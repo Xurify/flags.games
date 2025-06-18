@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Guess the Country",
+  title: "Guess the Country | Flags.games",
   description: "Test your knowledge and identify countries by their flags",
 };
 

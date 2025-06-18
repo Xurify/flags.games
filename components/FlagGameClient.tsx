@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Country } from "@/lib/data/countries";
 import { useGameSettings } from "@/lib/hooks/useGameSettings";
-import { Shuffle, RotateCcw, Trophy, HelpCircle } from "lucide-react";
+import { Shuffle, RotateCcw, Trophy, HelpCircle, Volume2, VolumeX } from "lucide-react";
 import {
   generateQuestion,
   getDifficultySettings,
@@ -58,7 +58,7 @@ interface GameState {
 }
 
 const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
-  const { settings } = useGameSettings();
+  const { settings, updateSetting } = useGameSettings();
 
   const [gameState, setGameState] = useState<GameState>({
     currentQuestion: 1,
@@ -276,6 +276,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     setShowDifficultyDialog(false);
   };
 
+  const toggleSound = () => {
+    updateSetting('soundEffects', !settings.soundEffects);
+  };
+
   const getScoreMessage = () => {
     const percentage = (gameState.score / gameState.totalQuestions) * 100;
     if (percentage >= 90) return "Excellent! You're a geography expert! 🌟";
@@ -384,6 +388,21 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                 </div>
               </div>
             </div>
+            
+            <div className="ml-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleSound}
+                className="h-8 px-3 text-muted-foreground hover:text-foreground"
+              >
+                {settings.soundEffects ? (
+                  <Volume2 className="w-4 h-4" />
+                ) : (
+                  <VolumeX className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
           </div>
 
           <div className="flex justify-center items-center">
@@ -488,7 +507,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             </AlertDialogContent>
           </AlertDialog>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <AlertDialog
               open={showDifficultyDialog}
               onOpenChange={setShowDifficultyDialog}
