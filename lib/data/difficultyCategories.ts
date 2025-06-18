@@ -1,4 +1,3 @@
-
 import { countries } from './countries';
 
 // Easy: Well-known, distinctive flags that are easily recognizable
@@ -24,7 +23,7 @@ export const getDifficultyCountries = (difficulty: 'easy' | 'medium' | 'hard') =
     case 'medium':
       return [...easyCountries, ...mediumCountries];
     case 'hard':
-      return countries; // All countries
+      return countries;
     default:
       return easyCountries;
   }

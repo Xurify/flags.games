@@ -1,6 +1,5 @@
-import FlagGame from "@/components/FlagGame";
-import Image from "next/image";
+import FlagGameServer from "@/components/FlagGameServer";
 
 export default function Home() {
-  return <FlagGame />;
+  return <FlagGameServer />;
 }

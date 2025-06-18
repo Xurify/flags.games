@@ -23,9 +23,24 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Country } from "@/lib/data/countries";
-import { getDifficultyCountries } from "@/lib/data/difficultyCategories";
 import { useGameSettings } from "@/lib/hooks/useGameSettings";
 import { Shuffle, RotateCcw, Trophy } from "lucide-react";
+import {
+  generateQuestion,
+  getDifficultySettings,
+  QuestionData
+} from "@/lib/utils/gameLogic";
+
+interface InitialGameData {
+  currentCountry: Country;
+  options: Country[];
+  difficulty: "easy" | "medium" | "hard" | "expert";
+  totalQuestions: number;
+}
+
+interface FlagGameClientProps {
+  initialGameData: InitialGameData;
+}
 
 interface GameState {
   currentQuestion: number;
@@ -41,413 +56,21 @@ interface GameState {
   gameStarted: boolean;
 }
 
-const getCountriesForDifficulty = (
-  difficulty: "easy" | "medium" | "hard" | "expert"
-) => {
-  const baseDifficulty = difficulty === "expert" ? "hard" : difficulty;
-  return getDifficultyCountries(baseDifficulty);
-};
-
-const getDifficultySettings = (
-  difficulty: "easy" | "medium" | "hard" | "expert"
-) => {
-  const countries = getCountriesForDifficulty(difficulty);
-  const settings = {
-    easy: { count: 15, label: "Easy (Well-known flags)" },
-    medium: { count: 25, label: "Medium (Mixed difficulty)" },
-    hard: {
-      count: countries.length,
-      label: `Hard (All ${countries.length} countries)`,
-    },
-    expert: {
-      count: countries.length,
-      label: `Expert (All ${countries.length} countries, maximum confusion)`,
-    },
-  };
-  return settings[difficulty];
-};
-
-const getCountryRegion = (countryCode: string): string => {
-  const regions = {
-    europe: [
-      "GB",
-      "FR",
-      "DE",
-      "IT",
-      "ES",
-      "NL",
-      "BE",
-      "CH",
-      "AT",
-      "SE",
-      "NO",
-      "DK",
-      "FI",
-      "PL",
-      "PT",
-      "GR",
-      "IS",
-      "CZ",
-      "HU",
-      "RO",
-      "BG",
-      "HR",
-      "SI",
-      "SK",
-      "EE",
-      "LV",
-      "LT",
-      "UA",
-      "BY",
-      "MD",
-      "RS",
-      "BA",
-      "ME",
-      "MK",
-      "AL",
-      "CY",
-      "MT",
-      "LU",
-      "MC",
-      "LI",
-      "SM",
-      "VA",
-      "AD",
-      "IE",
-    ],
-    asia: [
-      "JP",
-      "CN",
-      "IN",
-      "KR",
-      "TH",
-      "VN",
-      "SG",
-      "MY",
-      "ID",
-      "PH",
-      "MM",
-      "KH",
-      "LA",
-      "MN",
-      "KP",
-      "KZ",
-      "UZ",
-      "TM",
-      "KG",
-      "TJ",
-      "AZ",
-      "AM",
-      "GE",
-      "AF",
-      "PK",
-      "BD",
-      "LK",
-      "NP",
-      "BT",
-      "MV",
-      "TL",
-      "BN",
-    ],
-    africa: [
-      "EG",
-      "ZA",
-      "NG",
-      "KE",
-      "MA",
-      "DZ",
-      "TN",
-      "LY",
-      "SD",
-      "SS",
-      "ET",
-      "ER",
-      "DJ",
-      "SO",
-      "RW",
-      "BI",
-      "UG",
-      "TZ",
-      "MW",
-      "MZ",
-      "GH",
-      "CI",
-      "SN",
-      "ML",
-      "BF",
-      "NE",
-      "TD",
-      "CM",
-      "CF",
-      "CD",
-      "CG",
-      "GA",
-      "GQ",
-      "AO",
-      "ZM",
-      "ZW",
-      "BW",
-      "NA",
-      "LS",
-      "SZ",
-      "MG",
-      "MU",
-      "SC",
-      "KM",
-      "GN",
-      "GW",
-      "SL",
-      "LR",
-      "GM",
-      "MR",
-      "CV",
-      "ST",
-      "TG",
-      "BJ",
-    ],
-    americas: [
-      "US",
-      "CA",
-      "BR",
-      "MX",
-      "AR",
-      "CL",
-      "CO",
-      "PE",
-      "VE",
-      "UY",
-      "PY",
-      "BO",
-      "EC",
-      "GY",
-      "SR",
-      "CR",
-      "PA",
-      "NI",
-      "HN",
-      "SV",
-      "GT",
-      "BZ",
-      "JM",
-      "CU",
-      "HT",
-      "DO",
-      "TT",
-      "BB",
-      "LC",
-      "GD",
-      "VC",
-      "AG",
-      "DM",
-      "KN",
-      "BS",
-    ],
-    oceania: [
-      "AU",
-      "NZ",
-      "FJ",
-      "PG",
-      "SB",
-      "VU",
-      "WS",
-      "TO",
-      "PW",
-      "FM",
-      "MH",
-      "KI",
-      "NR",
-      "TV",
-    ],
-    middleEast: [
-      "IL",
-      "JO",
-      "LB",
-      "SY",
-      "IQ",
-      "IR",
-      "SA",
-      "AE",
-      "QA",
-      "KW",
-      "BH",
-      "OM",
-      "YE",
-      "TR",
-    ],
-  };
-
-  for (const [region, codes] of Object.entries(regions)) {
-    if (codes.includes(countryCode)) return region;
-  }
-  return "other";
-};
-
-const getSimilarFlags = (countryCode: string): string[] => {
-  const similarGroups: { [name: string]: string[] } = {
-    NL: ["LU", "RU", "SI", "SK"],
-    LU: ["NL", "RU", "SI", "SK"],
-    RU: ["NL", "LU", "SI", "SK"],
-    SI: ["NL", "LU", "RU", "SK"],
-    SK: ["NL", "LU", "RU", "SI"],
-    ID: ["MC", "PL"],
-    MC: ["ID", "PL"],
-    PL: ["ID", "MC"],
-    TD: ["RO"],
-    RO: ["TD"],
-    SE: ["NO", "DK", "FI", "IS"],
-    NO: ["SE", "DK", "FI", "IS"],
-    DK: ["SE", "NO", "FI", "IS"],
-    FI: ["SE", "NO", "DK", "IS"],
-    IS: ["SE", "NO", "DK", "FI"],
-    GH: ["CM", "GN", "ML", "SN"],
-    CM: ["GH", "GN", "ML", "SN"],
-    GN: ["GH", "CM", "ML", "SN"],
-    ML: ["GH", "CM", "GN", "SN"],
-    SN: ["GH", "CM", "GN", "ML"],
-    JO: ["AE", "KW", "SD", "SY"],
-    AE: ["JO", "KW", "SD", "SY"],
-    KW: ["JO", "AE", "SD", "SY"],
-    SD: ["JO", "AE", "KW", "SY"],
-    SY: ["JO", "AE", "KW", "SD"],
-    FR: ["NL", "RU", "CZ", "SK"],
-    CZ: ["FR", "NL", "RU", "SK"],
-    AU: ["NZ", "FJ"],
-    NZ: ["AU", "FJ"],
-    FJ: ["AU", "NZ"],
-  };
-
-  return similarGroups[countryCode] || [];
-};
-
-const getSimilarNames = (countryName: string): string[] => {
-  const nameGroups: { [name: string]: string[] } = {
-    "United States": ["United Kingdom", "United Arab Emirates"],
-    "United Kingdom": ["United States", "United Arab Emirates"],
-    "United Arab Emirates": ["United States", "United Kingdom"],
-    "North Korea": ["South Korea"],
-    "South Korea": ["North Korea"],
-    "Republic of the Congo": ["Democratic Republic of the Congo"],
-    "Democratic Republic of the Congo": ["Republic of the Congo"],
-    Guinea: ["Guinea-Bissau", "Equatorial Guinea"],
-    "Guinea-Bissau": ["Guinea", "Equatorial Guinea"],
-    "Equatorial Guinea": ["Guinea", "Guinea-Bissau"],
-    "Saint Kitts and Nevis": [
-      "Saint Lucia",
-      "Saint Vincent and the Grenadines",
-    ],
-    "Saint Lucia": [
-      "Saint Kitts and Nevis",
-      "Saint Vincent and the Grenadines",
-    ],
-    "Saint Vincent and the Grenadines": [
-      "Saint Kitts and Nevis",
-      "Saint Lucia",
-    ],
-  };
-
-  return nameGroups[countryName] || [];
-};
-
-const isDistinctiveFlag = (countryCode: string): boolean => {
-  const distinctive = [
-    "JP",
-    "CA",
-    "CH",
-    "NP",
-    "CY",
-    "MK",
-    "KE",
-    "KW",
-    "SA",
-    "BD",
-    "LK",
-    "IN",
-    "PK",
-    "TR",
-  ];
-  return distinctive.includes(countryCode);
-};
-
-const weightedRandomSelect = (items: any[], weights: number[]) => {
-  const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
-  let random = Math.random() * totalWeight;
-
-  for (let i = 0; i < items.length; i++) {
-    random -= weights[i];
-    if (random <= 0) {
-      return items[i];
-    }
-  }
-  return items[items.length - 1];
-};
-
-const calculateSimilarityScore = (
-  correctCountry: Country,
-  candidateCountry: Country,
-  difficulty: "easy" | "medium" | "hard" | "expert"
-) => {
-  let score = 0;
-  const correctRegion = getCountryRegion(correctCountry.code);
-  const candidateRegion = getCountryRegion(candidateCountry.code);
-  const similarFlags = getSimilarFlags(correctCountry.code);
-  const similarNames = getSimilarNames(correctCountry.name);
-
-  if (correctRegion === candidateRegion) {
-    score +=
-      difficulty === "expert"
-        ? 50
-        : difficulty === "hard"
-        ? 40
-        : difficulty === "medium"
-        ? 30
-        : 20;
-  }
-
-  if (similarFlags.includes(candidateCountry.code)) {
-    score += difficulty === "expert" ? 70 : 50;
-  }
-
-  if (similarNames.includes(candidateCountry.name)) {
-    score += difficulty === "expert" ? 45 : 35;
-  }
-
-  if (
-    (difficulty === "hard" || difficulty === "expert") &&
-    isDistinctiveFlag(candidateCountry.code)
-  ) {
-    score -= difficulty === "expert" ? 50 : 30;
-  }
-
-  if (difficulty === "expert") {
-    if (
-      correctRegion !== candidateRegion &&
-      !similarFlags.includes(candidateCountry.code) &&
-      !similarNames.includes(candidateCountry.name)
-    ) {
-      score -= 40;
-    }
-  }
-
-  score += Math.random() * (difficulty === "expert" ? 8 : 15);
-
-  return Math.max(score, 1);
-};
-
-const FlagGame = () => {
+const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const { settings } = useGameSettings();
 
   const [gameState, setGameState] = useState<GameState>({
     currentQuestion: 1,
     score: 0,
-    totalQuestions: 15,
-    currentCountry: { name: "", code: "", flag: "" },
-    options: [],
+    totalQuestions: initialGameData.totalQuestions,
+    currentCountry: initialGameData.currentCountry,
+    options: initialGameData.options,
     selectedAnswer: null,
     showResult: false,
     gameCompleted: false,
-    usedCountries: new Set(),
-    difficulty: "easy",
-    gameStarted: false,
+    usedCountries: new Set([initialGameData.currentCountry.code]),
+    difficulty: initialGameData.difficulty,
+    gameStarted: true,
   });
 
   const [showRestartDialog, setShowRestartDialog] = useState(false);
@@ -459,16 +82,9 @@ const FlagGame = () => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const playSound = (isCorrect: boolean) => {
-    console.log(
-      "playSound called with isCorrect:",
-      isCorrect,
-      "soundEffects setting:",
-      settings.soundEffects
-    );
     if (!settings.soundEffects) return;
 
     try {
-      // Create audio context and play sound
       const audioContext = new (window.AudioContext ||
         (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
@@ -478,27 +94,25 @@ const FlagGame = () => {
       gainNode.connect(audioContext.destination);
 
       if (isCorrect) {
-        // Success sound: ascending notes
-        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
         oscillator.frequency.setValueAtTime(
           659.25,
           audioContext.currentTime + 0.1
-        ); // E5
+        );
         oscillator.frequency.setValueAtTime(
           783.99,
           audioContext.currentTime + 0.2
-        ); // G5
+        );
       } else {
-        // Error sound: descending notes
-        oscillator.frequency.setValueAtTime(493.88, audioContext.currentTime); // B4
+        oscillator.frequency.setValueAtTime(493.88, audioContext.currentTime);
         oscillator.frequency.setValueAtTime(
           415.3,
           audioContext.currentTime + 0.1
-        ); // G#4
+        );
         oscillator.frequency.setValueAtTime(
           369.99,
           audioContext.currentTime + 0.2
-        ); // F#4
+        );
       }
 
       oscillator.type = "sine";
@@ -510,7 +124,6 @@ const FlagGame = () => {
 
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
-      console.log("Sound played successfully");
     } catch (error) {
       console.error("Error playing sound:", error);
     }
@@ -528,14 +141,10 @@ const FlagGame = () => {
     timeoutRef.current = setTimeout(callback, delay);
   };
 
-  const generateQuestion = () => {
-    const availableCountries = getCountriesForDifficulty(gameState.difficulty);
+  const generateQuestionHandler = () => {
+    const questionData = generateQuestion(gameState.difficulty, gameState.usedCountries);
 
-    const remainingCountries = availableCountries.filter(
-      (country) => !gameState.usedCountries.has(country.code)
-    );
-
-    if (remainingCountries.length === 0) {
+    if (!questionData) {
       setGameState((prev) => ({
         ...prev,
         gameCompleted: true,
@@ -543,81 +152,19 @@ const FlagGame = () => {
       return;
     }
 
-    const correctCountry =
-      remainingCountries[Math.floor(Math.random() * remainingCountries.length)];
-
-    const incorrectOptions: Country[] = [];
-
-    const candidateCountries = availableCountries.filter(
-      (c) => c.code !== correctCountry.code
-    );
-
-    const candidatesWithScores = candidateCountries.map((candidate) => ({
-      country: candidate,
-      score: calculateSimilarityScore(
-        correctCountry,
-        candidate,
-        gameState.difficulty
-      ),
-    }));
-
-    const minScoreThreshold = gameState.difficulty === "expert" ? 10 : 1;
-    const viableCandidates = candidatesWithScores.filter(
-      (c) => c.score >= minScoreThreshold
-    );
-
-    const finalCandidates =
-      viableCandidates.length >= 3 ? viableCandidates : candidatesWithScores;
-
-    while (incorrectOptions.length < 3 && finalCandidates.length > 0) {
-      const availableCandidates = finalCandidates.filter(
-        (c) => !incorrectOptions.find((opt) => opt.code === c.country.code)
-      );
-
-      if (availableCandidates.length === 0) break;
-
-      const countries = availableCandidates.map((c) => c.country);
-      const weights = availableCandidates.map((c) => c.score);
-
-      const selectedCountry = weightedRandomSelect(countries, weights);
-      incorrectOptions.push(selectedCountry);
-    }
-
-    while (
-      incorrectOptions.length < 3 &&
-      candidateCountries.length > incorrectOptions.length
-    ) {
-      const remainingCandidates = candidateCountries.filter(
-        (c) => !incorrectOptions.find((opt) => opt.code === c.code)
-      );
-
-      if (remainingCandidates.length === 0) break;
-
-      const nextCandidate =
-        remainingCandidates[
-          Math.floor(Math.random() * remainingCandidates.length)
-        ];
-      incorrectOptions.push(nextCandidate);
-    }
-
-    const allOptions = [correctCountry, ...incorrectOptions];
-    const shuffledOptions = allOptions.sort(() => Math.random() - 0.5);
-
     setGameState((prev) => ({
       ...prev,
-      currentCountry: correctCountry,
-      options: shuffledOptions,
+      currentCountry: questionData.currentCountry,
+      options: questionData.options,
       selectedAnswer: null,
       showResult: false,
-      usedCountries: new Set([...prev.usedCountries, correctCountry.code]),
+      usedCountries: new Set([...prev.usedCountries, questionData.currentCountry.code]),
     }));
   };
 
   const handleAnswer = (selectedCountry: Country) => {
     const isCorrect = selectedCountry.code === gameState.currentCountry.code;
 
-    console.log("handleAnswer called, playing sound...");
-    // Play sound effect
     playSound(isCorrect);
 
     setGameState((prev) => ({
@@ -636,7 +183,7 @@ const FlagGame = () => {
             ...prev,
             currentQuestion: prev.currentQuestion + 1,
           }));
-          generateQuestion();
+          generateQuestionHandler();
         } else {
           setGameState((prev) => ({
             ...prev,
@@ -653,7 +200,7 @@ const FlagGame = () => {
         ...prev,
         currentQuestion: prev.currentQuestion + 1,
       }));
-      generateQuestion();
+      generateQuestionHandler();
     } else {
       setGameState((prev) => ({
         ...prev,
@@ -679,7 +226,7 @@ const FlagGame = () => {
       gameStarted: true,
     }));
 
-    setTimeout(() => generateQuestion(), 0);
+    setTimeout(() => generateQuestionHandler(), 0);
   };
 
   const restartGame = () => {
@@ -696,7 +243,7 @@ const FlagGame = () => {
       usedCountries: new Set(),
     }));
 
-    setTimeout(() => generateQuestion(), 0);
+    setTimeout(() => generateQuestionHandler(), 0);
     setShowRestartDialog(false);
   };
 
@@ -717,7 +264,7 @@ const FlagGame = () => {
       usedCountries: new Set(),
     }));
 
-    setTimeout(() => generateQuestion(), 0);
+    setTimeout(() => generateQuestionHandler(), 0);
     setShowDifficultyDialog(false);
   };
 
@@ -748,28 +295,6 @@ const FlagGame = () => {
       clearGameTimeout();
     };
   }, []);
-
-  useEffect(() => {
-    if (!gameState.gameStarted) {
-      startGame();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (
-      gameState.gameStarted &&
-      !gameState.gameCompleted &&
-      gameState.options.length === 0 &&
-      gameState.currentCountry.code === ""
-    ) {
-      generateQuestion();
-    }
-  }, [
-    gameState.gameStarted,
-    gameState.gameCompleted,
-    gameState.options.length,
-    gameState.currentCountry.code,
-  ]);
 
   if (gameState.gameCompleted) {
     return (
@@ -827,11 +352,17 @@ const FlagGame = () => {
 
           <div className="mb-6 p-8 bg-gray-50 rounded-lg">
             <div className="flex justify-center">
-              <img
-                src={gameState.currentCountry.flag}
-                alt={`Flag of ${gameState.currentCountry.name}`}
-                className="w-48 h-32 object-contain rounded-md"
-              />
+              {gameState.currentCountry.flag ? (
+                <img
+                  src={gameState.currentCountry.flag}
+                  alt={`Flag of ${gameState.currentCountry.name}`}
+                  className="w-48 h-32 object-contain rounded-md"
+                />
+              ) : (
+                <div className="w-48 h-32 bg-gray-200 rounded-md flex items-center justify-center">
+                  <span className="text-gray-500">Loading...</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -965,4 +496,4 @@ const FlagGame = () => {
   );
 };
 
-export default FlagGame;
+export default FlagGameClient;

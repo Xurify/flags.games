@@ -17,7 +17,6 @@ export const useGameSettings = () => {
     const saved = localStorage.getItem('flagGameSettings');
     if (saved) {
       const parsedSettings = JSON.parse(saved);
-      // Only keep the settings we still support
       setSettings({
         soundEffects: parsedSettings.soundEffects ?? defaultSettings.soundEffects,
         autoAdvance: parsedSettings.autoAdvance ?? defaultSettings.autoAdvance
