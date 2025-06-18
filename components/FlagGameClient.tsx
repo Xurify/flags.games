@@ -30,6 +30,7 @@ import {
   getDifficultySettings,
   QuestionData
 } from "@/lib/utils/gameLogic";
+import { capitalizeText } from "@/lib/utils/strings";
 
 interface InitialGameData {
   currentCountry: Country;
@@ -495,9 +496,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
               <AlertDialogTrigger asChild>
                 <Button variant="ghost" className="text-muted-foreground" size="lg">
                   <Shuffle className="w-4 h-4 mr-2" />
-                  Level {gameState.difficulty === 'easy' ? '1' :
-                         gameState.difficulty === 'medium' ? '2' :
-                         gameState.difficulty === 'hard' ? '3' : '4'}
+                  Level: {capitalizeText(gameState.difficulty)}
                 </Button>
               </AlertDialogTrigger>
             <AlertDialogContent>
