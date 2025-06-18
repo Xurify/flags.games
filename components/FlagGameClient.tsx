@@ -24,11 +24,20 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Country } from "@/lib/data/countries";
 import { useGameSettings } from "@/lib/hooks/useGameSettings";
-import { Shuffle, RotateCcw, Trophy, HelpCircle, Volume2, VolumeX, Settings } from "lucide-react";
+import {
+  Shuffle,
+  RotateCcw,
+  Trophy,
+  HelpCircle,
+  Volume2,
+  VolumeX,
+  Settings,
+  Github,
+} from "lucide-react";
 import {
   generateQuestion,
   getDifficultySettings,
-  QuestionData
+  QuestionData,
 } from "@/lib/utils/gameLogic";
 import { capitalizeText } from "@/lib/utils/strings";
 
@@ -145,7 +154,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   };
 
   const generateQuestionHandler = () => {
-    const questionData = generateQuestion(gameState.difficulty, gameState.usedCountries);
+    const questionData = generateQuestion(
+      gameState.difficulty,
+      gameState.usedCountries
+    );
 
     if (!questionData) {
       setGameState((prev) => ({
@@ -161,7 +173,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       options: questionData.options,
       selectedAnswer: null,
       showResult: false,
-      usedCountries: new Set([...prev.usedCountries, questionData.currentCountry.code]),
+      usedCountries: new Set([
+        ...prev.usedCountries,
+        questionData.currentCountry.code,
+      ]),
     }));
   };
 
@@ -277,7 +292,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   };
 
   const toggleSound = () => {
-    updateSetting('soundEffects', !settings.soundEffects);
+    updateSetting("soundEffects", !settings.soundEffects);
   };
 
   const getScoreMessage = () => {
@@ -315,7 +330,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   }, []);
 
   if (gameState.gameCompleted) {
-    const percentage = Math.round((gameState.score / gameState.totalQuestions) * 100);
+    const percentage = Math.round(
+      (gameState.score / gameState.totalQuestions) * 100
+    );
 
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -330,7 +347,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                   Congratulations!
                 </h1>
                 <p className="text-muted-foreground">
-                  You've completed the {getDifficultySettings(gameState.difficulty).label.toLowerCase()} challenge!
+                  You've completed the{" "}
+                  {getDifficultySettings(
+                    gameState.difficulty
+                  ).label.toLowerCase()}{" "}
+                  challenge!
                 </p>
               </div>
 
@@ -374,23 +395,35 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                   <span className="text-sm font-medium text-foreground">
                     LEVEL
                   </span>
-                  <div className={`rounded-lg flex items-center justify-center px-2 py-1 ${
-                    gameState.difficulty === 'easy' ? 'bg-green-100' :
-                    gameState.difficulty === 'medium' ? 'bg-yellow-100' :
-                    gameState.difficulty === 'hard' ? 'bg-orange-100' : 'bg-red-100'
-                  }`}>
-                    <span className={`text-xs font-bold ${
-                      gameState.difficulty === 'easy' ? 'text-green-700' :
-                      gameState.difficulty === 'medium' ? 'text-yellow-700' :
-                      gameState.difficulty === 'hard' ? 'text-orange-700' : 'text-red-700'
-                    }`}>
+                  <div
+                    className={`rounded-lg flex items-center justify-center px-2 py-1 ${
+                      gameState.difficulty === "easy"
+                        ? "bg-green-100"
+                        : gameState.difficulty === "medium"
+                        ? "bg-yellow-100"
+                        : gameState.difficulty === "hard"
+                        ? "bg-orange-100"
+                        : "bg-red-100"
+                    }`}
+                  >
+                    <span
+                      className={`text-xs font-bold ${
+                        gameState.difficulty === "easy"
+                          ? "text-green-700"
+                          : gameState.difficulty === "medium"
+                          ? "text-yellow-700"
+                          : gameState.difficulty === "hard"
+                          ? "text-orange-700"
+                          : "text-red-700"
+                      }`}
+                    >
                       {gameState.difficulty.toUpperCase()}
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="w-px h-6 bg-border"></div>
-                
+
                 <Select>
                   <SelectTrigger className="w-auto border-none bg-transparent shadow-none p-0 h-auto">
                     <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
@@ -402,10 +435,14 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                     <div className="p-3">
                       <div className="space-y-4">
                         <div>
-                          <h4 className="text-sm font-medium text-foreground mb-2">Difficulty Level</h4>
+                          <h4 className="text-sm font-medium text-foreground mb-2">
+                            Difficulty Level
+                          </h4>
                           <Select
                             value={selectedDifficulty}
-                            onValueChange={(value: "easy" | "medium" | "hard" | "expert") => setSelectedDifficulty(value)}
+                            onValueChange={(
+                              value: "easy" | "medium" | "hard" | "expert"
+                            ) => setSelectedDifficulty(value)}
                           >
                             <SelectTrigger className="w-full">
                               <SelectValue />
@@ -425,20 +462,24 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                               </SelectItem>
                             </SelectContent>
                           </Select>
-                          <Button 
+                          <Button
                             onClick={changeDifficulty}
-                            size="sm" 
+                            size="sm"
                             className="w-full mt-2"
-                            disabled={selectedDifficulty === gameState.difficulty}
+                            disabled={
+                              selectedDifficulty === gameState.difficulty
+                            }
                           >
                             Change Difficulty
                           </Button>
                         </div>
-                        
+
                         <div className="w-full h-px bg-border"></div>
-                        
+
                         <div>
-                          <h4 className="text-sm font-medium text-foreground mb-2">Sound Effects</h4>
+                          <h4 className="text-sm font-medium text-foreground mb-2">
+                            Sound Effects
+                          </h4>
                           <Button
                             variant="outline"
                             size="sm"
@@ -450,8 +491,21 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                             ) : (
                               <VolumeX className="w-4 h-4 mr-2" />
                             )}
-                            {settings.soundEffects ? 'Sound On' : 'Sound Off'}
+                            {settings.soundEffects ? "Sound On" : "Sound Off"}
                           </Button>
+                        </div>
+
+                        <div className="w-full h-px bg-border"></div>
+
+                        <div>
+                          <a
+                            href="https://github.com/Xurify/flags.games"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-2 text-center w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                          >
+                            Made with ❤️ by Xurify
+                          </a>
                         </div>
                       </div>
                     </div>
@@ -466,7 +520,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-primary rounded-full"></div>
                 <span className="text-sm font-medium text-muted-foreground">
-                  Question {gameState.currentQuestion} of {gameState.totalQuestions}
+                  Question {gameState.currentQuestion} of{" "}
+                  {gameState.totalQuestions}
                 </span>
               </div>
               <div className="w-px h-4 bg-border"></div>
@@ -568,7 +623,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             onOpenChange={setShowHowToPlayDialog}
           >
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" className="text-muted-foreground" size="lg">
+              <Button
+                variant="ghost"
+                className="text-muted-foreground"
+                size="lg"
+              >
                 <HelpCircle className="w-4 h-4 mr-2" />
                 How to play?
               </Button>
@@ -579,12 +638,20 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                 <AlertDialogDescription asChild>
                   <div className="space-y-4 text-sm">
                     <div>
-                      <h4 className="font-medium text-foreground mb-2">🎯 Objective</h4>
-                      <p>Identify the country that each flag belongs to by selecting the correct answer from the multiple choice options.</p>
+                      <h4 className="font-medium text-foreground mb-2">
+                        🎯 Objective
+                      </h4>
+                      <p>
+                        Identify the country that each flag belongs to by
+                        selecting the correct answer from the multiple choice
+                        options.
+                      </p>
                     </div>
 
                     <div>
-                      <h4 className="font-medium text-foreground mb-2">🎮 How to Play</h4>
+                      <h4 className="font-medium text-foreground mb-2">
+                        🎮 How to Play
+                      </h4>
                       <ul className="space-y-1 list-disc list-inside">
                         <li>Look at the flag displayed</li>
                         <li>Choose the correct country from the options</li>
@@ -592,12 +659,29 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                     </div>
 
                     <div>
-                      <h4 className="font-medium text-foreground mb-2">📊 Difficulty Levels</h4>
+                      <h4 className="font-medium text-foreground mb-2">
+                        📊 Difficulty Levels
+                      </h4>
                       <ul className="space-y-1">
-                        <li><span className="inline-block w-3 h-3 bg-green-400 rounded mr-2"></span><strong>Level 1:</strong> Well-known flags (15 countries)</li>
-                        <li><span className="inline-block w-3 h-3 bg-yellow-400 rounded mr-2"></span><strong>Level 2:</strong> Medium mode (25 countries)</li>
-                        <li><span className="inline-block w-3 h-3 bg-orange-400 rounded mr-2"></span><strong>Level 3:</strong> Hard mode (194 countries - challenging)</li>
-                        <li><span className="inline-block w-3 h-3 bg-red-400 rounded mr-2"></span><strong>Level 4:</strong> Expert mode (194 countries - maximum confusion)</li>
+                        <li>
+                          <span className="inline-block w-3 h-3 bg-green-400 rounded mr-2"></span>
+                          <strong>Level 1:</strong> Well-known flags (15
+                          countries)
+                        </li>
+                        <li>
+                          <span className="inline-block w-3 h-3 bg-yellow-400 rounded mr-2"></span>
+                          <strong>Level 2:</strong> Medium mode (25 countries)
+                        </li>
+                        <li>
+                          <span className="inline-block w-3 h-3 bg-orange-400 rounded mr-2"></span>
+                          <strong>Level 3:</strong> Hard mode (194 countries -
+                          challenging)
+                        </li>
+                        <li>
+                          <span className="inline-block w-3 h-3 bg-red-400 rounded mr-2"></span>
+                          <strong>Level 4:</strong> Expert mode (194 countries -
+                          maximum confusion)
+                        </li>
                       </ul>
                     </div>
                   </div>
