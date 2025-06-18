@@ -442,7 +442,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             onOpenChange={setShowRestartDialog}
           >
             <AlertDialogTrigger asChild>
-              <Button variant="outline" className="w-full" size="lg">
+              <Button variant="destructive" className="w-full" size="lg">
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Restart Game
               </Button>
