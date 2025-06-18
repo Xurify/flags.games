@@ -405,7 +405,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
         </div>
 
         <Card className="mb-6 shadow-card hover:shadow-card-hover transition-all duration-300">
-          <CardContent className="p-8">
+          <CardContent className="sm:p-4">
             <div className="text-center mb-8">
               <h1 className="text-xl font-semibold text-foreground mb-2">
                 Guess the Country
