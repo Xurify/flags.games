@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Country } from "@/lib/data/countries";
 import { useGameSettings } from "@/lib/hooks/useGameSettings";
-import { Shuffle, RotateCcw, Trophy, HelpCircle, Volume2, VolumeX } from "lucide-react";
+import { Shuffle, RotateCcw, Trophy, HelpCircle, Volume2, VolumeX, Settings } from "lucide-react";
 import {
   generateQuestion,
   getDifficultySettings,
@@ -369,39 +369,95 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
         <div className="mb-8">
           <div className="flex items-center justify-center mb-6">
             <div className="bg-card rounded-2xl px-4 py-2 shadow-soft border border-border/50">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-foreground">
-                  LEVEL
-                </span>
-                <div className={`rounded-lg flex items-center justify-center px-2 py-1 ${
-                  gameState.difficulty === 'easy' ? 'bg-green-100' :
-                  gameState.difficulty === 'medium' ? 'bg-yellow-100' :
-                  gameState.difficulty === 'hard' ? 'bg-orange-100' : 'bg-red-100'
-                }`}>
-                  <span className={`text-xs font-bold ${
-                    gameState.difficulty === 'easy' ? 'text-green-700' :
-                    gameState.difficulty === 'medium' ? 'text-yellow-700' :
-                    gameState.difficulty === 'hard' ? 'text-orange-700' : 'text-red-700'
-                  }`}>
-                    {gameState.difficulty.toUpperCase()}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-foreground">
+                    LEVEL
                   </span>
+                  <div className={`rounded-lg flex items-center justify-center px-2 py-1 ${
+                    gameState.difficulty === 'easy' ? 'bg-green-100' :
+                    gameState.difficulty === 'medium' ? 'bg-yellow-100' :
+                    gameState.difficulty === 'hard' ? 'bg-orange-100' : 'bg-red-100'
+                  }`}>
+                    <span className={`text-xs font-bold ${
+                      gameState.difficulty === 'easy' ? 'text-green-700' :
+                      gameState.difficulty === 'medium' ? 'text-yellow-700' :
+                      gameState.difficulty === 'hard' ? 'text-orange-700' : 'text-red-700'
+                    }`}>
+                      {gameState.difficulty.toUpperCase()}
+                    </span>
+                  </div>
                 </div>
+                
+                <div className="w-px h-6 bg-border"></div>
+                
+                <Select>
+                  <SelectTrigger className="w-auto border-none bg-transparent shadow-none p-0 h-auto">
+                    <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+                      <Settings className="w-4 h-4" />
+                      <span className="text-sm font-medium">Settings</span>
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="w-64">
+                    <div className="p-3">
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="text-sm font-medium text-foreground mb-2">Difficulty Level</h4>
+                          <Select
+                            value={selectedDifficulty}
+                            onValueChange={(value: "easy" | "medium" | "hard" | "expert") => setSelectedDifficulty(value)}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="easy">
+                                {getDifficultySettings("easy").label}
+                              </SelectItem>
+                              <SelectItem value="medium">
+                                {getDifficultySettings("medium").label}
+                              </SelectItem>
+                              <SelectItem value="hard">
+                                {getDifficultySettings("hard").label}
+                              </SelectItem>
+                              <SelectItem value="expert">
+                                {getDifficultySettings("expert").label}
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Button 
+                            onClick={changeDifficulty}
+                            size="sm" 
+                            className="w-full mt-2"
+                            disabled={selectedDifficulty === gameState.difficulty}
+                          >
+                            Change Difficulty
+                          </Button>
+                        </div>
+                        
+                        <div className="w-full h-px bg-border"></div>
+                        
+                        <div>
+                          <h4 className="text-sm font-medium text-foreground mb-2">Sound Effects</h4>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={toggleSound}
+                            className="w-full justify-start"
+                          >
+                            {settings.soundEffects ? (
+                              <Volume2 className="w-4 h-4 mr-2" />
+                            ) : (
+                              <VolumeX className="w-4 h-4 mr-2" />
+                            )}
+                            {settings.soundEffects ? 'Sound On' : 'Sound Off'}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
-            
-            <div className="ml-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleSound}
-                className="h-8 px-3 text-muted-foreground hover:text-foreground"
-              >
-                {settings.soundEffects ? (
-                  <Volume2 className="w-4 h-4" />
-                ) : (
-                  <VolumeX className="w-4 h-4" />
-                )}
-              </Button>
             </div>
           </div>
 
@@ -507,60 +563,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             </AlertDialogContent>
           </AlertDialog>
 
-          <div className="grid grid-cols-3 gap-3">
-            <AlertDialog
-              open={showDifficultyDialog}
-              onOpenChange={setShowDifficultyDialog}
-            >
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" className="text-muted-foreground" size="lg">
-                  <Shuffle className="w-4 h-4 mr-2" />
-                  Level: {capitalizeText(gameState.difficulty)}
-                </Button>
-              </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Change Difficulty</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Select a new difficulty level. Your current progress will be
-                  lost.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <div className="my-4">
-                <Select
-                  value={selectedDifficulty}
-                  onValueChange={(
-                    value: "easy" | "medium" | "hard" | "expert"
-                  ) => setSelectedDifficulty(value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="easy">
-                      {getDifficultySettings("easy").label}
-                    </SelectItem>
-                    <SelectItem value="medium">
-                      {getDifficultySettings("medium").label}
-                    </SelectItem>
-                    <SelectItem value="hard">
-                      {getDifficultySettings("hard").label}
-                    </SelectItem>
-                    <SelectItem value="expert">
-                      {getDifficultySettings("expert").label}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={changeDifficulty}>
-                  Change Difficulty
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
           <AlertDialog
             open={showHowToPlayDialog}
             onOpenChange={setShowHowToPlayDialog}
@@ -606,7 +608,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-        </div>
         </div>
       </div>
     </div>
