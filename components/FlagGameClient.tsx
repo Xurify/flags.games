@@ -535,7 +535,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
           </div>
         )}
 
-        <div className="space-y-3">
+        <div className="flex flex-col items-center space-y-3">
           <AlertDialog
             open={showRestartDialog}
             onOpenChange={setShowRestartDialog}
