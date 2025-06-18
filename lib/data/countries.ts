@@ -179,7 +179,6 @@ export const countries: Country[] = [
   { name: "Nauru", code: "NR", flag: "https://cdn.jsdelivr.net/npm/svg-country-flags@1.2.10/svg/nr.svg" },
   { name: "Tuvalu", code: "TV", flag: "https://cdn.jsdelivr.net/npm/svg-country-flags@1.2.10/svg/tv.svg" },
   
-  // Missing countries that were identified
   { name: "South Sudan", code: "SS", flag: "https://cdn.jsdelivr.net/npm/svg-country-flags@1.2.10/svg/ss.svg" },
   { name: "Eritrea", code: "ER", flag: "https://cdn.jsdelivr.net/npm/svg-country-flags@1.2.10/svg/er.svg" },
   { name: "Djibouti", code: "DJ", flag: "https://cdn.jsdelivr.net/npm/svg-country-flags@1.2.10/svg/dj.svg" },
