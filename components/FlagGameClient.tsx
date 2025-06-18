@@ -75,6 +75,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
+  const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<
     "easy" | "medium" | "hard" | "expert"
   >("easy");
@@ -541,10 +542,51 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             </AlertDialogContent>
           </AlertDialog>
 
-          <Button variant="ghost" className="text-muted-foreground" size="lg">
-            <HelpCircle className="w-4 h-4 mr-2" />
-            How to play?
-          </Button>
+          <AlertDialog
+            open={showHowToPlayDialog}
+            onOpenChange={setShowHowToPlayDialog}
+          >
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" className="text-muted-foreground" size="lg">
+                <HelpCircle className="w-4 h-4 mr-2" />
+                How to play?
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="max-w-md">
+              <AlertDialogHeader>
+                <AlertDialogTitle>How to Play</AlertDialogTitle>
+                <AlertDialogDescription asChild>
+                  <div className="space-y-4 text-sm">
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">🎯 Objective</h4>
+                      <p>Identify the country that each flag belongs to by selecting the correct answer from the multiple choice options.</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">🎮 How to Play</h4>
+                      <ul className="space-y-1 list-disc list-inside">
+                        <li>Look at the flag displayed</li>
+                        <li>Choose the correct country from the options</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">📊 Difficulty Levels</h4>
+                      <ul className="space-y-1">
+                        <li><span className="inline-block w-3 h-3 bg-green-400 rounded mr-2"></span><strong>Level 1:</strong> Well-known flags (15 countries)</li>
+                        <li><span className="inline-block w-3 h-3 bg-yellow-400 rounded mr-2"></span><strong>Level 2:</strong> Medium mode (25 countries)</li>
+                        <li><span className="inline-block w-3 h-3 bg-orange-400 rounded mr-2"></span><strong>Level 3:</strong> Hard mode (194 countries - challenging)</li>
+                        <li><span className="inline-block w-3 h-3 bg-red-400 rounded mr-2"></span><strong>Level 4:</strong> Expert mode (194 countries - maximum confusion)</li>
+                      </ul>
+                    </div>
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogAction>Got it!</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
         </div>
       </div>
