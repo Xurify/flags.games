@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
 import {
   Select,
   SelectContent,
@@ -385,19 +385,20 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             </div>
           </div>
 
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-primary rounded-full"></div>
+          <div className="flex justify-center items-center">
+            <div className="relative flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                <span className="text-sm font-medium text-muted-foreground">
+                  Question {gameState.currentQuestion} of {gameState.totalQuestions}
+                </span>
+              </div>
+              <div className="w-px h-4 bg-border"></div>
               <span className="text-sm font-medium text-muted-foreground">
-                Question {gameState.currentQuestion} of {gameState.totalQuestions}
-              </span>
-            </div>
-            <div className="relative">
-              <Badge variant="secondary" className="text-sm px-3 py-1 rounded-full">
                 Score: {gameState.score}
-              </Badge>
+              </span>
               {showScorePopup && (
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 animate-score-popup">
+                <div className="absolute -top-8 right-0 animate-score-popup">
                   <span className="text-green-600 font-bold text-lg">+500</span>
                 </div>
               )}
