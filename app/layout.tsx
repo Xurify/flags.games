@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Flags of the World - Guess the Country Game",
-  description: "Test your knowledge of world flags in this fun and educational guessing game. Multiple difficulty levels available!",
+  title: "Guess the Country",
+  description: "Test your knowledge and identify countries by their flags",
 };
 
 export default function RootLayout({

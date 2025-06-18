@@ -408,10 +408,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
           <CardContent className="p-8">
             <div className="text-center mb-8">
               <h1 className="text-xl font-semibold text-foreground mb-2">
-                Flags of the world
+                Guess the Country
               </h1>
               <p className="text-muted-foreground text-sm">
-                Guess the country of the flag in each level to complete the mini game
+                Test your knowledge and identify countries by their flags
               </p>
             </div>
 
