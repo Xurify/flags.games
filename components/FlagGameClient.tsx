@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Country } from "@/lib/data/countries";
 import { useGameSettings } from "@/lib/hooks/useGameSettings";
-import { Shuffle, RotateCcw, Trophy } from "lucide-react";
+import { Shuffle, RotateCcw, Trophy, HelpCircle } from "lucide-react";
 import {
   generateQuestion,
   getDifficultySettings,
@@ -278,16 +278,22 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   };
 
   const getButtonClass = (country: Country) => {
-    if (!gameState.showResult) return "";
-    if (country.code === gameState.currentCountry.code)
-      return "bg-green-100 border-green-500 text-green-800 hover:bg-green-200";
+    if (!gameState.showResult) {
+      return "border-border hover:border-primary/50 hover:bg-primary/5 transition-all duration-200";
+    }
+
+    if (country.code === gameState.currentCountry.code) {
+      return "bg-green-50 border-green-200 text-green-700 hover:bg-green-100 shadow-soft";
+    }
+
     if (
       country.code === gameState.selectedAnswer &&
       country.code !== gameState.currentCountry.code
     ) {
-      return "bg-red-100 border-red-500 text-red-800 hover:bg-red-200";
+      return "bg-red-50 border-red-200 text-red-700 hover:bg-red-100 shadow-soft";
     }
-    return "opacity-50";
+
+    return "opacity-40 border-border/50";
   };
 
   useEffect(() => {
@@ -297,199 +303,228 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   }, []);
 
   if (gameState.gameCompleted) {
+    const percentage = Math.round((gameState.score / gameState.totalQuestions) * 100);
+
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <Trophy className="w-16 h-16 mx-auto text-yellow-500 mb-4" />
-            <CardTitle className="text-2xl">Congratulations!</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center space-y-4">
-            <div>
-              <p className="text-lg mb-2">
-                You've completed the{" "}
-                {getDifficultySettings(gameState.difficulty).label} challenge!
-              </p>
-              <p className="text-3xl font-bold text-primary">
-                {gameState.score} / {gameState.totalQuestions}
-              </p>
-              <p className="text-lg text-gray-600">
-                {Math.round((gameState.score / gameState.totalQuestions) * 100)}
-                % Correct
-              </p>
-            </div>
-            <p className="text-sm text-gray-700">{getScoreMessage()}</p>
-            <div className="space-y-2">
-              <Button onClick={startGame} className="w-full" size="lg">
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+          <Card className="shadow-card-hover">
+            <CardContent className="p-8 text-center">
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Trophy className="w-10 h-10 text-primary" />
+                </div>
+                <h1 className="text-2xl font-bold text-foreground mb-2">
+                  Congratulations!
+                </h1>
+                <p className="text-muted-foreground">
+                  You've completed the {getDifficultySettings(gameState.difficulty).label.toLowerCase()} challenge!
+                </p>
+              </div>
+
+              <div className="mb-8">
+                <div className="bg-muted/30 rounded-2xl p-6 mb-4">
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    {gameState.score} / {gameState.totalQuestions}
+                  </div>
+                  <div className="text-lg text-muted-foreground">
+                    {percentage}% Correct
+                  </div>
+                </div>
+
+                <div className="text-sm text-muted-foreground">
+                  {getScoreMessage()}
+                </div>
+              </div>
+              <Button
+                onClick={startGame}
+                className="w-full shadow-button"
+                size="lg"
+              >
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Play Again
               </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white">
-      <div className="p-4">
-        <div className="max-w-2xl mx-auto">
-          <div className="mb-6 flex justify-between items-center">
-            <Badge variant="secondary" className="text-lg px-4 py-2">
-              Question {gameState.currentQuestion} of {gameState.totalQuestions}
-            </Badge>
-            <Badge variant="outline" className="text-lg px-4 py-2">
-              Score: {gameState.score}
-            </Badge>
-          </div>
-
-          <div className="mb-6 text-center">
-            <h1 className="text-2xl font-semibold text-gray-900">
-              Which country does this flag belong to?
-            </h1>
-          </div>
-
-          <div className="mb-6 p-8 bg-gray-50 rounded-lg">
-            <div className="flex justify-center">
-              {gameState.currentCountry.flag ? (
-                <img
-                  src={gameState.currentCountry.flag}
-                  alt={`Flag of ${gameState.currentCountry.name}`}
-                  className="w-48 h-32 object-contain rounded-md"
-                />
-              ) : (
-                <div className="w-48 h-32 bg-gray-200 rounded-md flex items-center justify-center">
-                  <span className="text-gray-500">Loading...</span>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+        <div className="mb-8">
+          <div className="flex items-center justify-center mb-6">
+            <div className="bg-card rounded-2xl px-4 py-2 shadow-soft border border-border/50">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-foreground">
+                  LEVEL 
+                </span>
+                <div className="bg-primary/10 rounded-lg flex items-center justify-center px-2 py-1">
+                  <span className="text-xs font-bold text-primary">
+                    {gameState.difficulty.toUpperCase()}
+                  </span>
                 </div>
-              )}
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {gameState.options.map((country) => (
-              <Button
-                key={country.code}
-                onClick={() => !gameState.showResult && handleAnswer(country)}
-                disabled={gameState.showResult}
-                className={`h-16 text-lg font-medium border-2 ${getButtonClass(
-                  country
-                )}`}
-                variant="outline"
-              >
-                {country.name}
-              </Button>
-            ))}
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-primary rounded-full"></div>
+              <span className="text-sm font-medium text-muted-foreground">
+                Question {gameState.currentQuestion} of {gameState.totalQuestions}
+              </span>
+            </div>
+            <Badge variant="secondary" className="text-sm px-3 py-1 rounded-full">
+              Score: {gameState.score}
+            </Badge>
           </div>
+        </div>
 
-          {gameState.showResult && (
-            <Card className="mt-6">
-              <CardContent className="pt-6 text-center">
-                {gameState.selectedAnswer === gameState.currentCountry.code ? (
-                  <p className="text-green-600 font-semibold text-lg">
-                    ✅ Correct! Well done!
-                  </p>
+        <Card className="mb-6 shadow-card hover:shadow-card-hover transition-all duration-300">
+          <CardContent className="p-8">
+            <div className="text-center mb-8">
+              <h1 className="text-xl font-semibold text-foreground mb-2">
+                Flags of the world
+              </h1>
+              <p className="text-muted-foreground text-sm">
+                Guess the country of the flag in each level to complete the mini game
+              </p>
+            </div>
+
+            <div className="mb-8">
+              <div className="bg-muted/80 rounded-2xl p-4 sm:p-8 flex justify-center items-center min-h-[160px] sm:min-h-[200px]">
+                {gameState.currentCountry.flag ? (
+                  <img
+                    src={gameState.currentCountry.flag}
+                    alt={`Flag of ${gameState.currentCountry.name}`}
+                    className="max-w-full max-h-28 sm:max-h-32 object-contain rounded-sm shadow-flag"
+                  />
                 ) : (
-                  <p className="text-red-600 font-semibold text-lg">
-                    ❌ Incorrect. The correct answer was{" "}
-                    {gameState.currentCountry.name}
-                  </p>
+                  <div className="w-40 h-24 sm:w-48 sm:h-32 bg-muted rounded-lg flex items-center justify-center">
+                    <span className="text-muted-foreground">Loading...</span>
+                  </div>
                 )}
-                {!settings.autoAdvance && (
-                  <Button onClick={nextQuestion} className="mt-4">
-                    Next Question
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          )}
+              </div>
+            </div>
 
-          <div className="mt-6 text-center flex gap-4 justify-center">
-            <AlertDialog
-              open={showRestartDialog}
-              onOpenChange={setShowRestartDialog}
-            >
-              <AlertDialogTrigger asChild>
-                <Button variant="outline">
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Restart Game
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {gameState.options.map((country) => (
+                <Button
+                  key={country.code}
+                  onClick={() => !gameState.showResult && handleAnswer(country)}
+                  disabled={gameState.showResult}
+                  className={`h-14 text-base font-medium justify-start px-6 ${getButtonClass(
+                    country
+                  )}`}
+                  variant="outline"
+                >
+                  {country.name}
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Restart Game</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to restart the game? Your current
-                    progress will be lost.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={restartGame}>
-                    Restart
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
+        {gameState.showResult && !settings.autoAdvance && (
+          <div className="mb-6 text-center">
+            <Button onClick={nextQuestion} className="w-full" size="lg">
+              Next Question
+            </Button>
+          </div>
+        )}
+
+        <div className="space-y-3">
+          <AlertDialog
+            open={showRestartDialog}
+            onOpenChange={setShowRestartDialog}
+          >
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" className="w-full" size="lg">
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Restart Game
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Restart Game</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to restart the game? Your current
+                  progress will be lost.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={restartGame}>
+                  Restart
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <div className="grid grid-cols-2 gap-3">
             <AlertDialog
               open={showDifficultyDialog}
               onOpenChange={setShowDifficultyDialog}
             >
               <AlertDialogTrigger asChild>
-                <Button variant="outline">
+                <Button variant="ghost" className="text-muted-foreground" size="lg">
                   <Shuffle className="w-4 h-4 mr-2" />
-                  Change Difficulty:{" "}
-                  {
-                    getDifficultySettings(gameState.difficulty).label.split(
-                      " "
-                    )[0]
-                  }
+                  Level {gameState.difficulty === 'easy' ? '1' :
+                         gameState.difficulty === 'medium' ? '2' :
+                         gameState.difficulty === 'hard' ? '3' : '4'}
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Change Difficulty</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Select a new difficulty level. Your current progress will be
-                    lost.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <div className="my-4">
-                  <Select
-                    value={selectedDifficulty}
-                    onValueChange={(
-                      value: "easy" | "medium" | "hard" | "expert"
-                    ) => setSelectedDifficulty(value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="easy">
-                        {getDifficultySettings("easy").label}
-                      </SelectItem>
-                      <SelectItem value="medium">
-                        {getDifficultySettings("medium").label}
-                      </SelectItem>
-                      <SelectItem value="hard">
-                        {getDifficultySettings("hard").label}
-                      </SelectItem>
-                      <SelectItem value="expert">
-                        {getDifficultySettings("expert").label}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={changeDifficulty}>
-                    Change Difficulty
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Change Difficulty</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Select a new difficulty level. Your current progress will be
+                  lost.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="my-4">
+                <Select
+                  value={selectedDifficulty}
+                  onValueChange={(
+                    value: "easy" | "medium" | "hard" | "expert"
+                  ) => setSelectedDifficulty(value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="easy">
+                      {getDifficultySettings("easy").label}
+                    </SelectItem>
+                    <SelectItem value="medium">
+                      {getDifficultySettings("medium").label}
+                    </SelectItem>
+                    <SelectItem value="hard">
+                      {getDifficultySettings("hard").label}
+                    </SelectItem>
+                    <SelectItem value="expert">
+                      {getDifficultySettings("expert").label}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={changeDifficulty}>
+                  Change Difficulty
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <Button variant="ghost" className="text-muted-foreground" size="lg">
+            <HelpCircle className="w-4 h-4 mr-2" />
+            How to play?
+          </Button>
+        </div>
         </div>
       </div>
     </div>
