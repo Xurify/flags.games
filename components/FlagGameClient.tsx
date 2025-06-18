@@ -78,6 +78,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const [selectedDifficulty, setSelectedDifficulty] = useState<
     "easy" | "medium" | "hard" | "expert"
   >("easy");
+  const [showScorePopup, setShowScorePopup] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -171,8 +172,13 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       ...prev,
       selectedAnswer: selectedCountry.code,
       showResult: true,
-      score: isCorrect ? prev.score + 1 : prev.score,
+      score: isCorrect ? prev.score + 500 : prev.score,
     }));
+
+    if (isCorrect) {
+      setShowScorePopup(true);
+      setTimeout(() => setShowScorePopup(false), 1500);
+    }
 
     const delay = settings.autoAdvance ? 2000 : 0;
 
@@ -359,10 +365,18 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             <div className="bg-card rounded-2xl px-4 py-2 shadow-soft border border-border/50">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-foreground">
-                  LEVEL 
+                  LEVEL
                 </span>
-                <div className="bg-primary/10 rounded-lg flex items-center justify-center px-2 py-1">
-                  <span className="text-xs font-bold text-primary">
+                <div className={`rounded-lg flex items-center justify-center px-2 py-1 ${
+                  gameState.difficulty === 'easy' ? 'bg-green-100' :
+                  gameState.difficulty === 'medium' ? 'bg-yellow-100' :
+                  gameState.difficulty === 'hard' ? 'bg-orange-100' : 'bg-red-100'
+                }`}>
+                  <span className={`text-xs font-bold ${
+                    gameState.difficulty === 'easy' ? 'text-green-700' :
+                    gameState.difficulty === 'medium' ? 'text-yellow-700' :
+                    gameState.difficulty === 'hard' ? 'text-orange-700' : 'text-red-700'
+                  }`}>
                     {gameState.difficulty.toUpperCase()}
                   </span>
                 </div>
@@ -377,9 +391,16 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                 Question {gameState.currentQuestion} of {gameState.totalQuestions}
               </span>
             </div>
-            <Badge variant="secondary" className="text-sm px-3 py-1 rounded-full">
-              Score: {gameState.score}
-            </Badge>
+            <div className="relative">
+              <Badge variant="secondary" className="text-sm px-3 py-1 rounded-full">
+                Score: {gameState.score}
+              </Badge>
+              {showScorePopup && (
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 animate-score-popup">
+                  <span className="text-green-600 font-bold text-lg">+500</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
