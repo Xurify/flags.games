@@ -13,10 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Guess the Country | Flags.games",
+  title: "Guess the Country | flags.games",
   description: "Test your knowledge and identify countries by their flags",
   openGraph: {
-    title: "Guess the Country | Flags.games",
+    title: "Guess the Country | flags.games",
     description: "Test your knowledge and identify countries by their flags",
     url: "https://www.flags.games",
     siteName: "flags.games",
