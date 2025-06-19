@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import {
   Select,
@@ -68,6 +69,8 @@ interface GameState {
 
 const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const { settings, updateSetting } = useGameSettings();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [gameState, setGameState] = useState<GameState>({
     currentQuestion: 1,
@@ -88,7 +91,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<
     "easy" | "medium" | "hard" | "expert"
-  >("easy");
+  >(initialGameData.difficulty);
   const [showScorePopup, setShowScorePopup] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -289,6 +292,14 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
     setTimeout(() => generateQuestionHandler(), 0);
     setShowDifficultyDialog(false);
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("difficulty", selectedDifficulty);
+    if (selectedDifficulty === "easy") {
+      router.replace("/");
+    } else {
+      router.replace(`?${params.toString()}`);
+    }
   };
 
   const toggleSound = () => {
@@ -449,16 +460,16 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="easy">
-                                {getDifficultySettings("easy").label}
+                                {getDifficultySettings("easy").label} ({getDifficultySettings("easy").count} countries)
                               </SelectItem>
                               <SelectItem value="medium">
-                                {getDifficultySettings("medium").label}
+                                {getDifficultySettings("medium").label} ({getDifficultySettings("medium").count} countries)
                               </SelectItem>
                               <SelectItem value="hard">
-                                {getDifficultySettings("hard").label}
+                                {getDifficultySettings("hard").label} ({getDifficultySettings("hard").count} countries)
                               </SelectItem>
                               <SelectItem value="expert">
-                                {getDifficultySettings("expert").label}
+                                {getDifficultySettings("expert").label} ({getDifficultySettings("expert").count} countries)
                               </SelectItem>
                             </SelectContent>
                           </Select>
@@ -670,8 +681,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                       <ul className="space-y-1">
                         <li>
                           <span className="inline-block w-3 h-3 bg-green-400 rounded mr-2"></span>
-                          <strong>Level 1:</strong> Well-known flags (15
-                          countries)
+                          <strong>Level 1:</strong> Easy mode (15 countries -
+                          Well-known flags)
                         </li>
                         <li>
                           <span className="inline-block w-3 h-3 bg-yellow-400 rounded mr-2"></span>
@@ -680,12 +691,12 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                         <li>
                           <span className="inline-block w-3 h-3 bg-orange-400 rounded mr-2"></span>
                           <strong>Level 3:</strong> Hard mode (194 countries -
-                          challenging)
+                          Challenging)
                         </li>
                         <li>
                           <span className="inline-block w-3 h-3 bg-red-400 rounded mr-2"></span>
                           <strong>Level 4:</strong> Expert mode (194 countries -
-                          maximum confusion)
+                          Maximum confusion)
                         </li>
                       </ul>
                     </div>

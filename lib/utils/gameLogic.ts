@@ -13,15 +13,15 @@ export const getDifficultySettings = (
 ) => {
   const countries = getCountriesForDifficulty(difficulty);
   const settings = {
-    easy: { count: 15, label: "Easy (Well-known flags)" },
-    medium: { count: 25, label: "Medium (Mixed difficulty)" },
+    easy: { count: 15, label: "Easy" },
+    medium: { count: 25, label: "Medium" },
     hard: {
       count: countries.length,
-      label: `Hard (All ${countries.length} countries)`,
+      label: `Hard`,
     },
     expert: {
       count: countries.length,
-      label: `Expert (All ${countries.length} countries, maximum confusion)`,
+      label: `Expert`,
     },
   };
   return settings[difficulty];
@@ -273,3 +273,13 @@ export const generateQuestion = (
     options: shuffledOptions,
   };
 };
+
+export function parseDifficultyFromQuery(
+  queryValue: string | undefined
+): "easy" | "medium" | "hard" | "expert" {
+  const allowed = ["easy", "medium", "hard", "expert"];
+  if (queryValue && allowed.includes(queryValue)) {
+    return queryValue as "easy" | "medium" | "hard" | "expert";
+  }
+  return "easy";
+}

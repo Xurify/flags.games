@@ -1,15 +1,17 @@
 import { Country } from "@/lib/data/countries";
-import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
+import { generateQuestion, getDifficultySettings, parseDifficultyFromQuery } from "@/lib/utils/gameLogic";
 import FlagGameClient from "./FlagGameClient";
+
+export type Difficulty = "easy" | "medium" | "hard" | "expert";
 
 interface InitialGameData {
   currentCountry: Country;
   options: Country[];
-  difficulty: "easy" | "medium" | "hard" | "expert";
+  difficulty: Difficulty;
   totalQuestions: number;
 }
 
-const generateInitialQuestion = (difficulty: "easy" | "medium" | "hard" | "expert" = "easy"): InitialGameData => {
+const generateInitialQuestion = (difficulty: Difficulty): InitialGameData => {
   const questionData = generateQuestion(difficulty) as InitialGameData;
 
   return {
@@ -20,8 +22,11 @@ const generateInitialQuestion = (difficulty: "easy" | "medium" | "hard" | "exper
   };
 };
 
-export default function FlagGameServer() {
-  const initialGameData = generateInitialQuestion();
-  
+interface FlagGameServerProps {
+  difficulty: Difficulty;
+}
+
+export default function FlagGameServer({ difficulty }: FlagGameServerProps) {
+  const initialGameData = generateInitialQuestion(difficulty);
   return <FlagGameClient initialGameData={initialGameData} />;
 }
