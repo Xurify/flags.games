@@ -397,43 +397,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                           <h4 className="text-sm font-medium text-foreground mb-2">
                             Difficulty Level
                           </h4>
-                          <Select
-                            value={selectedDifficulty}
-                            onValueChange={(
-                              value: "easy" | "medium" | "hard" | "expert"
-                            ) => setSelectedDifficulty(value)}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="easy">
-                                {getDifficultySettings("easy").label} (
-                                {getDifficultySettings("easy").count} countries)
-                              </SelectItem>
-                              <SelectItem value="medium">
-                                {getDifficultySettings("medium").label} (
-                                {getDifficultySettings("medium").count}{" "}
-                                countries)
-                              </SelectItem>
-                              <SelectItem value="hard">
-                                {getDifficultySettings("hard").label} (
-                                {getDifficultySettings("hard").count} countries)
-                              </SelectItem>
-                              <SelectItem value="expert">
-                                {getDifficultySettings("expert").label} (
-                                {getDifficultySettings("expert").count}{" "}
-                                countries)
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
                           <Button
-                            onClick={changeDifficulty}
+                            onClick={() => setShowDifficultyDialog(true)}
                             size="sm"
-                            className="w-full mt-2 disabled:cursor-not-allowed! disabled:pointer-events-auto disabled:hover:translate-0"
-                            disabled={
-                              selectedDifficulty === gameState.difficulty
-                            }
+                            className="w-full mt-2"
+                            variant="outline"
                           >
                             Change Difficulty
                           </Button>
@@ -581,6 +549,51 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             )}
           </CardContent>
         </Card>
+
+        <AlertDialog open={showDifficultyDialog} onOpenChange={setShowDifficultyDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Change Difficulty</AlertDialogTitle>
+              <AlertDialogDescription>
+                Select a new difficulty level for your next game.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="space-y-4 mt-2">
+              <Select
+                value={selectedDifficulty}
+                onValueChange={(value: "easy" | "medium" | "hard" | "expert") => setSelectedDifficulty(value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="easy">
+                    {getDifficultySettings("easy").label} ({getDifficultySettings("easy").count} countries)
+                  </SelectItem>
+                  <SelectItem value="medium">
+                    {getDifficultySettings("medium").label} ({getDifficultySettings("medium").count} countries)
+                  </SelectItem>
+                  <SelectItem value="hard">
+                    {getDifficultySettings("hard").label} ({getDifficultySettings("hard").count} countries)
+                  </SelectItem>
+                  <SelectItem value="expert">
+                    {getDifficultySettings("expert").label} ({getDifficultySettings("expert").count} countries)
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                onClick={changeDifficulty}
+                className="w-full mt-2"
+                disabled={selectedDifficulty === gameState.difficulty}
+              >
+                Change Difficulty
+              </Button>
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <div className="flex flex-col items-center space-y-3">
           <AlertDialog

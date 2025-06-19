@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface GameEndScreenProps {
   score: number;
@@ -67,8 +66,9 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
       </div>
       <div className="text-sm text-muted-foreground mb-8 text-center">
         {score === totalPossible
-          ? 'You did fantastic! Perfect score!'
+          ? 'Holy smokes! You really know your stuff!'
           : 'Try again to beat your own score.'}
+          <span className="text-2xl">👏</span>
       </div>
       <div className="flex flex-col gap-3 w-full">
         <Button onClick={onPlayAgain} className="w-full" size="lg">
