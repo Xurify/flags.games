@@ -1,0 +1,1 @@
+export const CORRECT_POINT_COST = 500;

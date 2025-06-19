@@ -41,6 +41,7 @@ import {
   QuestionData,
 } from "@/lib/utils/gameLogic";
 import { capitalizeText } from "@/lib/utils/strings";
+import { CORRECT_POINT_COST } from "@/lib/constants";
 
 interface InitialGameData {
   currentCountry: Country;
@@ -192,7 +193,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       ...prev,
       selectedAnswer: selectedCountry.code,
       showResult: true,
-      score: isCorrect ? prev.score + 500 : prev.score,
+      score: isCorrect ? prev.score + CORRECT_POINT_COST : prev.score,
     }));
 
     if (isCorrect) {
@@ -307,7 +308,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   };
 
   const getScoreMessage = () => {
-    const percentage = (gameState.score / gameState.totalQuestions) * 100;
+    const percentage = (gameState.score / (gameState.totalQuestions * CORRECT_POINT_COST)) * 100;
     if (percentage >= 90) return "Excellent! You're a geography expert! 🌟";
     if (percentage >= 75) return "Great job! You know your flags well! 🎉";
     if (percentage >= 60) return "Good work! Keep practicing! 👍";
@@ -369,10 +370,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
               <div className="mb-8">
                 <div className="bg-muted/30 rounded-2xl p-6 mb-4">
                   <div className="text-4xl font-bold text-primary mb-2">
-                    {gameState.score} / {gameState.totalQuestions}
+                    {gameState.score} / {gameState.totalQuestions * CORRECT_POINT_COST}
                   </div>
                   <div className="text-lg text-muted-foreground">
-                    {percentage}% Correct
+                    {percentage / CORRECT_POINT_COST}% Correct
                   </div>
                 </div>
 
@@ -546,7 +547,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
               </span>
               {showScorePopup && (
                 <div className="absolute -top-8 right-0 animate-score-popup">
-                  <span className="text-green-600 font-bold text-lg">+500</span>
+                  <span className="text-green-600 font-bold text-lg">+{CORRECT_POINT_COST}</span>
                 </div>
               )}
             </div>
