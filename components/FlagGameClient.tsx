@@ -42,6 +42,7 @@ import {
 } from "@/lib/utils/gameLogic";
 import { capitalizeText } from "@/lib/utils/strings";
 import { CORRECT_POINT_COST } from "@/lib/constants";
+import GameEndScreen from "./GameEndScreen";
 
 interface InitialGameData {
   currentCountry: Country;
@@ -308,7 +309,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   };
 
   const getScoreMessage = () => {
-    const percentage = (gameState.score / (gameState.totalQuestions * CORRECT_POINT_COST)) * 100;
+    const percentage =
+      (gameState.score / (gameState.totalQuestions * CORRECT_POINT_COST)) * 100;
     if (percentage >= 90) return "Excellent! You're a geography expert! 🌟";
     if (percentage >= 75) return "Great job! You know your flags well! 🎉";
     if (percentage >= 60) return "Good work! Keep practicing! 👍";
@@ -340,61 +342,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       clearGameTimeout();
     };
   }, []);
-
-  if (gameState.gameCompleted) {
-    const percentage = Math.round(
-      (gameState.score / gameState.totalQuestions) * 100
-    );
-
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
-          <Card className="shadow-card-hover">
-            <CardContent className="p-8 text-center">
-              <div className="mb-6">
-                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Trophy className="w-10 h-10 text-primary" />
-                </div>
-                <h1 className="text-2xl font-bold text-foreground mb-2">
-                  Congratulations!
-                </h1>
-                <p className="text-muted-foreground">
-                  You've completed the{" "}
-                  {getDifficultySettings(
-                    gameState.difficulty
-                  ).label.toLowerCase()}{" "}
-                  challenge!
-                </p>
-              </div>
-
-              <div className="mb-8">
-                <div className="bg-muted/30 rounded-2xl p-6 mb-4">
-                  <div className="text-4xl font-bold text-primary mb-2">
-                    {gameState.score} / {gameState.totalQuestions * CORRECT_POINT_COST}
-                  </div>
-                  <div className="text-lg text-muted-foreground">
-                    {percentage / CORRECT_POINT_COST}% Correct
-                  </div>
-                </div>
-
-                <div className="text-sm text-muted-foreground">
-                  {getScoreMessage()}
-                </div>
-              </div>
-              <Button
-                onClick={startGame}
-                className="w-full shadow-button"
-                size="lg"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Play Again
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -461,16 +408,22 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="easy">
-                                {getDifficultySettings("easy").label} ({getDifficultySettings("easy").count} countries)
+                                {getDifficultySettings("easy").label} (
+                                {getDifficultySettings("easy").count} countries)
                               </SelectItem>
                               <SelectItem value="medium">
-                                {getDifficultySettings("medium").label} ({getDifficultySettings("medium").count} countries)
+                                {getDifficultySettings("medium").label} (
+                                {getDifficultySettings("medium").count}{" "}
+                                countries)
                               </SelectItem>
                               <SelectItem value="hard">
-                                {getDifficultySettings("hard").label} ({getDifficultySettings("hard").count} countries)
+                                {getDifficultySettings("hard").label} (
+                                {getDifficultySettings("hard").count} countries)
                               </SelectItem>
                               <SelectItem value="expert">
-                                {getDifficultySettings("expert").label} ({getDifficultySettings("expert").count} countries)
+                                {getDifficultySettings("expert").label} (
+                                {getDifficultySettings("expert").count}{" "}
+                                countries)
                               </SelectItem>
                             </SelectContent>
                           </Select>
@@ -547,7 +500,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
               </span>
               {showScorePopup && (
                 <div className="absolute -top-8 right-0 animate-score-popup">
-                  <span className="text-green-600 font-bold text-lg">+{CORRECT_POINT_COST}</span>
+                  <span className="text-green-600 font-bold text-lg">
+                    +{CORRECT_POINT_COST}
+                  </span>
                 </div>
               )}
             </div>
@@ -556,68 +511,90 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
         <Card className="mb-6 shadow-card hover:shadow-card-hover transition-all duration-300">
           <CardContent className="sm:p-4">
-            <div className="text-center mb-8">
-              <h1 className="text-xl font-semibold text-foreground mb-2">
-                Guess the Country
-              </h1>
-              <p className="text-muted-foreground text-sm">
-                Test your knowledge and identify countries by their flags
-              </p>
-            </div>
+            {gameState.gameCompleted ? (
+              <GameEndScreen
+                score={gameState.score}
+                totalPossible={gameState.totalQuestions * CORRECT_POINT_COST}
+                percentage={Math.round(
+                  (gameState.score /
+                    (gameState.totalQuestions * CORRECT_POINT_COST)) *
+                    100
+                )}
+                onPlayAgain={startGame}
+                onChangeDifficulty={() => setShowDifficultyDialog(true)}
+              />
+            ) : (
+              <>
+                <div className="text-center mb-8">
+                  <h1 className="text-xl font-semibold text-foreground mb-2">
+                    Guess the Country
+                  </h1>
+                  <p className="text-muted-foreground text-sm">
+                    Test your knowledge and identify countries by their flags
+                  </p>
+                </div>
 
-            <div className="mb-8">
-              <div className="bg-muted/80 dark:bg-transparent rounded-2xl p-4 sm:p-8 flex justify-center items-center min-h-[160px] sm:min-h-[200px]">
-                {gameState.currentCountry.flag ? (
-                  <img
-                    src={gameState.currentCountry.flag}
-                    alt={`Flag of ${gameState.currentCountry.name}`}
-                    className="max-w-full max-h-28 sm:max-h-32 object-contain rounded-sm shadow-flag"
-                  />
-                ) : (
-                  <div className="w-40 h-24 sm:w-48 sm:h-32 bg-muted rounded-lg flex items-center justify-center">
-                    <span className="text-muted-foreground">Loading...</span>
+                <div className="mb-8">
+                  <div className="bg-muted/80 dark:bg-transparent rounded-2xl p-4 sm:p-8 flex justify-center items-center min-h-[160px] sm:min-h-[200px]">
+                    {gameState.currentCountry.flag ? (
+                      <img
+                        src={gameState.currentCountry.flag}
+                        alt={`Flag of ${gameState.currentCountry.name}`}
+                        className="max-w-full max-h-28 sm:max-h-32 object-contain rounded-sm shadow-flag"
+                      />
+                    ) : (
+                      <div className="w-40 h-24 sm:w-48 sm:h-32 bg-muted rounded-lg flex items-center justify-center">
+                        <span className="text-muted-foreground">
+                          Loading...
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {gameState.options.map((country) => (
+                    <Button
+                      key={country.code}
+                      onClick={() =>
+                        !gameState.showResult && handleAnswer(country)
+                      }
+                      disabled={gameState.showResult}
+                      className={`h-14 text-base font-medium justify-start px-6 ${getButtonClass(
+                        country
+                      )}`}
+                      variant="outline"
+                    >
+                      {country.name}
+                    </Button>
+                  ))}
+                </div>
+
+                {gameState.showResult && !settings.autoAdvance && (
+                  <div className="mb-6 text-center">
+                    <Button onClick={nextQuestion} className="w-full" size="lg">
+                      Next Question
+                    </Button>
                   </div>
                 )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {gameState.options.map((country) => (
-                <Button
-                  key={country.code}
-                  onClick={() => !gameState.showResult && handleAnswer(country)}
-                  disabled={gameState.showResult}
-                  className={`h-14 text-base font-medium justify-start px-6 ${getButtonClass(
-                    country
-                  )}`}
-                  variant="outline"
-                >
-                  {country.name}
-                </Button>
-              ))}
-            </div>
+              </>
+            )}
           </CardContent>
         </Card>
-
-        {gameState.showResult && !settings.autoAdvance && (
-          <div className="mb-6 text-center">
-            <Button onClick={nextQuestion} className="w-full" size="lg">
-              Next Question
-            </Button>
-          </div>
-        )}
 
         <div className="flex flex-col items-center space-y-3">
           <AlertDialog
             open={showRestartDialog}
             onOpenChange={setShowRestartDialog}
           >
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" className="w-full" size="lg">
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Restart Game
-              </Button>
-            </AlertDialogTrigger>
+            {!gameState.gameCompleted && (
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="w-full" size="lg">
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Restart Game
+                </Button>
+              </AlertDialogTrigger>
+            )}
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Restart Game</AlertDialogTitle>
