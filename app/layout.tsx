@@ -20,14 +20,6 @@ export const metadata: Metadata = {
     description: "Test your knowledge and identify countries by their flags",
     url: "https://www.flags.games",
     siteName: "flags.games",
-    images: [
-      {
-        url: "https://www.flags.games/icon.svg",
-        width: 1024,
-        height: 1024,
-        alt: "flags.games Logo",
-      },
-    ],
     locale: "en_US",
     type: "website",
   },
@@ -35,12 +27,6 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Guess the Country | flags.games",
     description: "Test your knowledge and identify countries by their flags",
-    images: [
-      {
-        url: "https://www.flags.games/icon.svg",
-        alt: "flags.games Logo",
-      },
-    ],
   },
   applicationName: "flags.games",
   metadataBase: new URL("https://www.flags.games"),
