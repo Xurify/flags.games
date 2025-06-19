@@ -504,6 +504,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                             rel="noopener noreferrer"
                             className="flex items-center justify-center gap-2 text-center w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
                           >
+                            <img
+                              src="/icon.png"
+                              alt="Guess the Country Icon"
+                              className="w-6 h-6 rounded"
+                            />
                             Made with ❤️ by Xurify
                           </a>
                         </div>
