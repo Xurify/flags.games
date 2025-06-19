@@ -317,21 +317,21 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
   const getButtonClass = (country: Country) => {
     if (!gameState.showResult) {
-      return "border-border hover:border-primary/50 hover:bg-primary/5 transition-all duration-200";
+      return "border-border hover:border-primary/50 hover:bg-primary/5 dark:border-primary/50 dark:bg-primary/5 dark:hover:border-primary/70 transition-all duration-200";
     }
 
     if (country.code === gameState.currentCountry.code) {
-      return "bg-green-50 border-green-200 text-green-700 hover:bg-green-100 shadow-soft";
+      return "bg-green-50 border-green-200 text-green-700 dark:bg-green-700/40 dark:border-green-500 dark:text-white dark:shadow-lg hover:text-green-700 focus:text-green-700 dark:hover:text-white dark:focus:text-white disabled:bg-green-50 disabled:text-green-700 disabled:dark:bg-green-700/40 disabled:dark:text-white !opacity-100 !grayscale-0 shadow-soft";
     }
 
     if (
       country.code === gameState.selectedAnswer &&
       country.code !== gameState.currentCountry.code
     ) {
-      return "bg-red-50 border-red-200 text-red-700 hover:bg-red-100 shadow-soft";
+      return "bg-red-50 border-red-200 text-red-700 dark:bg-red-700/40 dark:border-red-500 dark:text-white dark:shadow-lg hover:text-red-700 focus:text-red-700 dark:hover:text-white dark:focus:text-white disabled:bg-red-50 disabled:text-red-700 disabled:dark:bg-red-700/40 disabled:dark:text-white !opacity-100 !grayscale-0 shadow-soft";
     }
 
-    return "opacity-40 border-border/50";
+    return "!opacity-40 border-border/50 !grayscale-0";
   };
 
   useEffect(() => {
@@ -565,7 +565,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             </div>
 
             <div className="mb-8">
-              <div className="bg-muted/80 rounded-2xl p-4 sm:p-8 flex justify-center items-center min-h-[160px] sm:min-h-[200px]">
+              <div className="bg-muted/80 dark:bg-transparent rounded-2xl p-4 sm:p-8 flex justify-center items-center min-h-[160px] sm:min-h-[200px]">
                 {gameState.currentCountry.flag ? (
                   <img
                     src={gameState.currentCountry.flag}
