@@ -407,14 +407,14 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                     LEVEL
                   </span>
                   <div
-                    className={`rounded-lg flex items-center justify-center px-2 py-1 border border-green-700 dark:border-green-600 ${
+                    className={`rounded-lg flex items-center justify-center px-2 py-1 border ${
                       gameState.difficulty === "easy"
-                        ? "bg-green-100 dark:bg-green-800"
+                        ? "bg-green-100 dark:bg-green-800 border-green-700 dark:border-green-600"
                         : gameState.difficulty === "medium"
-                        ? "bg-yellow-100"
+                        ? "bg-yellow-100  border-yellow-700 dark:border-yellow-600"
                         : gameState.difficulty === "hard"
-                        ? "bg-orange-100"
-                        : "bg-red-100"
+                        ? "bg-orange-100 border-orange-700 dark:border-orange-600"
+                        : "bg-red-100 border-red-700 dark:border-red-600"
                     }`}
                   >
                     <span
