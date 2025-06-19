@@ -22,9 +22,9 @@ export const metadata: Metadata = {
     siteName: "flags.games",
     images: [
       {
-        url: "/icon.svg",
-        width: 1200,
-        height: 630,
+        url: "https://www.flags.games/icon.svg",
+        width: 1024,
+        height: 1024,
         alt: "flags.games Logo",
       },
     ],
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     description: "Test your knowledge and identify countries by their flags",
     images: [
       {
-        url: "/icon.svg",
+        url: "https://www.flags.games/icon.svg",
         alt: "flags.games Logo",
       },
     ],
