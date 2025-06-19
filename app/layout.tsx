@@ -42,6 +42,13 @@ export const metadata: Metadata = {
       },
     ],
   },
+  applicationName: "flags.games",
+  metadataBase: new URL("https://www.flags.games"),
+  alternates: {
+    canonical: "https://www.flags.games/",
+  },
+  keywords: ["flag guessing game", "country guessing game"],
+  authors: [{ name: "Xurify" }],
 };
 
 export default function RootLayout({
