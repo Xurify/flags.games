@@ -95,6 +95,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     "easy" | "medium" | "hard" | "expert"
   >(initialGameData.difficulty);
   const [showScorePopup, setShowScorePopup] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -305,7 +306,13 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   };
 
   const toggleSound = () => {
-    updateSetting("soundEffects", !settings.soundEffects);
+    const newValue = !settings.soundEffects;
+    updateSetting("soundEffects", newValue);
+    try {
+      const audio = new window.Audio("https://qqu03sron6.ufs.sh/f/jU7cOp6GbyJPgMfH3ZgX8X5HeUlLvVymNa4CbMGB6tSrRJ7W");
+      audio.volume = 0.5;
+      audio.play();
+    } catch (e) {}
   };
 
   const getScoreMessage = () => {
@@ -383,7 +390,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
                 <div className="w-px h-6 bg-border"></div>
 
-                <Select>
+                <Select open={settingsOpen} onOpenChange={setSettingsOpen}>
                   <SelectTrigger className="w-auto border-none bg-transparent shadow-none p-0 h-auto">
                     <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
                       <Settings className="w-4 h-4" />
@@ -398,7 +405,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                             Difficulty Level
                           </h4>
                           <Button
-                            onClick={() => setShowDifficultyDialog(true)}
+                            onClick={() => {
+                              setSettingsOpen(false);
+                              setShowDifficultyDialog(true);
+                            }}
                             size="sm"
                             className="w-full mt-2"
                             variant="outline"
@@ -550,7 +560,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
           </CardContent>
         </Card>
 
-        <AlertDialog open={showDifficultyDialog} onOpenChange={setShowDifficultyDialog}>
+        <AlertDialog
+          open={showDifficultyDialog}
+          onOpenChange={setShowDifficultyDialog}
+        >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Change Difficulty</AlertDialogTitle>
@@ -561,23 +574,29 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             <div className="space-y-4 mt-2">
               <Select
                 value={selectedDifficulty}
-                onValueChange={(value: "easy" | "medium" | "hard" | "expert") => setSelectedDifficulty(value)}
+                onValueChange={(value: "easy" | "medium" | "hard" | "expert") =>
+                  setSelectedDifficulty(value)
+                }
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="easy">
-                    {getDifficultySettings("easy").label} ({getDifficultySettings("easy").count} countries)
+                    {getDifficultySettings("easy").label} (
+                    {getDifficultySettings("easy").count} countries)
                   </SelectItem>
                   <SelectItem value="medium">
-                    {getDifficultySettings("medium").label} ({getDifficultySettings("medium").count} countries)
+                    {getDifficultySettings("medium").label} (
+                    {getDifficultySettings("medium").count} countries)
                   </SelectItem>
                   <SelectItem value="hard">
-                    {getDifficultySettings("hard").label} ({getDifficultySettings("hard").count} countries)
+                    {getDifficultySettings("hard").label} (
+                    {getDifficultySettings("hard").count} countries)
                   </SelectItem>
                   <SelectItem value="expert">
-                    {getDifficultySettings("expert").label} ({getDifficultySettings("expert").count} countries)
+                    {getDifficultySettings("expert").label} (
+                    {getDifficultySettings("expert").count} countries)
                   </SelectItem>
                 </SelectContent>
               </Select>
