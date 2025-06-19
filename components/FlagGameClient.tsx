@@ -321,14 +321,14 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     }
 
     if (country.code === gameState.currentCountry.code) {
-      return "bg-green-50 border-green-200 text-green-700 dark:bg-green-700/40 dark:border-green-500 dark:text-white dark:shadow-lg hover:text-green-700 focus:text-green-700 dark:hover:text-white dark:focus:text-white disabled:bg-green-50 disabled:text-green-700 disabled:dark:bg-green-700/40 disabled:dark:text-white !opacity-100 !grayscale-0 shadow-soft";
+      return "bg-green-100 border-green-500 text-green-700 dark:bg-green-700/40 dark:border-green-500 dark:text-white dark:shadow-lg hover:text-green-700 focus:text-green-700 dark:hover:text-white dark:focus:text-white disabled:bg-green-100 disabled:text-green-700 disabled:dark:bg-green-700/40 disabled:dark:text-white !opacity-100 !grayscale-0 shadow-soft";
     }
 
     if (
       country.code === gameState.selectedAnswer &&
       country.code !== gameState.currentCountry.code
     ) {
-      return "bg-red-50 border-red-200 text-red-700 dark:bg-red-700/40 dark:border-red-500 dark:text-white dark:shadow-lg hover:text-red-700 focus:text-red-700 dark:hover:text-white dark:focus:text-white disabled:bg-red-50 disabled:text-red-700 disabled:dark:bg-red-700/40 disabled:dark:text-white !opacity-100 !grayscale-0 shadow-soft";
+      return "bg-red-50 border-red-400 text-red-700 dark:bg-red-700/40 dark:border-red-500 dark:text-white dark:shadow-lg hover:text-red-700 focus:text-red-700 dark:hover:text-white dark:focus:text-white disabled:bg-red-50 disabled:text-red-700 disabled:dark:bg-red-700/40 disabled:dark:text-white !opacity-100 !grayscale-0 shadow-soft";
     }
 
     return "!opacity-40 border-border/50 !grayscale-0";
@@ -407,9 +407,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                     LEVEL
                   </span>
                   <div
-                    className={`rounded-lg flex items-center justify-center px-2 py-1 ${
+                    className={`rounded-lg flex items-center justify-center px-2 py-1 border border-green-700 dark:border-green-600 ${
                       gameState.difficulty === "easy"
-                        ? "bg-green-100"
+                        ? "bg-green-100 dark:bg-green-800"
                         : gameState.difficulty === "medium"
                         ? "bg-yellow-100"
                         : gameState.difficulty === "hard"
@@ -420,7 +420,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                     <span
                       className={`text-xs font-bold ${
                         gameState.difficulty === "easy"
-                          ? "text-green-700"
+                          ? "text-green-700 dark:text-green-100"
                           : gameState.difficulty === "medium"
                           ? "text-yellow-700"
                           : gameState.difficulty === "hard"
@@ -476,7 +476,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                           <Button
                             onClick={changeDifficulty}
                             size="sm"
-                            className="w-full mt-2"
+                            className="w-full mt-2 disabled:cursor-not-allowed! disabled:pointer-events-auto disabled:hover:translate-0"
                             disabled={
                               selectedDifficulty === gameState.difficulty
                             }
