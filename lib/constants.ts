@@ -1,1 +1,1 @@
-export const CORRECT_POINT_COST = 500;
+export const CORRECT_POINT_COST = 1;
