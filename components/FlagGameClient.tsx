@@ -113,12 +113,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     }
   };
 
-  useEffect(() => {
-    return () => {
-      clearGameTimeout();
-    };
-  }, []);
-
   const setGameTimeout = (callback: () => void, delay: number) => {
     clearGameTimeout();
     timeoutRef.current = setTimeout(callback, delay);
