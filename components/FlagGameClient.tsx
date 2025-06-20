@@ -41,8 +41,11 @@ import {
   QuestionData,
 } from "@/lib/utils/gameLogic";
 import { capitalizeText } from "@/lib/utils/strings";
-import { CORRECT_POINT_COST } from "@/lib/constants";
+import { CORRECT_POINT_COST, AUDIO_URLS, AUDIO_URLS_KEYS } from "@/lib/constants";
 import GameEndScreen from "./GameEndScreen";
+import { useAudio } from "@/lib/hooks/useAudio";
+import { useSoundEffect } from "@/lib/hooks/useSoundEffect";
+import { playErrorSound, playSuccessSound } from "@/lib/utils/audioUtils";
 
 interface InitialGameData {
   currentCountry: Country;
@@ -74,6 +77,12 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const { playSound: playButtonClickSound } = useSoundEffect({
+    audioUrl: AUDIO_URLS.BUTTON_CLICK,
+    volume: 0.5,
+    cacheKey: AUDIO_URLS_KEYS.BUTTON_CLICK,
+  });
+
   const [gameState, setGameState] = useState<GameState>({
     currentQuestion: 1,
     score: 0,
@@ -102,48 +111,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const playSound = (isCorrect: boolean) => {
     if (!settings.soundEffects) return;
 
-    try {
-      const audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      if (isCorrect) {
-        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(
-          659.25,
-          audioContext.currentTime + 0.1
-        );
-        oscillator.frequency.setValueAtTime(
-          783.99,
-          audioContext.currentTime + 0.2
-        );
-      } else {
-        oscillator.frequency.setValueAtTime(493.88, audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(
-          415.3,
-          audioContext.currentTime + 0.1
-        );
-        oscillator.frequency.setValueAtTime(
-          369.99,
-          audioContext.currentTime + 0.2
-        );
-      }
-
-      oscillator.type = "sine";
-      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.01,
-        audioContext.currentTime + 0.3
-      );
-
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.3);
-    } catch (error) {
-      console.error("Error playing sound:", error);
+    if (isCorrect) {
+      playSuccessSound();
+    } else {
+      playErrorSound();
     }
   };
 
@@ -308,11 +279,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const toggleSound = () => {
     const newValue = !settings.soundEffects;
     updateSetting("soundEffects", newValue);
-    try {
-      const audio = new window.Audio("https://qqu03sron6.ufs.sh/f/jU7cOp6GbyJPgMfH3ZgX8X5HeUlLvVymNa4CbMGB6tSrRJ7W");
-      audio.volume = 0.5;
-      audio.play();
-    } catch (e) {}
+    playButtonClickSound();
   };
 
   const getScoreMessage = () => {
