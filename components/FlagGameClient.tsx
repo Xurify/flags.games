@@ -43,7 +43,6 @@ import {
 import { capitalizeText } from "@/lib/utils/strings";
 import { CORRECT_POINT_COST, AUDIO_URLS, AUDIO_URLS_KEYS } from "@/lib/constants";
 import GameEndScreen from "./GameEndScreen";
-import { useAudio } from "@/lib/hooks/useAudio";
 import { useSoundEffect } from "@/lib/hooks/useSoundEffect";
 import { playErrorSound, playSuccessSound } from "@/lib/utils/audioUtils";
 
