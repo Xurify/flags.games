@@ -1,10 +1,21 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Confetti from "react-confetti";
+import {
+  RotateCcw,
+  HelpCircle,
+  Volume2,
+  VolumeX,
+  Settings,
+  Github,
+  Sun,
+  Moon,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useRouter, useSearchParams } from "next/navigation";
-
 import {
   Select,
   SelectContent,
@@ -25,25 +36,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Country } from "@/lib/data/countries";
 import { useGameSettings } from "@/lib/hooks/useGameSettings";
-import {
-  RotateCcw,
-  HelpCircle,
-  Volume2,
-  VolumeX,
-  Settings,
-  Github,
-  Sun,
-  Moon,
-} from "lucide-react";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
 import {
   CORRECT_POINT_COST,
   AUDIO_URLS,
   AUDIO_URLS_KEYS,
 } from "@/lib/constants";
-import GameEndScreen from "./GameEndScreen";
 import { useSoundEffect } from "@/lib/hooks/useSoundEffect";
 import { playErrorSound, playSuccessSound } from "@/lib/utils/audioUtils";
+import GameEndScreen from "./GameEndScreen";
 
 interface InitialGameData {
   currentCountry: Country;
@@ -79,6 +80,12 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     audioUrl: AUDIO_URLS.BUTTON_CLICK,
     volume: 0.5,
     cacheKey: AUDIO_URLS_KEYS.BUTTON_CLICK,
+  });
+
+  const { playSound: playVictorySound } = useSoundEffect({
+    audioUrl: AUDIO_URLS.VICTORY,
+    volume: 0.7,
+    cacheKey: AUDIO_URLS_KEYS.VICTORY,
   });
 
   const [gameState, setGameState] = useState<GameState>({
@@ -318,8 +325,21 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     playButtonClickSound();
   };
 
+  useEffect(() => {
+    if (gameState.gameCompleted && settings.soundEffects) {
+      const percentage =
+        (gameState.score / (gameState.totalQuestions * CORRECT_POINT_COST)) * 100;
+      if (percentage >= 60) {
+        playVictorySound();
+      }
+    }
+  }, [gameState.gameCompleted, settings.soundEffects]);
+
   return (
     <div className="min-h-screen bg-background">
+      {gameState.gameCompleted && (
+        <Confetti width={window.innerWidth} height={window.innerHeight} numberOfPieces={350} recycle={false} />
+      )}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
         <div className="mb-8">
           <div className="flex items-center justify-center mb-6">
