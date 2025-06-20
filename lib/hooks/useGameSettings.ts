@@ -3,11 +3,13 @@ import { useState, useEffect } from 'react';
 export interface GameSettings {
   soundEffects: boolean;
   autoAdvance: boolean;
+  darkMode: boolean;
 }
 
 const defaultSettings: GameSettings = {
   soundEffects: true,
-  autoAdvance: true
+  autoAdvance: true,
+  darkMode: false
 };
 
 export const useGameSettings = () => {
@@ -19,7 +21,8 @@ export const useGameSettings = () => {
       const parsedSettings = JSON.parse(saved);
       setSettings({
         soundEffects: parsedSettings.soundEffects ?? defaultSettings.soundEffects,
-        autoAdvance: parsedSettings.autoAdvance ?? defaultSettings.autoAdvance
+        autoAdvance: parsedSettings.autoAdvance ?? defaultSettings.autoAdvance,
+        darkMode: parsedSettings.darkMode ?? defaultSettings.darkMode
       });
     }
   }, []);

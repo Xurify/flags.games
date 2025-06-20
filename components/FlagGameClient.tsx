@@ -32,6 +32,8 @@ import {
   VolumeX,
   Settings,
   Github,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
 import {
@@ -313,6 +315,16 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      document.documentElement.classList.toggle("dark", settings.darkMode);
+    }
+  }, [settings.darkMode]);
+
+  const toggleDarkMode = () => {
+    updateSetting("darkMode", !settings.darkMode);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
@@ -398,6 +410,28 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                               <VolumeX className="w-4 h-4 mr-2" />
                             )}
                             {settings.soundEffects ? "Sound On" : "Sound Off"}
+                          </Button>
+                        </div>
+
+                        <div className="w-full h-px bg-border"></div>
+
+                        <div>
+                          <h4 className="text-sm font-medium text-foreground mb-2">
+                            Dark Mode
+                          </h4>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={toggleDarkMode}
+                            className="w-full justify-start"
+                            aria-pressed={settings.darkMode}
+                          >
+                            {settings.darkMode ? (
+                              <Sun className="w-4 h-4 mr-2" />
+                            ) : (
+                              <Moon className="w-4 h-4 mr-2" />
+                            )}
+                            {settings.darkMode ? "Dark Mode On" : "Dark Mode Off"}
                           </Button>
                         </div>
 
