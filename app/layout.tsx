@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -37,13 +38,15 @@ export const metadata: Metadata = {
   authors: [{ name: "Xurify" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const theme = (await cookies()).get("theme")?.value;
+  const isDark = theme === "dark";
   return (
-    <html lang="en">
+    <html lang="en" className={isDark ? `dark` : undefined}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

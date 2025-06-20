@@ -322,7 +322,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   }, [settings.darkMode]);
 
   const toggleDarkMode = () => {
-    updateSetting("darkMode", !settings.darkMode);
+    const nextDark = !settings.darkMode;
+    updateSetting("darkMode", nextDark);
+    document.cookie = `theme=${nextDark ? "dark" : "light"}; path=/; max-age=31536000`;
   };
 
   return (
