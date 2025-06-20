@@ -1,5 +1,5 @@
 import { Country } from "@/lib/data/countries";
-import { generateQuestion, getDifficultySettings, parseDifficultyFromQuery } from "@/lib/utils/gameLogic";
+import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
 import FlagGameClient from "./FlagGameClient";
 
 export type Difficulty = "easy" | "medium" | "hard" | "expert";

@@ -26,22 +26,19 @@ import {
 import { Country } from "@/lib/data/countries";
 import { useGameSettings } from "@/lib/hooks/useGameSettings";
 import {
-  Shuffle,
   RotateCcw,
-  Trophy,
   HelpCircle,
   Volume2,
   VolumeX,
   Settings,
   Github,
 } from "lucide-react";
+import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
 import {
-  generateQuestion,
-  getDifficultySettings,
-  QuestionData,
-} from "@/lib/utils/gameLogic";
-import { capitalizeText } from "@/lib/utils/strings";
-import { CORRECT_POINT_COST, AUDIO_URLS, AUDIO_URLS_KEYS } from "@/lib/constants";
+  CORRECT_POINT_COST,
+  AUDIO_URLS,
+  AUDIO_URLS_KEYS,
+} from "@/lib/constants";
 import GameEndScreen from "./GameEndScreen";
 import { useSoundEffect } from "@/lib/hooks/useSoundEffect";
 import { playErrorSound, playSuccessSound } from "@/lib/utils/audioUtils";
