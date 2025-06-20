@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 
 export interface GameSettings {
-  soundEffects: boolean;
-  autoAdvance: boolean;
+  soundEffectsEnabled: boolean;
+  autoAdvanceEnabled: boolean;
   darkMode: boolean;
 }
 
 const defaultSettings: GameSettings = {
-  soundEffects: true,
-  autoAdvance: true,
+  soundEffectsEnabled: true,
+  autoAdvanceEnabled: true,
   darkMode: false
 };
 
@@ -24,8 +24,8 @@ export const useGameSettings = () => {
     if (saved) {
       const parsedSettings = JSON.parse(saved);
       setSettings({
-        soundEffects: parsedSettings.soundEffects ?? defaultSettings.soundEffects,
-        autoAdvance: parsedSettings.autoAdvance ?? defaultSettings.autoAdvance,
+        soundEffectsEnabled: parsedSettings.soundEffectsEnabled ?? defaultSettings.soundEffectsEnabled,
+        autoAdvanceEnabled: parsedSettings.autoAdvanceEnabled ?? defaultSettings.autoAdvanceEnabled,
         darkMode: parsedSettings.darkMode ?? defaultSettings.darkMode
       });
     }

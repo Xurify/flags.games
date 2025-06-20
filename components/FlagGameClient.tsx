@@ -126,7 +126,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   };
 
   const playSound = (isCorrect: boolean) => {
-    if (!settings.soundEffects) return;
+    if (!settings.soundEffectsEnabled) return;
 
     if (isCorrect) {
       playSuccessSound();
@@ -179,9 +179,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       setTimeout(() => setShowScorePopup(false), 1500);
     }
 
-    const delay = settings.autoAdvance ? 2000 : 0;
+    const delay = settings.autoAdvanceEnabled ? 2000 : 0;
 
-    if (settings.autoAdvance) {
+    if (settings.autoAdvanceEnabled) {
       setGameTimeout(() => {
         if (gameState.currentQuestion < gameState.totalQuestions) {
           setGameState((prev) => ({
@@ -320,20 +320,20 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   };
 
   const toggleSound = () => {
-    const newValue = !settings.soundEffects;
-    updateSetting("soundEffects", newValue);
+    const newValue = !settings.soundEffectsEnabled;
+    updateSetting("soundEffectsEnabled", newValue);
     playButtonClickSound();
   };
 
   useEffect(() => {
-    if (gameState.gameCompleted && settings.soundEffects) {
+    if (gameState.gameCompleted && settings.soundEffectsEnabled) {
       const percentage =
         (gameState.score / (gameState.totalQuestions * CORRECT_POINT_COST)) * 100;
       if (percentage >= 60) {
         playVictorySound();
       }
     }
-  }, [gameState.gameCompleted, settings.soundEffects]);
+  }, [gameState.gameCompleted, settings.soundEffectsEnabled]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -417,12 +417,12 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                             onClick={toggleSound}
                             className="w-full justify-start"
                           >
-                            {settings.soundEffects ? (
+                            {settings.soundEffectsEnabled ? (
                               <Volume2 className="w-4 h-4 mr-2" />
                             ) : (
                               <VolumeX className="w-4 h-4 mr-2" />
                             )}
-                            {settings.soundEffects ? "Sound On" : "Sound Off"}
+                            {settings.soundEffectsEnabled ? "Sound On" : "Sound Off"}
                           </Button>
                         </div>
 
@@ -558,7 +558,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                   ))}
                 </div>
 
-                {gameState.showResult && !settings.autoAdvance && (
+                {gameState.showResult && !settings.autoAdvanceEnabled && (
                   <div className="mb-6 text-center">
                     <Button onClick={nextQuestion} className="w-full" size="lg">
                       Next Question
