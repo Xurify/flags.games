@@ -503,7 +503,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                 </div>
 
                 <div className="mb-8">
-                  <div className="bg-muted/80 dark:bg-transparent rounded-2xl p-4 sm:p-8 flex justify-center items-center min-h-[160px] sm:min-h-[200px]">
+                  <div className="bg-muted/80 dark:bg-transparent rounded-2xl p-4 sm:p-12 flex justify-center items-center min-h-[160px] sm:min-h-[200px]">
                     {gameState.currentCountry.flag ? (
                       <img
                         src={gameState.currentCountry.flag}
