@@ -106,6 +106,24 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const clearGameTimeout = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      clearGameTimeout();
+    };
+  }, []);
+
+  const setGameTimeout = (callback: () => void, delay: number) => {
+    clearGameTimeout();
+    timeoutRef.current = setTimeout(callback, delay);
+  };
+
   const playSound = (isCorrect: boolean) => {
     if (!settings.soundEffects) return;
 
@@ -114,18 +132,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     } else {
       playErrorSound();
     }
-  };
-
-  const clearGameTimeout = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-  };
-
-  const setGameTimeout = (callback: () => void, delay: number) => {
-    clearGameTimeout();
-    timeoutRef.current = setTimeout(callback, delay);
   };
 
   const generateQuestionHandler = () => {
@@ -274,12 +280,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     }
   };
 
-  const toggleSound = () => {
-    const newValue = !settings.soundEffects;
-    updateSetting("soundEffects", newValue);
-    playButtonClickSound();
-  };
-
   const getScoreMessage = () => {
     const percentage =
       (gameState.score / (gameState.totalQuestions * CORRECT_POINT_COST)) * 100;
@@ -309,22 +309,19 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     return "!opacity-40 border-border/50 !grayscale-0";
   };
 
-  useEffect(() => {
-    return () => {
-      clearGameTimeout();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      document.documentElement.classList.toggle("dark", settings.darkMode);
-    }
-  }, [settings.darkMode]);
-
   const toggleDarkMode = () => {
     const nextDark = !settings.darkMode;
     updateSetting("darkMode", nextDark);
-    document.cookie = `theme=${nextDark ? "dark" : "light"}; path=/; max-age=31536000`;
+    document.cookie = `theme=${
+      nextDark ? "dark" : "light"
+    }; path=/; max-age=31536000`;
+    playButtonClickSound();
+  };
+
+  const toggleSound = () => {
+    const newValue = !settings.soundEffects;
+    updateSetting("soundEffects", newValue);
+    playButtonClickSound();
   };
 
   return (
@@ -433,7 +430,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                             ) : (
                               <Moon className="w-4 h-4 mr-2" />
                             )}
-                            {settings.darkMode ? "Dark Mode On" : "Dark Mode Off"}
+                            {settings.darkMode ? "On" : "Off"}
                           </Button>
                         </div>
 

@@ -16,6 +16,10 @@ export const useGameSettings = () => {
   const [settings, setSettings] = useState<GameSettings>(defaultSettings);
 
   useEffect(() => {
+    document.documentElement.classList.toggle("dark", settings.darkMode);
+  }, [settings.darkMode]);
+
+  useEffect(() => {
     const saved = localStorage.getItem('flagGameSettings');
     if (saved) {
       const parsedSettings = JSON.parse(saved);
