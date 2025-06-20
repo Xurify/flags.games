@@ -328,7 +328,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   useEffect(() => {
     if (gameState.gameCompleted && settings.soundEffectsEnabled) {
       const percentage =
-        (gameState.score / (gameState.totalQuestions * CORRECT_POINT_COST)) * 100;
+        (gameState.score / (gameState.totalQuestions * CORRECT_POINT_COST)) *
+        100;
       if (percentage >= 60) {
         playVictorySound();
       }
@@ -338,7 +339,12 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   return (
     <div className="min-h-screen bg-background">
       {gameState.gameCompleted && (
-        <Confetti width={window.innerWidth} height={window.innerHeight} numberOfPieces={350} recycle={false} />
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          numberOfPieces={350}
+          recycle={false}
+        />
       )}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
         <div className="mb-8">
@@ -422,7 +428,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                             ) : (
                               <VolumeX className="w-4 h-4 mr-2" />
                             )}
-                            {settings.soundEffectsEnabled ? "Sound On" : "Sound Off"}
+                            {settings.soundEffectsEnabled
+                              ? "Sound On"
+                              : "Sound Off"}
                           </Button>
                         </div>
 
@@ -668,15 +676,12 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                 How to play?
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="max-w-md">
+            <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>How to Play</AlertDialogTitle>
+                <AlertDialogTitle className="text-2xl">How to Play</AlertDialogTitle>
                 <AlertDialogDescription asChild>
                   <div className="space-y-4 text-sm">
                     <div>
-                      <h4 className="font-medium text-foreground mb-2">
-                        🎯 Objective
-                      </h4>
                       <p>
                         Identify the country that each flag belongs to by
                         selecting the correct answer from the multiple choice
@@ -686,17 +691,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
                     <div>
                       <h4 className="font-medium text-foreground mb-2">
-                        🎮 How to Play
-                      </h4>
-                      <ul className="space-y-1 list-disc list-inside">
-                        <li>Look at the flag displayed</li>
-                        <li>Choose the correct country from the options</li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h4 className="font-medium text-foreground mb-2">
-                        📊 Difficulty Levels
+                        Difficulty Levels
                       </h4>
                       <ul className="space-y-1">
                         <li>
