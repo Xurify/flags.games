@@ -503,12 +503,12 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                 </div>
 
                 <div className="mb-8">
-                  <div className="bg-muted/80 dark:bg-transparent rounded-2xl p-4 sm:p-12 flex justify-center items-center min-h-[160px] sm:min-h-[200px]">
+                  <div className="bg-muted/80 dark:bg-transparent rounded-2xl p-12 flex justify-center items-center min-h-[160px] sm:min-h-[200px]">
                     {gameState.currentCountry.flag ? (
                       <img
                         src={gameState.currentCountry.flag}
                         alt={`Flag of ${gameState.currentCountry.name}`}
-                        className="max-w-full max-h-28 sm:max-h-32 object-contain rounded-sm shadow-flag"
+                        className="max-w-full max-h-42 sm:max-h-36 object-contain rounded-sm shadow-flag"
                       />
                     ) : (
                       <div className="w-40 h-24 sm:w-48 sm:h-32 bg-muted rounded-lg flex items-center justify-center">
