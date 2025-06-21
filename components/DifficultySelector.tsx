@@ -16,22 +16,16 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { getDifficultySettings } from "@/lib/utils/gameLogic";
+import { Difficulty, DIFFICULTY_LEVELS } from "@/lib/constants";
 
 interface DifficultySelectorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  selectedDifficulty: "easy" | "medium" | "hard" | "expert";
-  setSelectedDifficulty: (value: "easy" | "medium" | "hard" | "expert") => void;
+  selectedDifficulty: Difficulty;
+  setSelectedDifficulty: (value: Difficulty) => void;
   onChangeDifficulty: () => void;
-  currentDifficulty: "easy" | "medium" | "hard" | "expert";
+  currentDifficulty: Difficulty;
 }
-
-const difficultyLevels: Array<"easy" | "medium" | "hard" | "expert"> = [
-  "easy",
-  "medium",
-  "hard",
-  "expert",
-];
 
 const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   open,
@@ -57,7 +51,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {difficultyLevels.map((level) => {
+          {DIFFICULTY_LEVELS.map((level) => {
             const settings = getDifficultySettings(level);
             return (
               <SelectItem key={level} value={level}>

@@ -1,25 +1,31 @@
 import { Country } from "@/lib/data/countries";
 import { getDifficultyCountries } from "@/lib/data/difficultyCategories";
+import { 
+  DIFFICULTY_LEVELS, 
+  Difficulty, 
+  DEFAULT_DIFFICULTY, 
+  EXPERT_DIFFICULTY, 
+  HARD_DIFFICULTY, 
+  MEDIUM_DIFFICULTY 
+} from "@/lib/constants";
 
 export const getCountriesForDifficulty = (
-  difficulty: "easy" | "medium" | "hard" | "expert"
+  difficulty: Difficulty
 ) => {
-  const baseDifficulty = difficulty === "expert" ? "hard" : difficulty;
+  const baseDifficulty = difficulty === EXPERT_DIFFICULTY ? HARD_DIFFICULTY : difficulty;
   return getDifficultyCountries(baseDifficulty);
 };
 
-export const getDifficultySettings = (
-  difficulty: "easy" | "medium" | "hard" | "expert"
-) => {
+export const getDifficultySettings = (difficulty: Difficulty) => {
   const countries = getCountriesForDifficulty(difficulty);
   const settings = {
-    easy: { count: 15, label: "Easy" },
-    medium: { count: 25, label: "Medium" },
-    hard: {
+    [DEFAULT_DIFFICULTY]: { count: 15, label: "Easy" },
+    [MEDIUM_DIFFICULTY]: { count: 25, label: "Medium" },
+    [HARD_DIFFICULTY]: {
       count: countries.length,
       label: `Hard`,
     },
-    expert: {
+    [EXPERT_DIFFICULTY]: {
       count: countries.length,
       label: `Expert`,
     },
@@ -144,7 +150,7 @@ export const weightedRandomSelect = (items: any[], weights: number[]) => {
 export const calculateSimilarityScore = (
   correctCountry: Country,
   candidateCountry: Country,
-  difficulty: "easy" | "medium" | "hard" | "expert"
+  difficulty: Difficulty
 ) => {
   let score = 0;
   const correctRegion = getCountryRegion(correctCountry.code);
@@ -154,31 +160,31 @@ export const calculateSimilarityScore = (
 
   if (correctRegion === candidateRegion) {
     score +=
-      difficulty === "expert"
+      difficulty === EXPERT_DIFFICULTY
         ? 50
-        : difficulty === "hard"
+        : difficulty === HARD_DIFFICULTY
         ? 40
-        : difficulty === "medium"
+        : difficulty === MEDIUM_DIFFICULTY
         ? 30
         : 20;
   }
 
   if (similarFlags.includes(candidateCountry.code)) {
-    score += difficulty === "expert" ? 70 : 50;
+    score += difficulty === EXPERT_DIFFICULTY ? 70 : 50;
   }
 
   if (similarNames.includes(candidateCountry.name)) {
-    score += difficulty === "expert" ? 45 : 35;
+    score += difficulty === EXPERT_DIFFICULTY ? 45 : 35;
   }
 
   if (
-    (difficulty === "hard" || difficulty === "expert") &&
+    (difficulty === HARD_DIFFICULTY || difficulty === EXPERT_DIFFICULTY) &&
     isDistinctiveFlag(candidateCountry.code)
   ) {
-    score -= difficulty === "expert" ? 50 : 30;
+    score -= difficulty === EXPERT_DIFFICULTY ? 50 : 30;
   }
 
-  if (difficulty === "expert") {
+  if (difficulty === EXPERT_DIFFICULTY) {
     if (
       correctRegion !== candidateRegion &&
       !similarFlags.includes(candidateCountry.code) &&
@@ -188,18 +194,19 @@ export const calculateSimilarityScore = (
     }
   }
 
-  score += Math.random() * (difficulty === "expert" ? 8 : 15);
+  score += Math.random() * (difficulty === EXPERT_DIFFICULTY ? 8 : 15);
 
   return Math.max(score, 1);
 };
 
 export interface QuestionData {
+  difficulty: Difficulty;
   currentCountry: Country;
   options: Country[];
 }
 
 export const generateQuestion = (
-  difficulty: "easy" | "medium" | "hard" | "expert",
+  difficulty: Difficulty,
   usedCountries: Set<string> = new Set()
 ): QuestionData | null => {
   const availableCountries = getCountriesForDifficulty(difficulty);
@@ -226,7 +233,7 @@ export const generateQuestion = (
     score: calculateSimilarityScore(correctCountry, candidate, difficulty),
   }));
 
-  const minScoreThreshold = difficulty === "expert" ? 10 : 1;
+  const minScoreThreshold = difficulty === EXPERT_DIFFICULTY ? 10 : 1;
   const viableCandidates = candidatesWithScores.filter(
     (c) => c.score >= minScoreThreshold
   );
@@ -269,6 +276,7 @@ export const generateQuestion = (
   const shuffledOptions = allOptions.sort(() => Math.random() - 0.5);
 
   return {
+    difficulty,
     currentCountry: correctCountry,
     options: shuffledOptions,
   };
@@ -276,10 +284,78 @@ export const generateQuestion = (
 
 export function parseDifficultyFromQuery(
   queryValue: string | undefined
-): "easy" | "medium" | "hard" | "expert" {
-  const allowed = ["easy", "medium", "hard", "expert"];
-  if (queryValue && allowed.includes(queryValue)) {
-    return queryValue as "easy" | "medium" | "hard" | "expert";
+): Difficulty {
+  const allowed = DIFFICULTY_LEVELS;
+  if (queryValue && allowed.includes(queryValue as Difficulty)) {
+    return queryValue as Difficulty;
   }
-  return "easy";
+  return DEFAULT_DIFFICULTY;
 }
+
+export const calculateScore = (
+  difficulty: Difficulty,
+  correctAnswers: number,
+  totalQuestions: number,
+  timeBonus: number = 0,
+  streakBonus: number = 0
+): number => {
+  let score = 0;
+
+  // Base score for correct answers
+  if (difficulty === EXPERT_DIFFICULTY) {
+    score += correctAnswers * 10;
+  } else if (difficulty === HARD_DIFFICULTY) {
+    score += correctAnswers * 8;
+  } else if (difficulty === MEDIUM_DIFFICULTY) {
+    score += correctAnswers * 6;
+  } else {
+    score += correctAnswers * 4;
+  }
+
+  // Perfect score bonus
+  if (correctAnswers === totalQuestions) {
+    score += difficulty === EXPERT_DIFFICULTY ? 70 : 50;
+  }
+
+  // High accuracy bonus (80%+)
+  if (correctAnswers / totalQuestions >= 0.8) {
+    score += difficulty === EXPERT_DIFFICULTY ? 45 : 35;
+  }
+
+  // Time bonus (faster completion = more points)
+  if (
+    (difficulty === HARD_DIFFICULTY || difficulty === EXPERT_DIFFICULTY) &&
+    timeBonus > 0
+  ) {
+    score += Math.floor(timeBonus / 10);
+  }
+
+  // Streak bonus
+  if (streakBonus > 0) {
+    score -= difficulty === EXPERT_DIFFICULTY ? 50 : 30;
+  }
+
+  // Random bonus for variety
+  if (difficulty === EXPERT_DIFFICULTY) {
+    score += Math.floor(Math.random() * 20);
+  } else {
+    score += Math.floor(Math.random() * 15);
+  }
+
+  return Math.max(0, score);
+};
+
+export const getRandomDifficulty = (): Difficulty => {
+  const randomIndex = Math.floor(Math.random() * DIFFICULTY_LEVELS.length);
+  return DIFFICULTY_LEVELS[randomIndex];
+};
+
+export const validateDifficulty = (
+  queryValue: string | null
+): Difficulty => {
+  const allowed = DIFFICULTY_LEVELS;
+  if (queryValue && allowed.includes(queryValue as Difficulty)) {
+    return queryValue as Difficulty;
+  }
+  return DEFAULT_DIFFICULTY;
+};

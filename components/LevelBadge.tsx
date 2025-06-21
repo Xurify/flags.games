@@ -1,7 +1,8 @@
 import React from "react";
+import { Difficulty } from "@/lib/constants";
 
 interface LevelBadgeProps {
-  difficulty: "easy" | "medium" | "hard" | "expert";
+  difficulty: Difficulty;
 }
 
 const badgeStyles: Record<string, string> = {

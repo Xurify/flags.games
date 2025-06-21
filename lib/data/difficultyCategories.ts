@@ -1,4 +1,5 @@
 import { countries } from './countries';
+import { Difficulty } from '@/lib/constants';
 
 // Easy: Well-known, distinctive flags that are easily recognizable
 export const easyCountries = countries.filter(country => 
@@ -16,13 +17,14 @@ export const hardCountries = countries.filter(country =>
   !mediumCountries.find(c => c.code === country.code)
 );
 
-export const getDifficultyCountries = (difficulty: 'easy' | 'medium' | 'hard') => {
+export const getDifficultyCountries = (difficulty: Difficulty) => {
   switch (difficulty) {
     case 'easy':
       return easyCountries;
     case 'medium':
       return [...easyCountries, ...mediumCountries];
     case 'hard':
+    case 'expert':
       return countries;
     default:
       return easyCountries;

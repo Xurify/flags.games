@@ -1,8 +1,7 @@
 import { Country } from "@/lib/data/countries";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
+import { Difficulty } from "@/lib/constants";
 import FlagGameClient from "./FlagGameClient";
-
-export type Difficulty = "easy" | "medium" | "hard" | "expert";
 
 interface InitialGameData {
   currentCountry: Country;

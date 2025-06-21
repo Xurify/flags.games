@@ -41,6 +41,9 @@ import {
   CORRECT_POINT_COST,
   AUDIO_URLS,
   AUDIO_URLS_KEYS,
+  Difficulty,
+  DIFFICULTY_LEVELS,
+  DEFAULT_DIFFICULTY,
 } from "@/lib/constants";
 import { useSoundEffect } from "@/lib/hooks/useSoundEffect";
 import { playErrorSound, playSuccessSound } from "@/lib/utils/audioUtils";
@@ -57,7 +60,7 @@ import DifficultySelector from "./DifficultySelector";
 interface InitialGameData {
   currentCountry: Country;
   options: Country[];
-  difficulty: "easy" | "medium" | "hard" | "expert";
+  difficulty: Difficulty;
   totalQuestions: number;
 }
 
@@ -75,7 +78,7 @@ interface GameState {
   showResult: boolean;
   gameCompleted: boolean;
   usedCountries: Set<string>;
-  difficulty: "easy" | "medium" | "hard" | "expert";
+  difficulty: Difficulty;
   gameStarted: boolean;
 }
 
@@ -113,9 +116,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<
-    "easy" | "medium" | "hard" | "expert"
-  >(initialGameData.difficulty);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>(
+    initialGameData.difficulty
+  );
   const [showScorePopup, setShowScorePopup] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -282,7 +285,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
     const params = new URLSearchParams(searchParams.toString());
     params.set("difficulty", selectedDifficulty);
-    if (selectedDifficulty === "easy") {
+    if (selectedDifficulty === DEFAULT_DIFFICULTY) {
       router.replace("/");
     } else {
       router.replace(`?${params.toString()}`);
