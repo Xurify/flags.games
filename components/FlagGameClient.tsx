@@ -45,6 +45,14 @@ import {
 import { useSoundEffect } from "@/lib/hooks/useSoundEffect";
 import { playErrorSound, playSuccessSound } from "@/lib/utils/audioUtils";
 import GameEndScreen from "./GameEndScreen";
+import LevelBadge from "./LevelBadge";
+import QuestionProgress from "./QuestionProgress";
+import FlagDisplay from "./FlagDisplay";
+import AnswerOptions from "./AnswerOptions";
+import HowToPlayDialog from "./HowToPlayDialog";
+import RestartDialog from "./RestartDialog";
+import SettingsMenu from "./SettingsMenu";
+import DifficultySelector from "./DifficultySelector";
 
 interface InitialGameData {
   currentCountry: Country;
@@ -355,154 +363,30 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                   <span className="text-sm font-medium text-foreground">
                     LEVEL
                   </span>
-                  <div
-                    className={`rounded-lg flex items-center justify-center px-2 py-1 border ${
-                      gameState.difficulty === "easy"
-                        ? "bg-green-100 dark:bg-green-800 border-green-700 dark:border-green-600"
-                        : gameState.difficulty === "medium"
-                        ? "bg-yellow-100  border-yellow-700 dark:border-yellow-600"
-                        : gameState.difficulty === "hard"
-                        ? "bg-orange-100 border-orange-700 dark:border-orange-600"
-                        : "bg-red-100 border-red-700 dark:border-red-600"
-                    }`}
-                  >
-                    <span
-                      className={`text-xs font-bold ${
-                        gameState.difficulty === "easy"
-                          ? "text-green-700 dark:text-green-100"
-                          : gameState.difficulty === "medium"
-                          ? "text-yellow-700"
-                          : gameState.difficulty === "hard"
-                          ? "text-orange-700"
-                          : "text-red-700"
-                      }`}
-                    >
-                      {gameState.difficulty.toUpperCase()}
-                    </span>
-                  </div>
+                  <LevelBadge difficulty={gameState.difficulty} />
                 </div>
 
                 <div className="w-px h-6 bg-border"></div>
 
-                <Select open={settingsOpen} onOpenChange={setSettingsOpen}>
-                  <SelectTrigger className="w-auto border-none bg-transparent shadow-none p-0 h-auto">
-                    <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                      <Settings className="w-4 h-4" />
-                      <span className="text-sm font-medium">Settings</span>
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent className="w-64">
-                    <div className="p-3">
-                      <div className="space-y-4">
-                        <div>
-                          <h4 className="text-sm font-medium text-foreground mb-2">
-                            Difficulty Level
-                          </h4>
-                          <Button
-                            onClick={() => {
-                              setSettingsOpen(false);
-                              setShowDifficultyDialog(true);
-                            }}
-                            size="sm"
-                            className="w-full mt-2"
-                            variant="outline"
-                          >
-                            Change Difficulty
-                          </Button>
-                        </div>
-
-                        <div className="w-full h-px bg-border"></div>
-
-                        <div>
-                          <h4 className="text-sm font-medium text-foreground mb-2">
-                            Sound Effects
-                          </h4>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={toggleSound}
-                            className="w-full justify-start"
-                          >
-                            {settings.soundEffectsEnabled ? (
-                              <Volume2 className="w-4 h-4 mr-2" />
-                            ) : (
-                              <VolumeX className="w-4 h-4 mr-2" />
-                            )}
-                            {settings.soundEffectsEnabled
-                              ? "Sound On"
-                              : "Sound Off"}
-                          </Button>
-                        </div>
-
-                        <div className="w-full h-px bg-border"></div>
-
-                        <div>
-                          <h4 className="text-sm font-medium text-foreground mb-2">
-                            Dark Mode
-                          </h4>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={toggleDarkMode}
-                            className="w-full justify-start"
-                            aria-pressed={settings.darkMode}
-                          >
-                            {settings.darkMode ? (
-                              <Sun className="w-4 h-4 mr-2" />
-                            ) : (
-                              <Moon className="w-4 h-4 mr-2" />
-                            )}
-                            {settings.darkMode ? "On" : "Off"}
-                          </Button>
-                        </div>
-
-                        <div className="w-full h-px bg-border"></div>
-
-                        <div>
-                          <a
-                            href="https://github.com/Xurify/flags.games"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 text-center w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
-                          >
-                            <img
-                              src="/icon.png"
-                              alt="Guess the Country Icon"
-                              className="w-6 h-6 rounded"
-                            />
-                            Made with ❤️ by Xurify
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </SelectContent>
-                </Select>
+                <SettingsMenu
+                  settingsOpen={settingsOpen}
+                  setSettingsOpen={setSettingsOpen}
+                  setShowDifficultyDialog={setShowDifficultyDialog}
+                  toggleSound={toggleSound}
+                  toggleDarkMode={toggleDarkMode}
+                  settings={settings}
+                />
               </div>
             </div>
           </div>
 
-          <div className="flex justify-center items-center">
-            <div className="relative flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-primary rounded-full"></div>
-                <span className="text-sm font-medium text-muted-foreground">
-                  Question {gameState.currentQuestion} of{" "}
-                  {gameState.totalQuestions}
-                </span>
-              </div>
-              <div className="w-px h-4 bg-border"></div>
-              <span className="text-sm font-medium text-muted-foreground">
-                Score: {gameState.score}
-              </span>
-              {showScorePopup && (
-                <div className="absolute -top-8 right-0 animate-score-popup">
-                  <span className="text-green-600 font-bold text-lg">
-                    +{CORRECT_POINT_COST}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
+          <QuestionProgress
+            currentQuestion={gameState.currentQuestion}
+            totalQuestions={gameState.totalQuestions}
+            score={gameState.score}
+            showScorePopup={showScorePopup}
+            CORRECT_POINT_COST={CORRECT_POINT_COST}
+          />
         </div>
 
         <Card className="mb-6 shadow-card hover:shadow-card-hover transition-all duration-300">
@@ -531,40 +415,20 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                 </div>
 
                 <div className="mb-8">
-                  <div className="bg-muted/80 dark:bg-transparent rounded-2xl p-12 flex justify-center items-center min-h-[160px] sm:min-h-[200px]">
-                    {gameState.currentCountry.flag ? (
-                      <img
-                        src={gameState.currentCountry.flag}
-                        alt={`Flag of ${gameState.currentCountry.name}`}
-                        className="max-w-full max-h-42 sm:max-h-36 object-contain rounded-sm shadow-flag"
-                      />
-                    ) : (
-                      <div className="w-40 h-24 sm:w-48 sm:h-32 bg-muted rounded-lg flex items-center justify-center">
-                        <span className="text-muted-foreground">
-                          Loading...
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                  <FlagDisplay
+                    flag={gameState.currentCountry.flag}
+                    countryName={gameState.currentCountry.name}
+                  />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {gameState.options.map((country) => (
-                    <Button
-                      key={country.code}
-                      onClick={() =>
-                        !gameState.showResult && handleAnswer(country)
-                      }
-                      disabled={gameState.showResult}
-                      className={`h-14 text-base font-medium justify-start px-6 ${getButtonClass(
-                        country
-                      )}`}
-                      variant="outline"
-                    >
-                      {country.name}
-                    </Button>
-                  ))}
-                </div>
+                <AnswerOptions
+                  options={gameState.options}
+                  showResult={gameState.showResult}
+                  handleAnswer={handleAnswer}
+                  selectedAnswer={gameState.selectedAnswer}
+                  getButtonClass={getButtonClass}
+                  disabled={gameState.showResult}
+                />
 
                 {gameState.showResult && !settings.autoAdvanceEnabled && (
                   <div className="mb-6 text-center">
@@ -582,144 +446,39 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
           open={showDifficultyDialog}
           onOpenChange={setShowDifficultyDialog}
         >
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Change Difficulty</AlertDialogTitle>
-              <AlertDialogDescription>
-                Select a new difficulty level for your next game.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className="space-y-4 mt-2">
-              <Select
-                value={selectedDifficulty}
-                onValueChange={(value: "easy" | "medium" | "hard" | "expert") =>
-                  setSelectedDifficulty(value)
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="easy">
-                    {getDifficultySettings("easy").label} (
-                    {getDifficultySettings("easy").count} countries)
-                  </SelectItem>
-                  <SelectItem value="medium">
-                    {getDifficultySettings("medium").label} (
-                    {getDifficultySettings("medium").count} countries)
-                  </SelectItem>
-                  <SelectItem value="hard">
-                    {getDifficultySettings("hard").label} (
-                    {getDifficultySettings("hard").count} countries)
-                  </SelectItem>
-                  <SelectItem value="expert">
-                    {getDifficultySettings("expert").label} (
-                    {getDifficultySettings("expert").count} countries)
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <Button
-                onClick={changeDifficulty}
-                className="w-full mt-2"
-                disabled={selectedDifficulty === gameState.difficulty}
-              >
-                Change Difficulty
-              </Button>
-            </div>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-            </AlertDialogFooter>
-          </AlertDialogContent>
+          <DifficultySelector
+            open={showDifficultyDialog}
+            onOpenChange={setShowDifficultyDialog}
+            selectedDifficulty={selectedDifficulty}
+            setSelectedDifficulty={setSelectedDifficulty}
+            onChangeDifficulty={changeDifficulty}
+            currentDifficulty={gameState.difficulty}
+          />
         </AlertDialog>
 
         <div className="flex flex-col items-center space-y-3">
-          <AlertDialog
+          <RestartDialog
             open={showRestartDialog}
             onOpenChange={setShowRestartDialog}
+            onRestart={restartGame}
+            gameCompleted={gameState.gameCompleted}
           >
-            {!gameState.gameCompleted && (
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" className="w-full" size="lg">
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Restart Game
-                </Button>
-              </AlertDialogTrigger>
-            )}
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Restart Game</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Are you sure you want to restart the game? Your current
-                  progress will be lost.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={restartGame}>
-                  Restart
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            <Button variant="destructive" className="w-full" size="lg">
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Restart Game
+            </Button>
+          </RestartDialog>
 
-          <AlertDialog
-            open={showHowToPlayDialog}
-            onOpenChange={setShowHowToPlayDialog}
-          >
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="ghost"
-                className="text-muted-foreground"
-                size="lg"
-              >
-                <HelpCircle className="w-4 h-4 mr-2" />
-                How to play?
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-2xl">How to Play</AlertDialogTitle>
-                <AlertDialogDescription asChild>
-                  <div className="space-y-4 text-sm">
-                    <div>
-                      <p>
-                        Identify the country that each flag belongs to by
-                        selecting the correct answer from the multiple choice
-                        options.
-                      </p>
-                    </div>
-
-                    <div>
-                      <h4 className="font-medium text-foreground mb-2">
-                        Difficulty Levels
-                      </h4>
-                      <ul className="space-y-1">
-                        <li>
-                          <span className="inline-block w-3 h-3 bg-green-400 rounded mr-2"></span>
-                          <strong>Level 1:</strong> Easy mode (15 countries)
-                        </li>
-                        <li>
-                          <span className="inline-block w-3 h-3 bg-yellow-400 rounded mr-2"></span>
-                          <strong>Level 2:</strong> Medium mode (25 countries)
-                        </li>
-                        <li>
-                          <span className="inline-block w-3 h-3 bg-orange-400 rounded mr-2"></span>
-                          <strong>Level 3:</strong> Hard mode (194 countries)
-                        </li>
-                        <li>
-                          <span className="inline-block w-3 h-3 bg-red-400 rounded mr-2"></span>
-                          <strong>Level 4:</strong> Expert mode (194 countries)
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogAction>Got it!</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <HowToPlayDialog open={showHowToPlayDialog} onOpenChange={setShowHowToPlayDialog}>
+            <Button
+              variant="ghost"
+              className="text-muted-foreground"
+              size="lg"
+            >
+              <HelpCircle className="w-4 h-4 mr-2" />
+              How to play?
+            </Button>
+          </HowToPlayDialog>
         </div>
       </div>
     </div>
