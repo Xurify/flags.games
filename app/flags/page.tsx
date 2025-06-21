@@ -2,7 +2,7 @@ import React from "react";
 import FlagDisplay from "../../components/FlagDisplay";
 import { countries } from "../../lib/data/countries";
 
-const TestFlagsPage = () => {
+const FlagsPage = () => {
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-7xl mx-auto">
@@ -27,4 +27,4 @@ const TestFlagsPage = () => {
   );
 };
 
-export default TestFlagsPage;
+export default FlagsPage;
