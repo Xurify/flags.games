@@ -18,7 +18,7 @@ const LevelBadge: React.FC<LevelBadgeProps> = ({ difficulty }) => (
     className={`rounded-lg flex items-center justify-center px-2 py-1 border ${badgeStyles[difficulty]}`}
   >
     <span
-      className={`text-xs font-bold ${badgeStyles[difficulty]
+      className={`text-xs font-extrabold ${badgeStyles[difficulty]
         .split(" ")
         .pop()}`}
     >
