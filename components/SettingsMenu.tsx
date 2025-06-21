@@ -25,7 +25,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
 }) => (
   <Select open={settingsOpen} onOpenChange={setSettingsOpen}>
     <SelectTrigger className="w-auto border-none bg-transparent shadow-none p-0 h-auto">
-      <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+      <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground dark:text-foreground transition-colors">
         <Settings className="w-4 h-4" />
         <span className="text-sm font-medium">Settings</span>
       </div>
@@ -44,7 +44,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
               }}
               size="sm"
               className="w-full mt-2"
-              variant="outline"
+              variant="neutral"
             >
               Change Difficulty
             </Button>
@@ -57,7 +57,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
               Sound Effects
             </h4>
             <Button
-              variant="outline"
+              variant="neutral"
               size="sm"
               onClick={toggleSound}
               className="w-full justify-start"
@@ -78,7 +78,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
               Dark Mode
             </h4>
             <Button
-              variant="outline"
+              variant="neutral"
               size="sm"
               onClick={toggleDarkMode}
               className="w-full justify-start"
