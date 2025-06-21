@@ -696,8 +696,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                       <ul className="space-y-1">
                         <li>
                           <span className="inline-block w-3 h-3 bg-green-400 rounded mr-2"></span>
-                          <strong>Level 1:</strong> Easy mode (15 countries -
-                          Well-known flags)
+                          <strong>Level 1:</strong> Easy mode (15 countries)
                         </li>
                         <li>
                           <span className="inline-block w-3 h-3 bg-yellow-400 rounded mr-2"></span>
@@ -705,13 +704,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                         </li>
                         <li>
                           <span className="inline-block w-3 h-3 bg-orange-400 rounded mr-2"></span>
-                          <strong>Level 3:</strong> Hard mode (194 countries -
-                          Challenging)
+                          <strong>Level 3:</strong> Hard mode (194 countries)
                         </li>
                         <li>
                           <span className="inline-block w-3 h-3 bg-red-400 rounded mr-2"></span>
-                          <strong>Level 4:</strong> Expert mode (194 countries -
-                          Maximum confusion)
+                          <strong>Level 4:</strong> Expert mode (194 countries)
                         </li>
                       </ul>
                     </div>
