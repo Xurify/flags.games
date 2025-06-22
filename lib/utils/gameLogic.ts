@@ -1293,14 +1293,6 @@ export const calculateScore = (
     }
   }
 
-  // Expert mode: Penalty for mistakes
-  if (difficulty === EXPERT_DIFFICULTY) {
-    const mistakes = totalQuestions - correctAnswers;
-    if (mistakes > 0) {
-      score -= mistakes * 5;
-    }
-  }
-
   return Math.max(0, score);
 };
 
@@ -1340,11 +1332,9 @@ export const calculateExpertScore = (
     score += Math.floor(avgDifficulty * 2);
   }
 
-  // Streak bonus (but penalize for wrong streaks)
+  // Streak bonus (only reward positive streaks)
   if (streakBonus > 0) {
     score += streakBonus * 5;
-  } else {
-    score -= Math.abs(streakBonus) * 10; // Penalty for wrong streaks
   }
 
   // Consistency bonus (reward steady performance)
@@ -1648,11 +1638,6 @@ export const calculateExpertSimilarityScore = (
     candidateCountry.code,
     pools
   );
-
-  // Penalize overly distinctive flags in expert mode
-  if (isDistinctiveFlag(candidateCountry.code)) {
-    score -= 100;
-  }
 
   // Bonus for countries that are historically confused
   score += getHistoricalConfusionBonus(
