@@ -9,7 +9,7 @@ import {
   MEDIUM_DIFFICULTY,
 } from "@/lib/constants";
 
-export const getCountriesForDifficulty = (difficulty: Difficulty) => {
+const getCountriesForDifficulty = (difficulty: Difficulty) => {
   const baseDifficulty =
     difficulty === EXPERT_DIFFICULTY ? HARD_DIFFICULTY : difficulty;
   return getDifficultyCountries(baseDifficulty);
@@ -32,7 +32,7 @@ export const getDifficultySettings = (difficulty: Difficulty) => {
   return settings[difficulty];
 };
 
-export const getCountryRegion = (countryCode: string): string => {
+const getCountryRegion = (countryCode: string): string => {
   const regions = {
     europe: [
       "GB",
@@ -247,7 +247,7 @@ export const getCountryRegion = (countryCode: string): string => {
   return "other";
 };
 
-export const getSimilarFlags = (countryCode: string): string[] => {
+const getSimilarFlags = (countryCode: string): string[] => {
   const similarGroups: { [name: string]: string[] } = {
     // Nearly identical flags
     RO: ["TD"], // Romania and Chad - almost identical blue-yellow-red vertical stripes
@@ -359,7 +359,7 @@ export const getSimilarFlags = (countryCode: string): string[] => {
   return similarGroups[countryCode] || [];
 };
 
-export const getSimilarNames = (countryName: string): string[] => {
+const getSimilarNames = (countryName: string): string[] => {
   const nameGroups: { [name: string]: string[] } = {
     "United States": ["United Kingdom", "United Arab Emirates"],
     "United Kingdom": ["United States", "United Arab Emirates"],
@@ -433,7 +433,7 @@ export const getSimilarNames = (countryName: string): string[] => {
   return nameGroups[countryName] || [];
 };
 
-export const isDistinctiveFlag = (countryCode: string): boolean => {
+const isDistinctiveFlag = (countryCode: string): boolean => {
   const distinctive = [
     "JP",
     "CA",
@@ -453,7 +453,7 @@ export const isDistinctiveFlag = (countryCode: string): boolean => {
   return distinctive.includes(countryCode);
 };
 
-export const weightedRandomSelect = (items: any[], weights: number[]) => {
+const weightedRandomSelect = (items: any[], weights: number[]) => {
   const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
   let random = Math.random() * totalWeight;
 
@@ -466,23 +466,23 @@ export const weightedRandomSelect = (items: any[], weights: number[]) => {
   return items[items.length - 1];
 };
 
-export const calculateSimilarityScore = (
+const calculateOptionSimilarityScore = (
   correctCountry: Country,
   candidateCountry: Country,
   difficulty: Difficulty
-) => {
+): number => {
   if (difficulty === EXPERT_DIFFICULTY) {
-    return calculateExpertSimilarityScore(correctCountry, candidateCountry);
+    return calculateExpertOptionSimilarityScore(correctCountry, candidateCountry);
   }
 
-  let score = 0;
+  let similarityScore = 0;
   const correctRegion = getCountryRegion(correctCountry.code);
   const candidateRegion = getCountryRegion(candidateCountry.code);
   const similarFlags = getSimilarFlags(correctCountry.code);
   const similarNames = getSimilarNames(correctCountry.name);
 
   if (correctRegion === candidateRegion) {
-    score +=
+    similarityScore +=
       difficulty === HARD_DIFFICULTY
         ? 40
         : difficulty === MEDIUM_DIFFICULTY
@@ -491,18 +491,18 @@ export const calculateSimilarityScore = (
   }
 
   if (similarFlags.includes(candidateCountry.code)) {
-    score += 50;
+    similarityScore += 50;
   }
 
   if (similarNames.includes(candidateCountry.name)) {
-    score += 35;
+    similarityScore += 35;
   }
 
   // Expert mode: Additional similarity factors
   if (difficulty === EXPERT_DIFFICULTY) {
     // Same starting letter bonus
     if (correctCountry.name[0] === candidateCountry.name[0]) {
-      score += 25;
+      similarityScore += 25;
     }
 
     // Similar name length bonus
@@ -510,7 +510,7 @@ export const calculateSimilarityScore = (
       correctCountry.name.length - candidateCountry.name.length
     );
     if (lengthDiff <= 2) {
-      score += 20;
+      similarityScore += 20;
     }
 
     // Same ending pattern bonus
@@ -518,7 +518,7 @@ export const calculateSimilarityScore = (
       correctCountry.name.endsWith(candidateCountry.name.slice(-3)) ||
       candidateCountry.name.endsWith(correctCountry.name.slice(-3))
     ) {
-      score += 30;
+      similarityScore += 30;
     }
 
     // Similar syllable count bonus
@@ -532,7 +532,7 @@ export const calculateSimilarityScore = (
     ).length;
     const syllableDiff = Math.abs(correctSyllables - candidateSyllables);
     if (syllableDiff <= 1) {
-      score += 15;
+      similarityScore += 15;
     }
 
     // Advanced linguistic similarities
@@ -543,13 +543,13 @@ export const calculateSimilarityScore = (
       candidateWords.includes(word)
     );
     if (sharedWords.length > 0) {
-      score += sharedWords.length * 20;
+      similarityScore += sharedWords.length * 20;
     }
 
     // Similar word count bonus
     const wordCountDiff = Math.abs(correctWords.length - candidateWords.length);
     if (wordCountDiff <= 1) {
-      score += 15;
+      similarityScore += 15;
     }
 
     // Flag color pattern analysis
@@ -580,7 +580,7 @@ export const calculateSimilarityScore = (
         codes.includes(correctCountry.code) &&
         codes.includes(candidateCountry.code)
       ) {
-        score += 40;
+        similarityScore += 40;
         break;
       }
     }
@@ -707,7 +707,7 @@ export const calculateSimilarityScore = (
         codes.includes(correctCountry.code) &&
         codes.includes(candidateCountry.code)
       ) {
-        score += 35;
+        similarityScore += 35;
         break;
       }
     }
@@ -869,7 +869,7 @@ export const calculateSimilarityScore = (
     };
 
     if (neighbors[correctCountry.code]?.includes(candidateCountry.code)) {
-      score += 45;
+      similarityScore += 45;
     }
 
     // Sub-regional similarity bonus
@@ -993,7 +993,7 @@ export const calculateSimilarityScore = (
         codes.includes(correctCountry.code) &&
         codes.includes(candidateCountry.code)
       ) {
-        score += 35;
+        similarityScore += 35;
         break;
       }
     }
@@ -1003,7 +1003,7 @@ export const calculateSimilarityScore = (
     (difficulty === HARD_DIFFICULTY || difficulty === EXPERT_DIFFICULTY) &&
     isDistinctiveFlag(candidateCountry.code)
   ) {
-    score -= difficulty === EXPERT_DIFFICULTY ? 60 : 30;
+    similarityScore -= difficulty === EXPERT_DIFFICULTY ? 60 : 30;
   }
 
   if (difficulty === EXPERT_DIFFICULTY) {
@@ -1012,17 +1012,17 @@ export const calculateSimilarityScore = (
       !similarFlags.includes(candidateCountry.code) &&
       !similarNames.includes(candidateCountry.name)
     ) {
-      score -= 50;
+      similarityScore -= 50;
     }
   }
 
   // Random bonus for variety
-  score += Math.random() * (difficulty === EXPERT_DIFFICULTY ? 5 : 15);
+  similarityScore += Math.random() * (difficulty === EXPERT_DIFFICULTY ? 5 : 15);
 
-  return Math.max(score, 1);
+  return Math.max(similarityScore, 1);
 };
 
-export interface QuestionData {
+interface QuestionData {
   difficulty: Difficulty;
   currentCountry: Country;
   options: Country[];
@@ -1099,13 +1099,13 @@ export const generateQuestion = (
 
   const candidatesWithScores = candidateCountries.map((candidate) => ({
     country: candidate,
-    score: calculateSimilarityScore(correctCountry, candidate, difficulty),
+    similarityScore: calculateOptionSimilarityScore(correctCountry, candidate, difficulty),
   }));
 
   // Much higher threshold for expert mode
   const minScoreThreshold = difficulty === EXPERT_DIFFICULTY ? 60 : 1;
   const viableCandidates = candidatesWithScores.filter(
-    (c) => c.score >= minScoreThreshold
+    (c) => c.similarityScore >= minScoreThreshold
   );
 
   // For expert mode, if we don't have enough viable candidates, lower the threshold but still keep it high
@@ -1113,7 +1113,7 @@ export const generateQuestion = (
     difficulty === EXPERT_DIFFICULTY
       ? viableCandidates.length >= 3
         ? viableCandidates
-        : candidatesWithScores.filter((c) => c.score >= 40)
+        : candidatesWithScores.filter((c) => c.similarityScore >= 40)
       : viableCandidates.length >= 3
       ? viableCandidates
       : candidatesWithScores;
@@ -1121,7 +1121,7 @@ export const generateQuestion = (
   // Expert mode: Much stricter question generation
   if (difficulty === EXPERT_DIFFICULTY && finalCandidates.length > 0) {
     // Sort candidates by descending similarity score
-    const sortedCandidates = [...finalCandidates].sort((a, b) => b.score - a.score);
+    const sortedCandidates = [...finalCandidates].sort((a, b) => b.similarityScore - a.similarityScore);
     // Always include the top 2 most similar countries
     for (let i = 0; i < 2 && i < sortedCandidates.length; i++) {
       incorrectOptions.push(sortedCandidates[i].country);
@@ -1149,7 +1149,7 @@ export const generateQuestion = (
     // Original logic for other difficulties
     // Ensure at least one very similar option (high similarity)
     const highSimilarityCandidates = finalCandidates.filter(
-      (c) => c.score >= 60
+      (c) => c.similarityScore >= 60
     );
     if (highSimilarityCandidates.length > 0) {
       const highSimilarityCountry =
@@ -1163,8 +1163,8 @@ export const generateQuestion = (
     if (incorrectOptions.length < 3) {
       const mediumSimilarityCandidates = finalCandidates.filter(
         (c) =>
-          c.score >= 30 &&
-          c.score < 60 &&
+          c.similarityScore >= 30 &&
+          c.similarityScore < 60 &&
           !incorrectOptions.find((opt) => opt.code === c.country.code)
       );
       if (mediumSimilarityCandidates.length > 0) {
@@ -1186,7 +1186,7 @@ export const generateQuestion = (
 
     const countries = availableCandidates.map((c) => c.country);
     const weights = availableCandidates.map((c) =>
-      difficulty === EXPERT_DIFFICULTY ? Math.pow(c.score, 2) : c.score
+      difficulty === EXPERT_DIFFICULTY ? Math.pow(c.similarityScore, 2) : c.similarityScore
     );
 
     const selectedCountry = weightedRandomSelect(countries, weights);
@@ -1230,139 +1230,7 @@ export function parseDifficultyFromQuery(
   return DEFAULT_DIFFICULTY;
 }
 
-export const calculateScore = (
-  difficulty: Difficulty,
-  correctAnswers: number,
-  totalQuestions: number,
-  timeBonus: number = 0,
-  streakBonus: number = 0
-): number => {
-  let score = 0;
-
-  // Base score for correct answers
-  if (difficulty === EXPERT_DIFFICULTY) {
-    score += correctAnswers * 12;
-  } else if (difficulty === HARD_DIFFICULTY) {
-    score += correctAnswers * 8;
-  } else if (difficulty === MEDIUM_DIFFICULTY) {
-    score += correctAnswers * 6;
-  } else {
-    score += correctAnswers * 4;
-  }
-
-  // Perfect score bonus
-  if (correctAnswers === totalQuestions) {
-    score += difficulty === EXPERT_DIFFICULTY ? 100 : 50;
-  }
-
-  // High accuracy bonus (90%+ for Expert, 80%+ for others)
-  const accuracyThreshold = difficulty === EXPERT_DIFFICULTY ? 0.9 : 0.8;
-  if (correctAnswers / totalQuestions >= accuracyThreshold) {
-    score += difficulty === EXPERT_DIFFICULTY ? 60 : 35;
-  }
-
-  // Expert mode: Additional accuracy bonuses
-  if (difficulty === EXPERT_DIFFICULTY) {
-    // 95%+ accuracy bonus
-    if (correctAnswers / totalQuestions >= 0.95) {
-      score += 40;
-    }
-
-    // 100% accuracy with no mistakes bonus
-    if (correctAnswers === totalQuestions && correctAnswers > 0) {
-      score += 80;
-    }
-  }
-
-  // Time bonus (faster completion = more points)
-  if (
-    (difficulty === HARD_DIFFICULTY || difficulty === EXPERT_DIFFICULTY) &&
-    timeBonus > 0
-  ) {
-    score += Math.floor(
-      timeBonus / (difficulty === EXPERT_DIFFICULTY ? 8 : 10)
-    );
-  }
-
-  // Streak bonus (consecutive correct answers)
-  if (streakBonus > 0) {
-    if (difficulty === EXPERT_DIFFICULTY) {
-      score += streakBonus * 3;
-    } else {
-      score += streakBonus * 2;
-    }
-  }
-
-  return Math.max(0, score);
-};
-
-export const calculateExpertScore = (
-  correctAnswers: number,
-  totalQuestions: number,
-  timeBonus: number = 0,
-  streakBonus: number = 0,
-  difficultyPattern: number[] = [] // Track question difficulty progression
-): number => {
-  let score = 0;
-
-  // Higher base score for expert mode
-  score += correctAnswers * 15;
-
-  // Perfect score bonus (higher for expert)
-  if (correctAnswers === totalQuestions) {
-    score += 100;
-  }
-
-  // Accuracy bonuses (more granular)
-  const accuracy = correctAnswers / totalQuestions;
-  if (accuracy >= 0.9) score += 80;
-  else if (accuracy >= 0.8) score += 60;
-  else if (accuracy >= 0.7) score += 40;
-  else if (accuracy >= 0.6) score += 20;
-
-  // Enhanced time bonus for expert mode
-  if (timeBonus > 0) {
-    score += Math.floor(timeBonus / 5); // More generous time bonus
-  }
-
-  // Progressive difficulty bonus
-  if (difficultyPattern.length > 0) {
-    const avgDifficulty =
-      difficultyPattern.reduce((a, b) => a + b, 0) / difficultyPattern.length;
-    score += Math.floor(avgDifficulty * 2);
-  }
-
-  // Streak bonus (only reward positive streaks)
-  if (streakBonus > 0) {
-    score += streakBonus * 5;
-  }
-
-  // Consistency bonus (reward steady performance)
-  if (difficultyPattern.length >= 5) {
-    const variance = calculateVariance(difficultyPattern);
-    if (variance < 2) {
-      // Low variance = consistent performance
-      score += 30;
-    }
-  }
-
-  return Math.max(score, 1);
-};
-
-export const getRandomDifficulty = (): Difficulty => {
-  const randomIndex = Math.floor(Math.random() * DIFFICULTY_LEVELS.length);
-  return DIFFICULTY_LEVELS[randomIndex];
-};
-
-export const validateDifficulty = (queryValue: string | null): Difficulty => {
-  const allowed = DIFFICULTY_LEVELS;
-  if (queryValue && allowed.includes(queryValue as Difficulty)) {
-    return queryValue as Difficulty;
-  }
-  return DEFAULT_DIFFICULTY;
-};
-
-export const getExpertCountryPools = () => ({
+const getExpertCountryPools = () => ({
   // Countries with very similar flags
    confusingFlags: [
     "NL", "LU", "RU", "SI", "SK", "CZ", "FR", // Similar tricolors
@@ -1549,7 +1417,7 @@ const getHistoricalConfusionBonus = (
 };
 
 // Enhanced similarity scoring for expert mode (with balanced randomness)
-export const calculateExpertSimilarityScore = (
+const calculateExpertOptionSimilarityScore = (
   correctCountry: Country,
   candidateCountry: Country
 ): number => {
@@ -1649,10 +1517,4 @@ export const calculateExpertSimilarityScore = (
   score += Math.random() * 5;
 
   return Math.max(score, 1);
-};
-
-const calculateVariance = (numbers: number[]): number => {
-  const mean = numbers.reduce((a, b) => a + b, 0) / numbers.length;
-  const squaredDifferences = numbers.map((num) => Math.pow(num - mean, 2));
-  return squaredDifferences.reduce((a, b) => a + b, 0) / numbers.length;
 };
