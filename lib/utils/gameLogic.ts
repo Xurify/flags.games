@@ -797,7 +797,6 @@ export const calculateSimilarityScore = (
       PK: ["IN", "CN", "AF", "IR", "TJ", "KG", "KZ", "UZ", "TM"],
       AF: ["PK", "CN", "TJ", "KG", "UZ", "TM", "IR"],
       IR: ["PK", "AF", "TM", "UZ", "KG", "TJ", "AZ", "AM", "GE", "TR", "IQ"],
-      IQ: ["IR", "TR", "SY", "JO", "SA", "KW"],
       SA: ["IQ", "JO", "AE", "QA", "KW", "BH", "OM", "YE"],
 
       // Africa
@@ -1302,13 +1301,6 @@ export const calculateScore = (
     }
   }
 
-  // Random bonus for variety (reduced for Expert mode)
-  if (difficulty === EXPERT_DIFFICULTY) {
-    score += Math.floor(Math.random() * 10);
-  } else {
-    score += Math.floor(Math.random() * 15);
-  }
-
   return Math.max(0, score);
 };
 
@@ -1363,9 +1355,6 @@ export const calculateExpertScore = (
       score += 30;
     }
   }
-
-  // For randomness
-  score += Math.floor(Math.random() * 10);
 
   return Math.max(score, 1);
 };
@@ -1581,24 +1570,24 @@ export const calculateExpertSimilarityScore = (
   const correctRegion = getCountryRegion(correctCountry.code);
   const candidateRegion = getCountryRegion(candidateCountry.code);
   if (correctRegion === candidateRegion) {
-    score += 100; // Increased from 80
+    score += 100;
   }
 
   // Flag pattern similarity (very high weight)
   const similarFlags = getSimilarFlags(correctCountry.code);
   if (similarFlags.includes(candidateCountry.code)) {
-    score += 150; // Increased from 100
+    score += 150;
   }
 
   // Name confusion factor
   const similarNames = getSimilarNames(correctCountry.name);
   if (similarNames.includes(candidateCountry.name)) {
-    score += 120; // Increased from 90
+    score += 80;
   }
 
   // Same starting letter bonus (higher than before)
   if (correctCountry.name[0] === candidateCountry.name[0]) {
-    score += 50; // Increased from 40
+    score += 50;
   }
 
   // Enhanced name length similarity
@@ -1613,7 +1602,7 @@ export const calculateExpertSimilarityScore = (
   const correctEnding = correctCountry.name.slice(-3).toLowerCase();
   const candidateEnding = candidateCountry.name.slice(-3).toLowerCase();
   if (correctEnding === candidateEnding) {
-    score += 60; // Increased from 45
+    score += 60;
   }
 
   // Common suffix patterns (enhanced)
@@ -1625,7 +1614,7 @@ export const calculateExpertSimilarityScore = (
     correctSuffix &&
     candidateCountry.name.toLowerCase().endsWith(correctSuffix)
   ) {
-    score += 70; // Increased from 50
+    score += 70;
   }
 
   // Enhanced vowel pattern similarity
@@ -1634,16 +1623,16 @@ export const calculateExpertSimilarityScore = (
   const correctVowels = getVowelPattern(correctCountry.name);
   const candidateVowels = getVowelPattern(candidateCountry.name);
   if (correctVowels === candidateVowels) {
-    score += 40; // Increased from 30
+    score += 40;
   } else if (correctVowels.length === candidateVowels.length) {
-    score += 20; // Increased from 15
+    score += 20;
   }
 
   // Word count similarity (for multi-word countries)
   const correctWords = correctCountry.name.split(" ").length;
   const candidateWords = candidateCountry.name.split(" ").length;
   if (correctWords === candidateWords && correctWords > 1) {
-    score += 35; // Increased from 25
+    score += 35;
   }
 
   // Enhanced sub-regional patterns
@@ -1662,7 +1651,7 @@ export const calculateExpertSimilarityScore = (
 
   // Penalize overly distinctive flags in expert mode
   if (isDistinctiveFlag(candidateCountry.code)) {
-    score -= 100; // Increased penalty from 80
+    score -= 100;
   }
 
   // Bonus for countries that are historically confused
@@ -1672,7 +1661,7 @@ export const calculateExpertSimilarityScore = (
   );
 
   // Balanced random element (reduced for more consistent difficulty)
-  score += Math.random() * 5; // Reduced from 8
+  score += Math.random() * 5;
 
   return Math.max(score, 1);
 };
