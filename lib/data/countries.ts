@@ -199,4 +199,7 @@ export const countries: Country[] = [
   { name: "Benin", code: "BJ", flag: "/images/flags/bj.svg" },
   { name: "Timor-Leste", code: "TL", flag: "/images/flags/tl.svg" },
   { name: "Brunei", code: "BN", flag: "/images/flags/bn.svg" },
+  { name: "Taiwan", code: "TW", flag: "/images/flags/tw.svg" },
+  { name: "Palestine", code: "PS", flag: "/images/flags/ps.svg" },
+  { name: "Kosovo", code: "XK", flag: "/images/flags/xk.svg" },
 ];
