@@ -249,116 +249,111 @@ export const getCountryRegion = (countryCode: string): string => {
 
 export const getSimilarFlags = (countryCode: string): string[] => {
   const similarGroups: { [name: string]: string[] } = {
-    // Nordic Cross flags (similar cross designs)
-    DK: ["FI", "IS", "NO", "SE"],
-    FI: ["DK", "IS", "NO", "SE"],
-    IS: ["DK", "FI", "NO", "SE"],
-    NO: ["DK", "FI", "IS", "SE"],
-    SE: ["DK", "FI", "IS", "NO"],
-
-    // Tricolor flags (similar three-stripe patterns)
-    CZ: ["FR", "LU", "NL", "RU", "SI", "SK"],
-    FR: ["CZ", "LU", "NL", "RU", "SI", "SK"],
-    LU: ["CZ", "FR", "NL", "RU", "SI", "SK"],
-    NL: ["CZ", "FR", "LU", "RU", "SI", "SK"],
-    RU: ["CZ", "FR", "LU", "NL", "SI", "SK"],
-    SI: ["CZ", "FR", "LU", "NL", "RU", "SK"],
-    SK: ["CZ", "FR", "LU", "NL", "RU", "SI"],
-
-    // Pan-African colors (green-yellow-red patterns)
-    BF: ["BJ", "CM", "GH", "GN", "ML", "SN", "TG"],
-    BJ: ["BF", "CM", "GH", "GN", "ML", "SN", "TG"],
-    CM: ["BF", "BJ", "GH", "GN", "ML", "SN", "TG"],
-    GH: ["BF", "BJ", "CM", "GN", "ML", "SN", "TG"],
-    GN: ["BF", "BJ", "CM", "GH", "ML", "SN", "TG"],
-    ML: ["BF", "BJ", "CM", "GH", "GN", "SN", "TG"],
-    SN: ["BF", "BJ", "CM", "GH", "GN", "ML", "TG"],
-    TG: ["BF", "BJ", "CM", "GH", "GN", "ML", "SN"],
-
-    // Pan-Arab colors (red-white-black-green patterns)
-    AE: ["BH", "IQ", "IR", "JO", "KW", "OM", "QA", "SA", "SD", "SY", "YE"],
-    BH: ["AE", "IQ", "IR", "JO", "KW", "OM", "QA", "SA", "SD", "SY", "YE"],
-    IQ: ["AE", "BH", "IR", "JO", "KW", "OM", "QA", "SA", "SD", "SY", "YE"],
-    IR: ["AE", "BH", "IQ", "JO", "KW", "OM", "QA", "SA", "SD", "SY", "YE"],
-    JO: ["AE", "BH", "IQ", "IR", "KW", "OM", "QA", "SA", "SD", "SY", "YE"],
-    KW: ["AE", "BH", "IQ", "IR", "JO", "OM", "QA", "SA", "SD", "SY", "YE"],
-    OM: ["AE", "BH", "IQ", "IR", "JO", "KW", "QA", "SA", "SD", "SY", "YE"],
-    QA: ["AE", "BH", "IQ", "IR", "JO", "KW", "OM", "SA", "SD", "SY", "YE"],
-    SA: ["AE", "BH", "IQ", "IR", "JO", "KW", "OM", "QA", "SD", "SY", "YE"],
-    SD: ["AE", "BH", "IQ", "IR", "JO", "KW", "OM", "QA", "SA", "SY", "YE"],
-    SY: ["AE", "BH", "IQ", "IR", "JO", "KW", "OM", "QA", "SA", "SD", "YE"],
-    YE: ["AE", "BH", "IQ", "IR", "JO", "KW", "OM", "QA", "SA", "SD", "SY"],
-
-    // Baltic flags (similar designs)
-    EE: ["LV", "LT"],
-    LV: ["EE", "LT"],
-    LT: ["EE", "LV"],
-
-    // Central Asian flags (similar patterns)
-    AM: ["AZ", "GE", "KG", "KZ", "TJ", "TM", "UZ"],
-    AZ: ["AM", "GE", "KG", "KZ", "TJ", "TM", "UZ"],
-    GE: ["AM", "AZ", "KG", "KZ", "TJ", "TM", "UZ"],
-    KG: ["AM", "AZ", "GE", "KZ", "TJ", "TM", "UZ"],
-    KZ: ["AM", "AZ", "GE", "KG", "TJ", "TM", "UZ"],
-    TJ: ["AM", "AZ", "GE", "KG", "KZ", "TM", "UZ"],
-    TM: ["AM", "AZ", "GE", "KG", "KZ", "TJ", "UZ"],
-    UZ: ["AM", "AZ", "GE", "KG", "KZ", "TJ", "TM"],
-
-    // Balkan flags (similar tricolor patterns)
-    BA: ["HR", "ME", "MK", "RS"],
-    HR: ["BA", "ME", "MK", "RS"],
-    ME: ["BA", "HR", "MK", "RS"],
-    MK: ["BA", "HR", "ME", "RS"],
-    RS: ["BA", "HR", "ME", "MK"],
-
-    // Similar tricolor with center emblem
-    IN: ["NE"],
-    NE: ["IN", "IE", "CI", "TD"],
-
-    // Similar color schemes
-    CI: ["NE"],
-    IE: ["NE"],
-    TD: ["NE", "RO"],
-    RO: ["TD"],
-
-    // Red-white patterns
-    ID: ["MC", "PL"],
-    MC: ["ID", "PL"],
-    PL: ["ID", "MC"],
-
-    // British Isles and similar
-    GB: ["US"],
-    US: ["GB"],
-
-    // Caribbean flags with similar designs (focusing on actual similarity)
-    AG: ["BB", "DM", "GD", "KN", "LC", "VC"],
-    BB: ["AG", "DM", "GD", "KN", "LC", "VC"],
-    BS: ["CU", "DO", "JM", "TT"],
-    CU: ["BS", "DO", "JM", "TT"],
-    DM: ["AG", "BB", "GD", "KN", "LC", "VC"],
-    DO: ["BS", "CU", "JM", "TT"],
-    GD: ["AG", "BB", "DM", "KN", "LC", "VC"],
-    JM: ["BS", "CU", "DO", "TT"],
-    KN: ["AG", "BB", "DM", "GD", "LC", "VC"],
-    LC: ["AG", "BB", "DM", "GD", "KN", "VC"],
-    TT: ["BS", "CU", "DO", "JM"],
-    VC: ["AG", "BB", "DM", "GD", "KN", "LC"],
-
-    // Pacific flags with similar designs
-    AU: ["NZ"],
-    FJ: ["PG", "SB", "VU"],
-    KI: ["MH", "NR", "TV"],
-    MH: ["KI", "NR", "TV"],
-    NR: ["KI", "MH", "TV"],
-    NZ: ["AU"],
-    PG: ["FJ", "SB", "VU"],
-    PW: ["FM"],
-    FM: ["PW"],
-    SB: ["FJ", "PG", "VU"],
-    TO: ["WS"],
-    TV: ["KI", "MH", "NR"],
-    VU: ["FJ", "PG", "SB"],
-    WS: ["TO"],
+    // Nearly identical flags
+    RO: ["TD"], // Romania and Chad - almost identical blue-yellow-red vertical stripes
+    TD: ["RO"],
+    
+    ID: ["MC", "PL"], // Red-white horizontal stripes
+    MC: ["ID", "PL"], // Monaco and Indonesia are identical, Poland is inverted
+    PL: ["ID", "MC"], // Poland (white-red) vs Indonesia/Monaco (red-white)
+    
+    // Very similar red-white-red horizontal stripes
+    LV: ["AT"], // Latvia and Austria - both red-white-red horizontal
+    AT: ["LV"],
+    
+    // Nordic Cross flags - visually very similar cross designs
+    DK: ["FI", "IS", "NO", "SE"], // Denmark
+    FI: ["DK", "IS", "NO", "SE"], // Finland
+    IS: ["DK", "FI", "NO", "SE"], // Iceland
+    NO: ["DK", "FI", "IS", "SE"], // Norway
+    SE: ["DK", "FI", "IS", "NO"], // Sweden
+    
+    // Vertical tricolors with similar patterns
+    FR: ["IT", "BE", "IE", "CI", "RO", "TD"], // Blue-white-red and similar vertical stripes
+    IT: ["FR", "BE", "IE", "CI"], // Green-white-red vertical
+    BE: ["FR", "IT", "IE", "CI", "DE"], // Black-yellow-red vertical
+    IE: ["FR", "IT", "BE", "CI"], // Green-white-orange vertical
+    CI: ["FR", "IT", "BE", "IE"], // Orange-white-green vertical (reverse of Ireland)
+    DE: ["BE"], // Black-red-yellow horizontal (similar colors to Belgium)
+    
+    // Horizontal tricolors
+    NL: ["LU", "RU", "HR", "SK", "SI"], // Red-white-blue and similar horizontal stripes
+    LU: ["NL", "RU", "HR"], // Red-white-blue horizontal (similar to Netherlands)
+    RU: ["NL", "LU", "SK", "SI"], // White-blue-red horizontal
+    HR: ["NL", "LU", "SK", "SI"], // Red-white-blue with coat of arms
+    SK: ["NL", "RU", "HR", "SI"], // White-blue-red horizontal
+    SI: ["NL", "RU", "HR", "SK"], // White-blue-red horizontal
+    
+    // Pan-African colors (green-yellow-red in various arrangements)
+    GH: ["BF", "BJ", "CM", "GN", "ML", "SN", "TG", "ET"], // Red-yellow-green horizontal with star
+    BF: ["GH", "BJ", "CM", "GN", "ML", "SN", "TG"], // Red-white-green horizontal
+    BJ: ["GH", "BF", "CM", "GN", "ML", "SN", "TG"], // Green-yellow-red horizontal
+    CM: ["GH", "BF", "BJ", "GN", "ML", "SN", "TG"], // Green-red-yellow vertical
+    GN: ["GH", "BF", "BJ", "CM", "ML", "SN", "TG"], // Red-yellow-green vertical
+    ML: ["GH", "BF", "BJ", "CM", "GN", "SN", "TG"], // Green-yellow-red vertical
+    SN: ["GH", "BF", "BJ", "CM", "GN", "ML", "TG"], // Green-yellow-red vertical with star
+    TG: ["GH", "BF", "BJ", "CM", "GN", "ML", "SN"], // Green-yellow-red horizontal with star
+    ET: ["GH"], // Green-yellow-red horizontal with emblem
+    
+    // Pan-Arab colors (red-white-black with green variations)
+    AE: ["EG", "IQ", "JO", "KW", "SD", "SY", "YE"], // Red-white-black horizontal with green vertical
+    EG: ["AE", "IQ", "JO", "SY", "YE"], // Red-white-black horizontal with eagle
+    IQ: ["AE", "EG", "JO", "SY", "YE"], // Red-white-black horizontal with text
+    JO: ["AE", "EG", "IQ", "SY", "YE"], // Black-white-green horizontal with triangle and star
+    SY: ["AE", "EG", "IQ", "JO", "YE"], // Red-white-black horizontal with stars
+    YE: ["AE", "EG", "IQ", "JO", "SY"], // Red-white-black horizontal
+    SD: ["AE"], // Red-white-black horizontal with green triangle
+    
+    // Union Jack derivatives
+    AU: ["NZ", "FJ"], // Blue field with Union Jack canton
+    NZ: ["AU", "FJ"], // Blue field with Union Jack canton and stars
+    FJ: ["AU", "NZ"], // Light blue field with Union Jack canton
+    
+    // Stars and Stripes pattern
+    US: ["MY"], // Stars and stripes pattern
+    MY: ["US"], // Red-white stripes with blue canton
+    
+    // Crescent and star patterns
+    TR: ["TN", "PK"], // Red field with crescent and star
+    TN: ["TR", "PK"], // Red field with crescent and star
+    PK: ["TR", "TN"], // Green field with crescent and star
+    
+    // Simple horizontal stripes - commonly confused
+    UA: ["AR"], // Ukraine (blue-yellow) can be confused with Argentina's colors
+    
+    // Cross patterns (not Nordic) - commonly confused
+    CH: ["GE"], // Square flag with cross
+    GE: ["CH"], // White field with cross pattern
+    
+    // Green-white-red horizontal stripes
+    HU: ["IT", "IR"], // Red-white-green horizontal
+    IR: ["HU"], // Green-white-red horizontal
+    
+    // Blue-white patterns
+    GR: ["IL", "UY"], // Blue-white stripes
+    IL: ["GR", "UY"], // Blue-white stripes with star
+    UY: ["GR", "IL"], // Blue-white stripes with sun
+    
+    // Complex but similar patterns - commonly confused
+    IN: ["NE"], // Orange-white-green horizontal with wheel/emblem
+    NE: ["IN"], // Orange-white-green horizontal
+    
+    // Commonly confused due to circle/sun symbols
+    JP: ["BD"], // Red circle on white (Japan) vs green field with red circle (Bangladesh)
+    BD: ["JP"],
+    
+    // Central American flags with similar blue-white-blue patterns
+    GT: ["SV", "HN", "NI"], // Blue-white-blue vertical with emblem
+    SV: ["GT", "HN", "NI"], // Blue-white-blue horizontal with emblem
+    HN: ["GT", "SV", "NI"], // Blue-white-blue horizontal with emblem
+    NI: ["GT", "SV", "HN"], // Blue-white-blue horizontal with emblem
+    
+    // South American flags with similar patterns
+    AR: ["UY", "UA"], // Blue-white-blue horizontal with sun, similar colors to Ukraine
+    BO: ["EC"], // Red-yellow-green horizontal with emblem
+    EC: ["BO", "CO", "VE"], // Yellow-blue-red horizontal with emblem
+    CO: ["EC", "VE"], // Yellow-blue-red horizontal
+    VE: ["EC", "CO"], // Yellow-blue-red horizontal with stars
   };
 
   return similarGroups[countryCode] || [];
@@ -1372,7 +1367,7 @@ export const calculateExpertScore = (
   // For randomness
   score += Math.floor(Math.random() * 10);
 
-  return Math.max(0, score);
+  return Math.max(score, 1);
 };
 
 export const getRandomDifficulty = (): Difficulty => {
