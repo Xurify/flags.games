@@ -1,8 +1,8 @@
 import { Country } from "@/lib/data/countries";
 import { getDifficultyCountries } from "@/lib/data/difficultyCategories";
-import { FLAG_COLOR_PATTERNS, FLAG_ELEMENTS, COMMON_SUFFIXES, GEOGRAPHIC_NEIGHBORS, SUB_REGIONS } from "@/lib/data/flagPatterns";
+import { FLAG_COLOR_PATTERNS, FLAG_ELEMENTS, COMMON_SUFFIXES, GEOGRAPHIC_NEIGHBORS, SUB_REGIONS, SIMILAR_FLAGS } from "@/lib/data/flagPatterns";
+import { EXPERT_COUNTRY_POOLS } from '@/lib/data/expertPools';
 import { HISTORICAL_CONFUSION_PAIRS } from "@/lib/data/historicalConfusion";
-import { EXPERT_COUNTRY_POOLS } from "@/lib/data/expertPools";
 import {
   DIFFICULTY_LEVELS,
   Difficulty,
@@ -284,115 +284,7 @@ const getCountryRegion = (countryCode: string): string => {
 // ============================================================================
 
 const getSimilarFlags = (countryCode: string): string[] => {
-  const similarGroups: { [name: string]: string[] } = {
-    // Nearly identical flags
-    RO: ["TD"], // Romania and Chad - almost identical blue-yellow-red vertical stripes
-    TD: ["RO"],
-    
-    ID: ["MC", "PL"], // Red-white horizontal stripes
-    MC: ["ID", "PL"], // Monaco and Indonesia are identical, Poland is inverted
-    PL: ["ID", "MC"], // Poland (white-red) vs Indonesia/Monaco (red-white)
-    
-    // Very similar red-white-red horizontal stripes
-    LV: ["AT"], // Latvia and Austria - both red-white-red horizontal
-    AT: ["LV"],
-    
-    // Nordic Cross flags - visually very similar cross designs
-    DK: ["FI", "IS", "NO", "SE"], // Denmark
-    FI: ["DK", "IS", "NO", "SE"], // Finland
-    IS: ["DK", "FI", "NO", "SE"], // Iceland
-    NO: ["DK", "FI", "IS", "SE"], // Norway
-    SE: ["DK", "FI", "IS", "NO"], // Sweden
-    
-    // Vertical tricolors with similar patterns
-    FR: ["IT", "BE", "IE", "CI", "RO", "TD"], // Blue-white-red and similar vertical stripes
-    IT: ["FR", "BE", "IE", "CI"], // Green-white-red vertical
-    BE: ["FR", "IT", "IE", "CI", "DE"], // Black-yellow-red vertical
-    IE: ["FR", "IT", "BE", "CI"], // Green-white-orange vertical
-    CI: ["FR", "IT", "BE", "IE"], // Orange-white-green vertical (reverse of Ireland)
-    DE: ["BE"], // Black-red-yellow horizontal (similar colors to Belgium)
-    
-    // Horizontal tricolors
-    NL: ["LU", "RU", "HR", "SK", "SI"], // Red-white-blue and similar horizontal stripes
-    LU: ["NL", "RU", "HR"], // Red-white-blue horizontal (similar to Netherlands)
-    RU: ["NL", "LU", "SK", "SI"], // White-blue-red horizontal
-    HR: ["NL", "LU", "SK", "SI"], // Red-white-blue with coat of arms
-    SK: ["NL", "RU", "HR", "SI"], // White-blue-red horizontal
-    SI: ["NL", "RU", "HR", "SK"], // White-blue-red horizontal
-    
-    // Pan-African colors (green-yellow-red in various arrangements)
-    GH: ["BF", "BJ", "CM", "GN", "ML", "SN", "TG", "ET"], // Red-yellow-green horizontal with star
-    BF: ["GH", "BJ", "CM", "GN", "ML", "SN", "TG"], // Red-white-green horizontal
-    BJ: ["GH", "BF", "CM", "GN", "ML", "SN", "TG"], // Green-yellow-red horizontal
-    CM: ["GH", "BF", "BJ", "GN", "ML", "SN", "TG"], // Green-red-yellow vertical
-    GN: ["GH", "BF", "BJ", "CM", "ML", "SN", "TG"], // Red-yellow-green vertical
-    ML: ["GH", "BF", "BJ", "CM", "GN", "SN", "TG"], // Green-yellow-red vertical
-    SN: ["GH", "BF", "BJ", "CM", "GN", "ML", "TG"], // Green-yellow-red vertical with star
-    TG: ["GH", "BF", "BJ", "CM", "GN", "ML", "SN"], // Green-yellow-red horizontal with star
-    ET: ["GH"], // Green-yellow-red horizontal with emblem
-    
-    // Pan-Arab colors (red-white-black with green variations)
-    AE: ["EG", "IQ", "JO", "KW", "SD", "SY", "YE"], // Red-white-black horizontal with green vertical
-    EG: ["AE", "IQ", "JO", "SY", "YE"], // Red-white-black horizontal with eagle
-    IQ: ["AE", "EG", "JO", "SY", "YE"], // Red-white-black horizontal with text
-    JO: ["AE", "EG", "IQ", "SY", "YE"], // Black-white-green horizontal with triangle and star
-    SY: ["AE", "EG", "IQ", "JO", "YE"], // Red-white-black horizontal with stars
-    YE: ["AE", "EG", "IQ", "JO", "SY"], // Red-white-black horizontal
-    SD: ["AE"], // Red-white-black horizontal with green triangle
-    
-    // Union Jack derivatives
-    AU: ["NZ", "FJ"], // Blue field with Union Jack canton
-    NZ: ["AU", "FJ"], // Blue field with Union Jack canton and stars
-    FJ: ["AU", "NZ"], // Light blue field with Union Jack canton
-    
-    // Stars and Stripes pattern
-    US: ["MY"], // Stars and stripes pattern
-    MY: ["US"], // Red-white stripes with blue canton
-    
-    // Crescent and star patterns
-    TR: ["TN", "PK"], // Red field with crescent and star
-    TN: ["TR", "PK"], // Red field with crescent and star
-    PK: ["TR", "TN"], // Green field with crescent and star
-    
-    // Simple horizontal stripes - commonly confused
-    UA: ["AR"], // Ukraine (blue-yellow) can be confused with Argentina's colors
-    
-    // Cross patterns (not Nordic) - commonly confused
-    CH: ["GE"], // Square flag with cross
-    GE: ["CH"], // White field with cross pattern
-    
-    // Green-white-red horizontal stripes
-    HU: ["IT", "IR"], // Red-white-green horizontal
-    IR: ["HU"], // Green-white-red horizontal
-    
-    // Blue-white patterns
-    GR: ["IL", "UY"], // Blue-white stripes
-    IL: ["GR", "UY"], // Blue-white stripes with star
-    UY: ["GR", "IL"], // Blue-white stripes with sun
-    
-    // Complex but similar patterns - commonly confused
-    IN: ["NE"], // Orange-white-green horizontal with wheel/emblem
-    NE: ["IN"], // Orange-white-green horizontal
-    
-    // Commonly confused due to circle/sun symbols
-    JP: ["BD"], // Red circle on white (Japan) vs green field with red circle (Bangladesh)
-    BD: ["JP"],
-    
-    // Central American flags with similar blue-white-blue patterns
-    GT: ["SV", "HN", "NI"], // Blue-white-blue vertical with emblem
-    SV: ["GT", "HN", "NI"], // Blue-white-blue horizontal with emblem
-    HN: ["GT", "SV", "NI"], // Blue-white-blue horizontal with emblem
-    NI: ["GT", "SV", "HN"], // Blue-white-blue horizontal with emblem
-    
-    // South American flags with similar patterns
-    AR: ["UY", "UA"], // Blue-white-blue horizontal with sun, similar colors to Ukraine
-    BO: ["EC"], // Red-yellow-green horizontal with emblem
-    EC: ["BO", "CO", "VE"], // Yellow-blue-red horizontal with emblem
-    CO: ["EC", "VE"], // Yellow-blue-red horizontal
-    VE: ["EC", "CO"], // Yellow-blue-red horizontal with stars
-  };
-
-  return similarGroups[countryCode] || [];
+  return SIMILAR_FLAGS[countryCode] || [];
 };
 
 const getSimilarNames = (countryName: string): string[] => {
@@ -430,10 +322,6 @@ const getSimilarNames = (countryName: string): string[] => {
     "Australia": ["Austria"],
     "Dominica": ["Dominican Republic"],
     "Dominican Republic": ["Dominica"],
-    "Moldova": ["Maldives"],
-    "Maldives": ["Moldova"],
-    "Armenia": ["Romania"],
-    "Romania": ["Armenia"],
     "Central African Republic": ["South Africa"],
     "South Africa": ["Central African Republic"],
     "Antigua and Barbuda": ["Barbados"],
@@ -464,6 +352,8 @@ const getSimilarNames = (countryName: string): string[] => {
     "Chile": ["Chad"],
     "Benin": ["Bahrain"],
     "Bahrain": ["Benin"],
+    "Luxembourg": ["Liechtenstein"],
+    "Liechtenstein": ["Luxembourg"]
   };
 
   return nameGroups[countryName] || [];
@@ -471,20 +361,27 @@ const getSimilarNames = (countryName: string): string[] => {
 
 const isDistinctiveFlag = (countryCode: string): boolean => {
   const distinctive = [
-    "JP",
-    "CA",
-    "CH",
-    "NP",
-    "CY",
-    "MK",
-    "KE",
-    "KW",
-    "SA",
-    "BD",
-    "LK",
-    "IN",
-    "PK",
-    "TR",
+    // Most globally recognizable flags
+    "US", // United States - stars and stripes (universally known)
+    "GB", // United Kingdom - Union Jack (globally recognized)
+    "JP", // Japan - red circle (extremely recognizable)
+    "CA", // Canada - maple leaf (highly distinctive)
+    "CH", // Switzerland - square with cross (unique shape)
+    "IT", // Italy - green-white-red (very well known)
+    "FR", // France - blue-white-red (globally recognized)
+    "DE", // Germany - black-red-yellow (well known)
+    "AU", // Australia - Union Jack with stars (recognizable)
+    "BR", // Brazil - globe with stars (distinctive)
+    "IN", // India - wheel symbol (recognizable)
+    "CN", // China - red with stars (globally known)
+    "RU", // Russia - white-blue-red (well known)
+    "KR", // South Korea - yin-yang symbol (distinctive)
+    "MX", // Mexico - eagle and snake (recognizable)
+    "AR", // Argentina - sun symbol (well known)
+    "ZA", // South Africa - unique Y-design (distinctive)
+    "EG", // Egypt - eagle symbol (recognizable)
+    "TR", // Turkey - crescent and star (well known)
+    "SA", // Saudi Arabia - sword and text (distinctive)
   ];
   return distinctive.includes(countryCode);
 };
