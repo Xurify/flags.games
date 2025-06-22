@@ -134,35 +134,40 @@ export const SIMILAR_FLAGS: { [key: string]: string[] } = {
   TD: ["RO"],
   
   ID: ["MC", "PL"], // Red-white horizontal stripes
-  MC: ["ID", "PL"], // Monaco and Indonesia are identical, Poland is inverted
-  PL: ["ID", "MC"], // Poland (white-red) vs Indonesia/Monaco (red-white)
+  MC: ["ID", "PL", "SG"], // Monaco and Indonesia are identical, Poland is inverted
+  PL: ["ID", "MC", "SG", "CZ"], // Poland (white-red) vs Indonesia/Monaco (red-white)
+  SG: ["ID", "MC", "PL"], // Singapore is similar but with a crescent/stars
   
   // Very similar red-white-red horizontal stripes
   LV: ["AT"], // Latvia and Austria - both red-white-red horizontal
   AT: ["LV"],
-  
+
   // Nordic Cross flags - visually very similar cross designs
-  DK: ["FI", "IS", "NO", "SE"], // Denmark
+  DK: ["FI", "IS", "NO", "SE", "CH"], // Denmark
   FI: ["DK", "IS", "NO", "SE"], // Finland
   IS: ["DK", "FI", "NO", "SE"], // Iceland
   NO: ["DK", "FI", "IS", "SE"], // Norway
   SE: ["DK", "FI", "IS", "NO"], // Sweden
   
   // Vertical tricolors with similar patterns
-  FR: ["IT", "BE", "IE", "CI", "RO", "TD"], // Blue-white-red and similar vertical stripes
-  IT: ["FR", "BE", "IE", "CI"], // Green-white-red vertical
-  BE: ["FR", "IT", "IE", "CI", "DE"], // Black-yellow-red vertical
-  IE: ["FR", "IT", "BE", "CI"], // Green-white-orange vertical
-  CI: ["FR", "IT", "BE", "IE"], // Orange-white-green vertical (reverse of Ireland)
+  FR: ["NL", "LU", "PY", "RU"], // France (vertical) is often confused with horizontal tricolors
+  IT: ["MX", "HU"], // Italy's vertical tricolor is confused with Mexico (emblem) and Hungary (horizontal)
+  BE: ["DE"], // Black-yellow-red vertical vs horizontal
+  IE: ["CI"], // Green-white-orange vertical vs Orange-white-green
+  CI: ["IE"], // Orange-white-green vertical (reverse of Ireland)
   DE: ["BE"], // Black-red-yellow horizontal (similar colors to Belgium)
+  MX: ["IT"], // Mexico is the same as Italy with a coat of arms
   
   // Horizontal tricolors
-  NL: ["LU", "RU", "HR", "SK", "SI"], // Red-white-blue and similar horizontal stripes
-  LU: ["NL", "RU", "HR"], // Red-white-blue horizontal (similar to Netherlands)
-  RU: ["NL", "LU", "SK", "SI"], // White-blue-red horizontal
-  HR: ["NL", "LU", "SK", "SI"], // Red-white-blue with coat of arms
-  SK: ["NL", "RU", "HR", "SI"], // White-blue-red horizontal
-  SI: ["NL", "RU", "HR", "SK"], // White-blue-red horizontal
+  NL: ["LU", "RU", "HR", "SK", "SI", "PY", "FR"], // Red-white-blue and similar horizontal stripes
+  LU: ["NL", "RU", "HR", "PY", "FR"], // Red-white-blue horizontal (similar to Netherlands)
+  RU: ["NL", "LU", "SK", "SI", "PY", "FR"], // White-blue-red horizontal
+  HR: ["NL", "LU", "SK", "SI", "PY"], // Red-white-blue with coat of arms
+  SK: ["NL", "RU", "HR", "SI", "PY"], // White-blue-red horizontal
+  SI: ["NL", "RU", "HR", "SK", "PY"], // White-blue-red horizontal
+  PY: ["NL", "LU", "RU", "HR", "SK", "SI", "FR"], // Red-white-blue horizontal
+  LI: ["HT"], // Liechtenstein and Haiti - blue over red with emblems
+  HT: ["LI"], // Haiti and Liechtenstein
   
   // Pan-African colors (green-yellow-red in various arrangements)
   GH: ["BF", "BJ", "CM", "GN", "ML", "SN", "TG", "ET"], // Red-yellow-green horizontal with star
@@ -190,8 +195,9 @@ export const SIMILAR_FLAGS: { [key: string]: string[] } = {
   FJ: ["AU", "NZ"], // Light blue field with Union Jack canton
   
   // Stars and Stripes pattern
-  US: ["MY"], // Stars and stripes pattern
-  MY: ["US"], // Red-white stripes with blue canton
+  US: ["MY", "LR"], // Stars and stripes pattern
+  MY: ["US", "LR"], // Red-white stripes with blue canton
+  LR: ["US", "MY"], // Red-white stripes with blue canton
   
   // Crescent and star patterns
   TR: ["TN", "PK"], // Red field with crescent and star
@@ -199,10 +205,11 @@ export const SIMILAR_FLAGS: { [key: string]: string[] } = {
   PK: ["TR", "TN"], // Green field with crescent and star
   
   // Simple horizontal stripes - commonly confused
-  UA: ["AR"], // Ukraine (blue-yellow) can be confused with Argentina's colors
+  UA: ["AR", "RW"], // Ukraine (blue-yellow) can be confused with Argentina's colors
+  RW: ["UA"], // Rwanda has a similar blue/yellow scheme
   
   // Cross patterns (not Nordic) - commonly confused
-  CH: ["GE"], // Square flag with cross
+  CH: ["DK", "GE"], // Square flag with cross
   GE: ["CH"], // White field with cross pattern
   
   // Green-white-red horizontal stripes
@@ -219,8 +226,8 @@ export const SIMILAR_FLAGS: { [key: string]: string[] } = {
   NE: ["IN"], // Orange-white-green horizontal
   
   // Commonly confused due to circle/sun symbols
-  JP: ["BD"], // Red circle on white (Japan) vs green field with red circle (Bangladesh)
-  BD: ["JP"],
+  MK: ["KG"], // North Macedonia and Kyrgyzstan - red field with yellow sun
+  KG: ["MK"],
   
   // Central American flags with similar blue-white-blue patterns
   GT: ["SV", "HN", "NI"], // Blue-white-blue vertical with emblem
@@ -238,4 +245,27 @@ export const SIMILAR_FLAGS: { [key: string]: string[] } = {
   // Light blue backgrounds with white stars - commonly confused
   SO: ["FM"], // Somalia (light blue with white star) vs Micronesia (light blue with 4 white stars)
   FM: ["SO"], // Micronesia (light blue with 4 white stars) vs Somalia (light blue with white star)
+  
+  // Light blue backgrounds with yellow circle/sun symbols - commonly confused
+  PW: ["KZ"], // Palau (light blue with yellow circle) vs Kazakhstan (light blue with yellow sun)
+  KZ: ["PW"], // Kazakhstan (light blue with yellow sun) vs Palau (light blue with yellow circle)
+
+  // Other strong similarities
+  QA: ["BH"], // Qatar and Bahrain - maroon/red and white with serrated edge
+  BH: ["QA"],
+  MD: ["AD"], // Moldova and Andorra - nearly identical tricolors with emblems
+  AD: ["MD"],
+  VU: ["ZA"], // Vanuatu and South Africa - both have a 'Y' shape
+  ZA: ["VU"],
+  VA: ["BN"], // Vatican City and Brunei - yellow and white themes with complex emblems
+  BN: ["VA"],
+  MU: ["AM"], // Mauritius and Armenia - similar horizontal tricolors
+  AM: ["MU"],
+  CZ: ["PL"], // Czech Rep. and Poland - identical white-over-red stripes
+
+  // Groupings based on visual themes
+  diagonalStripes: ["CD", "NA", "SC", "SB"],
+  redFieldWithSymbol: ["CN", "VN"], // Red field with a prominent yellow star
+  CN: ["VN"],
+  VN: ["CN"],
 }; 
