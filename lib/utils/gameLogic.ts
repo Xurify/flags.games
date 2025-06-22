@@ -1,5 +1,8 @@
 import { Country } from "@/lib/data/countries";
 import { getDifficultyCountries } from "@/lib/data/difficultyCategories";
+import { FLAG_COLOR_PATTERNS, FLAG_ELEMENTS, COMMON_SUFFIXES, GEOGRAPHIC_NEIGHBORS, SUB_REGIONS } from "@/lib/data/flagPatterns";
+import { HISTORICAL_CONFUSION_PAIRS } from "@/lib/data/historicalConfusion";
+import { EXPERT_COUNTRY_POOLS } from "@/lib/data/expertPools";
 import {
   DIFFICULTY_LEVELS,
   Difficulty,
@@ -8,6 +11,31 @@ import {
   HARD_DIFFICULTY,
   MEDIUM_DIFFICULTY,
 } from "@/lib/constants";
+
+
+interface QuestionData {
+  difficulty: Difficulty;
+  currentCountry: Country;
+  options: Country[];
+}
+
+function shuffleArray<T>(array: T[]): T[] {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function sampleOne<T>(array: T[]): T | undefined {
+  if (!array.length) return undefined;
+  const idx = Math.floor(Math.random() * array.length);
+  return array[idx];
+}
+
+// ============================================================================
+// DIFFICULTY AND SETTINGS
+// ============================================================================
 
 const getCountriesForDifficulty = (difficulty: Difficulty) => {
   const baseDifficulty =
@@ -31,6 +59,10 @@ export const getDifficultySettings = (difficulty: Difficulty) => {
   };
   return settings[difficulty];
 };
+
+// ============================================================================
+// GEOGRAPHIC AND REGIONAL
+// ============================================================================
 
 const getCountryRegion = (countryCode: string): string => {
   const regions = {
@@ -246,6 +278,10 @@ const getCountryRegion = (countryCode: string): string => {
   }
   return "other";
 };
+
+// ============================================================================
+// SIMILARITY SCORING
+// ============================================================================
 
 const getSimilarFlags = (countryCode: string): string[] => {
   const similarGroups: { [name: string]: string[] } = {
@@ -553,29 +589,7 @@ const calculateOptionSimilarityScore = (
     }
 
     // Flag color pattern analysis
-    const colorPatterns = {
-      redWhiteBlue: ["US", "GB", "FR", "NL", "RU", "CZ", "SK", "SI", "LU"],
-      redWhiteGreen: ["IT", "BG", "HU", "IR", "BD", "MG"],
-      redYellowGreen: [
-        "GH",
-        "CM",
-        "GN",
-        "ML",
-        "SN",
-        "BF",
-        "NE",
-        "TD",
-        "TG",
-        "BJ",
-      ],
-      redWhiteBlack: ["EG", "SY", "IQ", "YE", "SD", "SS"],
-      blueWhiteRed: ["FR", "NL", "RU", "CZ", "SK", "SI", "LU"],
-      greenWhiteRed: ["IT", "BG", "HU", "IR", "BD", "MG"],
-      yellowBlueRed: ["RO", "TD", "CO", "EC", "VE"],
-      redYellowBlue: ["RO", "TD", "CO", "EC", "VE"],
-    };
-
-    for (const [pattern, codes] of Object.entries(colorPatterns)) {
+    for (const [pattern, codes] of Object.entries(FLAG_COLOR_PATTERNS)) {
       if (
         codes.includes(correctCountry.code) &&
         codes.includes(candidateCountry.code)
@@ -586,123 +600,7 @@ const calculateOptionSimilarityScore = (
     }
 
     // Flag element similarities (stars, crosses, stripes, etc.)
-    const flagElements = {
-      stars: [
-        "US",
-        "AU",
-        "NZ",
-        "BR",
-        "CN",
-        "VN",
-        "CU",
-        "DO",
-        "TT",
-        "BB",
-        "LC",
-        "GD",
-        "VC",
-        "AG",
-        "DM",
-        "KN",
-        "BS",
-      ],
-      crosses: ["SE", "NO", "DK", "FI", "IS", "GB", "CH", "GR"],
-      stripes: [
-        "US",
-        "FR",
-        "IT",
-        "NL",
-        "RU",
-        "CZ",
-        "SK",
-        "SI",
-        "LU",
-        "TH",
-        "MY",
-        "ID",
-        "PH",
-        "SG",
-        "BR",
-        "AR",
-        "CL",
-        "CO",
-        "PE",
-        "VE",
-        "UY",
-        "PY",
-        "BO",
-        "EC",
-        "GY",
-        "SR",
-        "CR",
-        "PA",
-        "NI",
-        "HN",
-        "SV",
-        "GT",
-        "BZ",
-        "JM",
-        "CU",
-        "DO",
-        "TT",
-        "BB",
-        "LC",
-        "GD",
-        "VC",
-        "AG",
-        "DM",
-        "KN",
-        "BS",
-        "HT",
-      ],
-      circles: ["JP", "BD", "NP", "BN", "PW", "MH", "KI", "NR", "TV"],
-      triangles: [
-        "BA",
-        "CZ",
-        "SK",
-        "SI",
-        "LU",
-        "TH",
-        "MY",
-        "ID",
-        "PH",
-        "SG",
-        "BR",
-        "AR",
-        "CL",
-        "CO",
-        "PE",
-        "VE",
-        "UY",
-        "PY",
-        "BO",
-        "EC",
-        "GY",
-        "SR",
-        "CR",
-        "PA",
-        "NI",
-        "HN",
-        "SV",
-        "GT",
-        "BZ",
-        "JM",
-        "CU",
-        "DO",
-        "TT",
-        "BB",
-        "LC",
-        "GD",
-        "VC",
-        "AG",
-        "DM",
-        "KN",
-        "BS",
-        "HT",
-      ],
-    };
-
-    for (const [element, codes] of Object.entries(flagElements)) {
+    for (const [element, codes] of Object.entries(FLAG_ELEMENTS)) {
       if (
         codes.includes(correctCountry.code) &&
         codes.includes(candidateCountry.code)
@@ -713,282 +611,12 @@ const calculateOptionSimilarityScore = (
     }
 
     // Geographic proximity (neighboring countries)
-    const neighbors: { [key: string]: string[] } = {
-      // Europe
-      DE: [
-        "FR",
-        "IT",
-        "AT",
-        "CH",
-        "BE",
-        "NL",
-        "DK",
-        "PL",
-        "CZ",
-        "SK",
-        "HU",
-        "SI",
-        "HR",
-        "RS",
-        "BA",
-        "ME",
-        "MK",
-        "AL",
-        "BG",
-        "RO",
-        "UA",
-        "BY",
-        "MD",
-        "LV",
-        "LT",
-        "EE",
-        "FI",
-        "SE",
-        "NO",
-      ],
-      FR: ["DE", "IT", "ES", "BE", "NL", "CH", "AT", "GB", "IE"],
-      IT: [
-        "FR",
-        "DE",
-        "AT",
-        "CH",
-        "SI",
-        "HR",
-        "RS",
-        "BA",
-        "ME",
-        "MK",
-        "AL",
-        "BG",
-        "RO",
-        "GR",
-      ],
-      ES: ["FR", "PT", "MA", "DZ", "TN", "LY"],
-      PL: ["DE", "CZ", "SK", "HU", "UA", "BY", "LT", "LV", "EE", "RU"],
-      CZ: ["DE", "PL", "SK", "HU", "AT", "SI"],
-      SK: ["CZ", "PL", "HU", "UA", "AT", "SI"],
-      HU: ["SK", "CZ", "PL", "UA", "RO", "RS", "HR", "SI", "AT"],
-      RO: ["HU", "UA", "MD", "BG", "RS", "BA", "ME", "MK", "AL"],
-      BG: ["RO", "RS", "BA", "ME", "MK", "AL", "GR", "TR"],
-      GR: ["BG", "AL", "MK", "ME", "TR"],
-      TR: ["GR", "BG", "GE", "AM", "AZ", "IR", "IQ", "SY"],
-
-      // Asia
-      CN: [
-        "RU",
-        "MN",
-        "KP",
-        "KR",
-        "JP",
-        "VN",
-        "LA",
-        "MM",
-        "IN",
-        "PK",
-        "AF",
-        "TJ",
-        "KG",
-        "KZ",
-      ],
-      JP: ["KR", "KP", "CN", "RU"],
-      KR: ["KP", "JP", "CN"],
-      KP: ["KR", "JP", "CN", "RU"],
-      IN: ["PK", "CN", "NP", "BT", "BD", "MM", "LK", "MV"],
-      PK: ["IN", "CN", "AF", "IR", "TJ", "KG", "KZ", "UZ", "TM"],
-      AF: ["PK", "CN", "TJ", "KG", "UZ", "TM", "IR"],
-      IR: ["PK", "AF", "TM", "UZ", "KG", "TJ", "AZ", "AM", "GE", "TR", "IQ"],
-      SA: ["IQ", "JO", "AE", "QA", "KW", "BH", "OM", "YE"],
-
-      // Africa
-      EG: ["LY", "SD", "SS", "IL", "JO", "SA"],
-      LY: ["EG", "TN", "DZ", "NE", "TD", "SD"],
-      DZ: ["LY", "TN", "MA", "NE", "ML", "MR"],
-      MA: ["DZ", "TN", "ES"],
-      TN: ["LY", "DZ", "MA"],
-      SD: ["EG", "LY", "TD", "CF", "CD", "SS", "ET", "ER"],
-      SS: ["SD", "ET", "KE", "UG", "CD", "CF"],
-      ET: ["SS", "SD", "ER", "DJ", "SO", "KE"],
-      KE: ["SS", "ET", "SO", "UG", "TZ"],
-      NG: [
-        "NE",
-        "TD",
-        "CM",
-        "GQ",
-        "GA",
-        "CG",
-        "CD",
-        "BI",
-        "RW",
-        "UG",
-        "TZ",
-        "MW",
-        "MZ",
-        "ZW",
-        "BW",
-        "NA",
-        "GH",
-        "CI",
-        "SN",
-        "ML",
-        "BF",
-        "GN",
-        "GW",
-        "SL",
-        "LR",
-        "GM",
-        "MR",
-        "CV",
-        "ST",
-      ],
-
-      // Americas
-      US: ["CA", "MX"],
-      CA: ["US"],
-      MX: ["US", "GT", "BZ"],
-      BR: ["GY", "SR", "VE", "CO", "PE", "BO", "PY", "AR", "UY"],
-      AR: ["BR", "PY", "BO", "CL", "UY"],
-      CL: ["AR", "BO", "PE"],
-      CO: ["BR", "VE", "PE", "EC", "PA"],
-      PE: ["BR", "CO", "EC", "BO", "CL"],
-      VE: ["BR", "CO", "GY", "SR"],
-      BO: ["BR", "AR", "CL", "PE", "PY"],
-      PY: ["BR", "AR", "BO"],
-      UY: ["BR", "AR"],
-      EC: ["CO", "PE"],
-      PA: ["CO", "CR"],
-      CR: ["PA", "NI"],
-      NI: ["CR", "HN"],
-      HN: ["NI", "SV", "GT"],
-      SV: ["HN", "GT"],
-      GT: ["SV", "HN", "BZ", "MX"],
-      BZ: ["GT", "MX"],
-      JM: ["CU", "DO", "HT"],
-      CU: ["JM", "DO", "HT"],
-      DO: ["JM", "CU", "HT"],
-      HT: ["JM", "CU", "DO"],
-    };
-
-    if (neighbors[correctCountry.code]?.includes(candidateCountry.code)) {
+    if (GEOGRAPHIC_NEIGHBORS[correctCountry.code]?.includes(candidateCountry.code)) {
       similarityScore += 45;
     }
 
     // Sub-regional similarity bonus
-    const subRegions = {
-      scandinavia: ["SE", "NO", "DK", "FI", "IS"],
-      baltics: ["EE", "LV", "LT"],
-      balkans: ["HR", "SI", "RS", "BA", "ME", "MK", "AL", "BG", "RO"],
-      centralEurope: ["CZ", "SK", "HU", "AT", "CH", "DE", "PL"],
-      benelux: ["BE", "NL", "LU"],
-      iberia: ["ES", "PT"],
-      britishIsles: ["GB", "IE"],
-      caucasus: ["AZ", "AM", "GE"],
-      centralAsia: ["KZ", "UZ", "TM", "KG", "TJ"],
-      hornOfAfrica: ["ET", "ER", "DJ", "SO"],
-      westAfrica: [
-        "GH",
-        "CI",
-        "SN",
-        "ML",
-        "BF",
-        "NE",
-        "TD",
-        "TG",
-        "BJ",
-        "NG",
-        "GN",
-        "GW",
-        "SL",
-        "LR",
-        "GM",
-        "MR",
-        "CV",
-        "ST",
-      ],
-      centralAfrica: [
-        "CM",
-        "CF",
-        "CD",
-        "CG",
-        "GA",
-        "GQ",
-        "AO",
-        "ZM",
-        "ZW",
-        "RW",
-        "BI",
-        "UG",
-        "TZ",
-        "MW",
-        "MZ",
-      ],
-      southernAfrica: ["ZA", "BW", "NA", "LS", "SZ", "MG", "MU", "SC", "KM"],
-      caribbean: [
-        "JM",
-        "CU",
-        "DO",
-        "TT",
-        "BB",
-        "LC",
-        "GD",
-        "VC",
-        "AG",
-        "DM",
-        "KN",
-        "BS",
-        "HT",
-      ],
-      centralAmerica: ["GT", "BZ", "SV", "HN", "NI", "CR", "PA"],
-      andes: ["CO", "EC", "PE", "BO", "CL", "AR"],
-      southernCone: ["AR", "CL", "UY", "PY"],
-      amazon: ["BR", "GY", "SR", "VE"],
-      pacific: [
-        "FJ",
-        "PG",
-        "SB",
-        "VU",
-        "WS",
-        "TO",
-        "PW",
-        "FM",
-        "MH",
-        "KI",
-        "NR",
-        "TV",
-      ],
-      southeastAsia: [
-        "TH",
-        "VN",
-        "MY",
-        "ID",
-        "PH",
-        "MM",
-        "KH",
-        "LA",
-        "SG",
-        "BN",
-      ],
-      southAsia: ["IN", "PK", "BD", "LK", "NP", "BT", "MV", "AF"],
-      eastAsia: ["CN", "JP", "KR", "KP", "MN"],
-      middleEast: [
-        "IL",
-        "JO",
-        "LB",
-        "SY",
-        "IQ",
-        "IR",
-        "SA",
-        "AE",
-        "QA",
-        "KW",
-        "BH",
-        "OM",
-        "YE",
-        "TR",
-      ],
-      northAfrica: ["EG", "LY", "TN", "DZ", "MA", "SD", "SS"],
-    };
-
-    for (const [subRegion, codes] of Object.entries(subRegions)) {
+    for (const [subRegion, codes] of Object.entries(SUB_REGIONS)) {
       if (
         codes.includes(correctCountry.code) &&
         codes.includes(candidateCountry.code)
@@ -1022,25 +650,9 @@ const calculateOptionSimilarityScore = (
   return Math.max(similarityScore, 1);
 };
 
-interface QuestionData {
-  difficulty: Difficulty;
-  currentCountry: Country;
-  options: Country[];
-}
-
-function shuffleArray<T>(array: T[]): T[] {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
-
-function sampleOne<T>(array: T[]): T | undefined {
-  if (!array.length) return undefined;
-  const idx = Math.floor(Math.random() * array.length);
-  return array[idx];
-}
+// ============================================================================
+// MAIN GAME LOGIC
+// ============================================================================
 
 export const generateQuestion = (
   difficulty: Difficulty,
@@ -1059,9 +671,9 @@ export const generateQuestion = (
   let correctCountry: Country;
 
   if (difficulty === EXPERT_DIFFICULTY) {
-    const pools = getExpertCountryPools();
+    const pools = EXPERT_COUNTRY_POOLS;
 
-    // 70% chance to pick from challenging pools (increased from 60%)
+    // 70% chance to pick from challenging pools
     if (Math.random() < 0.7) {
       const challengingCountries = remainingCountries.filter((country) =>
         Object.values(pools).some((pool) => pool.includes(country.code))
@@ -1088,8 +700,6 @@ export const generateQuestion = (
     correctCountry =
       remainingCountries[Math.floor(Math.random() * remainingCountries.length)];
   }
-
-  //correctCountry = { name: "Croatia", code: "HR", flag: "/images/flags/hr.svg" };
 
   const incorrectOptions: Country[] = [];
 
@@ -1230,84 +840,15 @@ export function parseDifficultyFromQuery(
   return DEFAULT_DIFFICULTY;
 }
 
-const getExpertCountryPools = () => ({
-  // Countries with very similar flags
-   confusingFlags: [
-    "NL", "LU", "RU", "SI", "SK", "CZ", "FR", // Similar tricolors
-    "ID", "MC", "PL", // Red-white patterns
-    "TD", "RO", // Blue-yellow-red
-    "SE", "NO", "DK", "FI", "IS", // Nordic crosses
-    "HR", "RS", "BA", "ME", "MK", // Balkan similarities
-  ],
-  
-  // Countries with confusing names
-  confusingNames: [
-    "GN", "GW", "GQ", // Guinea variants
-    "CG", "CD", // Congo variants
-    "KP", "KR", // Korea variants
-    "US", "GB", "AE", // "United" countries
-  ],
-  
-  // Lesser-known countries that are often confused
-  lesserKnown: [
-    "SM", "AD", "LI", "MT", "CY", // Small European
-    "BT", "MV", "TL", "BN", // Small Asian
-    "KI", "NR", "TV", "PW", "FM", "MH", // Pacific islands
-    "ST", "CV", "KM", "SC", "MU", // Small African islands
-    "LC", "VC", "GD", "DM", "KN", "AG", "BB", // Caribbean
-  ],
-
-  // Countries with regional flag patterns
-  panAfrican: ["GH", "CM", "GN", "ML", "SN", "BF", "NE"],
-  panArab: ["JO", "AE", "KW", "SD", "SY", "IQ", "YE"],
-  nordic: ["SE", "NO", "DK", "FI", "IS"],
-  caribbean: ["JM", "CU", "DO", "TT", "BB", "LC", "GD", "VC"],
-});
-
-// New function for sub-regional similarity with enhanced bonuses
-const getSubRegionalSimilarity = (
-  correctCode: string,
-  candidateCode: string
-): number => {
-  const subRegions = {
-    scandinavia: { codes: ["SE", "NO", "DK"], bonus: 60 },
-    balticStates: { codes: ["EE", "LV", "LT"], bonus: 70 },
-    benelux: { codes: ["BE", "NL", "LU"], bonus: 65 },
-    balkans: {
-      codes: ["HR", "SI", "RS", "BA", "ME", "MK", "AL", "BG", "RO"],
-      bonus: 50,
-    },
-    caucasus: { codes: ["AZ", "AM", "GE"], bonus: 75 },
-    centralAsia: { codes: ["KZ", "UZ", "TM", "KG", "TJ"], bonus: 55 },
-    maghreb: { codes: ["MA", "DZ", "TN", "LY"], bonus: 60 },
-    gulfStates: { codes: ["AE", "QA", "KW", "BH", "OM"], bonus: 70 },
-    pacificIslands: { codes: ["FJ", "WS", "TO", "VU", "SB", "PG"], bonus: 45 },
-    caribbeanSmall: {
-      codes: ["LC", "VC", "GD", "DM", "KN", "AG", "BB"],
-      bonus: 65,
-    },
-    centralAmerica: {
-      codes: ["GT", "BZ", "SV", "HN", "NI", "CR", "PA"],
-      bonus: 40,
-    },
-  };
-
-  for (const region of Object.values(subRegions)) {
-    if (
-      region.codes.includes(correctCode) &&
-      region.codes.includes(candidateCode)
-    ) {
-      return region.bonus;
-    }
-  }
-  return 0;
-};
+// ============================================================================
+// EXPERT MODE SCORING FUNCTIONS
+// ============================================================================
 
 // New function for pool-based similarity
 const getPoolSimilarityBonus = (
   correctCode: string,
   candidateCode: string,
-  pools: ReturnType<typeof getExpertCountryPools>
+  pools: { [key: string]: string[] }
 ): number => {
   let bonus = 0;
 
@@ -1350,66 +891,7 @@ const getHistoricalConfusionBonus = (
   correctCode: string,
   candidateCode: string
 ): number => {
-  const confusionPairs: { [key: string]: string[] } = {
-    // Commonly confused pairs based on real user data
-    SI: ["SK", "HR", "CZ", "RS"], // Slovenia often confused with Slovakia/Croatia/Czech Republic/Serbia
-    SK: ["SI", "CZ", "HR", "RS"], // Slovakia with Slovenia/Czech Republic/Croatia/Serbia
-    CZ: ["SK", "SI", "HR", "RS"], // Czech Republic with Slovakia/Slovenia/Croatia/Serbia
-    HR: ["SI", "SK", "RS", "BA", "ME"], // Croatia with Slovenia/Slovakia/Serbia/Bosnia/Montenegro
-    RS: ["SI", "SK", "HR", "BA", "ME", "MK"], // Serbia with Slovenia/Slovakia/Croatia/Bosnia/Montenegro/Macedonia
-    BA: ["HR", "RS", "ME", "SI", "SK"], // Bosnia with Croatia/Serbia/Montenegro/Slovenia/Slovakia
-    ME: ["HR", "RS", "BA", "SI", "SK"], // Montenegro with Croatia/Serbia/Bosnia/Slovenia/Slovakia
-    MK: ["RS", "HR", "BA", "ME", "SI", "SK"], // Macedonia with Serbia/Croatia/Bosnia/Montenegro/Slovenia/Slovakia
-    LV: ["LT", "EE", "RU"], // Baltic confusion
-    LT: ["LV", "EE", "RU"],
-    EE: ["LV", "LT", "RU"],
-    BY: ["RU", "UA", "PL"], // Eastern European confusion
-    UA: ["BY", "RU", "PL"],
-    PL: ["BY", "UA", "RU", "CZ", "SK"],
-    GE: ["AM", "AZ", "TR"], // Caucasus confusion
-    AM: ["GE", "AZ", "TR"],
-    AZ: ["GE", "AM", "TR"],
-    UZ: ["KZ", "TM", "KG", "TJ"], // Central Asian confusion
-    KZ: ["UZ", "KG", "TM", "TJ"],
-    TM: ["UZ", "TJ", "KZ", "KG"],
-    KG: ["UZ", "KZ", "TJ", "TM"],
-    TJ: ["UZ", "TM", "KG", "KZ"],
-    // Nordic confusion
-    SE: ["NO", "DK", "FI", "IS"],
-    NO: ["SE", "DK", "FI", "IS"],
-    DK: ["SE", "NO", "FI", "IS"],
-    FI: ["SE", "NO", "DK", "IS"],
-    IS: ["SE", "NO", "DK", "FI"],
-    // Benelux confusion
-    NL: ["LU", "BE", "DE"],
-    LU: ["NL", "BE", "DE"],
-    BE: ["NL", "LU", "DE"],
-    // Iberian confusion
-    ES: ["PT", "FR"],
-    PT: ["ES", "FR"],
-    // British Isles confusion
-    GB: ["IE", "US"],
-    IE: ["GB", "US"],
-    // Middle Eastern confusion
-    JO: ["AE", "KW", "SA", "QA", "BH", "OM"],
-    AE: ["JO", "KW", "SA", "QA", "BH", "OM"],
-    KW: ["JO", "AE", "SA", "QA", "BH", "OM"],
-    SA: ["JO", "AE", "KW", "QA", "BH", "OM"],
-    QA: ["JO", "AE", "KW", "SA", "BH", "OM"],
-    BH: ["JO", "AE", "KW", "SA", "QA", "OM"],
-    OM: ["JO", "AE", "KW", "SA", "QA", "BH"],
-    // African confusion
-    GH: ["CM", "GN", "ML", "SN", "BF", "NE"],
-    CM: ["GH", "GN", "ML", "SN", "BF", "NE"],
-    GN: ["GH", "CM", "ML", "SN", "BF", "NE"],
-    ML: ["GH", "CM", "GN", "SN", "BF", "NE"],
-    SN: ["GH", "CM", "GN", "ML", "BF", "NE"],
-    BF: ["GH", "CM", "GN", "ML", "SN", "NE"],
-    NE: ["IN", "IE", "CI", "TD"],
-    IQ: ["JO", "AE", "KW", "SD", "SY", "IR", "SA", "QA", "BH", "OM", "YE"],
-  };
-
-  const confusedWith = confusionPairs[correctCode];
+  const confusedWith = HISTORICAL_CONFUSION_PAIRS[correctCode];
   if (confusedWith && confusedWith.includes(candidateCode)) {
     return 80; // Increased from 60
   }
@@ -1422,7 +904,7 @@ const calculateExpertOptionSimilarityScore = (
   candidateCountry: Country
 ): number => {
   let score = 0;
-  const pools = getExpertCountryPools();
+  const pools = EXPERT_COUNTRY_POOLS;
 
   // Base regional similarity (higher weight)
   const correctRegion = getCountryRegion(correctCountry.code);
@@ -1452,9 +934,9 @@ const calculateExpertOptionSimilarityScore = (
   const lengthDiff = Math.abs(
     correctCountry.name.length - candidateCountry.name.length
   );
-  if (lengthDiff === 0) score += 45; // Increased from 35
-  else if (lengthDiff === 1) score += 35; // Increased from 25
-  else if (lengthDiff === 2) score += 25; // Increased from 15
+  if (lengthDiff === 0) score += 45;
+  else if (lengthDiff === 1) score += 35;
+  else if (lengthDiff === 2) score += 25;
 
   // Enhanced ending pattern matching
   const correctEnding = correctCountry.name.slice(-3).toLowerCase();
@@ -1464,8 +946,7 @@ const calculateExpertOptionSimilarityScore = (
   }
 
   // Common suffix patterns (enhanced)
-  const commonSuffixes = ["land", "stan", "burg", "heim", "avia", "inia"];
-  const correctSuffix = commonSuffixes.find((suffix) =>
+  const correctSuffix = COMMON_SUFFIXES.find((suffix) =>
     correctCountry.name.toLowerCase().endsWith(suffix)
   );
   if (
@@ -1492,13 +973,6 @@ const calculateExpertOptionSimilarityScore = (
   if (correctWords === candidateWords && correctWords > 1) {
     score += 35;
   }
-
-  // Enhanced sub-regional patterns
-  const subRegionalBonus = getSubRegionalSimilarity(
-    correctCountry.code,
-    candidateCountry.code
-  );
-  score += subRegionalBonus;
 
   // Special country pool bonuses
   score += getPoolSimilarityBonus(
