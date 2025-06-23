@@ -104,7 +104,7 @@ export const GEOGRAPHIC_NEIGHBORS: { [key: string]: string[] } = {
 export const SUB_REGIONS: { [key: string]: string[] } = {
   scandinavia: ["SE", "NO", "DK", "FI", "IS"],
   baltics: ["EE", "LV", "LT"],
-  balkans: ["HR", "SI", "RS", "BA", "ME", "MK", "AL", "BG", "RO"],
+  balkans: ["HR", "SI", "RS", "BA", "ME", "MK", "AL", "BG", "RO", "XK"],
   centralEurope: ["CZ", "SK", "HU", "AT", "CH", "DE", "PL"],
   benelux: ["BE", "NL", "LU"],
   iberia: ["ES", "PT"],
@@ -123,8 +123,24 @@ export const SUB_REGIONS: { [key: string]: string[] } = {
   pacific: ["FJ", "PG", "SB", "VU", "WS", "TO", "PW", "FM", "MH", "KI", "NR", "TV"],
   southeastAsia: ["TH", "VN", "MY", "ID", "PH", "MM", "KH", "LA", "SG", "BN"],
   southAsia: ["IN", "PK", "BD", "LK", "NP", "BT", "MV", "AF"],
-  eastAsia: ["CN", "JP", "KR", "KP", "MN"],
-  middleEast: ["IL", "JO", "LB", "SY", "IQ", "IR", "SA", "AE", "QA", "KW", "BH", "OM", "YE", "TR"],
+  eastAsia: ["CN", "JP", "KR", "KP", "MN", "TW"],
+  middleEast: [
+    "IL",
+    "JO",
+    "LB",
+    "SY",
+    "IQ",
+    "IR",
+    "SA",
+    "AE",
+    "QA",
+    "KW",
+    "BH",
+    "OM",
+    "YE",
+    "TR",
+    "PS",
+  ],
   northAfrica: ["EG", "LY", "TN", "DZ", "MA", "SD", "SS"],
 }; 
 
@@ -181,13 +197,14 @@ export const SIMILAR_FLAGS: { [key: string]: string[] } = {
   ET: ["GH"], // Green-yellow-red horizontal with emblem
   
   // Pan-Arab colors (red-white-black with green variations)
-  AE: ["EG", "IQ", "JO", "KW", "SD", "SY", "YE"], // Red-white-black horizontal with green vertical
-  EG: ["AE", "IQ", "JO", "SY", "YE"], // Red-white-black horizontal with eagle
-  IQ: ["AE", "EG", "JO", "SY", "YE"], // Red-white-black horizontal with text
-  JO: ["AE", "EG", "IQ", "SY", "YE"], // Black-white-green horizontal with triangle and star
-  SY: ["AE", "EG", "IQ", "JO", "YE"], // Red-white-black horizontal with stars
-  YE: ["AE", "EG", "IQ", "JO", "SY"], // Red-white-black horizontal
-  SD: ["AE"], // Red-white-black horizontal with green triangle
+  AE: ["EG", "IQ", "JO", "KW", "SD", "SY", "YE", "PS"], // Red-white-black horizontal with green vertical
+  EG: ["AE", "IQ", "JO", "SY", "YE", "PS"], // Red-white-black horizontal with eagle
+  IQ: ["AE", "EG", "JO", "SY", "YE", "PS"], // Red-white-black horizontal with text
+  JO: ["AE", "EG", "IQ", "SY", "YE", "PS"], // Black-white-green horizontal with triangle and star
+  SY: ["AE", "EG", "IQ", "JO", "YE", "PS"], // Red-white-black horizontal with stars
+  YE: ["AE", "EG", "IQ", "JO", "SY", "PS"], // Red-white-black horizontal
+  SD: ["AE", "PS"], // Red-white-black horizontal with green triangle
+  PS: ["AE", "EG", "IQ", "JO", "SY", "YE", "SD"], // Palestine - red-white-black horizontal with green triangle
   
   // Union Jack derivatives
   AU: ["NZ", "FJ"], // Blue field with Union Jack canton
@@ -265,7 +282,8 @@ export const SIMILAR_FLAGS: { [key: string]: string[] } = {
 
   // Groupings based on visual themes
   diagonalStripes: ["CD", "NA", "SC", "SB"],
-  redFieldWithSymbol: ["CN", "VN"], // Red field with a prominent yellow star
-  CN: ["VN"],
-  VN: ["CN"],
+  redFieldWithSymbol: ["CN", "VN", "TW"], // Red field with a prominent yellow star
+  CN: ["VN", "TW"],
+  VN: ["CN", "TW"],
+  TW: ["CN", "VN"], // Taiwan - red field with blue canton and white sun
 }; 

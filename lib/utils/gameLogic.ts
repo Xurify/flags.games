@@ -145,6 +145,7 @@ const getCountryRegion = (countryCode: string): string => {
       "MV",
       "TL",
       "BN",
+      "TW",
     ],
     africa: [
       "EG",
@@ -270,6 +271,7 @@ const getCountryRegion = (countryCode: string): string => {
       "OM",
       "YE",
       "TR",
+      "PS",
     ],
   };
 

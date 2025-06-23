@@ -5,7 +5,7 @@ export const EXPERT_COUNTRY_POOLS: { [key: string]: string[] } = {
       "ID", "MC", "PL", // Red-white patterns
       "TD", "RO", "AD", // Blue-yellow-red
       "SE", "NO", "DK", "FI", "IS", // Nordic crosses
-      "HR", "RS", "BA", "ME", "MK", // Balkan similarities
+      "HR", "RS", "BA", "ME", "MK", "XK", // Balkan similarities
     ],
     
     // Countries with confusing names
@@ -23,11 +23,12 @@ export const EXPERT_COUNTRY_POOLS: { [key: string]: string[] } = {
       "KI", "NR", "TV", "PW", "FM", "MH", // Pacific islands
       "ST", "CV", "KM", "SC", "MU", // Small African islands
       "LC", "VC", "GD", "DM", "KN", "AG", "BB", // Caribbean
+      "XK", "PS", // Kosovo and Palestine
     ],
   
     // Regional flag patterns (for both similarity and question generation)
     panAfrican: ["GH", "CM", "GN", "ML", "SN", "BF", "NE", "TD", "TG", "BJ", "ET"],
-    panArab: ["JO", "AE", "KW", "SD", "SY", "IQ", "YE"],
+    panArab: ["JO", "AE", "KW", "SD", "SY", "IQ", "YE", "PS"],
     nordic: ["SE", "NO", "DK", "FI", "IS"],
     caribbean: ["JM", "CU", "DO", "TT", "BB", "LC", "GD", "VC"],
   };

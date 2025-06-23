@@ -4,10 +4,11 @@ export const HISTORICAL_CONFUSION_PAIRS: { [key: string]: string[] } = {
   SK: ["SI", "CZ", "HR", "RS"], // Slovakia with Slovenia/Czech Republic/Croatia/Serbia
   CZ: ["SK", "SI", "HR", "RS"], // Czech Republic with Slovakia/Slovenia/Croatia/Serbia
   HR: ["SI", "SK", "RS", "BA", "ME"], // Croatia with Slovenia/Slovakia/Serbia/Bosnia/Montenegro
-  RS: ["SI", "SK", "HR", "BA", "ME", "MK"], // Serbia with Slovenia/Slovakia/Croatia/Bosnia/Montenegro/Macedonia
-  BA: ["HR", "RS", "ME", "SI", "SK"], // Bosnia with Croatia/Serbia/Montenegro/Slovenia/Slovakia
-  ME: ["HR", "RS", "BA", "SI", "SK"], // Montenegro with Croatia/Serbia/Bosnia/Slovenia/Slovakia
-  MK: ["RS", "HR", "BA", "ME", "SI", "SK"], // Macedonia with Serbia/Croatia/Bosnia/Montenegro/Slovenia/Slovakia
+  RS: ["SI", "SK", "HR", "BA", "ME", "MK", "XK"], // Serbia with Slovenia/Slovakia/Croatia/Bosnia/Montenegro/Macedonia/Kosovo
+  BA: ["HR", "RS", "ME", "SI", "SK", "XK"], // Bosnia with Croatia/Serbia/Montenegro/Slovenia/Slovakia/Kosovo
+  ME: ["HR", "RS", "BA", "SI", "SK", "XK"], // Montenegro with Croatia/Serbia/Bosnia/Slovenia/Slovakia/Kosovo
+  MK: ["RS", "HR", "BA", "ME", "SI", "SK", "XK"], // Macedonia with Serbia/Croatia/Bosnia/Montenegro/Slovenia/Slovakia/Kosovo
+  XK: ["RS", "HR", "BA", "ME", "MK", "SI", "SK"], // Kosovo with Serbia/Croatia/Bosnia/Montenegro/Macedonia/Slovenia/Slovakia
   LV: ["LT", "EE", "RU"], // Baltic confusion
   LT: ["LV", "EE", "RU"],
   EE: ["LV", "LT", "RU"],
@@ -39,13 +40,14 @@ export const HISTORICAL_CONFUSION_PAIRS: { [key: string]: string[] } = {
   GB: ["IE", "US"],
   IE: ["GB", "US"],
   // Middle Eastern confusion
-  JO: ["AE", "KW", "SA", "QA", "BH", "OM"],
-  AE: ["JO", "KW", "SA", "QA", "BH", "OM"],
-  KW: ["JO", "AE", "SA", "QA", "BH", "OM"],
-  SA: ["JO", "AE", "KW", "QA", "BH", "OM"],
-  QA: ["JO", "AE", "KW", "SA", "BH", "OM"],
-  BH: ["JO", "AE", "KW", "SA", "QA", "OM"],
-  OM: ["JO", "AE", "KW", "SA", "QA", "BH"],
+  JO: ["AE", "KW", "SA", "QA", "BH", "OM", "PS"],
+  AE: ["JO", "KW", "SA", "QA", "BH", "OM", "PS"],
+  KW: ["JO", "AE", "SA", "QA", "BH", "OM", "PS"],
+  SA: ["JO", "AE", "KW", "QA", "BH", "OM", "PS"],
+  QA: ["JO", "AE", "KW", "SA", "BH", "OM", "PS"],
+  BH: ["JO", "AE", "KW", "SA", "QA", "OM", "PS"],
+  OM: ["JO", "AE", "KW", "SA", "QA", "BH", "PS"],
+  PS: ["JO", "AE", "KW", "SA", "QA", "BH", "OM"], // Palestine with other Middle Eastern countries
   // African confusion
   GH: ["CM", "GN", "ML", "SN", "BF", "NE"],
   CM: ["GH", "GN", "ML", "SN", "BF", "NE"],
@@ -54,5 +56,8 @@ export const HISTORICAL_CONFUSION_PAIRS: { [key: string]: string[] } = {
   SN: ["GH", "CM", "GN", "ML", "BF", "NE"],
   BF: ["GH", "CM", "GN", "ML", "SN", "NE"],
   NE: ["IN", "IE", "CI", "TD"],
-  IQ: ["JO", "AE", "KW", "SD", "SY", "IR", "SA", "QA", "BH", "OM", "YE"],
+  IQ: ["JO", "AE", "KW", "SD", "SY", "IR", "SA", "QA", "BH", "OM", "YE", "PS"],
+  // East Asian confusion
+  TW: ["CN", "JP", "KR", "KP"], // Taiwan often confused with China/Japan/Korea
+  CN: ["TW", "JP", "KR", "KP"], // China with Taiwan/Japan/Korea
 }; 
