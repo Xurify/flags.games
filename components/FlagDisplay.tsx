@@ -6,7 +6,6 @@ interface FlagDisplayProps {
 }
 
 const FlagDisplay: React.FC<FlagDisplayProps> = ({ flag, countryName }) => {
-  // Remove rounded corners and shadow for Nepal
   const isNepal = countryName.trim().toLowerCase() === "nepal";
   const flagClass = isNepal
     ? "max-w-full max-h-42 sm:max-h-36 object-contain"

@@ -1,4 +1,5 @@
 import React from "react";
+import HeartsDisplay from "./HeartsDisplay";
 
 interface QuestionProgressProps {
   currentQuestion: number;
@@ -6,6 +7,9 @@ interface QuestionProgressProps {
   score: number;
   showScorePopup: boolean;
   CORRECT_POINT_COST: number;
+  hearts?: number;
+  maxHearts?: number;
+  heartsModeEnabled?: boolean;
 }
 
 const QuestionProgress: React.FC<QuestionProgressProps> = ({
@@ -14,6 +18,9 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
   score,
   showScorePopup,
   CORRECT_POINT_COST,
+  hearts,
+  maxHearts,
+  heartsModeEnabled,
 }) => (
   <div className="flex justify-center items-center">
     <div className="relative flex items-center gap-4">
@@ -27,6 +34,16 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
       <span className="text-sm font-medium text-muted-foreground">
         Score: {score}
       </span>
+      {heartsModeEnabled && hearts !== undefined && maxHearts !== undefined && (
+        <>
+          <div className="w-px h-4 bg-border"></div>
+          <HeartsDisplay
+            hearts={hearts}
+            maxHearts={maxHearts}
+            enabled={heartsModeEnabled}
+          />
+        </>
+      )}
       {showScorePopup && (
         <div className="absolute -top-8 right-0 animate-score-popup">
           <span className="text-green-600 font-bold text-lg">

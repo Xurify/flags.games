@@ -39,6 +39,7 @@ import { useGameSettings } from "@/lib/hooks/useGameSettings";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
 import {
   CORRECT_POINT_COST,
+  MAX_HEARTS,
   AUDIO_URLS,
   AUDIO_URLS_KEYS,
   Difficulty,
@@ -68,7 +69,7 @@ interface FlagGameClientProps {
   initialGameData: InitialGameData;
 }
 
-interface GameState {
+export interface GameState {
   currentQuestion: number;
   score: number;
   totalQuestions: number;
@@ -80,6 +81,7 @@ interface GameState {
   usedCountries: Set<string>;
   difficulty: Difficulty;
   gameStarted: boolean;
+  hearts: number;
 }
 
 const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
@@ -111,8 +113,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     usedCountries: new Set([initialGameData.currentCountry.code]),
     difficulty: initialGameData.difficulty,
     gameStarted: true,
+    hearts: MAX_HEARTS,
   });
 
+  const [heartsModeEnabled, setHeartsModeEnabled] = useState(false);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
@@ -178,12 +182,20 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
     playSound(isCorrect);
 
-    setGameState((prev) => ({
-      ...prev,
-      selectedAnswer: selectedCountry.code,
-      showResult: true,
-      score: isCorrect ? prev.score + CORRECT_POINT_COST : prev.score,
-    }));
+    setGameState((prev) => {
+      const newHearts =
+        heartsModeEnabled && !isCorrect ? prev.hearts - 1 : prev.hearts;
+      const gameOver = heartsModeEnabled && newHearts <= 0;
+
+      return {
+        ...prev,
+        selectedAnswer: selectedCountry.code,
+        showResult: true,
+        score: isCorrect ? prev.score + CORRECT_POINT_COST : prev.score,
+        hearts: newHearts,
+        gameCompleted: gameOver || prev.gameCompleted,
+      };
+    });
 
     if (isCorrect) {
       setShowScorePopup(true);
@@ -194,6 +206,18 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
     if (settings.autoAdvanceEnabled) {
       setGameTimeout(() => {
+        const updatedHearts =
+          heartsModeEnabled && !isCorrect
+            ? gameState.hearts - 1
+            : gameState.hearts;
+        if (heartsModeEnabled && updatedHearts <= 0) {
+          setGameState((prev) => ({
+            ...prev,
+            gameCompleted: true,
+          }));
+          return;
+        }
+
         if (gameState.currentQuestion < gameState.totalQuestions) {
           setGameState((prev) => ({
             ...prev,
@@ -240,6 +264,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       gameCompleted: false,
       usedCountries: new Set(),
       gameStarted: true,
+      hearts: MAX_HEARTS,
     }));
 
     setTimeout(() => generateQuestionHandler(), 0);
@@ -257,13 +282,14 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       showResult: false,
       gameCompleted: false,
       usedCountries: new Set(),
+      hearts: MAX_HEARTS,
     }));
 
     setTimeout(() => generateQuestionHandler(), 0);
     setShowRestartDialog(false);
   };
 
-  const changeDifficulty = () => {
+  const handleChangeDifficulty = () => {
     const newTotalQuestions = getDifficultySettings(selectedDifficulty).count;
 
     clearGameTimeout();
@@ -278,6 +304,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       showResult: false,
       gameCompleted: false,
       usedCountries: new Set(),
+      hearts: MAX_HEARTS,
     }));
 
     setTimeout(() => generateQuestionHandler(), 0);
@@ -289,6 +316,13 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       router.replace("/");
     } else {
       router.replace(`?${params.toString()}`);
+    }
+  };
+
+  const handleToggleHeartsMode = (value: boolean) => {
+    if (gameState.currentQuestion === 1) {
+      playButtonClickSound();
+      setHeartsModeEnabled(value);
     }
   };
 
@@ -357,6 +391,18 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
           recycle={false}
         />
       )}
+      <DifficultySelector
+        open={showDifficultyDialog}
+        onOpenChange={setShowDifficultyDialog}
+        selectedDifficulty={selectedDifficulty}
+        setSelectedDifficulty={setSelectedDifficulty}
+        onChangeDifficulty={handleChangeDifficulty}
+        currentDifficulty={gameState.difficulty}
+        onToggleHeartsMode={handleToggleHeartsMode}
+        heartsModeEnabled={heartsModeEnabled}
+        gameState={gameState}
+      />
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
         <div className="mb-8">
           <div className="flex items-center justify-center mb-6">
@@ -389,6 +435,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             score={gameState.score}
             showScorePopup={showScorePopup}
             CORRECT_POINT_COST={CORRECT_POINT_COST}
+            hearts={gameState.hearts}
+            maxHearts={MAX_HEARTS}
+            heartsModeEnabled={heartsModeEnabled}
           />
         </div>
 
@@ -405,6 +454,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                 )}
                 onPlayAgain={startGame}
                 onChangeDifficulty={() => setShowDifficultyDialog(true)}
+                heartsModeEnabled={heartsModeEnabled}
+                hearts={gameState.hearts}
               />
             ) : (
               <>
@@ -445,20 +496,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
           </CardContent>
         </Card>
 
-        <AlertDialog
-          open={showDifficultyDialog}
-          onOpenChange={setShowDifficultyDialog}
-        >
-          <DifficultySelector
-            open={showDifficultyDialog}
-            onOpenChange={setShowDifficultyDialog}
-            selectedDifficulty={selectedDifficulty}
-            setSelectedDifficulty={setSelectedDifficulty}
-            onChangeDifficulty={changeDifficulty}
-            currentDifficulty={gameState.difficulty}
-          />
-        </AlertDialog>
-
         <div className="flex flex-col items-center space-y-3">
           <RestartDialog
             open={showRestartDialog}
@@ -472,12 +509,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             </Button>
           </RestartDialog>
 
-          <HowToPlayDialog open={showHowToPlayDialog} onOpenChange={setShowHowToPlayDialog}>
-            <Button
-              variant="ghost"
-              className="text-muted-foreground"
-              size="lg"
-            >
+          <HowToPlayDialog
+            open={showHowToPlayDialog}
+            onOpenChange={setShowHowToPlayDialog}
+          >
+            <Button variant="ghost" className="text-muted-foreground" size="lg">
               <HelpCircle className="w-4 h-4 mr-2" />
               How to play?
             </Button>
