@@ -176,7 +176,7 @@ export const SIMILAR_FLAGS: { [key: string]: string[] } = {
   
   // Horizontal tricolors
   NL: ["LU", "RU", "HR", "SK", "SI", "PY", "FR"], // Red-white-blue and similar horizontal stripes
-  LU: ["NL", "RU", "HR", "PY", "FR"], // Red-white-blue horizontal (similar to Netherlands)
+  LU: ["NL", "RU", "HR", "PY", "FR"], // Red-white-blue horizontal (similar to The Netherlands)
   RU: ["NL", "LU", "SK", "SI", "PY", "FR"], // White-blue-red horizontal
   HR: ["NL", "LU", "SK", "SI", "PY"], // Red-white-blue with coat of arms
   SK: ["NL", "RU", "HR", "SI", "PY"], // White-blue-red horizontal

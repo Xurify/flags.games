@@ -20,7 +20,7 @@ export const countries: Country[] = [
   { name: "Mexico", code: "MX", flag: "/images/flags/mx.svg" },
   { name: "Russia", code: "RU", flag: "/images/flags/ru.svg" },
   { name: "South Korea", code: "KR", flag: "/images/flags/kr.svg" },
-  { name: "Netherlands", code: "NL", flag: "/images/flags/nl.svg" },
+  { name: "The Netherlands", code: "NL", flag: "/images/flags/nl.svg" },
   { name: "Belgium", code: "BE", flag: "/images/flags/be.svg" },
   { name: "Switzerland", code: "CH", flag: "/images/flags/ch.svg" },
   { name: "Austria", code: "AT", flag: "/images/flags/at.svg" },
