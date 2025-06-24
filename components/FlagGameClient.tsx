@@ -3,37 +3,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Confetti from "react-confetti";
-import {
-  RotateCcw,
-  HelpCircle,
-  Volume2,
-  VolumeX,
-  Settings,
-  Github,
-  Sun,
-  Moon,
-} from "lucide-react";
+import { RotateCcw, HelpCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Country } from "@/lib/data/countries";
 import { useGameSettings } from "@/lib/hooks/useGameSettings";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
@@ -43,7 +16,6 @@ import {
   AUDIO_URLS,
   AUDIO_URLS_KEYS,
   Difficulty,
-  DIFFICULTY_LEVELS,
   DEFAULT_DIFFICULTY,
 } from "@/lib/constants";
 import { useSoundEffect } from "@/lib/hooks/useSoundEffect";
