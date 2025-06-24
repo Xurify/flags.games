@@ -71,6 +71,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     audioUrl: AUDIO_URLS.VICTORY,
     volume: 0.7,
     cacheKey: AUDIO_URLS_KEYS.VICTORY,
+    preload: false,
   });
 
   const [gameState, setGameState] = useState<GameState>({
