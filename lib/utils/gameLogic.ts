@@ -549,75 +549,42 @@ const calculateOptionSimilarityScore = (
   return Math.max(similarityScore, 1);
 };
 
-// ============================================================================
-// MAIN GAME LOGIC
-// ============================================================================
+// ======================
+// COUNTRY SELECTION HELPERS
+// ======================
 
-export const generateQuestion = (
-  difficulty: Difficulty,
-  usedCountries: Set<string> = new Set()
-): QuestionData | null => {
-  const availableCountries = getCountriesForDifficulty(difficulty);
-
-  const remainingCountries = availableCountries.filter(
-    (country) => !usedCountries.has(country.code)
-  );
-
-  if (remainingCountries.length === 0) {
-    return null;
-  }
-
-  let correctCountry: Country;
-
+const selectCorrectCountry = (difficulty: Difficulty, remainingCountries: Country[]): Country => {
   if (difficulty === EXPERT_DIFFICULTY) {
     const pools = EXPERT_COUNTRY_POOLS;
-
-    // 70% chance to pick from challenging pools
     if (Math.random() < 0.7) {
       const challengingCountries = remainingCountries.filter((country) =>
         Object.values(pools).some((pool) => pool.includes(country.code))
       );
-
       if (challengingCountries.length > 0) {
-        correctCountry =
-          challengingCountries[
-            Math.floor(Math.random() * challengingCountries.length)
-          ];
-      } else {
-        correctCountry =
-          remainingCountries[
-            Math.floor(Math.random() * remainingCountries.length)
-          ];
+        return challengingCountries[Math.floor(Math.random() * challengingCountries.length)];
       }
-    } else {
-      correctCountry =
-        remainingCountries[
-          Math.floor(Math.random() * remainingCountries.length)
-        ];
     }
-  } else {
-    correctCountry =
-      remainingCountries[Math.floor(Math.random() * remainingCountries.length)];
   }
+  return remainingCountries[Math.floor(Math.random() * remainingCountries.length)];
+};
 
+// ======================
+// DISTRACTOR GENERATION HELPERS
+// ======================
+
+const generateDistractors = (
+  correctCountry: Country,
+  availableCountries: Country[],
+  difficulty: Difficulty
+): Country[] => {
   const incorrectOptions: Country[] = [];
-
-  const candidateCountries = availableCountries.filter(
-    (c) => c.code !== correctCountry.code
-  );
-
+  const candidateCountries = availableCountries.filter((c) => c.code !== correctCountry.code);
   const candidatesWithScores = candidateCountries.map((candidate) => ({
     country: candidate,
     similarityScore: calculateOptionSimilarityScore(correctCountry, candidate, difficulty),
   }));
-
-  // Much higher threshold for expert mode
   const minScoreThreshold = difficulty === EXPERT_DIFFICULTY ? 60 : 1;
-  const viableCandidates = candidatesWithScores.filter(
-    (c) => c.similarityScore >= minScoreThreshold
-  );
-
-  // For expert mode, if we don't have enough viable candidates, lower the threshold but still keep it high
+  const viableCandidates = candidatesWithScores.filter((c) => c.similarityScore >= minScoreThreshold);
   const finalCandidates =
     difficulty === EXPERT_DIFFICULTY
       ? viableCandidates.length >= 3
@@ -627,7 +594,6 @@ export const generateQuestion = (
       ? viableCandidates
       : candidatesWithScores;
 
-  // Expert mode: Much stricter question generation
   if (difficulty === EXPERT_DIFFICULTY && finalCandidates.length > 0) {
     // Sort candidates by descending similarity score
     const sortedCandidates = [...finalCandidates].sort((a, b) => b.similarityScore - a.similarityScore);
@@ -657,17 +623,12 @@ export const generateQuestion = (
   } else {
     // Original logic for other difficulties
     // Ensure at least one very similar option (high similarity)
-    const highSimilarityCandidates = finalCandidates.filter(
-      (c) => c.similarityScore >= 60
-    );
+    const highSimilarityCandidates = finalCandidates.filter((c) => c.similarityScore >= 60);
     if (highSimilarityCandidates.length > 0) {
       const highSimilarityCountry =
-        highSimilarityCandidates[
-          Math.floor(Math.random() * highSimilarityCandidates.length)
-        ].country;
+        highSimilarityCandidates[Math.floor(Math.random() * highSimilarityCandidates.length)].country;
       incorrectOptions.push(highSimilarityCountry);
     }
-
     // Ensure at least one moderately similar option (medium similarity)
     if (incorrectOptions.length < 3) {
       const mediumSimilarityCandidates = finalCandidates.filter(
@@ -678,30 +639,23 @@ export const generateQuestion = (
       );
       if (mediumSimilarityCandidates.length > 0) {
         const mediumSimilarityCountry =
-          mediumSimilarityCandidates[
-            Math.floor(Math.random() * mediumSimilarityCandidates.length)
-          ].country;
+          mediumSimilarityCandidates[Math.floor(Math.random() * mediumSimilarityCandidates.length)].country;
         incorrectOptions.push(mediumSimilarityCountry);
       }
     }
   }
-
   while (incorrectOptions.length < 3 && finalCandidates.length > 0) {
     const availableCandidates = finalCandidates.filter(
       (c) => !incorrectOptions.find((opt) => opt.code === c.country.code)
     );
-
     if (availableCandidates.length === 0) break;
-
     const countries = availableCandidates.map((c) => c.country);
     const weights = availableCandidates.map((c) =>
       difficulty === EXPERT_DIFFICULTY ? Math.pow(c.similarityScore, 2) : c.similarityScore
     );
-
     const selectedCountry = weightedRandomSelect(countries, weights);
     incorrectOptions.push(selectedCountry);
   }
-
   while (
     incorrectOptions.length < 3 &&
     candidateCountries.length > incorrectOptions.length
@@ -709,19 +663,33 @@ export const generateQuestion = (
     const remainingCandidates = candidateCountries.filter(
       (c) => !incorrectOptions.find((opt) => opt.code === c.code)
     );
-
     if (remainingCandidates.length === 0) break;
-
     const nextCandidate =
-      remainingCandidates[
-        Math.floor(Math.random() * remainingCandidates.length)
-      ];
+      remainingCandidates[Math.floor(Math.random() * remainingCandidates.length)];
     incorrectOptions.push(nextCandidate);
   }
+  return incorrectOptions.slice(0, 3);
+};
 
+// ============================================================================
+// MAIN GAME LOGIC
+// ============================================================================
+
+export const generateQuestion = (
+  difficulty: Difficulty,
+  usedCountries: Set<string> = new Set()
+): QuestionData | null => {
+  const availableCountries = getCountriesForDifficulty(difficulty);
+  const remainingCountries = availableCountries.filter(
+    (country) => !usedCountries.has(country.code)
+  );
+  if (remainingCountries.length === 0) {
+    return null;
+  }
+  const correctCountry = selectCorrectCountry(difficulty, remainingCountries);
+  const incorrectOptions = generateDistractors(correctCountry, availableCountries, difficulty);
   const allOptions = [correctCountry, ...incorrectOptions];
   const shuffledOptions = shuffleArray(allOptions);
-
   return {
     difficulty,
     currentCountry: correctCountry,
@@ -743,7 +711,6 @@ export function parseDifficultyFromQuery(
 // EXPERT MODE SCORING FUNCTIONS
 // ============================================================================
 
-// New function for pool-based similarity
 const getPoolSimilarityBonus = (
   correctCode: string,
   candidateCode: string,
