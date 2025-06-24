@@ -24,7 +24,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   settings,
 }) => (
   <Select open={settingsOpen} onOpenChange={setSettingsOpen}>
-    <SelectTrigger className="w-auto border-none bg-transparent shadow-none p-0 h-auto">
+    <SelectTrigger aria-label="Settings" className="w-auto border-none bg-transparent shadow-none p-0 h-auto">
       <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground dark:text-foreground transition-colors">
         <Settings className="w-4 h-4" />
         <span className="text-sm font-medium">Settings</span>
