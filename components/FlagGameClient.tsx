@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Confetti from "react-confetti";
+//import Confetti from "react-confetti";
 import { RotateCcw, HelpCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,8 @@ import HowToPlayDialog from "./HowToPlayDialog";
 import RestartDialog from "./RestartDialog";
 import SettingsMenu from "./SettingsMenu";
 import DifficultySelector from "./DifficultySelector";
+
+const Confetti = React.lazy(() => import("react-confetti"));
 
 interface InitialGameData {
   currentCountry: Country;
@@ -67,13 +69,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     cacheKey: AUDIO_URLS_KEYS.BUTTON_CLICK,
   });
 
-  const { playSound: playVictorySound } = useSoundEffect({
-    audioUrl: AUDIO_URLS.VICTORY,
-    volume: 0.7,
-    cacheKey: AUDIO_URLS_KEYS.VICTORY,
-    preload: false,
-  });
-
   const [gameState, setGameState] = useState<GameState>({
     currentQuestion: 1,
     score: 0,
@@ -87,6 +82,13 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     difficulty: initialGameData.difficulty,
     gameStarted: true,
     hearts: MAX_HEARTS,
+  });
+
+  const { playSound: playVictorySound } = useSoundEffect({
+    audioUrl: AUDIO_URLS.VICTORY,
+    volume: 0.7,
+    cacheKey: AUDIO_URLS_KEYS.VICTORY,
+    preload: gameState.currentQuestion >= gameState.totalQuestions - 2,
   });
 
   const [heartsModeEnabled, setHeartsModeEnabled] = useState(false);
@@ -357,12 +359,14 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   return (
     <div className="min-h-screen bg-background">
       {gameState.gameCompleted && (
-        <Confetti
-          width={window.innerWidth}
-          height={window.innerHeight}
-          numberOfPieces={350}
-          recycle={false}
-        />
+        <React.Suspense fallback={null}>
+          <Confetti
+            width={window.innerWidth}
+            height={window.innerHeight}
+            numberOfPieces={350}
+            recycle={false}
+          />
+        </React.Suspense>
       )}
       <DifficultySelector
         open={showDifficultyDialog}
