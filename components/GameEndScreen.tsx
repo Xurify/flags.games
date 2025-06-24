@@ -78,9 +78,9 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
           <span className={`text-4xl font-extrabold ${isHeartsModeGameOver ? "text-red-600" : "text-blue-700"}`}>
             {score}/{totalPossible}
           </span>
-          <span className="text-sm text-muted-foreground mt-1">
+          {/* <span className="text-sm text-muted-foreground mt-1">
             {score} points
-          </span>
+          </span> */}
         </div>
       </div>
       <div className="text-sm text-muted-foreground mb-8 text-center">
