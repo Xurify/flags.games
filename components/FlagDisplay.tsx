@@ -18,6 +18,7 @@ const FlagDisplay: React.FC<FlagDisplayProps> = ({ flag, countryName }) => {
           src={flag}
           alt={`Flag of ${countryName}`}
           className={flagClass}
+          fetchPriority="high"
         />
       ) : (
         <div className="w-40 h-24 sm:w-48 sm:h-32 bg-muted rounded-lg flex items-center justify-center">
