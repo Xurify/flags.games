@@ -10,7 +10,7 @@ const FlagDisplay: React.FC<FlagDisplayProps> = ({ flag, countryName }) => {
   const flagClass = "max-w-full max-h-36 object-contain" + (isNepal ? "" : " rounded-sm shadow-flag");
 
   return (
-    <div className="bg-muted/80 dark:bg-transparent rounded-2xl p-12 flex justify-center items-center min-h-[160px] sm:min-h-[200px]">
+    <div className="bg-muted/80 dark:bg-transparent rounded-2xl p-6 sm:p-12 flex justify-center items-center h-[192px] sm:h-[200px]">
       {flag ? (
         <img
           src={flag}
@@ -19,7 +19,7 @@ const FlagDisplay: React.FC<FlagDisplayProps> = ({ flag, countryName }) => {
           fetchPriority="high"
         />
       ) : (
-        <div className="w-40 h-24 sm:w-48 sm:h-32 bg-muted rounded-lg flex items-center justify-center">
+        <div className="w-32 h-20 sm:w-48 sm:h-32 bg-muted rounded-lg flex items-center justify-center">
           <span className="text-muted-foreground">Loading...</span>
         </div>
       )}

@@ -18,13 +18,13 @@ const AnswerOptions: React.FC<AnswerOptionsProps> = ({
   getButtonClass,
   disabled,
 }) => (
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
     {options.map((country) => (
       <Button
         key={country.code}
         onClick={() => !showResult && handleAnswer(country)}
         disabled={disabled}
-        className={`h-14 text-base font-medium justify-start px-6 ${getButtonClass(
+        className={`h-12 sm:h-14 text-sm sm:text-base font-medium justify-start px-4 sm:px-6 ${getButtonClass(
           country
         )}`}
         variant="outline"

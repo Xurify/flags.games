@@ -357,7 +357,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   }, [gameState.gameCompleted, settings.soundEffectsEnabled]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen h-screen sm:min-h-screen sm:h-auto bg-background overflow-y-auto">
       {gameState.gameCompleted && (
         <React.Suspense fallback={null}>
           <Confetti
@@ -380,9 +380,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
         gameState={gameState}
       />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <div className="mb-8">
-          <div className="flex items-center justify-center mb-6">
+          <div className="flex items-center justify-center mb-3 sm:mb-6">
             <div className="bg-card rounded-2xl px-4 py-2 shadow border">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
@@ -418,8 +418,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
           />
         </div>
 
-        <Card className="mb-6 shadow-card hover:shadow-card-hover transition-all duration-300">
-          <CardContent className="sm:p-4">
+        <Card className="mb-3 sm:mb-6 shadow-card hover:shadow-card-hover transition-all duration-300">
+          <CardContent className="p-3 sm:p-4">
             {gameState.gameCompleted ? (
               <GameEndScreen
                 score={gameState.score}
@@ -436,8 +436,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
               />
             ) : (
               <>
-                <div className="text-center mb-8">
-                  <h1 className="text-xl font-semibold text-foreground mb-2">
+                <div className="text-center mb-4 sm:mb-8">
+                  <h1 className="text-lg sm:text-xl font-semibold text-foreground mb-1 sm:mb-2">
                     Guess the Country
                   </h1>
                   <p className="text-muted-foreground text-sm">
@@ -445,7 +445,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                   </p>
                 </div>
 
-                <div className="mb-8">
+                <div className="mb-4 sm:mb-8">
                   <FlagDisplay
                     flag={gameState.currentCountry.flag}
                     countryName={gameState.currentCountry.name}
@@ -462,7 +462,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                 />
 
                 {gameState.showResult && !settings.autoAdvanceEnabled && (
-                  <div className="mb-6 text-center">
+                  <div className="mb-3 sm:mb-6 text-center">
                     <Button onClick={nextQuestion} className="w-full" size="lg">
                       Next Question
                     </Button>
