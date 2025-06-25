@@ -41,7 +41,7 @@ const HowToPlayDialog: React.FC<HowToPlayDialogProps> = ({
               </h4>
               <ul className="space-y-1">
                 <li>
-                  <span className="inline-block w-3 h-3 bg-green-400 rounded mr-2"></span>
+                  <span className="inline-block w-3 h-3 bg-green-600 rounded mr-2"></span>
                   <strong>Easy</strong> (4 countries)
                   <span className="block text-xs text-muted-foreground ml-5">Only the most recognizable/distinctive flags worldwide.</span>
                 </li>
