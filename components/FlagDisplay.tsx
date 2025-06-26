@@ -7,7 +7,7 @@ interface FlagDisplayProps {
 
 const FlagDisplay: React.FC<FlagDisplayProps> = ({ flag, countryName }) => {
   const isNepal = countryName.trim().toLowerCase() === "nepal";
-  const flagClass = "max-w-full min-h-36 max-h-36 h-36 object-contain" + (isNepal ? "" : " rounded-sm shadow-flag");
+  const flagClass = "max-w-full min-h-36 max-h-36 h-36 object-cover" + (isNepal ? "" : " rounded-sm shadow-flag");
 
   if (!flag) return null;
 
