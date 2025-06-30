@@ -242,7 +242,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       hearts: MAX_HEARTS,
     }));
 
-    setTimeout(() => generateQuestionHandler(), 0);
+    generateQuestionHandler();
   };
 
   const restartGame = () => {
@@ -260,7 +260,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       hearts: MAX_HEARTS,
     }));
 
-    setTimeout(() => generateQuestionHandler(), 0);
+    generateQuestionHandler();
     setShowRestartDialog(false);
   };
 
@@ -282,7 +282,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       hearts: MAX_HEARTS,
     }));
 
-    setTimeout(() => generateQuestionHandler(), 0);
+    generateQuestionHandler();
     setShowDifficultyDialog(false);
 
     const params = new URLSearchParams(searchParams.toString());
@@ -312,7 +312,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   };
 
   const getButtonClass = (country: Country) => {
-    if (!gameState.showResult) {
+    if (!gameState.showResult || !gameState.selectedAnswer) {
       return "border-border hover:border-primary/50 hover:bg-primary/5 dark:border-primary/50 dark:bg-primary/5 dark:hover:border-primary/70 transition-all duration-200";
     }
 
