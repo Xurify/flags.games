@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "Guess the Country | flags.games",
     description: "Test your knowledge and identify countries by their flags",
     images: [
