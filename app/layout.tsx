@@ -23,11 +23,27 @@ export const metadata: Metadata = {
     siteName: "flags.games",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 200,
+        height: 200,
+        alt: "Guess the Country | flags.games",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Guess the Country | flags.games",
     description: "Test your knowledge and identify countries by their flags",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 200,
+        height: 200,
+        alt: "Guess the Country | flags.games",
+      },
+    ],
   },
   applicationName: "flags.games",
   metadataBase: new URL("https://www.flags.games"),
