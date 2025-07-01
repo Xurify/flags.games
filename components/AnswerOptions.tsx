@@ -19,9 +19,9 @@ const AnswerOptions: React.FC<AnswerOptionsProps> = ({
   disabled,
 }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
-    {options.map((country) => (
+    {options.map((country, index) => (
       <Button
-        key={country.code}
+        key={`${country.code}-${index}`}
         onClick={() => !showResult && handleAnswer(country)}
         disabled={disabled}
         className={`h-12 sm:h-14 text-sm sm:text-base font-medium justify-start px-4 sm:px-6 ${getButtonClass(
