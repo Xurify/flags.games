@@ -63,6 +63,9 @@ export default async function RootLayout({
   const isDark = theme === "dark";
   return (
     <html lang="en" className={isDark ? `dark` : undefined}>
+      <head>
+        <link rel="dns-prefetch" href="//qqu03sron6.ufs.sh" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
