@@ -26,6 +26,7 @@ const FlagDisplay: React.FC<FlagDisplayProps> = ({ flag, countryName }) => {
         }}
         width={200}
         height={200}
+        loading="eager"
       />
     </div>
   );
