@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Country } from "@/lib/data/countries";
 import { useGameSettings } from "@/lib/hooks/useGameSettings";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
+import { getDifficultyCountries } from "@/lib/data/difficultyCategories";
 import {
   CORRECT_POINT_COST,
   MAX_HEARTS,
@@ -58,6 +59,14 @@ export interface GameState {
   hearts: number;
 }
 
+const prefetchAllFlagsForDifficulty = (difficulty: Difficulty) => {
+  const countriesForDifficulty = getDifficultyCountries(difficulty);
+  countriesForDifficulty.forEach(country => {
+    const img = new Image();
+    img.src = country.flag;
+  });
+};
+
 const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const { settings, updateSetting } = useGameSettings();
   const router = useRouter();
@@ -102,6 +111,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    prefetchAllFlagsForDifficulty(gameState.difficulty);
+  }, [gameState.difficulty]);
 
   const clearGameTimeout = () => {
     if (timeoutRef.current) {
