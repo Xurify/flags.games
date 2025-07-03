@@ -3,7 +3,7 @@ import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
 import { Difficulty } from "@/lib/constants";
 import FlagGameClient from "./FlagGameClient";
 
-interface InitialGameData {
+export interface InitialGameData {
   currentCountry: Country;
   options: Country[];
   difficulty: Difficulty;

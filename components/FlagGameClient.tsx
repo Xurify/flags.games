@@ -30,15 +30,9 @@ import HowToPlayDialog from "./HowToPlayDialog";
 import RestartDialog from "./RestartDialog";
 import SettingsMenu from "./SettingsMenu";
 import DifficultySelector from "./DifficultySelector";
+import { InitialGameData } from "./FlagGameServer";
 
 const Confetti = React.lazy(() => import("react-confetti"));
-
-interface InitialGameData {
-  currentCountry: Country;
-  options: Country[];
-  difficulty: Difficulty;
-  totalQuestions: number;
-}
 
 interface FlagGameClientProps {
   initialGameData: InitialGameData;
