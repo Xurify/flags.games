@@ -2,15 +2,8 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-//import Confetti from "react-confetti";
 import { RotateCcw, HelpCircle } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Country } from "@/lib/data/countries";
-import { useGameSettings } from "@/lib/hooks/useGameSettings";
-import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
-import { getDifficultyCountries } from "@/lib/data/difficultyCategories";
 import {
   CORRECT_POINT_COST,
   MAX_HEARTS,
@@ -19,8 +12,15 @@ import {
   Difficulty,
   DEFAULT_DIFFICULTY,
 } from "@/lib/constants";
+import { Country } from "@/lib/data/countries";
+import { useGameSettings } from "@/lib/hooks/useGameSettings";
+import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
 import { useSoundEffect } from "@/lib/hooks/useSoundEffect";
 import { playErrorSound, playSuccessSound } from "@/lib/utils/audioUtils";
+import { prefetchAllFlagsForDifficulty } from "@/lib/utils/imageUtils";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import GameEndScreen from "./GameEndScreen";
 import LevelBadge from "./LevelBadge";
 import QuestionProgress from "./QuestionProgress";
@@ -58,14 +58,6 @@ export interface GameState {
   gameStarted: boolean;
   hearts: number;
 }
-
-const prefetchAllFlagsForDifficulty = (difficulty: Difficulty) => {
-  const countriesForDifficulty = getDifficultyCountries(difficulty);
-  countriesForDifficulty.forEach(country => {
-    const img = new Image();
-    img.src = country.flag;
-  });
-};
 
 const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const { settings, updateSetting } = useGameSettings();
