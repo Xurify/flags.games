@@ -112,9 +112,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // useEffect(() => {
-  //   prefetchAllFlagsForDifficulty(gameState.difficulty);
-  // }, [gameState.difficulty]);
+  useEffect(() => {
+    prefetchAllFlagsForDifficulty(gameState.difficulty);
+  }, [gameState.difficulty]);
 
   const clearGameTimeout = () => {
     if (timeoutRef.current) {
