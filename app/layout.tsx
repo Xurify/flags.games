@@ -71,7 +71,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
-        <Analytics />
+        {process.env.NODE_ENV !== "development" && <Analytics />}
       </body>
     </html>
   );
