@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/opengraph-image.png",
+        url: "https://www.flags.games/opengraph-image.png",
         width: 200,
         height: 200,
         alt: "Guess the Country | flags.games",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     description: "Test your knowledge and identify countries by their flags",
     images: [
       {
-        url: "/opengraph-image.png",
+        url: "https://www.flags.games/opengraph-image.png",
         width: 200,
         height: 200,
         alt: "Guess the Country | flags.games",
