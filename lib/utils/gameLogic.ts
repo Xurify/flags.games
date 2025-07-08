@@ -1,8 +1,17 @@
-import { Country } from "@/lib/data/countries";
+import { Country, getCountryByCode } from "@/lib/data/countries";
 import { getDifficultyCountries } from "@/lib/data/difficultyCategories";
-import { FLAG_COLOR_PATTERNS, FLAG_ELEMENTS, COMMON_SUFFIXES, GEOGRAPHIC_NEIGHBORS, SUB_REGIONS, SIMILAR_FLAGS } from "@/lib/data/flagPatterns";
-import { EXPERT_COUNTRY_POOLS } from '@/lib/data/expertPools';
+import {
+  FLAG_COLOR_PATTERNS,
+  FLAG_ELEMENTS,
+  COMMON_SUFFIXES,
+  GEOGRAPHIC_NEIGHBORS,
+  SUB_REGIONS,
+  SIMILAR_FLAGS,
+  DISTINCTIVE_FLAGS,
+} from "@/lib/data/flagPatterns";
+import { EXPERT_COUNTRY_POOLS } from "@/lib/data/expertPools";
 import { HISTORICAL_CONFUSION_PAIRS } from "@/lib/data/historicalConfusion";
+import { SIMILAR_NAMES } from "@/lib/data/similarNames";
 import {
   DIFFICULTY_LEVELS,
   Difficulty,
@@ -11,7 +20,6 @@ import {
   HARD_DIFFICULTY,
   MEDIUM_DIFFICULTY,
 } from "@/lib/constants";
-
 
 interface QuestionData {
   difficulty: Difficulty;
@@ -61,227 +69,6 @@ export const getDifficultySettings = (difficulty: Difficulty) => {
 };
 
 // ============================================================================
-// GEOGRAPHIC AND REGIONAL
-// ============================================================================
-
-const getCountryRegion = (countryCode: string): string => {
-  const regions = {
-    europe: [
-      "GB",
-      "FR",
-      "DE",
-      "IT",
-      "ES",
-      "NL",
-      "BE",
-      "CH",
-      "AT",
-      "SE",
-      "NO",
-      "DK",
-      "FI",
-      "PL",
-      "PT",
-      "GR",
-      "IS",
-      "CZ",
-      "HU",
-      "RO",
-      "BG",
-      "HR",
-      "SI",
-      "SK",
-      "EE",
-      "LV",
-      "LT",
-      "UA",
-      "BY",
-      "MD",
-      "RS",
-      "BA",
-      "ME",
-      "MK",
-      "AL",
-      "CY",
-      "MT",
-      "LU",
-      "MC",
-      "LI",
-      "SM",
-      "VA",
-      "AD",
-      "IE",
-    ],
-    asia: [
-      "JP",
-      "CN",
-      "IN",
-      "KR",
-      "TH",
-      "VN",
-      "SG",
-      "MY",
-      "ID",
-      "PH",
-      "MM",
-      "KH",
-      "LA",
-      "MN",
-      "KP",
-      "KZ",
-      "UZ",
-      "TM",
-      "KG",
-      "TJ",
-      "AZ",
-      "AM",
-      "GE",
-      "AF",
-      "PK",
-      "BD",
-      "LK",
-      "NP",
-      "BT",
-      "MV",
-      "TL",
-      "BN",
-      "TW",
-    ],
-    africa: [
-      "EG",
-      "ZA",
-      "NG",
-      "KE",
-      "MA",
-      "DZ",
-      "TN",
-      "LY",
-      "SD",
-      "SS",
-      "ET",
-      "ER",
-      "DJ",
-      "SO",
-      "RW",
-      "BI",
-      "UG",
-      "TZ",
-      "MW",
-      "MZ",
-      "GH",
-      "CI",
-      "SN",
-      "ML",
-      "BF",
-      "NE",
-      "TD",
-      "CM",
-      "CF",
-      "CD",
-      "CG",
-      "GA",
-      "GQ",
-      "AO",
-      "ZM",
-      "ZW",
-      "BW",
-      "NA",
-      "LS",
-      "SZ",
-      "MG",
-      "MU",
-      "SC",
-      "KM",
-      "GN",
-      "GW",
-      "SL",
-      "LR",
-      "GM",
-      "MR",
-      "CV",
-      "ST",
-      "TG",
-      "BJ",
-    ],
-    americas: [
-      "US",
-      "CA",
-      "BR",
-      "MX",
-      "AR",
-      "CL",
-      "CO",
-      "PE",
-      "VE",
-      "UY",
-      "PY",
-      "BO",
-      "EC",
-      "GY",
-      "SR",
-      "CR",
-      "PA",
-      "NI",
-      "HN",
-      "SV",
-      "GT",
-      "BZ",
-      "JM",
-      "CU",
-      "HT",
-      "DO",
-      "TT",
-      "BB",
-      "LC",
-      "GD",
-      "VC",
-      "AG",
-      "DM",
-      "KN",
-      "BS",
-    ],
-    oceania: [
-      "AU",
-      "NZ",
-      "FJ",
-      "PG",
-      "SB",
-      "VU",
-      "WS",
-      "TO",
-      "PW",
-      "FM",
-      "MH",
-      "KI",
-      "NR",
-      "TV",
-    ],
-    middleEast: [
-      "IL",
-      "JO",
-      "LB",
-      "SY",
-      "IQ",
-      "IR",
-      "SA",
-      "AE",
-      "QA",
-      "KW",
-      "BH",
-      "OM",
-      "YE",
-      "TR",
-      "PS",
-    ],
-  };
-
-  for (const [region, codes] of Object.entries(regions)) {
-    if (codes.includes(countryCode)) return region;
-  }
-  return "other";
-};
-
-// ============================================================================
 // SIMILARITY SCORING
 // ============================================================================
 
@@ -290,102 +77,11 @@ const getSimilarFlags = (countryCode: string): string[] => {
 };
 
 const getSimilarNames = (countryName: string): string[] => {
-  const nameGroups: { [name: string]: string[] } = {
-    "United States": ["United Kingdom", "United Arab Emirates"],
-    "United Kingdom": ["United States", "United Arab Emirates"],
-    "United Arab Emirates": ["United States", "United Kingdom"],
-    "North Korea": ["South Korea"],
-    "South Korea": ["North Korea"],
-    "Republic of the Congo": ["Democratic Republic of the Congo"],
-    "Democratic Republic of the Congo": ["Republic of the Congo"],
-    Guinea: ["Guinea-Bissau", "Equatorial Guinea", "Papua New Guinea"],
-    "Guinea-Bissau": ["Guinea", "Equatorial Guinea", "Papua New Guinea"],
-    "Equatorial Guinea": ["Guinea", "Guinea-Bissau", "Papua New Guinea"],
-    "Papua New Guinea": ["Guinea", "Guinea-Bissau", "Equatorial Guinea"],
-    "Saint Kitts and Nevis": [
-      "Saint Lucia",
-      "Saint Vincent and the Grenadines"
-    ],
-    "Saint Lucia": [
-      "Saint Kitts and Nevis",
-      "Saint Vincent and the Grenadines"
-    ],
-    "Saint Vincent and the Grenadines": [
-      "Saint Kitts and Nevis",
-      "Saint Lucia"
-    ],
-    "Sudan": ["South Sudan"],
-    "South Sudan": ["Sudan"],
-    "Niger": ["Nigeria"],
-    "Nigeria": ["Niger"],
-    "Slovakia": ["Slovenia"],
-    "Slovenia": ["Slovakia"],
-    "Austria": ["Australia"],
-    "Australia": ["Austria"],
-    "Dominica": ["Dominican Republic"],
-    "Dominican Republic": ["Dominica"],
-    "Central African Republic": ["South Africa"],
-    "South Africa": ["Central African Republic"],
-    "Antigua and Barbuda": ["Barbados"],
-    "Barbados": ["Antigua and Barbuda"],
-    "Burkina Faso": ["Burundi"],
-    "Burundi": ["Burkina Faso"],
-    "Mauritania": ["Mauritius"],
-    "Mauritius": ["Mauritania"],
-    "Seychelles": ["Senegal"],
-    "Senegal": ["Seychelles"],
-    "Gambia": ["Zambia", "Gabon"],
-    "Zambia": ["Gambia", "Gabon"],
-    "Gabon": ["Gambia", "Zambia"],
-    "Latvia": ["Lithuania", "Estonia"],
-    "Lithuania": ["Latvia", "Estonia"],
-    "Estonia": ["Latvia", "Lithuania"],
-    "Belarus": ["Russia"],
-    "Russia": ["Belarus"],
-    "Yemen": ["Oman"],
-    "Oman": ["Yemen"],
-    "Jordan": ["Lebanon"],
-    "Lebanon": ["Jordan"],
-    "Iran": ["Iraq"],
-    "Iraq": ["Iran"],
-    "Sweden": ["Switzerland"],
-    "Switzerland": ["Sweden"],
-    "Chad": ["Chile"],
-    "Chile": ["Chad"],
-    "Benin": ["Bahrain"],
-    "Bahrain": ["Benin"],
-    "Luxembourg": ["Liechtenstein"],
-    "Liechtenstein": ["Luxembourg"]
-  };
-
-  return nameGroups[countryName] || [];
+  return SIMILAR_NAMES[countryName] || [];
 };
 
 const isDistinctiveFlag = (countryCode: string): boolean => {
-  const distinctive = [
-    // Most globally recognizable flags
-    "US", // United States - stars and stripes (universally known)
-    "GB", // United Kingdom - Union Jack (globally recognized)
-    "JP", // Japan - red circle (extremely recognizable)
-    "CA", // Canada - maple leaf (highly distinctive)
-    "CH", // Switzerland - square with cross (unique shape)
-    "IT", // Italy - green-white-red (very well known)
-    "FR", // France - blue-white-red (globally recognized)
-    "DE", // Germany - black-red-yellow (well known)
-    "AU", // Australia - Union Jack with stars (recognizable)
-    "BR", // Brazil - globe with stars (distinctive)
-    "IN", // India - wheel symbol (recognizable)
-    "CN", // China - red with stars (globally known)
-    "RU", // Russia - white-blue-red (well known)
-    "KR", // South Korea - yin-yang symbol (distinctive)
-    "MX", // Mexico - eagle and snake (recognizable)
-    "AR", // Argentina - sun symbol (well known)
-    "ZA", // South Africa - unique Y-design (distinctive)
-    "EG", // Egypt - eagle symbol (recognizable)
-    "TR", // Turkey - crescent and star (well known)
-    "SA", // Saudi Arabia - sword and text (distinctive)
-  ];
-  return distinctive.includes(countryCode);
+  return DISTINCTIVE_FLAGS.includes(countryCode);
 };
 
 const weightedRandomSelect = (items: any[], weights: number[]) => {
@@ -407,12 +103,15 @@ const calculateOptionSimilarityScore = (
   difficulty: Difficulty
 ): number => {
   if (difficulty === EXPERT_DIFFICULTY) {
-    return calculateExpertOptionSimilarityScore(correctCountry, candidateCountry);
+    return calculateExpertOptionSimilarityScore(
+      correctCountry,
+      candidateCountry
+    );
   }
 
   let similarityScore = 0;
-  const correctRegion = getCountryRegion(correctCountry.code);
-  const candidateRegion = getCountryRegion(candidateCountry.code);
+  const correctRegion = getCountryByCode(correctCountry.code)?.region;
+  const candidateRegion = getCountryByCode(candidateCountry.code)?.region;
   const similarFlags = getSimilarFlags(correctCountry.code);
   const similarNames = getSimilarNames(correctCountry.name);
 
@@ -510,7 +209,9 @@ const calculateOptionSimilarityScore = (
     }
 
     // Geographic proximity (neighboring countries)
-    if (GEOGRAPHIC_NEIGHBORS[correctCountry.code]?.includes(candidateCountry.code)) {
+    if (
+      GEOGRAPHIC_NEIGHBORS[correctCountry.code]?.includes(candidateCountry.code)
+    ) {
       similarityScore += 45;
     }
 
@@ -544,7 +245,8 @@ const calculateOptionSimilarityScore = (
   }
 
   // Random bonus for variety
-  similarityScore += Math.random() * (difficulty === EXPERT_DIFFICULTY ? 5 : 15);
+  similarityScore +=
+    Math.random() * (difficulty === EXPERT_DIFFICULTY ? 5 : 15);
 
   return Math.max(similarityScore, 1);
 };
@@ -553,7 +255,10 @@ const calculateOptionSimilarityScore = (
 // COUNTRY SELECTION HELPERS
 // ======================
 
-const selectCorrectCountry = (difficulty: Difficulty, remainingCountries: Country[]): Country => {
+const selectCorrectCountry = (
+  difficulty: Difficulty,
+  remainingCountries: Country[]
+): Country => {
   if (difficulty === EXPERT_DIFFICULTY) {
     const pools = EXPERT_COUNTRY_POOLS;
     if (Math.random() < 0.7) {
@@ -561,11 +266,15 @@ const selectCorrectCountry = (difficulty: Difficulty, remainingCountries: Countr
         Object.values(pools).some((pool) => pool.includes(country.code))
       );
       if (challengingCountries.length > 0) {
-        return challengingCountries[Math.floor(Math.random() * challengingCountries.length)];
+        return challengingCountries[
+          Math.floor(Math.random() * challengingCountries.length)
+        ];
       }
     }
   }
-  return remainingCountries[Math.floor(Math.random() * remainingCountries.length)];
+  return remainingCountries[
+    Math.floor(Math.random() * remainingCountries.length)
+  ];
 };
 
 // ======================
@@ -578,13 +287,21 @@ const generateDistractors = (
   difficulty: Difficulty
 ): Country[] => {
   const incorrectOptions: Country[] = [];
-  const candidateCountries = availableCountries.filter((c) => c.code !== correctCountry.code);
+  const candidateCountries = availableCountries.filter(
+    (c) => c.code !== correctCountry.code
+  );
   const candidatesWithScores = candidateCountries.map((candidate) => ({
     country: candidate,
-    similarityScore: calculateOptionSimilarityScore(correctCountry, candidate, difficulty),
+    similarityScore: calculateOptionSimilarityScore(
+      correctCountry,
+      candidate,
+      difficulty
+    ),
   }));
   const minScoreThreshold = difficulty === EXPERT_DIFFICULTY ? 60 : 1;
-  const viableCandidates = candidatesWithScores.filter((c) => c.similarityScore >= minScoreThreshold);
+  const viableCandidates = candidatesWithScores.filter(
+    (c) => c.similarityScore >= minScoreThreshold
+  );
   const finalCandidates =
     difficulty === EXPERT_DIFFICULTY
       ? viableCandidates.length >= 3
@@ -596,7 +313,9 @@ const generateDistractors = (
 
   if (difficulty === EXPERT_DIFFICULTY && finalCandidates.length > 0) {
     // Sort candidates by descending similarity score
-    const sortedCandidates = [...finalCandidates].sort((a, b) => b.similarityScore - a.similarityScore);
+    const sortedCandidates = [...finalCandidates].sort(
+      (a, b) => b.similarityScore - a.similarityScore
+    );
     // Always include the top 2 most similar countries
     for (let i = 0; i < 2 && i < sortedCandidates.length; i++) {
       incorrectOptions.push(sortedCandidates[i].country);
@@ -604,9 +323,11 @@ const generateDistractors = (
     // For the 3rd distractor, randomly pick from the next 5–10 most similar (not already chosen)
     const poolStart = 2;
     const poolEnd = Math.min(10, sortedCandidates.length);
-    const pool = sortedCandidates.slice(poolStart, poolEnd).filter(
-      (c) => !incorrectOptions.find((opt) => opt.code === c.country.code)
-    );
+    const pool = sortedCandidates
+      .slice(poolStart, poolEnd)
+      .filter(
+        (c) => !incorrectOptions.find((opt) => opt.code === c.country.code)
+      );
     if (pool.length > 0) {
       const sampled = sampleOne(pool);
       if (sampled) incorrectOptions.push(sampled.country);
@@ -614,7 +335,10 @@ const generateDistractors = (
     // If still not enough, fill with next most similar
     while (incorrectOptions.length < 3 && poolStart < sortedCandidates.length) {
       const next = sortedCandidates[poolStart + incorrectOptions.length - 2];
-      if (next && !incorrectOptions.find((opt) => opt.code === next.country.code)) {
+      if (
+        next &&
+        !incorrectOptions.find((opt) => opt.code === next.country.code)
+      ) {
         incorrectOptions.push(next.country);
       } else {
         break;
@@ -623,10 +347,14 @@ const generateDistractors = (
   } else {
     // Original logic for other difficulties
     // Ensure at least one very similar option (high similarity)
-    const highSimilarityCandidates = finalCandidates.filter((c) => c.similarityScore >= 60);
+    const highSimilarityCandidates = finalCandidates.filter(
+      (c) => c.similarityScore >= 60
+    );
     if (highSimilarityCandidates.length > 0) {
       const highSimilarityCountry =
-        highSimilarityCandidates[Math.floor(Math.random() * highSimilarityCandidates.length)].country;
+        highSimilarityCandidates[
+          Math.floor(Math.random() * highSimilarityCandidates.length)
+        ].country;
       incorrectOptions.push(highSimilarityCountry);
     }
     // Ensure at least one moderately similar option (medium similarity)
@@ -639,7 +367,9 @@ const generateDistractors = (
       );
       if (mediumSimilarityCandidates.length > 0) {
         const mediumSimilarityCountry =
-          mediumSimilarityCandidates[Math.floor(Math.random() * mediumSimilarityCandidates.length)].country;
+          mediumSimilarityCandidates[
+            Math.floor(Math.random() * mediumSimilarityCandidates.length)
+          ].country;
         incorrectOptions.push(mediumSimilarityCountry);
       }
     }
@@ -651,7 +381,9 @@ const generateDistractors = (
     if (availableCandidates.length === 0) break;
     const countries = availableCandidates.map((c) => c.country);
     const weights = availableCandidates.map((c) =>
-      difficulty === EXPERT_DIFFICULTY ? Math.pow(c.similarityScore, 2) : c.similarityScore
+      difficulty === EXPERT_DIFFICULTY
+        ? Math.pow(c.similarityScore, 2)
+        : c.similarityScore
     );
     const selectedCountry = weightedRandomSelect(countries, weights);
     incorrectOptions.push(selectedCountry);
@@ -665,7 +397,9 @@ const generateDistractors = (
     );
     if (remainingCandidates.length === 0) break;
     const nextCandidate =
-      remainingCandidates[Math.floor(Math.random() * remainingCandidates.length)];
+      remainingCandidates[
+        Math.floor(Math.random() * remainingCandidates.length)
+      ];
     incorrectOptions.push(nextCandidate);
   }
   return incorrectOptions.slice(0, 3);
@@ -687,7 +421,11 @@ export const generateQuestion = (
     return null;
   }
   const correctCountry = selectCorrectCountry(difficulty, remainingCountries);
-  const incorrectOptions = generateDistractors(correctCountry, availableCountries, difficulty);
+  const incorrectOptions = generateDistractors(
+    correctCountry,
+    availableCountries,
+    difficulty
+  );
   const allOptions = [correctCountry, ...incorrectOptions];
   const shuffledOptions = shuffleArray(allOptions);
   return {
@@ -764,7 +502,6 @@ const getHistoricalConfusionBonus = (
   return 0;
 };
 
-// Enhanced similarity scoring for expert mode (with balanced randomness)
 const calculateExpertOptionSimilarityScore = (
   correctCountry: Country,
   candidateCountry: Country
@@ -773,8 +510,9 @@ const calculateExpertOptionSimilarityScore = (
   const pools = EXPERT_COUNTRY_POOLS;
 
   // Base regional similarity (higher weight)
-  const correctRegion = getCountryRegion(correctCountry.code);
-  const candidateRegion = getCountryRegion(candidateCountry.code);
+  const correctRegion = getCountryByCode(correctCountry.code)?.region;
+  const candidateRegion = getCountryByCode(candidateCountry.code)?.region;
+
   if (correctRegion === candidateRegion) {
     score += 100;
   }

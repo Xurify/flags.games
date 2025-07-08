@@ -205,3 +205,7 @@ export const countries: Country[] = [
   { name: "Palestine", code: "PS", flag: "/images/flags/ps.svg", continent: "Asia", region: "Middle East" },
   { name: "Kosovo", code: "XK", flag: "/images/flags/xk.svg", continent: "Europe", region: "Europe" },
 ];
+
+export const getCountryByCode = (code: string) => {
+  return countries.find((country) => country.code === code);
+};

@@ -287,3 +287,27 @@ export const SIMILAR_FLAGS: { [key: string]: string[] } = {
   VN: ["CN", "TW"],
   TW: ["CN", "VN"], // Taiwan - red field with blue canton and white sun
 }; 
+
+export const DISTINCTIVE_FLAGS: string[] = [
+  // Most globally recognizable flags
+  "US", // United States - stars and stripes (universally known)
+  "GB", // United Kingdom - Union Jack (globally recognized)
+  "JP", // Japan - red circle (extremely recognizable)
+  "CA", // Canada - maple leaf (highly distinctive)
+  "CH", // Switzerland - square with cross (unique shape)
+  "IT", // Italy - green-white-red (very well known)
+  "FR", // France - blue-white-red (globally recognized)
+  "DE", // Germany - black-red-yellow (well known)
+  "AU", // Australia - Union Jack with stars (recognizable)
+  "BR", // Brazil - globe with stars (distinctive)
+  "IN", // India - wheel symbol (recognizable)
+  "CN", // China - red with stars (globally known)
+  "RU", // Russia - white-blue-red (well known)
+  "KR", // South Korea - yin-yang symbol (distinctive)
+  "MX", // Mexico - eagle and snake (recognizable)
+  "AR", // Argentina - sun symbol (well known)
+  "ZA", // South Africa - unique Y-design (distinctive)
+  "EG", // Egypt - eagle symbol (recognizable)
+  "TR", // Turkey - crescent and star (well known)
+  "SA", // Saudi Arabia - sword and text (distinctive)
+];
