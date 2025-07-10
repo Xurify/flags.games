@@ -54,12 +54,17 @@ const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
         </div>
 
         {currentView === "create" ? (
-          <CreateRoomView onCreateRoom={onCreateRoom} isCreating={isCreating} />
+          <CreateRoomView
+            onCreateRoom={onCreateRoom}
+            isCreating={isCreating}
+            onSwitchView={() => setCurrentView("join")}
+          />
         ) : currentView === "join" ? (
           <JoinRoomView
             onJoinRoom={onJoinRoom}
             isJoining={isJoining}
             error={joinError}
+            onSwitchView={() => setCurrentView("create")}
           />
         ) : (
           <Card className="mb-3 sm:mb-6 shadow-card hover:shadow-card-hover transition-all duration-300">
