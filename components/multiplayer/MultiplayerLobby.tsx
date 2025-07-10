@@ -57,7 +57,6 @@ const MultiplayerLobby: React.FC<MultiplayerLobbyProps> = ({
           <CreateRoomView
             onCreateRoom={onCreateRoom}
             isCreating={isCreating}
-            onSwitchView={() => setCurrentView("join")}
           />
         ) : currentView === "join" ? (
           <JoinRoomView

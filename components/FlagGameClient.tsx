@@ -95,7 +95,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     initialGameData.difficulty
   );
   const [showScorePopup, setShowScorePopup] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -328,21 +327,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     }
 
     return "!opacity-40 border-border/50 !grayscale-0";
-  };
-
-  const toggleDarkMode = () => {
-    const nextDark = !settings.darkMode;
-    updateSetting("darkMode", nextDark);
-    document.cookie = `theme=${
-      nextDark ? "dark" : "light"
-    }; path=/; max-age=31536000`;
-    playButtonClickSound();
-  };
-
-  const toggleSound = () => {
-    const newValue = !settings.soundEffectsEnabled;
-    updateSetting("soundEffectsEnabled", newValue);
-    playButtonClickSound();
   };
 
   useEffect(() => {

@@ -114,7 +114,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                     size="sm"
                     onClick={() => {
                       setSettingsOpen(false);
-                      router.push("/multiplayer");
+                      router.push("/create-room");
                     }}
                     className="w-full justify-start"
                   >
