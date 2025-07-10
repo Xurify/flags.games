@@ -31,6 +31,7 @@ import RestartDialog from "./RestartDialog";
 import SettingsMenu from "./SettingsMenu";
 import DifficultySelector from "./DifficultySelector";
 import { InitialGameData } from "./FlagGameServer";
+import Header from "@/components/Header";
 
 const Confetti = React.lazy(() => import("react-confetti"));
 
@@ -381,30 +382,14 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <div className="mb-8">
-          <div className="flex items-center justify-center mb-3 sm:mb-6">
-            <div className="bg-card rounded-2xl px-4 py-2 shadow border">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-foreground">
-                    LEVEL
-                  </span>
-                  <LevelBadge difficulty={gameState.difficulty} />
-                </div>
-
-                <div className="w-px h-6 bg-border"></div>
-
-                <SettingsMenu
-                  settingsOpen={settingsOpen}
-                  setSettingsOpen={setSettingsOpen}
-                  setShowDifficultyDialog={setShowDifficultyDialog}
-                  toggleSound={toggleSound}
-                  toggleDarkMode={toggleDarkMode}
-                  settings={settings}
-                />
+          <Header
+            leftContent={
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-foreground">LEVEL</span>
+                <LevelBadge difficulty={gameState.difficulty} />
               </div>
-            </div>
-          </div>
-
+            }
+          />
           <QuestionProgress
             currentQuestion={gameState.currentQuestion}
             totalQuestions={gameState.totalQuestions}

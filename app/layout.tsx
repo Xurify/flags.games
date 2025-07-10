@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SettingsProvider } from "@/lib/context/SettingsContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -70,7 +71,9 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <SettingsProvider>
+          {children}
+        </SettingsProvider>
         {process.env.NODE_ENV !== "development" && <Analytics />}
       </body>
     </html>
