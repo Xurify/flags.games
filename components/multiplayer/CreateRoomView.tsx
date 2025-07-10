@@ -203,7 +203,7 @@ const CreateRoomView: React.FC<CreateRoomViewProps> = ({
               )}
             </Button>
           </div>
-          <div className="bg-muted/50 rounded-xl p-4 text-center">
+          <div className="bg-muted/70 rounded-xl p-4 text-center">
             <p className="text-sm text-muted-foreground">
               You'll be the room host and can start the game when everyone is
               ready

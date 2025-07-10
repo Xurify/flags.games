@@ -28,7 +28,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const showMultiplayer = true;
+  const showMultiplayer = process.env.NODE_ENV === "development";
   //pathname !== "/multiplayer"
   return (
     <Select open={settingsOpen} onOpenChange={setSettingsOpen}>

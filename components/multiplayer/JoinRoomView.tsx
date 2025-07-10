@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface JoinRoomViewProps {
-  onJoinRoom: (roomCode: string, username: string) => void;
+  onJoinRoom: (inviteCode: string, username: string) => void;
   isJoining?: boolean;
   error?: string;
 }
@@ -24,22 +24,22 @@ const JoinRoomView: React.FC<JoinRoomViewProps> = ({
   isJoining = false,
   error,
 }) => {
-  const [roomCode, setRoomCode] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
   const [username, setUsername] = useState("");
 
   const handleJoinRoom = () => {
-    if (roomCode.trim() && username.trim()) {
-      onJoinRoom(roomCode.trim().toUpperCase(), username.trim());
+    if (inviteCode.trim() && username.trim()) {
+      onJoinRoom(inviteCode.trim().toUpperCase(), username.trim());
     }
   };
 
-  const handleRoomCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInviteCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toUpperCase().slice(0, 6);
-    setRoomCode(value);
+    setInviteCode(value);
   };
 
   const isFormValid =
-    roomCode.trim().length >= 4 && username.trim().length >= 2;
+    inviteCode.trim().length >= 4 && username.trim().length >= 2;
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -50,7 +50,7 @@ const JoinRoomView: React.FC<JoinRoomViewProps> = ({
             Join Game Room
           </CardTitle>
           <CardDescription className="text-center">
-            Enter the room code shared by your friend to join their game
+            Enter the invite code shared by your friend to join their game
           </CardDescription>
         </CardHeader>
 
@@ -65,22 +65,22 @@ const JoinRoomView: React.FC<JoinRoomViewProps> = ({
 
           <div className="space-y-2">
             <Label
-              htmlFor="roomCode"
+              htmlFor="inviteCode"
               className="text-sm font-medium flex items-center gap-2"
             >
               <Hash className="w-4 h-4" />
-              Room Code
+              Invite Code
             </Label>
             <Input
-              id="roomCode"
-              placeholder="Enter 4-6 character room code"
-              value={roomCode}
-              onChange={handleRoomCodeChange}
+              id="inviteCode"
+              placeholder="Enter 4-6 character invite code"
+              value={inviteCode}
+              onChange={handleInviteCodeChange}
               className="h-12 rounded-xl text-center text-lg font-mono tracking-wider uppercase"
               maxLength={6}
             />
             <p className="text-xs text-muted-foreground text-center">
-              Room codes are usually 4-6 characters long
+              Invite codes are 6 characters long
             </p>
           </div>
 
@@ -119,9 +119,9 @@ const JoinRoomView: React.FC<JoinRoomViewProps> = ({
             </Button>
           </div>
 
-          <div className="bg-muted/50 rounded-xl p-4 text-center">
+          <div className="bg-muted/70 rounded-xl p-4 text-center">
             <p className="text-sm text-muted-foreground">
-              Ask your friend for the room code to join their game
+              Ask your friend for the invite code to join their game
             </p>
           </div>
         </CardContent>
