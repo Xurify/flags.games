@@ -124,9 +124,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     }
   };
 
-  const generateQuestionHandler = () => {
+  const generateQuestionHandler = (difficulty?: Difficulty) => {
+    const difficultyToUse = difficulty || gameState.difficulty;
     const questionData = generateQuestion(
-      gameState.difficulty,
+      difficultyToUse,
       gameState.usedCountries
     );
 
@@ -281,7 +282,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       hearts: MAX_HEARTS,
     }));
 
-    generateQuestionHandler();
+    generateQuestionHandler(newDifficulty);
     setShowDifficultyDialog(false);
 
     const params = new URLSearchParams(searchParams.toString());
