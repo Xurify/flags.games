@@ -131,7 +131,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
       <div className="flex items-center justify-center">
         <Card className="w-full max-w-5xl flex flex-col lg:flex-row overflow-hidden">
           <div className="lg:w-2/5 flex flex-col items-center justify-center px-6 lg:px-8 gap-6 lg:gap-8 border-b lg:border-b-0 lg:border-r border-border">
-            <h2 className="text-lg font-bold text-primary mb-2 tracking-tight">
+            <h2 className="text-lg font-semibold text-primary mb-2 tracking-tight">
               Players
             </h2>
             <div className="flex flex-col gap-4 lg:gap-5 w-full">
@@ -189,7 +189,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
           </div>
           <div className="lg:w-3/5 flex flex-col justify-between px-6 lg:px-10 gap-8 lg:gap-10">
             <div>
-              <h2 className="text-lg font-bold text-primary mb-4 lg:mb-6 tracking-tight text-center lg:text-left">
+              <h2 className="text-lg font-semibold text-primary mb-4 lg:mb-6 tracking-tight text-center lg:text-left">
                 Game Settings
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
@@ -297,7 +297,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     <div className="max-w-lg w-full mx-auto">
       <Card className="shadow-card hover:shadow-card-hover transition-all duration-300">
         <CardHeader>
-          <CardTitle className="text-center flex items-center justify-center gap-2">
+          <CardTitle className="text-center flex items-center justify-center gap-2 font-semibold">
             <UsersIcon className="w-5 h-5 text-primary" />
             Create New Room
           </CardTitle>
