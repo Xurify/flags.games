@@ -1,0 +1,52 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSocket } from "@/lib/context/SocketContext";
+import MultiplayerRoom from "@/components/multiplayer/MultiplayerRoom";
+import { RoomSettings } from "@/lib/types/multiplayer";
+import Header from "@/components/Header";
+import { Button } from "@/components/ui/button";
+import { HomeIcon } from "lucide-react";
+
+export function MultiplayerPageContent() {
+  const router = useRouter();
+  const [isCreating, setIsCreating] = useState(false);
+  const { createRoom, isConnected } = useSocket();
+
+  const handleCreateRoom = async (username: string, settings: RoomSettings) => {
+    setIsCreating(true);
+    await createRoom(username, settings.difficulty);
+    setIsCreating(false);
+  };
+
+  return (
+    <div className="flex justify-center bg-background">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="mb-8">
+          <Header
+            leftContent={
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => router.push("/")}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <HomeIcon className="w-4 h-4" />
+                </Button>
+                <span className="text-sm font-medium text-foreground">
+                  MULTIPLAYER
+                </span>
+              </div>
+            }
+          />
+        </div>
+        <MultiplayerRoom
+          onCreateRoom={handleCreateRoom}
+          isCreating={isCreating}
+        />
+      </div>
+    </div>
+  );
+} 
