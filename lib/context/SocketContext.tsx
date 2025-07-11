@@ -21,7 +21,6 @@ export interface User {
   color: string;
   isAdmin: boolean;
   score: number;
-  isReady: boolean;
   currentAnswer?: string;
   answerTime?: number;
   lastActiveTime: string;
@@ -122,7 +121,6 @@ export interface SocketContextType {
 
   startGame: () => Promise<void>;
   submitAnswer: (answer: string) => Promise<void>;
-  setReady: (isReady: boolean) => Promise<void>;
 
   updateRoomSettings: (settings: Partial<Room["settings"]>) => Promise<void>;
   kickUser: (userId: string) => Promise<void>;
@@ -461,16 +459,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     [sendMessage, gameState]
   );
 
-  const setReady = useCallback(
-    async (isReady: boolean) => {
-      sendMessage({
-        type: WS_MESSAGE_TYPES.TOGGLE_READY,
-        data: { isReady },
-      });
-    },
-    [sendMessage]
-  );
-
   const updateRoomSettings = useCallback(
     async (settings: Partial<Room["settings"]>) => {
       sendMessage({
@@ -542,7 +530,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     leaveRoom,
     startGame,
     submitAnswer,
-    setReady,
     updateRoomSettings,
     kickUser,
     sendMessage,

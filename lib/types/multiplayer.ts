@@ -7,7 +7,6 @@ export interface User {
   roomId: string;
   socketId: string;
   isAdmin: boolean;
-  isReady?: boolean;
   score?: number;
 }
 

@@ -18,9 +18,7 @@ export const useRoomManagement = () => {
 
   const canStartGame = useCallback(() => {
     if (!currentRoom || !isHost()) return false;
-
-    const readyUsers = currentRoom.members.filter(member => member.isReady);
-    return readyUsers.length >= 2 && readyUsers.length === currentRoom.members.length;
+    return true;
   }, [currentRoom, isHost]);
 
   const getRoomStats = useCallback(() => {
@@ -29,7 +27,6 @@ export const useRoomManagement = () => {
     return {
       memberCount: currentRoom.members.length,
       maxMembers: currentRoom.settings.maxRoomSize,
-      readyCount: currentRoom.members.filter(m => m.isReady).length,
       isPrivate: currentRoom.settings.private,
       inviteCode: currentRoom.inviteCode
     };
