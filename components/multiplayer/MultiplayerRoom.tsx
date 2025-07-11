@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   UsersIcon,
@@ -33,6 +33,7 @@ import { Difficulty, ROOM_SIZES } from "@/lib/constants";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
 import { useSocket } from "@/lib/context/SocketContext";
 import { z, ZodIssue } from "zod";
+import { UsernameGenerator } from "@/lib/utils/usernameGenerator";
 
 const difficulties = ["easy", "medium", "hard", "expert"];
 const timePerQuestionOptions = [10, 15, 20, 30, 60];
@@ -65,6 +66,8 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
   const { currentRoom, currentUser, isHost, canStartGame, updateRoomSettings } =
     useRoomManagement();
 
+  const usernameGen = new UsernameGenerator();
+  const [randomUsername, setRandomUsername] = useState("");
   const [username, setUsername] = useState("");
   const [settings, setSettings] = useState<RoomSettings>({
     maxRoomSize: 2,
@@ -74,8 +77,13 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
   });
   const [formErrors, setFormErrors] = useState<{ username?: string; settings?: string }>({});
 
+  useEffect(() => {
+    setRandomUsername(usernameGen.generateUsername());
+  }, []);
+
   const handleCreateRoom = () => {
-    const result = formSchema.safeParse({ username: username.trim(), settings });
+    const finalUsername = username.trim() || randomUsername;
+    const result = formSchema.safeParse({ username: finalUsername, settings });
     if (!result.success) {
       const errors: { username?: string; settings?: string } = {};
       result.error.issues.forEach((err: ZodIssue) => {
@@ -86,7 +94,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
       return;
     }
     setFormErrors({});
-    onCreateRoom(username.trim(), settings);
+    onCreateRoom(finalUsername, settings);
   };
 
   if (currentRoom && currentRoom.settings) {
@@ -305,7 +313,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
             </Label>
             <Input
               id="username"
-              placeholder="Enter your name (min. 3 characters)"
+              placeholder={randomUsername}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="h-11 rounded-xl"
