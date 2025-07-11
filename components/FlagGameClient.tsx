@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { RotateCcw, HelpCircle } from "lucide-react";
+import { RotateCcw, HelpCircle, ArrowLeftRight } from "lucide-react";
 
 import {
   CORRECT_POINT_COST,
@@ -369,6 +369,15 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
           <Header
             leftContent={
               <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => setShowDifficultyDialog(true)}
+                  className="text-muted-foreground hover:text-foreground"
+                  title="Change difficulty"
+                >
+                  <ArrowLeftRight className="w-3 h-3" />
+                </Button>
                 <span className="text-sm font-medium text-foreground">LEVEL</span>
                 <LevelBadge difficulty={gameState.difficulty} />
               </div>
