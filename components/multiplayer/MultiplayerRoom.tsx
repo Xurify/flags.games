@@ -132,7 +132,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
         <Card className="w-full max-w-5xl flex flex-col lg:flex-row overflow-hidden">
           <div className="lg:w-2/5 flex flex-col items-center justify-center px-6 lg:px-8 gap-6 lg:gap-8 border-b lg:border-b-0 lg:border-r border-border">
             <h2 className="text-lg font-semibold text-primary mb-2 tracking-tight">
-              Players
+              Players ({members.length}/{maxPlayers})
             </h2>
             <div className="flex flex-col gap-4 lg:gap-5 w-full">
               {[
