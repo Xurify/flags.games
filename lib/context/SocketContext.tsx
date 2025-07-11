@@ -79,10 +79,10 @@ export interface Room {
   passcode: string | null;
   gameState: GameState;
   members: User[];
-  maxRoomSize: number;
   created: string;
-  private: boolean;
   settings: {
+    private: boolean;
+    maxRoomSize: number;
     difficulty: string;
     questionCount: number;
     timePerQuestion: number;

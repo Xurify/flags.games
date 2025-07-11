@@ -45,22 +45,20 @@ export function LobbyPageContent() {
   }
 
   const members = currentRoom.members;
-  const maxPlayers = currentRoom.settings.questionCount;
+  const maxPlayers = currentRoom.settings.maxRoomSize;
   const roomInviteCode = currentRoom.inviteCode || "";
   const inviteLink =
     typeof window !== "undefined" && roomInviteCode
       ? `${window.location.origin}/lobby?c=${roomInviteCode}`
       : "";
 
-  const handleSettingChange = useCallback(
+  const handleSettingChange =
     (key: keyof typeof currentRoom.settings, value: any) => {
       if (isHost()) {
         updateRoomSettings({ ...currentRoom.settings, [key]: value });
       }
-    },
-    [isHost, updateRoomSettings, currentRoom]
-  );
-
+    }
+  
   const handleReady = () => {};
 
   const handleStart = () => {};
@@ -160,7 +158,7 @@ export function LobbyPageContent() {
                   Max Players
                 </Label>
                 <Select
-                  value={String(currentRoom.settings.questionCount || 4)}
+                  value={String(currentRoom.settings.maxRoomSize || 4)}
                   onValueChange={(v) =>
                     handleSettingChange("questionCount", Number(v))
                   }
