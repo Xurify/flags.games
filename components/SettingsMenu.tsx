@@ -11,6 +11,7 @@ interface SettingsMenuProps {
   toggleSound: () => void;
   toggleDarkMode: () => void;
   onNavigateToMultiplayer?: () => void;
+  showDifficultyOption?: boolean;
   settings: {
     soundEffectsEnabled: boolean;
     darkMode: boolean;
@@ -24,6 +25,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   toggleSound,
   toggleDarkMode,
   onNavigateToMultiplayer,
+  showDifficultyOption = true,
   settings,
 }) => {
   const pathname = usePathname();
@@ -41,24 +43,28 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
       <SelectContent className="w-64">
         <div className="p-3">
           <div className="space-y-4">
-            <div>
-              <h4 className="text-sm font-medium text-foreground mb-2">
-                Difficulty Level
-              </h4>
-              <Button
-                onClick={() => {
-                  setSettingsOpen(false);
-                  setShowDifficultyDialog(true);
-                }}
-                size="sm"
-                className="w-full mt-2"
-                variant="neutral"
-              >
-                Change Difficulty
-              </Button>
-            </div>
+            {showDifficultyOption && (
+              <>
+                <div>
+                  <h4 className="text-sm font-medium text-foreground mb-2">
+                    Difficulty Level
+                  </h4>
+                  <Button
+                    onClick={() => {
+                      setSettingsOpen(false);
+                      setShowDifficultyDialog(true);
+                    }}
+                    size="sm"
+                    className="w-full mt-2"
+                    variant="neutral"
+                  >
+                    Change Difficulty
+                  </Button>
+                </div>
 
-            <div className="w-full h-px bg-border"></div>
+                <div className="w-full h-px bg-border"></div>
+              </>
+            )}
 
             <div>
               <h4 className="text-sm font-medium text-foreground mb-2">

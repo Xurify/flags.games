@@ -4,8 +4,8 @@ import SettingsMenu from "@/components/SettingsMenu";
 
 interface HeaderProps {
   leftContent: ReactNode;
-  showDifficultyDialog: boolean;
-  setShowDifficultyDialog: (open: boolean) => void;
+  showDifficultyDialog?: boolean;
+  setShowDifficultyDialog?: (open: boolean) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ leftContent, showDifficultyDialog, setShowDifficultyDialog }) => {
@@ -31,10 +31,11 @@ const Header: React.FC<HeaderProps> = ({ leftContent, showDifficultyDialog, setS
           <SettingsMenu
             settingsOpen={settingsOpen}
             setSettingsOpen={setSettingsOpen}
-            setShowDifficultyDialog={setShowDifficultyDialog}
+            setShowDifficultyDialog={setShowDifficultyDialog || (() => {})}
             toggleSound={toggleSound}
             toggleDarkMode={toggleDarkMode}
             settings={settings}
+            showDifficultyOption={!!setShowDifficultyDialog}
           />
         </div>
       </div>
