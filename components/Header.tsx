@@ -4,11 +4,12 @@ import SettingsMenu from "@/components/SettingsMenu";
 
 interface HeaderProps {
   leftContent: ReactNode;
+  showDifficultyDialog: boolean;
+  setShowDifficultyDialog: (open: boolean) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ leftContent }) => {
+const Header: React.FC<HeaderProps> = ({ leftContent, showDifficultyDialog, setShowDifficultyDialog }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const { settings, updateSetting } = useSettings();
 
   const toggleDarkMode = () => {

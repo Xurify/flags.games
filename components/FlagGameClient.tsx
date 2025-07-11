@@ -373,6 +373,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                 <LevelBadge difficulty={gameState.difficulty} />
               </div>
             }
+            showDifficultyDialog={showDifficultyDialog}
+            setShowDifficultyDialog={setShowDifficultyDialog}
           />
           <QuestionProgress
             currentQuestion={gameState.currentQuestion}
