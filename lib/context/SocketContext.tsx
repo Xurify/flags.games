@@ -10,6 +10,7 @@ import React, {
   ReactNode,
 } from "react";
 import { logger } from "@/lib/utils/logger";
+import { WS_MESSAGE_TYPES } from "@/lib/types/socket";
 
 export interface User {
   id: string;
@@ -172,71 +173,60 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const messageHandlers = useRef<Map<string, (data: any) => void>>(new Map());
 
   const setupMessageHandlers = useCallback(() => {
-    messageHandlers.current.set("HEARTBEAT", () => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.HEARTBEAT, () => {
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(
-          JSON.stringify({ type: "HEARTBEAT_RESPONSE", data: {} })
+          JSON.stringify({ type: WS_MESSAGE_TYPES.HEARTBEAT_RESPONSE, data: {} })
         );
       }
     });
 
-    messageHandlers.current.set("AUTH_SUCCESS", (data) => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.AUTH_SUCCESS, (data) => {
       data.user && setCurrentUser(data.user);
       data.room && setCurrentRoom(data.room);
     });
 
-    messageHandlers.current.set("ROOM_CREATED", (data) => {
-      setCurrentRoom(data.room);
-      setCurrentUser(data.user);
-      logger.info("Room created successfully");
-    });
 
-    messageHandlers.current.set("ROOM_JOINED", (data) => {
-      setCurrentRoom(data.room);
-      setCurrentUser(data.user);
-      logger.info("Joined room successfully");
-    });
-
-    messageHandlers.current.set("CREATE_ROOM_SUCCESS", (data) => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS, (data) => {
       setCurrentRoom(data.room);
       setCurrentUser(data.user);
       logger.info("Room created successfully (CREATE_ROOM_SUCCESS)");
     });
 
-    messageHandlers.current.set("JOIN_ROOM_SUCCESS", (data) => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS, (data) => {
       setCurrentRoom(data.room);
       setCurrentUser(data.user);
       logger.info("Joined room successfully (JOIN_ROOM_SUCCESS)");
     });
 
-    messageHandlers.current.set("ROOM_LEFT", () => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.LEAVE_ROOM, () => {
       setCurrentRoom(null);
       setCurrentUser(null);
       setGameState(null);
       logger.info("Left room");
     });
 
-    messageHandlers.current.set("ROOM_UPDATED", (data) => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.SETTINGS_UPDATED, (data) => {
       setCurrentRoom(data.room);
     });
 
-    messageHandlers.current.set("USER_JOINED", (data) => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_JOINED, (data) => {
       setCurrentRoom((prev) =>
         prev ? { ...prev, members: data.members } : null
       );
     });
 
-    messageHandlers.current.set("USER_LEFT", (data) => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_LEFT, (data) => {
       setCurrentRoom((prev) =>
         prev ? { ...prev, members: data.members } : null
       );
     });
 
-    messageHandlers.current.set("GAME_STARTING", (data) => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_STARTING, (data) => {
       setGameState((prev) => (prev ? { ...prev, phase: "starting" } : null));
     });
 
-    messageHandlers.current.set("NEW_QUESTION", (data) => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.NEW_QUESTION, (data) => {
       setGameState((prev) =>
         prev
           ? {
@@ -249,11 +239,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     });
 
-    messageHandlers.current.set("ANSWER_SUBMITTED", (data) => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.ANSWER_SUBMITTED, (data) => {
       logger.info(`${data.username} submitted an answer`);
     });
 
-    messageHandlers.current.set("QUESTION_RESULTS", (data) => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.QUESTION_RESULTS, (data) => {
       setGameState((prev) =>
         prev
           ? {
@@ -266,7 +256,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     });
 
-    messageHandlers.current.set("GAME_ENDED", (data) => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_ENDED, (data) => {
       setGameState((prev) =>
         prev
           ? {
@@ -279,7 +269,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     });
 
-    messageHandlers.current.set("GAME_STOPPED", () => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_STOPPED, () => {
       setGameState((prev) =>
         prev
           ? {
@@ -292,15 +282,15 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     });
 
-    messageHandlers.current.set("GAME_PAUSED", () => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_PAUSED, () => {
       setGameState((prev) => (prev ? { ...prev, isPaused: true } : null));
     });
 
-    messageHandlers.current.set("GAME_RESUMED", () => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_RESUMED, () => {
       setGameState((prev) => (prev ? { ...prev, isPaused: false } : null));
     });
 
-    messageHandlers.current.set("ERROR", (data) => {
+    messageHandlers.current.set(WS_MESSAGE_TYPES.ERROR, (data) => {
       setLastError(data.message || "An error occurred");
       logger.error("Socket error:", data);
     });
@@ -340,7 +330,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
         if (sessionToken) {
           wsRef.current?.send(
             JSON.stringify({
-              type: "AUTH",
+              type: WS_MESSAGE_TYPES.AUTH,
               data: {
                 token: sessionToken,
               },
@@ -422,7 +412,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const createRoom = useCallback(
     async (username: string, difficulty: string) => {
       sendMessage({
-        type: "CREATE_ROOM",
+        type: WS_MESSAGE_TYPES.CREATE_ROOM,
         data: { username, difficulty },
       });
     },
@@ -432,7 +422,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const joinRoom = useCallback(
     async (inviteCode: string, username: string, passcode?: string) => {
       sendMessage({
-        type: "JOIN_ROOM",
+        type: WS_MESSAGE_TYPES.JOIN_ROOM,
         data: { inviteCode, username, passcode },
       });
     },
@@ -441,14 +431,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
 
   const leaveRoom = useCallback(async () => {
     sendMessage({
-      type: "LEAVE_ROOM",
+      type: WS_MESSAGE_TYPES.LEAVE_ROOM,
       data: {},
     });
   }, [sendMessage]);
 
   const startGame = useCallback(async () => {
     sendMessage({
-      type: "START_GAME",
+      type: WS_MESSAGE_TYPES.START_GAME,
       data: {},
     });
   }, [sendMessage]);
@@ -461,7 +451,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       }
 
       sendMessage({
-        type: "SUBMIT_ANSWER",
+        type: WS_MESSAGE_TYPES.SUBMIT_ANSWER,
         data: {
           answer,
           questionId: gameState.currentQuestion.questionNumber.toString(),
@@ -474,7 +464,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const setReady = useCallback(
     async (isReady: boolean) => {
       sendMessage({
-        type: "SET_READY",
+        type: WS_MESSAGE_TYPES.TOGGLE_READY,
         data: { isReady },
       });
     },
@@ -484,7 +474,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const updateRoomSettings = useCallback(
     async (settings: Partial<Room["settings"]>) => {
       sendMessage({
-        type: "UPDATE_ROOM_SETTINGS",
+        type: WS_MESSAGE_TYPES.UPDATE_SETTINGS,
         data: { settings },
       });
     },
@@ -494,7 +484,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const kickUser = useCallback(
     async (userId: string) => {
       sendMessage({
-        type: "KICK_USER",
+        type: WS_MESSAGE_TYPES.KICK_USER,
         data: { userId },
       });
     },
