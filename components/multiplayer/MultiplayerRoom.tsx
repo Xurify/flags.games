@@ -39,7 +39,10 @@ const difficulties = ["easy", "medium", "hard", "expert"];
 const timePerQuestionOptions = [10, 15, 20, 30, 60];
 
 const roomSettingsSchema = z.object({
-  maxRoomSize: z.number().min(2).max(ROOM_SIZES[ROOM_SIZES.length - 1]),
+  maxRoomSize: z
+    .number()
+    .min(2)
+    .max(ROOM_SIZES[ROOM_SIZES.length - 1]),
   difficulty: z.enum(["easy", "medium", "hard", "expert"]),
   gameMode: z.string(),
   timePerQuestion: z.number().min(10).max(60),
@@ -75,7 +78,10 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     gameMode: "classic",
     timePerQuestion: 30,
   });
-  const [formErrors, setFormErrors] = useState<{ username?: string; settings?: string }>({});
+  const [formErrors, setFormErrors] = useState<{
+    username?: string;
+    settings?: string;
+  }>({});
 
   useEffect(() => {
     setRandomUsername(usernameGen.generateUsername());
@@ -110,10 +116,6 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
       }
     };
 
-    const handleReady = () => {
-      // TODO: Implement ready up logic via socket
-    };
-
     const handleStart = () => {
       // TODO: Implement start game logic via socket
     };
@@ -121,75 +123,77 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     const handleInvite = () => {
       const roomInviteCode = currentRoom.inviteCode || "";
       const inviteLink = roomInviteCode
-      ? `${window.location.origin}/lobby?c=${roomInviteCode}`
-      : "";
+        ? `${window.location.origin}/lobby?c=${roomInviteCode}`
+        : "";
       if (inviteLink) navigator.clipboard.writeText(inviteLink);
     };
 
     return (
-      <div className="flex items-center justify-center bg-background">
-        <Card className="w-full max-w-6xl flex flex-col md:flex-row shadow-card">
-          <div className="md:w-1/3 border-b md:border-b-0 md:border-r border-border flex flex-col items-center p-4 bg-card">
-            <CardHeader className="w-full pb-2">
-              <CardTitle className="text-base text-foreground text-center">
-                Players {members.length}/{maxPlayers}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="w-full flex flex-col gap-2 p-0">
+      <div className="flex items-center justify-center">
+        <Card className="w-full max-w-5xl flex flex-col lg:flex-row overflow-hidden">
+          <div className="lg:w-2/5 flex flex-col items-center justify-center px-6 lg:px-8 gap-6 lg:gap-8 border-b lg:border-b-0 lg:border-r border-border">
+            <h2 className="text-lg font-bold text-primary mb-2 tracking-tight">
+              Players
+            </h2>
+            <div className="flex flex-col gap-4 lg:gap-5 w-full">
               {[
                 ...members,
                 ...Array(maxPlayers - members.length).fill(null),
               ].map((player, idx) => (
                 <div
                   key={idx}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg ${
-                    player ? "bg-muted" : "bg-muted/50"
+                  className={`flex items-center gap-4 lg:gap-5 px-3 lg:px-4 py-2 rounded-2xl shadow-card bg-white/70 border border-border transition-all ${
+                    player ? "" : "opacity-60 bg-muted/60 border-dashed"
                   }`}
                 >
-                  {player ? (
-                    <>
-                      <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center">
-                        {player.avatar ? (
-                          <img
-                            src={player.avatar}
-                            alt={player.name}
-                            className="w-9 h-9 rounded-full"
-                          />
-                        ) : (
-                          <UserIcon className="w-5 h-5 text-muted-foreground" />
-                        )}
-                      </div>
-                      <span className="font-medium text-foreground flex-1">
-                        {player.name || player.username}
-                      </span>
-                      {currentRoom?.host === player.id && (
-                        <CrownIcon
-                          className="w-4 h-4 text-yellow-400"
-                          aria-label="Host"
+                  <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-accent flex items-center justify-center border-2 border-accent/40 flex-shrink-0">
+                    {player ? (
+                      player.avatar ? (
+                        <img
+                          src={player.avatar}
+                          alt={player.name}
+                          className="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover"
                         />
-                      )}
-                      {player.isReady && (
-                        <CheckIcon
-                          className="w-4 h-4 text-green-500"
-                          aria-label="Ready"
-                        />
-                      )}
-                    </>
-                  ) : (
-                    <span className="text-muted-foreground flex items-center gap-2">
-                      <UserIcon className="w-4 h-4" /> EMPTY
+                      ) : (
+                        <UserIcon className="w-6 h-6 lg:w-7 lg:h-7 text-muted-foreground" />
+                      )
+                    ) : (
+                      <UserIcon className="w-6 h-6 lg:w-7 lg:h-7 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="block font-semibold text-foreground truncate text-sm lg:text-base">
+                      {player ? player.name || player.username : "Waiting..."}
                     </span>
+                    {player && (
+                      <span className="block text-xs text-muted-foreground truncate">
+                        {currentRoom?.host === player.id ? "Host" : "Player"}
+                      </span>
+                    )}
+                  </div>
+                  {player && currentRoom?.host === player.id && (
+                    <CrownIcon
+                      className="w-4 h-4 lg:w-5 lg:h-5 text-yellow-400 flex-shrink-0"
+                      aria-label="Host"
+                    />
                   )}
                 </div>
               ))}
-            </CardContent>
+            </div>
+            <div className="text-sm text-muted-foreground mt-4 text-center">
+              {members.length < maxPlayers
+                ? `Waiting for ${maxPlayers - members.length} more player${
+                    maxPlayers - members.length > 1 ? "s" : ""
+                  }...`
+                : "Room is full!"}
+            </div>
           </div>
-          <div className="md:w-2/3 flex flex-col gap-6 p-4">
-            <div className="mb-2">
-              <h2 className="text-base font-semibold text-foreground mb-3 text-center md:text-left">
+          <div className="lg:w-3/5 flex flex-col justify-between px-6 lg:px-10 gap-8 lg:gap-10">
+            <div>
+              <h2 className="text-lg font-bold text-primary mb-4 lg:mb-6 tracking-tight text-center lg:text-left">
                 Game Settings
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
                 <div>
                   <Label htmlFor="difficulty" className="text-sm font-medium">
                     Difficulty
@@ -199,7 +203,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                     onValueChange={(v) => handleSettingChange("difficulty", v)}
                     disabled={!isHost()}
                   >
-                    <SelectTrigger className="h-11 rounded-xl mt-1">
+                    <SelectTrigger className="h-12 rounded-xl mt-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -222,7 +226,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                     }
                     disabled={!isHost()}
                   >
-                    <SelectTrigger className="h-11 rounded-xl mt-1">
+                    <SelectTrigger className="h-12 rounded-xl mt-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -235,19 +239,23 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="timePerQuestion" className="text-sm font-medium">
+                  <Label
+                    htmlFor="timePerQuestion"
+                    className="text-sm font-medium"
+                  >
                     Time per Question (seconds)
                   </Label>
                   <Select
                     value={String(
-                      currentRoom.settings.timePerQuestion || settings.timePerQuestion
+                      currentRoom.settings.timePerQuestion ||
+                        settings.timePerQuestion
                     )}
                     onValueChange={(v) =>
                       handleSettingChange("timePerQuestion", Number(v))
                     }
                     disabled={!isHost()}
                   >
-                    <SelectTrigger className="h-11 rounded-xl mt-1">
+                    <SelectTrigger className="h-12 rounded-xl mt-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -261,30 +269,22 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                 </div>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mt-4">
+            <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center items-center mt-6 lg:mt-8">
               <Button
                 variant="outline"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 h-12 px-6 text-base w-full sm:w-auto"
                 onClick={handleInvite}
               >
-                <LinkIcon className="w-4 h-4" /> Invite
-              </Button>
-              <Button
-                variant={currentUser?.isReady ? "default" : "secondary"}
-                className="flex items-center gap-2"
-                onClick={handleReady}
-              >
-                <CheckIcon className="w-4 h-4" />{" "}
-                {currentUser?.isReady ? "Ready!" : "Ready Up"}
+                <LinkIcon className="w-5 h-5" /> Invite
               </Button>
               {isHost() && (
                 <Button
                   variant="default"
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 h-12 px-6 text-base w-full sm:w-auto"
                   onClick={handleStart}
                   disabled={!canStartGame()}
                 >
-                  <PlayIcon className="w-4 h-4" /> Start
+                  <PlayIcon className="w-5 h-5" /> Start
                 </Button>
               )}
             </div>
@@ -295,7 +295,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
   }
 
   return (
-    <div className="max-w-4xl w-full mx-auto">
+    <div className="max-w-lg w-full mx-auto">
       <Card className="shadow-card hover:shadow-card-hover transition-all duration-300">
         <CardHeader>
           <CardTitle className="text-center flex items-center justify-center gap-2">
@@ -386,7 +386,10 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="timePerQuestion" className="text-sm font-medium">
+                <Label
+                  htmlFor="timePerQuestion"
+                  className="text-sm font-medium"
+                >
                   Time per Question (seconds)
                 </Label>
                 <Select

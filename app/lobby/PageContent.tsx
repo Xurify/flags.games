@@ -22,7 +22,7 @@ export function MultiplayerPageContent() {
 
   return (
     <div className="flex justify-center bg-background">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <div className="mb-8">
           <Header
             leftContent={
