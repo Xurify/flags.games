@@ -27,7 +27,7 @@ interface DifficultySelectorProps {
   onOpenChange: (open: boolean) => void;
   selectedDifficulty: Difficulty;
   setSelectedDifficulty: (value: Difficulty) => void;
-  onChangeDifficulty: () => void;
+  onChangeDifficulty: (difficulty: Difficulty) => void;
   currentDifficulty: Difficulty;
   heartsModeEnabled: boolean;
   onToggleHeartsMode: (value: boolean) => void;
@@ -139,7 +139,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
           </div>
 
           <Button
-            onClick={onChangeDifficulty}
+            onClick={() => onChangeDifficulty(selectedDifficulty)}
             className="w-full mt-2"
             disabled={selectedDifficulty === currentDifficulty}
           >

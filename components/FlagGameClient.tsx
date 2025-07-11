@@ -263,14 +263,14 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     setShowRestartDialog(false);
   };
 
-  const handleChangeDifficulty = () => {
-    const newTotalQuestions = getDifficultySettings(selectedDifficulty).count;
+  const handleChangeDifficulty = (newDifficulty: Difficulty) => {
+    const newTotalQuestions = getDifficultySettings(newDifficulty).count;
 
     clearGameTimeout();
 
     setGameState((prev) => ({
       ...prev,
-      difficulty: selectedDifficulty,
+      difficulty: newDifficulty,
       totalQuestions: newTotalQuestions,
       currentQuestion: 1,
       score: 0,
@@ -285,8 +285,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     setShowDifficultyDialog(false);
 
     const params = new URLSearchParams(searchParams.toString());
-    params.set("difficulty", selectedDifficulty);
-    if (selectedDifficulty === DEFAULT_DIFFICULTY) {
+    params.set("difficulty", newDifficulty);
+    if (newDifficulty === DEFAULT_DIFFICULTY) {
       router.replace("/");
     } else {
       router.replace(`?${params.toString()}`);
@@ -339,6 +339,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       }
     }
   }, [gameState.gameCompleted, settings.soundEffectsEnabled]);
+
+  // Sync selectedDifficulty with gameState.difficulty
+  useEffect(() => {
+    setSelectedDifficulty(gameState.difficulty);
+  }, [gameState.difficulty]);
 
   return (
     <div className="min-h-screen h-screen sm:min-h-screen sm:h-auto bg-background overflow-y-auto">
