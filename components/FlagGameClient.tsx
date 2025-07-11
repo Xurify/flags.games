@@ -365,7 +365,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-        <div className="mb-8">
+        <div className="mb-4">
           <Header
             leftContent={
               <div className="flex items-center gap-2">
@@ -385,6 +385,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             showDifficultyDialog={showDifficultyDialog}
             setShowDifficultyDialog={setShowDifficultyDialog}
           />
+        </div>
+
+        <div className="mb-4">
           <QuestionProgress
             currentQuestion={gameState.currentQuestion}
             totalQuestions={gameState.totalQuestions}
