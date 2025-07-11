@@ -182,6 +182,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       }
     });
 
+    messageHandlers.current.set("AUTH_SUCCESS", (data) => {
+      data.user && setCurrentUser(data.user);
+      data.room && setCurrentRoom(data.room);
+    });
+
     messageHandlers.current.set("ROOM_CREATED", (data) => {
       setCurrentRoom(data.room);
       setCurrentUser(data.user);

@@ -12,13 +12,14 @@ import { HomeIcon } from "lucide-react";
 export function CreateRoomPageContent() {
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
-  const { createRoom, currentRoom } = useSocket();
+  const { createRoom, currentRoom, currentUser } = useSocket();
 
   useEffect(() => {
-    // if (currentRoom?.inviteCode) {
-    //   router.push(`/lobby?c=${currentRoom.inviteCode}`);
-    // }
-  }, [currentRoom, router]);
+    if (currentRoom?.inviteCode && currentUser?.isAdmin) {
+      // Room creator (admin) goes to lobby without query params
+      router.push("/lobby");
+    }
+  }, [currentRoom, currentUser, router]);
 
   const handleCreateRoom = async (username: string, settings: RoomSettings) => {
     setIsCreating(true);
