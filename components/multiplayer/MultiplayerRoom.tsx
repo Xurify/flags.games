@@ -32,9 +32,22 @@ import { RoomSettings } from "@/lib/types/multiplayer";
 import { Difficulty, ROOM_SIZES } from "@/lib/constants";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
 import { useSocket } from "@/lib/context/SocketContext";
+import { z, ZodIssue } from "zod";
 
 const difficulties = ["easy", "medium", "hard", "expert"];
 const timePerQuestionOptions = [10, 15, 20, 30, 60];
+
+const roomSettingsSchema = z.object({
+  maxRoomSize: z.number().min(2).max(ROOM_SIZES[ROOM_SIZES.length - 1]),
+  difficulty: z.enum(["easy", "medium", "hard", "expert"]),
+  gameMode: z.string(),
+  timePerQuestion: z.number().min(10).max(60),
+});
+
+const formSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  settings: roomSettingsSchema,
+});
 
 interface MultiplayerRoomProps {
   onCreateRoom: (username: string, settings: RoomSettings) => void;
@@ -59,22 +72,26 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     gameMode: "classic",
     timePerQuestion: 30,
   });
+  const [formErrors, setFormErrors] = useState<{ username?: string; settings?: string }>({});
 
   const handleCreateRoom = () => {
-    if (username.trim().length >= 3) {
-      onCreateRoom(username.trim(), settings);
+    const result = formSchema.safeParse({ username: username.trim(), settings });
+    if (!result.success) {
+      const errors: { username?: string; settings?: string } = {};
+      result.error.issues.forEach((err: ZodIssue) => {
+        if (err.path[0] === "username") errors.username = err.message;
+        if (err.path[0] === "settings") errors.settings = err.message;
+      });
+      setFormErrors(errors);
+      return;
     }
+    setFormErrors({});
+    onCreateRoom(username.trim(), settings);
   };
-
-  const isFormValid = username.trim().length >= 3;
 
   if (currentRoom && currentRoom.settings) {
     const members = currentRoom.members;
     const maxPlayers = currentRoom.settings.maxRoomSize;
-    const roomInviteCode = currentRoom.inviteCode || "";
-    const inviteLink = roomInviteCode
-      ? `${window.location.origin}/lobby?c=${roomInviteCode}`
-      : "";
 
     const handleSettingChange = (
       key: keyof typeof currentRoom.settings,
@@ -94,6 +111,10 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     };
 
     const handleInvite = () => {
+      const roomInviteCode = currentRoom.inviteCode || "";
+      const inviteLink = roomInviteCode
+      ? `${window.location.origin}/lobby?c=${roomInviteCode}`
+      : "";
       if (inviteLink) navigator.clipboard.writeText(inviteLink);
     };
 
@@ -290,6 +311,9 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
               className="h-11 rounded-xl"
               maxLength={24}
             />
+            {formErrors.username && (
+              <p className="text-xs text-red-500">{formErrors.username}</p>
+            )}
             <p className="text-xs text-muted-foreground">
               {username.length}/24 characters
             </p>
@@ -410,7 +434,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
           <div className="pt-4">
             <Button
               onClick={handleCreateRoom}
-              disabled={!isFormValid || isCreating}
+              disabled={isCreating}
               className="w-full"
               size="lg"
             >

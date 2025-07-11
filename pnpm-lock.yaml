@@ -56,6 +56,9 @@ dependencies:
   uuid:
     specifier: ^11.1.0
     version: 11.1.0
+  zod:
+    specifier: ^4.0.5
+    version: 4.0.5
 
 devDependencies:
   '@tailwindcss/postcss':
@@ -2095,3 +2098,7 @@ packages:
     resolution: {integrity: sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw==}
     engines: {node: '>=18'}
     dev: true
+
+  /zod@4.0.5:
+    resolution: {integrity: sha512-/5UuuRPStvHXu7RS+gmvRf4NXrNxpSllGwDnCBcJZtQsKrviYXm54yDGV2KYNLT5kq0lHGcl7lqWJLgSaG+tgA==}
+    dev: false
