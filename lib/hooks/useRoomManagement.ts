@@ -29,9 +29,9 @@ export const useRoomManagement = () => {
 
     return {
       memberCount: currentRoom.members.length,
-      maxMembers: currentRoom.maxRoomSize,
+      maxMembers: currentRoom.settings.maxRoomSize,
       readyCount: currentRoom.members.filter(m => m.isReady).length,
-      isPrivate: currentRoom.private,
+      isPrivate: currentRoom.settings.private,
       inviteCode: currentRoom.inviteCode
     };
   }, [currentRoom]);

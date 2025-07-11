@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   CrownIcon,
   UserIcon,
@@ -27,16 +27,37 @@ const timeLimits = [10, 15, 20, 30, 60];
 const roomSizes = [2, 3, 4, 5];
 
 export function LobbyPageContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const inviteCode = searchParams.get("c");
-  const { joinRoomByInviteCode } = useSocket();
+  const { joinRoomByInviteCode, isConnected } = useSocket();
+  
+  const {
+    currentRoom,
+    currentUser,
+    isHost,
+    canStartGame,
+    updateRoomSettings,
+  } = useRoomManagement();
 
-  const { currentRoom, currentUser, isHost, canStartGame, updateRoomSettings } =
-    useRoomManagement();
+  if (!isConnected || (!currentRoom && !currentUser)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <span className="text-muted-foreground">Loading lobby...</span>
+      </div>
+    );
+  }
 
-  console.log("currentRoom", currentRoom, currentUser);
+  if (isConnected && (!currentRoom || !currentUser)) {
+    router.push("/create-room");
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <span className="text-muted-foreground">Redirecting to create room...</span>
+      </div>
+    );
+  }
 
-  if (!currentRoom || !currentRoom.settings) {
+  if (!currentRoom) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <span className="text-muted-foreground">Loading lobby...</span>
@@ -47,18 +68,19 @@ export function LobbyPageContent() {
   const members = currentRoom.members;
   const maxPlayers = currentRoom.settings.maxRoomSize;
   const roomInviteCode = currentRoom.inviteCode || "";
-  const inviteLink =
-    typeof window !== "undefined" && roomInviteCode
-      ? `${window.location.origin}/lobby?c=${roomInviteCode}`
-      : "";
+  const inviteLink = roomInviteCode
+    ? `${window.location.origin}/lobby?c=${roomInviteCode}`
+    : "";
 
-  const handleSettingChange =
-    (key: keyof typeof currentRoom.settings, value: any) => {
-      if (isHost()) {
-        updateRoomSettings({ ...currentRoom.settings, [key]: value });
-      }
+  const handleSettingChange = (
+    key: keyof typeof currentRoom.settings,
+    value: any
+  ) => {
+    if (isHost()) {
+      updateRoomSettings({ ...currentRoom.settings, [key]: value });
     }
-  
+  };
+
   const handleReady = () => {};
 
   const handleStart = () => {};
