@@ -1,24 +1,19 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSocket } from "@/lib/context/SocketContext";
 import MultiplayerRoom from "@/components/multiplayer/MultiplayerRoom";
-import { RoomSettings } from "@/lib/types/multiplayer";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { HomeIcon } from "lucide-react";
 
-export function MultiplayerPageContent() {
-  const router = useRouter();
-  const [isCreating, setIsCreating] = useState(false);
-  const { createRoom, isConnected } = useSocket();
+interface MultiplayerPageContentProps {
+  randomUsername: string;
+}
 
-  const handleCreateRoom = async (username: string, settings: RoomSettings) => {
-    setIsCreating(true);
-    await createRoom(username, settings.difficulty);
-    setIsCreating(false);
-  };
+export function MultiplayerPageContent({
+  randomUsername,
+}: MultiplayerPageContentProps) {
+  const router = useRouter();
 
   return (
     <div className="flex justify-center bg-background">
@@ -42,11 +37,8 @@ export function MultiplayerPageContent() {
             }
           />
         </div>
-        <MultiplayerRoom
-          onCreateRoom={handleCreateRoom}
-          isCreating={isCreating}
-        />
+        <MultiplayerRoom randomUsername={randomUsername} />
       </div>
     </div>
   );
-} 
+}

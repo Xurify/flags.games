@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   UsersIcon,
@@ -31,9 +31,7 @@ import {
 import { RoomSettings } from "@/lib/types/multiplayer";
 import { Difficulty, ROOM_SIZES } from "@/lib/constants";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
-import { useSocket } from "@/lib/context/SocketContext";
 import { z, ZodIssue } from "zod";
-import { UsernameGenerator } from "@/lib/utils/usernameGenerator";
 
 const difficulties = ["easy", "medium", "hard", "expert"];
 const timePerQuestionOptions = [10, 15, 20, 30, 60];
@@ -54,22 +52,17 @@ const formSchema = z.object({
 });
 
 interface MultiplayerRoomProps {
-  onCreateRoom: (username: string, settings: RoomSettings) => void;
-  isCreating?: boolean;
+  randomUsername: string;
 }
 
-const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
-  onCreateRoom,
-  isCreating = false,
-}) => {
+const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({ randomUsername }) => {
   const searchParams = useSearchParams();
   const inviteCode = searchParams.get("c");
 
-  const { currentRoom, isHost, canStartGame, updateRoomSettings } =
+  const [isCreating, setIsCreating] = useState(false);
+  const { currentRoom, isHost, canStartGame, updateRoomSettings, createRoom } =
     useRoomManagement();
 
-  const usernameGen = new UsernameGenerator();
-  const [randomUsername, setRandomUsername] = useState("");
   const [username, setUsername] = useState("");
   const [settings, setSettings] = useState<RoomSettings>({
     maxRoomSize: 2,
@@ -82,11 +75,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     settings?: string;
   }>({});
 
-  useEffect(() => {
-    setRandomUsername(usernameGen.generateUsername());
-  }, []);
-
-  const handleCreateRoom = () => {
+  const handleCreateRoom = async () => {
     const finalUsername = username.trim() || randomUsername;
     const result = formSchema.safeParse({ username: finalUsername, settings });
     if (!result.success) {
@@ -99,7 +88,9 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
       return;
     }
     setFormErrors({});
-    onCreateRoom(finalUsername, settings);
+    setIsCreating(true);
+    await createRoom(finalUsername, settings.difficulty);
+    setIsCreating(false);
   };
 
   if (currentRoom && currentRoom.settings) {
