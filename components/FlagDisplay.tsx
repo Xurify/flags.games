@@ -13,7 +13,7 @@ const FlagDisplay: React.FC<FlagDisplayProps> = ({ flag, countryName }) => {
   if (!flag) return null;
 
   return (
-    <div className="bg-muted/80 dark:bg-transparent rounded-2xl p-6 sm:p-12 flex justify-center items-center h-[192px] sm:h-[200px]">
+    <div className="bg-muted/50 dark:bg-transparent rounded-2xl p-6 sm:p-12 flex justify-center items-center h-[192px] sm:h-[200px]">
       <Image
         src={flag}
         alt={`Flag of ${countryName}`}

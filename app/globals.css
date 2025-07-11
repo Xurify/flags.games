@@ -46,24 +46,24 @@
 }
 
 :root {
-  --radius: 1.25rem; /* Increased for modern, softer look */
-  --background: oklch(0.99 0.001 240); /* Softer, more neutral background */
-  --foreground: oklch(0.15 0.005 240); /* Slightly softer text */
-  --card: oklch(1 0 0); /* Pure white cards for clean look */
+  --radius: 1.75rem; /* Softer, more pillowy */
+  --background: oklch(0.98 0.01 100); /* Creamy, warm background */
+  --foreground: oklch(0.15 0.005 240);
+  --card: oklch(0.995 0.002 100); /* Slightly off-white for cards */
   --card-foreground: oklch(0.15 0.005 240);
-  --popover: oklch(1 0 0);
+  --popover: oklch(0.995 0.002 100);
   --popover-foreground: oklch(0.15 0.005 240);
-  --primary: oklch(0.5 0.2 240); /* Modern blue, less saturated */
-  --primary-foreground: oklch(0.99 0.001 240);
-  --secondary: oklch(0.96 0.008 240); /* Softer secondary */
+  --primary: oklch(0.5 0.2 240);
+  --primary-foreground: oklch(0.98 0.01 100);
+  --secondary: oklch(0.97 0.01 100);
   --secondary-foreground: oklch(0.15 0.005 240);
-  --muted: oklch(0.97 0.005 240); /* Very light muted */
-  --muted-foreground: oklch(0.55 0.015 240); /* Better contrast */
-  --accent: oklch(0.95 0.008 240);
+  --muted: oklch(0.975 0.008 100);
+  --muted-foreground: oklch(0.55 0.015 240);
+  --accent: oklch(0.96 0.012 100);
   --accent-foreground: oklch(0.15 0.005 240);
-  --destructive: oklch(0.58 0.2 25); /* Modern darker red */
-  --border: oklch(0.92 0.005 240); /* Softer borders */
-  --input: oklch(0.95 0.005 240);
+  --destructive: oklch(0.58 0.2 25);
+  --border: oklch(0.93 0.008 100);
+  --input: oklch(0.975 0.008 100);
   --ring: oklch(0.5 0.2 240);
 
   /* Modern game-specific colors */
@@ -132,13 +132,11 @@
   }
 
   .shadow-card {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
-      0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 8px 32px 0 rgba(60, 50, 30, 0.08), 0 1.5px 6px 0 rgba(60, 50, 30, 0.04);
   }
 
   .shadow-card-hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08),
-      0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 16px 40px 0 rgba(60, 50, 30, 0.12), 0 3px 12px 0 rgba(60, 50, 30, 0.06);
   }
 
   .shadow-flag {
