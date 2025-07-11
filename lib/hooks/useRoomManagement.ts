@@ -2,12 +2,11 @@ import { useSocket } from '@/lib/context/SocketContext';
 import { useCallback } from 'react';
 
 export const useRoomManagement = () => {
-  const { 
-    currentRoom, 
-    currentUser, 
-    createRoom, 
-    joinRoom, 
-    joinRoomByInviteCode, 
+  const {
+    currentRoom,
+    currentUser,
+    createRoom,
+    joinRoom,
     leaveRoom,
     updateRoomSettings,
     kickUser
@@ -19,7 +18,7 @@ export const useRoomManagement = () => {
 
   const canStartGame = useCallback(() => {
     if (!currentRoom || !isHost()) return false;
-    
+
     const readyUsers = currentRoom.members.filter(member => member.isReady);
     return readyUsers.length >= 2 && readyUsers.length === currentRoom.members.length;
   }, [currentRoom, isHost]);
@@ -44,7 +43,6 @@ export const useRoomManagement = () => {
     getRoomStats,
     createRoom,
     joinRoom,
-    joinRoomByInviteCode,
     leaveRoom,
     updateRoomSettings,
     kickUser

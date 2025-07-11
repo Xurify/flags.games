@@ -64,9 +64,8 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
 }) => {
   const searchParams = useSearchParams();
   const inviteCode = searchParams.get("c");
-  const { joinRoomByInviteCode } = useSocket();
 
-  const { currentRoom, currentUser, isHost, canStartGame, updateRoomSettings } =
+  const { currentRoom, isHost, canStartGame, updateRoomSettings } =
     useRoomManagement();
 
   const usernameGen = new UsernameGenerator();
@@ -142,7 +141,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
               ].map((player, idx) => (
                 <div
                   key={idx}
-                  className={`flex items-center gap-4 lg:gap-5 px-3 lg:px-4 py-2 rounded-2xl shadow-card bg-white/70 border border-border transition-all ${
+                  className={`flex items-center gap-4 lg:gap-5 px-3 lg:px-4 py-3 rounded-2xl shadow-card bg-white/70 border border-border transition-all ${
                     player ? "" : "opacity-60 bg-muted/60 border-dashed"
                   }`}
                 >

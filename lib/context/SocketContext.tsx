@@ -113,11 +113,10 @@ export interface SocketContextType {
 
   createRoom: (username: string, difficulty: string) => Promise<void>;
   joinRoom: (
-    roomId: string,
+    inviteCode: string,
     username: string,
     passcode?: string
   ) => Promise<void>;
-  joinRoomByInviteCode: (inviteCode: string, username: string) => Promise<void>;
   leaveRoom: () => Promise<void>;
 
   startGame: () => Promise<void>;
@@ -417,7 +416,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     } else {
       logger.warn("Cannot send message: WebSocket not connected");
-      throw new Error("WebSocket not connected");
     }
   }, []);
 
@@ -432,20 +430,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   );
 
   const joinRoom = useCallback(
-    async (roomId: string, username: string, passcode?: string) => {
+    async (inviteCode: string, username: string, passcode?: string) => {
       sendMessage({
         type: "JOIN_ROOM",
-        data: { roomId, username, passcode },
-      });
-    },
-    [sendMessage]
-  );
-
-  const joinRoomByInviteCode = useCallback(
-    async (inviteCode: string, username: string) => {
-      sendMessage({
-        type: "JOIN_ROOM_BY_INVITE",
-        data: { inviteCode, username },
+        data: { inviteCode, username, passcode },
       });
     },
     [sendMessage]
@@ -468,7 +456,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const submitAnswer = useCallback(
     async (answer: string) => {
       if (!gameState?.currentQuestion) {
-        throw new Error("No active question");
+        console.error("No active question");
+        return;
       }
 
       sendMessage({
@@ -560,7 +549,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     disconnect,
     createRoom,
     joinRoom,
-    joinRoomByInviteCode,
     leaveRoom,
     startGame,
     submitAnswer,
