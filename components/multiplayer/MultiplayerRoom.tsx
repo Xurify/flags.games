@@ -74,13 +74,12 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
 
   const isFormValid = username.trim().length >= 3;
 
-  // If we have a room, show the lobby view
   if (currentRoom && currentRoom.settings) {
     const members = currentRoom.members;
     const maxPlayers = currentRoom.settings.maxRoomSize;
     const roomInviteCode = currentRoom.inviteCode || "";
     const inviteLink = roomInviteCode
-      ? `${window.location.origin}/multiplayer?c=${roomInviteCode}`
+      ? `${window.location.origin}/lobby?c=${roomInviteCode}`
       : "";
 
     const handleSettingChange = (

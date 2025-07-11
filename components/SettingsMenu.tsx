@@ -114,7 +114,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                     size="sm"
                     onClick={() => {
                       setSettingsOpen(false);
-                      router.push("/create-room");
+                      router.push("/lobby");
                     }}
                     className="w-full justify-start"
                   >
