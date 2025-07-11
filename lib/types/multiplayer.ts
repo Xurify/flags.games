@@ -28,7 +28,7 @@ export interface RoomSettings {
   maxRoomSize: number;
   difficulty: Difficulty;
   gameMode: string;
-  timeLimit?: number;
+  timePerQuestion?: number;
 }
 
 // Game State Types for multiplayer

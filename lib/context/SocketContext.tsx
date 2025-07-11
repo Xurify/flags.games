@@ -38,7 +38,6 @@ export interface GameQuestion {
     name: string;
     flag: string;
   }>;
-  timeLimit: number;
 }
 
 export interface GameAnswer {

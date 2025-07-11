@@ -14,7 +14,8 @@ export const useGameState = () => {
     const updateTimer = () => {
       const now = Date.now();
       const elapsed = now - (gameState.currentQuestion?.country ? Date.now() : 0);
-      const remaining = Math.max(0, (gameState.currentQuestion?.timeLimit || 30) * 1000 - elapsed);
+      const timePerQuestion = currentRoom?.settings?.timePerQuestion || 30;
+      const remaining = Math.max(0, timePerQuestion * 1000 - elapsed);
       setTimeRemaining(Math.ceil(remaining / 1000));
     };
 

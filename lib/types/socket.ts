@@ -82,5 +82,5 @@ export interface RoomSettings {
   maxRoomSize: number;
   difficulty: string;
   gameMode: string;
-  timeLimit?: number;
+  timePerQuestion?: number;
 }

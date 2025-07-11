@@ -36,7 +36,7 @@ const CreateRoomView: React.FC<CreateRoomViewProps> = ({
     maxRoomSize: 2,
     difficulty: "easy",
     gameMode: "classic",
-    timeLimit: 30,
+    timePerQuestion: 30,
   });
 
   const handleCreateRoom = () => {
@@ -136,15 +136,15 @@ const CreateRoomView: React.FC<CreateRoomViewProps> = ({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="timeLimit" className="text-sm font-medium">
+                <Label htmlFor="timePerQuestion" className="text-sm font-medium">
                   Time per Question (seconds)
                 </Label>
                 <Select
-                  value={settings.timeLimit?.toString() || "30"}
+                  value={settings.timePerQuestion?.toString() || "30"}
                   onValueChange={(value) =>
                     setSettings((prev) => ({
                       ...prev,
-                      timeLimit: parseInt(value),
+                      timePerQuestion: parseInt(value),
                     }))
                   }
                 >

@@ -2,14 +2,14 @@
 
 import React, { useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { 
-  UsersIcon, 
-  SettingsIcon, 
-  CrownIcon, 
-  UserIcon, 
-  CheckIcon, 
-  PlayIcon, 
-  LinkIcon 
+import {
+  UsersIcon,
+  SettingsIcon,
+  CrownIcon,
+  UserIcon,
+  CheckIcon,
+  PlayIcon,
+  LinkIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +34,7 @@ import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
 import { useSocket } from "@/lib/context/SocketContext";
 
 const difficulties = ["easy", "medium", "hard", "expert"];
-const timeLimits = [10, 15, 20, 30, 60];
+const timePerQuestionOptions = [10, 15, 20, 30, 60];
 
 interface MultiplayerRoomProps {
   onCreateRoom: (username: string, settings: RoomSettings) => void;
@@ -48,22 +48,16 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
   const searchParams = useSearchParams();
   const inviteCode = searchParams.get("c");
   const { joinRoomByInviteCode } = useSocket();
-  
-  const {
-    currentRoom,
-    currentUser,
-    isHost,
-    canStartGame,
-    updateRoomSettings,
-  } = useRoomManagement();
 
-  // Create room state
+  const { currentRoom, currentUser, isHost, canStartGame, updateRoomSettings } =
+    useRoomManagement();
+
   const [username, setUsername] = useState("");
   const [settings, setSettings] = useState<RoomSettings>({
     maxRoomSize: 2,
     difficulty: "easy",
     gameMode: "classic",
-    timeLimit: 30,
+    timePerQuestion: 30,
   });
 
   const handleCreateRoom = () => {
@@ -106,7 +100,6 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     return (
       <div className="flex items-center justify-center bg-background">
         <Card className="w-full max-w-6xl flex flex-col md:flex-row shadow-card">
-          {/* Player List */}
           <div className="md:w-1/3 border-b md:border-b-0 md:border-r border-border flex flex-col items-center p-4 bg-card">
             <CardHeader className="w-full pb-2">
               <CardTitle className="text-base text-foreground text-center">
@@ -114,64 +107,125 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
               </CardTitle>
             </CardHeader>
             <CardContent className="w-full flex flex-col gap-2 p-0">
-              {[...members, ...Array(maxPlayers - members.length).fill(null)].map((player, idx) => (
-                <div key={idx} className={`flex items-center gap-3 px-3 py-2 rounded-lg ${player ? "bg-muted" : "bg-muted/50"}`}>
+              {[
+                ...members,
+                ...Array(maxPlayers - members.length).fill(null),
+              ].map((player, idx) => (
+                <div
+                  key={idx}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg ${
+                    player ? "bg-muted" : "bg-muted/50"
+                  }`}
+                >
                   {player ? (
                     <>
                       <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center">
-                        {player.avatar ? <img src={player.avatar} alt={player.name} className="w-9 h-9 rounded-full" /> : <UserIcon className="w-5 h-5 text-muted-foreground" />}
+                        {player.avatar ? (
+                          <img
+                            src={player.avatar}
+                            alt={player.name}
+                            className="w-9 h-9 rounded-full"
+                          />
+                        ) : (
+                          <UserIcon className="w-5 h-5 text-muted-foreground" />
+                        )}
                       </div>
-                      <span className="font-medium text-foreground flex-1">{player.name || player.username}</span>
-                      {currentRoom?.host === player.id && <CrownIcon className="w-4 h-4 text-yellow-400" aria-label="Host" />}
-                      {player.isReady && <CheckIcon className="w-4 h-4 text-green-500" aria-label="Ready" />}
+                      <span className="font-medium text-foreground flex-1">
+                        {player.name || player.username}
+                      </span>
+                      {currentRoom?.host === player.id && (
+                        <CrownIcon
+                          className="w-4 h-4 text-yellow-400"
+                          aria-label="Host"
+                        />
+                      )}
+                      {player.isReady && (
+                        <CheckIcon
+                          className="w-4 h-4 text-green-500"
+                          aria-label="Ready"
+                        />
+                      )}
                     </>
                   ) : (
-                    <span className="text-muted-foreground flex items-center gap-2"><UserIcon className="w-4 h-4" /> EMPTY</span>
+                    <span className="text-muted-foreground flex items-center gap-2">
+                      <UserIcon className="w-4 h-4" /> EMPTY
+                    </span>
                   )}
                 </div>
               ))}
             </CardContent>
           </div>
-          {/* Settings & Actions */}
           <div className="md:w-2/3 flex flex-col gap-6 p-4">
             <div className="mb-2">
-              <h2 className="text-base font-semibold text-foreground mb-3 text-center md:text-left">Game Settings</h2>
+              <h2 className="text-base font-semibold text-foreground mb-3 text-center md:text-left">
+                Game Settings
+              </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="difficulty" className="text-sm font-medium">Difficulty</Label>
-                  <Select value={currentRoom.settings.difficulty || "easy"} onValueChange={v => handleSettingChange("difficulty", v)} disabled={!isHost()}>
+                  <Label htmlFor="difficulty" className="text-sm font-medium">
+                    Difficulty
+                  </Label>
+                  <Select
+                    value={currentRoom.settings.difficulty || "easy"}
+                    onValueChange={(v) => handleSettingChange("difficulty", v)}
+                    disabled={!isHost()}
+                  >
                     <SelectTrigger className="h-11 rounded-xl mt-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {difficulties.map(d => (
-                        <SelectItem key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</SelectItem>
+                      {difficulties.map((d) => (
+                        <SelectItem key={d} value={d}>
+                          {d.charAt(0).toUpperCase() + d.slice(1)}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="roomSize" className="text-sm font-medium">Max Players</Label>
-                  <Select value={String(currentRoom.settings.maxRoomSize || 4)} onValueChange={v => handleSettingChange("maxRoomSize", Number(v))} disabled={!isHost()}>
+                  <Label htmlFor="roomSize" className="text-sm font-medium">
+                    Max Players
+                  </Label>
+                  <Select
+                    value={String(currentRoom.settings.maxRoomSize || 4)}
+                    onValueChange={(v) =>
+                      handleSettingChange("maxRoomSize", Number(v))
+                    }
+                    disabled={!isHost()}
+                  >
                     <SelectTrigger className="h-11 rounded-xl mt-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {ROOM_SIZES.map(n => (
-                        <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                      {ROOM_SIZES.map((n) => (
+                        <SelectItem key={n} value={n.toString()}>
+                          {n}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="timeLimit" className="text-sm font-medium">Time per Question (seconds)</Label>
-                  <Select value={String(currentRoom.settings.timePerQuestion || 30)} onValueChange={v => handleSettingChange("timePerQuestion", Number(v))} disabled={!isHost()}>
+                  <Label htmlFor="timePerQuestion" className="text-sm font-medium">
+                    Time per Question (seconds)
+                  </Label>
+                  <Select
+                    value={String(
+                      currentRoom.settings.timePerQuestion || settings.timePerQuestion
+                    )}
+                    onValueChange={(v) =>
+                      handleSettingChange("timePerQuestion", Number(v))
+                    }
+                    disabled={!isHost()}
+                  >
                     <SelectTrigger className="h-11 rounded-xl mt-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {timeLimits.map(t => (
-                        <SelectItem key={t} value={t.toString()}>{t} seconds</SelectItem>
+                      {timePerQuestionOptions.map((t) => (
+                        <SelectItem key={t} value={t.toString()}>
+                          {t} seconds
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -179,14 +233,28 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mt-4">
-              <Button variant="outline" className="flex items-center gap-2" onClick={handleInvite}>
+              <Button
+                variant="outline"
+                className="flex items-center gap-2"
+                onClick={handleInvite}
+              >
                 <LinkIcon className="w-4 h-4" /> Invite
               </Button>
-              <Button variant={currentUser?.isReady ? "default" : "secondary"} className="flex items-center gap-2" onClick={handleReady}>
-                <CheckIcon className="w-4 h-4" /> {currentUser?.isReady ? "Ready!" : "Ready Up"}
+              <Button
+                variant={currentUser?.isReady ? "default" : "secondary"}
+                className="flex items-center gap-2"
+                onClick={handleReady}
+              >
+                <CheckIcon className="w-4 h-4" />{" "}
+                {currentUser?.isReady ? "Ready!" : "Ready Up"}
               </Button>
               {isHost() && (
-                <Button variant="default" className="flex items-center gap-2" onClick={handleStart} disabled={!canStartGame()}>
+                <Button
+                  variant="default"
+                  className="flex items-center gap-2"
+                  onClick={handleStart}
+                  disabled={!canStartGame()}
+                >
                   <PlayIcon className="w-4 h-4" /> Start
                 </Button>
               )}
@@ -197,7 +265,6 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     );
   }
 
-  // Show create room view if no room exists
   return (
     <div className="max-w-4xl w-full mx-auto">
       <Card className="shadow-card hover:shadow-card-hover transition-all duration-300">
@@ -287,15 +354,15 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="timeLimit" className="text-sm font-medium">
+                <Label htmlFor="timePerQuestion" className="text-sm font-medium">
                   Time per Question (seconds)
                 </Label>
                 <Select
-                  value={settings.timeLimit?.toString() || "30"}
+                  value={settings.timePerQuestion?.toString() || "30"}
                   onValueChange={(value) =>
                     setSettings((prev) => ({
                       ...prev,
-                      timeLimit: parseInt(value),
+                      timePerQuestion: parseInt(value),
                     }))
                   }
                 >
@@ -303,11 +370,11 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="10">10 seconds</SelectItem>
-                    <SelectItem value="15">15 seconds</SelectItem>
-                    <SelectItem value="20">20 seconds</SelectItem>
-                    <SelectItem value="30">30 seconds</SelectItem>
-                    <SelectItem value="60">60 seconds</SelectItem>
+                    {timePerQuestionOptions.map((t) => (
+                      <SelectItem key={t} value={t.toString()}>
+                        {t} seconds
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -363,4 +430,4 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
   );
 };
 
-export default MultiplayerRoom; 
+export default MultiplayerRoom;
