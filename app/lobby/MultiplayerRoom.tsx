@@ -97,6 +97,8 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     setIsCreating(false);
   };
 
+  console.log('currentRoom', currentRoom);
+
   if (currentRoom && currentRoom.settings) {
     const members = currentRoom.members;
     const maxPlayers = currentRoom.settings.maxRoomSize;

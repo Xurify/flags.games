@@ -188,7 +188,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     });
 
     messageHandlers.current.set(WS_MESSAGE_TYPES.SETTINGS_UPDATED, (data) => {
-      setCurrentRoom(data.room);
+      if (currentRoom && data.settings) {
+        setCurrentRoom({ ...currentRoom as Room, settings: data.settings });
+      }
     });
 
     messageHandlers.current.set(WS_MESSAGE_TYPES.USER_JOINED, (data) => {
@@ -275,7 +277,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       setLastError(data.message || "An error occurred");
       logger.error("Socket error:", data);
     });
-  }, []);
+  }, [currentRoom]);
 
   const handleMessage = useCallback((event: MessageEvent) => {
     try {
