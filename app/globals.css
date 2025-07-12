@@ -63,7 +63,7 @@
   --accent-foreground: oklch(0.1 0.005 240);
   --destructive: oklch(0.6 0.2 25);
   --border: oklch(0.9 0.01 100);
-  --input: oklch(0.97 0.01 100);
+  --input: oklch(0.93 0.01 100); /* Further darken input for better contrast */
   --ring: oklch(0.55 0.25 260);
 
   /* Modern game-specific colors */
@@ -105,7 +105,7 @@
   --accent-foreground: oklch(0.98 0.005 240);
   --destructive: oklch(0.6 0.2 25); /* Modern darker red */
   --border: oklch(0.16 0.002 240); /* Slightly lighter than background */
-  --input: oklch(0.14 0.002 240); /* Same as secondary */
+  --input: oklch(0.28 0.002 240); /* Further lighten input for better contrast in dark mode */
   --ring: oklch(0.65 0.25 260);
   --chart-1: oklch(0.7 0.15 15);
   --chart-2: oklch(0.65 0.18 140);
