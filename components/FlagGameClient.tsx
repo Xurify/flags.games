@@ -91,9 +91,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>(
-    initialGameData.difficulty
-  );
   const [showScorePopup, setShowScorePopup] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -341,11 +338,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     }
   }, [gameState.gameCompleted, settings.soundEffectsEnabled]);
 
-  // Sync selectedDifficulty with gameState.difficulty
-  useEffect(() => {
-    setSelectedDifficulty(gameState.difficulty);
-  }, [gameState.difficulty]);
-
   return (
     <div className="min-h-screen h-screen sm:min-h-screen sm:h-auto bg-background overflow-y-auto">
       {gameState.gameCompleted && (
@@ -361,8 +353,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       <DifficultySelector
         open={showDifficultyDialog}
         onOpenChange={setShowDifficultyDialog}
-        selectedDifficulty={selectedDifficulty}
-        setSelectedDifficulty={setSelectedDifficulty}
         onChangeDifficulty={handleChangeDifficulty}
         currentDifficulty={gameState.difficulty}
         onToggleHeartsMode={handleToggleHeartsMode}

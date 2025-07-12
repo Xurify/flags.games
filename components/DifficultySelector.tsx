@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   AlertDialogContent,
   AlertDialogHeader,
@@ -25,8 +25,6 @@ import { GameState } from "./FlagGameClient";
 interface DifficultySelectorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  selectedDifficulty: Difficulty;
-  setSelectedDifficulty: (value: Difficulty) => void;
   onChangeDifficulty: (difficulty: Difficulty) => void;
   currentDifficulty: Difficulty;
   heartsModeEnabled: boolean;
@@ -37,15 +35,21 @@ interface DifficultySelectorProps {
 const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   open,
   onOpenChange,
-  selectedDifficulty,
-  setSelectedDifficulty,
   onChangeDifficulty,
   onToggleHeartsMode,
   currentDifficulty,
   heartsModeEnabled,
   gameState,
 }) => {
+  const [selectedDifficulty, setSelectedDifficulty] = useState(currentDifficulty);
   const settings = getDifficultySettings(selectedDifficulty);
+
+  useEffect(() => {
+    if (open) {
+      setSelectedDifficulty(currentDifficulty);
+    }
+  }, [open, currentDifficulty]);
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
