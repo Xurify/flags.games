@@ -334,7 +334,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
+              <div className="space-y-2 h-[64px]">
                 <Label htmlFor="maxPlayers" className="text-sm font-medium">
                   Max Players
                 </Label>
@@ -362,7 +362,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 h-[64px]">
                 <Label htmlFor="difficulty" className="text-sm font-medium">
                   Difficulty
                 </Label>
@@ -393,7 +393,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 h-[64px]">
                 <Label
                   htmlFor="timePerQuestion"
                   className="text-sm font-medium"
@@ -421,7 +421,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 h-[64px]">
                 <Label htmlFor="gameMode" className="text-sm font-medium">
                   Game Mode
                 </Label>
