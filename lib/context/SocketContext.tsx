@@ -11,7 +11,8 @@ import React, {
 } from "react";
 import { logger } from "@/lib/utils/logger";
 import { WS_MESSAGE_TYPES } from "@/lib/types/socket";
-import { Room } from "../types/multiplayer";
+import { Room, RoomSettings } from "../types/multiplayer";
+import { GameSettings } from "./SettingsContext";
 
 export interface User {
   id: string;
@@ -93,7 +94,7 @@ export interface SocketContextType {
   connect: () => void;
   disconnect: () => void;
 
-  createRoom: (username: string, difficulty: string) => Promise<void>;
+  createRoom: (username: string, settings: Partial<RoomSettings>) => Promise<void>;
   joinRoom: (
     inviteCode: string,
     username: string,
@@ -390,10 +391,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   }, []);
 
   const createRoom = useCallback(
-    async (username: string, difficulty: string) => {
+    async (username: string, settings: Partial<RoomSettings>) => {
       sendMessage({
         type: WS_MESSAGE_TYPES.CREATE_ROOM,
-        data: { username, difficulty },
+        data: { username, settings },
       });
     },
     [sendMessage]

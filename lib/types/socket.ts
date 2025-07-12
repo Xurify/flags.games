@@ -1,3 +1,5 @@
+import { RoomSettings } from './multiplayer';
+
 export const WS_MESSAGE_TYPES = {
   // Client-to-server message types
   AUTH: "AUTH",
@@ -54,9 +56,7 @@ export interface WebSocketMessage {
 
 export interface CreateRoomData {
   username: string;
-  userId: string;
-  roomName: string;
-  settings?: Partial<RoomSettings>;
+  settings: Partial<RoomSettings>;
 }
 
 export interface JoinRoomData {
@@ -78,9 +78,4 @@ export interface KickUserData {
   userId: string;
 }
 
-export interface RoomSettings {
-  maxRoomSize: number;
-  difficulty: string;
-  gameMode: string;
-  timePerQuestion?: number;
-}
+

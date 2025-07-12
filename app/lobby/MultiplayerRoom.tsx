@@ -93,7 +93,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     }
     setFormErrors({});
     setIsCreating(true);
-    await createRoom(finalUsername, settings.difficulty);
+    await createRoom(finalUsername, settings);
     setIsCreating(false);
   };
 
