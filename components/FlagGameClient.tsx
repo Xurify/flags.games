@@ -28,7 +28,6 @@ import FlagDisplay from "./FlagDisplay";
 import AnswerOptions from "./AnswerOptions";
 import HowToPlayDialog from "./HowToPlayDialog";
 import RestartDialog from "./RestartDialog";
-import SettingsMenu from "./SettingsMenu";
 import DifficultySelector from "./DifficultySelector";
 import { InitialGameData } from "./FlagGameServer";
 import Header from "@/components/Header";
@@ -55,7 +54,7 @@ export interface GameState {
 }
 
 const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
-  const { settings, updateSetting } = useGameSettings();
+  const { settings } = useGameSettings();
   const router = useRouter();
   const searchParams = useSearchParams();
 

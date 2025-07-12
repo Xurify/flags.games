@@ -1,8 +1,8 @@
 import React from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Settings, Volume2, VolumeX, Sun, Moon, Users } from "lucide-react";
 import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Settings, Volume2, VolumeX, Sun, Moon, Users } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
 
 interface SettingsMenuProps {
   settingsOpen: boolean;
