@@ -13,8 +13,8 @@ export const mediumCountries = countries.filter(country =>
 
 // Hard: Lesser-known countries and flags that are similar to others
 export const hardCountries = countries.filter(country => 
-  !easyCountries.find(c => c.code === country.code) && 
-  !mediumCountries.find(c => c.code === country.code)
+  !easyCountries.find(easyCountry => easyCountry.code === country.code) && 
+  !mediumCountries.find(mediumCountry => mediumCountry.code === country.code)
 );
 
 export const getDifficultyCountries = (difficulty: Difficulty) => {
