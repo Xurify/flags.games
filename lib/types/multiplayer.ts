@@ -3,24 +3,29 @@ import { Difficulty } from "@/lib/constants";
 
 export interface User {
   id: string;
+  socketId: string;
   username: string;
   roomId: string;
-  socketId: string;
+  created: string;
+  color: string;
   isAdmin: boolean;
-  score?: number;
+  score: number;
+  currentAnswer?: string;
+  answerTime?: number;
+  lastActiveTime: string;
 }
 
 export interface Room {
   id: string;
   name: string;
+  host: string;
   inviteCode: string;
-  members: User[];
-  maxRoomSize: number;
-  settings: RoomSettings;
+  passcode: string | null;
   gameState: GameState;
-  createdAt: string;
-  createdBy: string;
-  host?: string;
+  members: User[];
+  previouslyConnectedMembers: Array<{ userId: string; username: string }>;
+  created: string;
+  settings: RoomSettings;
 }
 
 export interface RoomSettings {
@@ -67,15 +72,15 @@ export interface GameState {
   gameStartTime: number | null;
   gameEndTime: number | null;
   usedCountries: Set<string>;
-  questionTimer: NodeJS.Timeout | null;
-  resultTimer: NodeJS.Timeout | null;
-  leaderboard: Array<{
-    userId: string;
-    username: string;
-    score: number;
-    correctAnswers: number;
-    averageTime: number;
-  }>;
+  leaderboard: GameStateLeaderboard[];
+}
+
+export interface GameStateLeaderboard {
+  userId: string;
+  username: string;
+  score: number;
+  correctAnswers: number;
+  averageTime: number;
 }
 
 export interface HealthResponse {

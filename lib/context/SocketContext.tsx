@@ -11,69 +11,11 @@ import React, {
 } from "react";
 import { logger } from "@/lib/utils/logger";
 import { WS_MESSAGE_TYPES } from "@/lib/types/socket";
-import { Room, RoomSettings } from "../types/multiplayer";
+import { Room, RoomSettings, User, GameState, GameQuestion, GameAnswer, GameStateLeaderboard } from "../types/multiplayer";
 import { GameSettings } from "./SettingsContext";
 
-export interface User {
-  id: string;
-  socketId: string;
-  username: string;
-  roomId: string;
-  created: string;
-  color: string;
-  isAdmin: boolean;
-  score: number;
-  currentAnswer?: string;
-  answerTime?: number;
-  lastActiveTime: string;
-}
-
-export interface GameQuestion {
-  questionNumber: number;
-  country: {
-    code: string;
-    name: string;
-    flag: string;
-  };
-  options: Array<{
-    code: string;
-    name: string;
-    flag: string;
-  }>;
-}
-
-export interface GameAnswer {
-  userId: string;
-  username: string;
-  answer: string;
-  timeToAnswer: number;
-  isCorrect: boolean;
-  pointsAwarded: number;
-  timestamp: number;
-}
-
-export interface GameState {
-  isActive: boolean;
-  isPaused: boolean;
-  phase: "waiting" | "starting" | "question" | "results" | "finished";
-  currentQuestion: GameQuestion | null;
-  answers: GameAnswer[];
-  currentQuestionIndex: number;
-  totalQuestions: number;
-  difficulty: string;
-  gameStartTime: number | null;
-  gameEndTime: number | null;
-  leaderboard: Array<{
-    userId: string;
-    username: string;
-    score: number;
-    correctAnswers: number;
-    averageTime: number;
-  }>;
-}
-
 export interface WebSocketMessage<T = any> {
-  type: string;
+  type: keyof typeof WS_MESSAGE_TYPES;
   data: T;
   timestamp?: number;
 }
@@ -83,6 +25,79 @@ export type ConnectionState =
   | "connecting"
   | "connected"
   | "reconnecting";
+
+export interface MessageDataTypes {
+  [WS_MESSAGE_TYPES.HEARTBEAT]: {};
+  [WS_MESSAGE_TYPES.AUTH_SUCCESS]: {
+    user?: User;
+    room?: Room;
+    userId: string;
+    isAdmin: boolean;
+  };
+  [WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS]: {
+    room: Room;
+    user: User;
+  };
+  [WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS]: {
+    room: Room;
+    user: User;
+  };
+  [WS_MESSAGE_TYPES.LEAVE_ROOM]: {};
+  [WS_MESSAGE_TYPES.SETTINGS_UPDATED]: {
+    settings: RoomSettings;
+  };
+  [WS_MESSAGE_TYPES.USER_JOINED]: {
+    members: User[];
+  };
+  [WS_MESSAGE_TYPES.USER_LEFT]: {
+    members: User[];
+  };
+  [WS_MESSAGE_TYPES.HOST_CHANGED]: {
+    newHost: User;
+  };
+  [WS_MESSAGE_TYPES.KICKED]: {
+    reason: string;
+  };
+  [WS_MESSAGE_TYPES.GAME_STARTING]: {};
+  [WS_MESSAGE_TYPES.NEW_QUESTION]: {
+    question: GameQuestion;
+  };
+  [WS_MESSAGE_TYPES.ANSWER_SUBMITTED]: {
+    username: string;
+  };
+  [WS_MESSAGE_TYPES.QUESTION_RESULTS]: {
+    playerAnswers: GameAnswer[];
+    leaderboard: GameStateLeaderboard[];
+  };
+  [WS_MESSAGE_TYPES.GAME_ENDED]: {
+    leaderboard: GameStateLeaderboard[];
+  };
+  [WS_MESSAGE_TYPES.GAME_STOPPED]: {};
+  [WS_MESSAGE_TYPES.GAME_PAUSED]: {};
+  [WS_MESSAGE_TYPES.GAME_RESUMED]: {};
+  [WS_MESSAGE_TYPES.QUESTION_SKIPPED]: {
+    skippedBy: string;
+  };
+  [WS_MESSAGE_TYPES.USER_REACTION]: {
+    fromUsername: string;
+    reaction: string;
+  };
+  [WS_MESSAGE_TYPES.PROFILE_UPDATED]: {
+    user: User;
+  };
+  [WS_MESSAGE_TYPES.USER_PROFILE_UPDATED]: {
+    userId: string;
+    username: string;
+    color: string;
+  };
+  [WS_MESSAGE_TYPES.ERROR]: {
+    message: string;
+  };
+}
+
+type MessageHandler<T extends keyof MessageDataTypes> = (
+  data: MessageDataTypes[T]
+) => void;
 
 export interface SocketContextType {
   connectionState: ConnectionState;
@@ -104,9 +119,16 @@ export interface SocketContextType {
 
   startGame: () => Promise<void>;
   submitAnswer: (answer: string) => Promise<void>;
+  pauseGame: () => Promise<void>;
+  resumeGame: () => Promise<void>;
+  stopGame: () => Promise<void>;
+  skipQuestion: () => Promise<void>;
 
   updateRoomSettings: (settings: Partial<Room["settings"]>) => Promise<void>;
   kickUser: (userId: string) => Promise<void>;
+
+  sendReaction: (reaction: string, targetUserId?: string) => Promise<void>;
+  updateProfile: (updates: { color?: string; username?: string }) => Promise<void>;
 
   sendMessage: (message: WebSocketMessage) => void;
   getConnectionStats: () => {
@@ -151,65 +173,82 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const maxReconnectAttempts = 5;
   const reconnectDelay = 3000;
 
-  const messageHandlers = useRef<Map<string, (data: any) => void>>(new Map());
+  // Fixed: Use a Map with proper typing
+  const messageHandlers = useRef<Map<keyof typeof WS_MESSAGE_TYPES, (data: any) => void>>(new Map());
 
   const setupMessageHandlers = useCallback(() => {
-    messageHandlers.current.set(WS_MESSAGE_TYPES.HEARTBEAT, () => {
+    // Clear existing handlers
+    messageHandlers.current.clear();
+
+    // Typed handler functions
+    const heartbeatHandler: MessageHandler<typeof WS_MESSAGE_TYPES.HEARTBEAT> = () => {
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(
           JSON.stringify({ type: WS_MESSAGE_TYPES.HEARTBEAT_RESPONSE, data: {} })
         );
       }
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.AUTH_SUCCESS, (data) => {
+    const authSuccessHandler: MessageHandler<typeof WS_MESSAGE_TYPES.AUTH_SUCCESS> = (data) => {
       data.user && setCurrentUser(data.user);
       data.room && setCurrentRoom(data.room);
-    });
+    };
 
-
-    messageHandlers.current.set(WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS, (data) => {
+    const createRoomSuccessHandler: MessageHandler<typeof WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS> = (data) => {
       setCurrentRoom(data.room);
       setCurrentUser(data.user);
       logger.info("Room created successfully (CREATE_ROOM_SUCCESS)");
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS, (data) => {
+    const joinRoomSuccessHandler: MessageHandler<typeof WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS> = (data) => {
       setCurrentRoom(data.room);
       setCurrentUser(data.user);
       logger.info("Joined room successfully (JOIN_ROOM_SUCCESS)");
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.LEAVE_ROOM, () => {
+    const leaveRoomHandler: MessageHandler<typeof WS_MESSAGE_TYPES.LEAVE_ROOM> = () => {
       setCurrentRoom(null);
       setCurrentUser(null);
       setGameState(null);
       logger.info("Left room");
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.SETTINGS_UPDATED, (data) => {
+    const settingsUpdatedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED> = (data) => {
       if (currentRoom && data.settings) {
         setCurrentRoom({ ...currentRoom as Room, settings: data.settings });
       }
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_JOINED, (data) => {
+    const userJoinedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_JOINED> = (data) => {
       setCurrentRoom((prev) =>
         prev ? { ...prev, members: data.members } : null
       );
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_LEFT, (data) => {
+    const userLeftHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_LEFT> = (data) => {
       setCurrentRoom((prev) =>
         prev ? { ...prev, members: data.members } : null
       );
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_STARTING, (data) => {
+    const hostChangedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.HOST_CHANGED> = (data) => {
+      setCurrentRoom((prev) =>
+        prev ? { ...prev, host: data.newHost.id } : null
+      );
+    };
+
+    const kickedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.KICKED> = (data) => {
+      setCurrentRoom(null);
+      setCurrentUser(null);
+      setGameState(null);
+      logger.info("Kicked from room:", data.reason);
+    };
+
+    const gameStartingHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_STARTING> = () => {
       setGameState((prev) => (prev ? { ...prev, phase: "starting" } : null));
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.NEW_QUESTION, (data) => {
+    const newQuestionHandler: MessageHandler<typeof WS_MESSAGE_TYPES.NEW_QUESTION> = (data) => {
       setGameState((prev) =>
         prev
           ? {
@@ -220,13 +259,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
             }
           : null
       );
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.ANSWER_SUBMITTED, (data) => {
+    const answerSubmittedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ANSWER_SUBMITTED> = (data) => {
       logger.info(`${data.username} submitted an answer`);
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.QUESTION_RESULTS, (data) => {
+    const questionResultsHandler: MessageHandler<typeof WS_MESSAGE_TYPES.QUESTION_RESULTS> = (data) => {
       setGameState((prev) =>
         prev
           ? {
@@ -237,9 +276,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
             }
           : null
       );
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_ENDED, (data) => {
+    const gameEndedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_ENDED> = (data) => {
       setGameState((prev) =>
         prev
           ? {
@@ -250,9 +289,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
             }
           : null
       );
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_STOPPED, () => {
+    const gameStoppedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_STOPPED> = () => {
       setGameState((prev) =>
         prev
           ? {
@@ -263,20 +302,71 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
             }
           : null
       );
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_PAUSED, () => {
+    const gamePausedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_PAUSED> = () => {
       setGameState((prev) => (prev ? { ...prev, isPaused: true } : null));
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_RESUMED, () => {
+    const gameResumedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_RESUMED> = () => {
       setGameState((prev) => (prev ? { ...prev, isPaused: false } : null));
-    });
+    };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.ERROR, (data) => {
+    const questionSkippedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.QUESTION_SKIPPED> = (data) => {
+      logger.info(`Question skipped by ${data.skippedBy}`);
+    };
+
+    const userReactionHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_REACTION> = (data) => {
+      logger.info(`Reaction from ${data.fromUsername}: ${data.reaction}`);
+    };
+
+    const profileUpdatedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.PROFILE_UPDATED> = (data) => {
+      setCurrentUser(data.user);
+    };
+
+    const userProfileUpdatedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_PROFILE_UPDATED> = (data) => {
+      setCurrentRoom((prev) =>
+        prev
+          ? {
+              ...prev,
+              members: prev.members.map((member) =>
+                member.id === data.userId
+                  ? { ...member, username: data.username, color: data.color }
+                  : member
+              ),
+            }
+          : null
+      );
+    };
+
+    const errorHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ERROR> = (data) => {
       setLastError(data.message || "An error occurred");
       logger.error("Socket error:", data);
-    });
+    };
+
+    messageHandlers.current.set(WS_MESSAGE_TYPES.HEARTBEAT, heartbeatHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.AUTH_SUCCESS, authSuccessHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS, createRoomSuccessHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS, joinRoomSuccessHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.LEAVE_ROOM, leaveRoomHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.SETTINGS_UPDATED, settingsUpdatedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_JOINED, userJoinedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_LEFT, userLeftHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.HOST_CHANGED, hostChangedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.KICKED, kickedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_STARTING, gameStartingHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.NEW_QUESTION, newQuestionHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.ANSWER_SUBMITTED, answerSubmittedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.QUESTION_RESULTS, questionResultsHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_ENDED, gameEndedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_STOPPED, gameStoppedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_PAUSED, gamePausedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_RESUMED, gameResumedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.QUESTION_SKIPPED, questionSkippedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_REACTION, userReactionHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.PROFILE_UPDATED, profileUpdatedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_PROFILE_UPDATED, userProfileUpdatedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.ERROR, errorHandler);
   }, [currentRoom]);
 
   const handleMessage = useCallback((event: MessageEvent) => {
@@ -331,7 +421,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
         setConnectionState("disconnected");
 
         if (event.code !== 1000) {
-          // Not a normal closure
           logger.warn(
             "WebSocket closed unexpectedly:",
             event.code,
@@ -444,6 +533,34 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     [sendMessage, gameState]
   );
 
+  const pauseGame = useCallback(async () => {
+    sendMessage({
+      type: WS_MESSAGE_TYPES.PAUSE_GAME,
+      data: {},
+    });
+  }, [sendMessage]);
+
+  const resumeGame = useCallback(async () => {
+    sendMessage({
+      type: WS_MESSAGE_TYPES.RESUME_GAME,
+      data: {},
+    });
+  }, [sendMessage]);
+
+  const stopGame = useCallback(async () => {
+    sendMessage({
+      type: WS_MESSAGE_TYPES.STOP_GAME,
+      data: {},
+    });
+  }, [sendMessage]);
+
+  const skipQuestion = useCallback(async () => {
+    sendMessage({
+      type: WS_MESSAGE_TYPES.SKIP_QUESTION,
+      data: {},
+    });
+  }, [sendMessage]);
+
   const updateRoomSettings = useCallback(
     async (settings: Partial<Room["settings"]>) => {
       sendMessage({
@@ -459,6 +576,26 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       sendMessage({
         type: WS_MESSAGE_TYPES.KICK_USER,
         data: { userId },
+      });
+    },
+    [sendMessage]
+  );
+
+  const sendReaction = useCallback(
+    async (reaction: string, targetUserId?: string) => {
+      sendMessage({
+        type: WS_MESSAGE_TYPES.REACTION,
+        data: { reaction, targetUserId },
+      });
+    },
+    [sendMessage]
+  );
+
+  const updateProfile = useCallback(
+    async (updates: { color?: string; username?: string }) => {
+      sendMessage({
+        type: WS_MESSAGE_TYPES.UPDATE_PROFILE,
+        data: updates,
       });
     },
     [sendMessage]
@@ -515,8 +652,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     leaveRoom,
     startGame,
     submitAnswer,
+    pauseGame,
+    resumeGame,
+    stopGame,
+    skipQuestion,
     updateRoomSettings,
     kickUser,
+    sendReaction,
+    updateProfile,
     sendMessage,
     getConnectionStats,
   };
