@@ -1,10 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import MultiplayerRoom from "@/components/multiplayer/MultiplayerRoom";
-import Header from "@/components/Header";
-import { Button } from "@/components/ui/button";
 import { HomeIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Header from "@/components/Header";
+import MultiplayerRoom from "./MultiplayerRoom";
 
 interface MultiplayerPageContentProps {
   randomUsername: string;
