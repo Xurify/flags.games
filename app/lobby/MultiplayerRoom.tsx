@@ -28,13 +28,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RoomSettings } from "@/lib/types/multiplayer";
-import { Difficulty, ROOM_SIZES } from "@/lib/constants";
+import { GameMode, RoomSettings } from "@/lib/types/multiplayer";
+import {
+  Difficulty,
+  DIFFICULTY_LEVELS,
+  ROOM_SIZES,
+  TIME_PER_QUESTION_OPTIONS,
+} from "@/lib/constants";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
 import { z, ZodIssue } from "zod";
-
-const difficulties = ["easy", "medium", "hard", "expert"];
-const timePerQuestionOptions = [10, 15, 20, 30, 60];
 
 const roomSettingsSchema = z.object({
   maxRoomSize: z
@@ -55,7 +57,9 @@ interface MultiplayerRoomProps {
   randomUsername: string;
 }
 
-const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({ randomUsername }) => {
+const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
+  randomUsername,
+}) => {
   const searchParams = useSearchParams();
   const inviteCode = searchParams.get("c");
 
@@ -189,17 +193,23 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({ randomUsername }) => 
                     Difficulty
                   </Label>
                   <Select
-                    value={currentRoom.settings.difficulty || "easy"}
+                    value={currentRoom.settings.difficulty}
                     onValueChange={(v) => handleSettingChange("difficulty", v)}
                     disabled={!isHost()}
                   >
-                    <SelectTrigger className="h-12 rounded-xl mt-2">
-                      <SelectValue />
+                    <SelectTrigger className="h-12 rounded-xl mt-2 capitalize">
+                      <SelectValue>
+                        {currentRoom.settings.difficulty}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      {difficulties.map((d) => (
-                        <SelectItem key={d} value={d}>
-                          {d.charAt(0).toUpperCase() + d.slice(1)}
+                      {DIFFICULTY_LEVELS.map((difficulty) => (
+                        <SelectItem
+                          className="capitalize"
+                          key={difficulty}
+                          value={difficulty}
+                        >
+                          {difficulty}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -210,14 +220,16 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({ randomUsername }) => 
                     Max Players
                   </Label>
                   <Select
-                    value={String(currentRoom.settings.maxRoomSize || 4)}
+                    value={String(currentRoom.settings.maxRoomSize)}
                     onValueChange={(v) =>
                       handleSettingChange("maxRoomSize", Number(v))
                     }
                     disabled={!isHost()}
                   >
                     <SelectTrigger className="h-12 rounded-xl mt-2">
-                      <SelectValue />
+                      <SelectValue>
+                        {currentRoom.settings.maxRoomSize} players
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {ROOM_SIZES.map((n) => (
@@ -236,22 +248,21 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({ randomUsername }) => 
                     Time per Question (seconds)
                   </Label>
                   <Select
-                    value={String(
-                      currentRoom.settings.timePerQuestion ||
-                        settings.timePerQuestion
-                    )}
+                    value={String(currentRoom.settings.timePerQuestion)}
                     onValueChange={(v) =>
                       handleSettingChange("timePerQuestion", Number(v))
                     }
                     disabled={!isHost()}
                   >
                     <SelectTrigger className="h-12 rounded-xl mt-2">
-                      <SelectValue />
+                      <SelectValue>
+                        {currentRoom.settings.timePerQuestion}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      {timePerQuestionOptions.map((t) => (
-                        <SelectItem key={t} value={t.toString()}>
-                          {t} seconds
+                      {TIME_PER_QUESTION_OPTIONS.map((time) => (
+                        <SelectItem key={time} value={time.toString()}>
+                          {time} seconds
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -337,7 +348,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({ randomUsername }) => 
                   }
                 >
                   <SelectTrigger className="h-11 rounded-xl">
-                    <SelectValue />
+                    <SelectValue>{settings.maxRoomSize} players</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {ROOM_SIZES.map((roomSize) => (
@@ -357,21 +368,28 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({ randomUsername }) => 
                 </Label>
                 <Select
                   value={settings.difficulty}
-                  onValueChange={(value) =>
+                  onValueChange={(value: Difficulty) =>
                     setSettings((prev) => ({
                       ...prev,
-                      difficulty: value as Difficulty,
+                      difficulty: value,
                     }))
                   }
                 >
-                  <SelectTrigger className="h-11 rounded-xl">
-                    <SelectValue />
+                  <SelectTrigger className="h-11 rounded-xl capitalize">
+                    <SelectValue className="capitalize">
+                      {settings.difficulty}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="easy">Easy</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="hard">Hard</SelectItem>
-                    <SelectItem value="expert">Expert</SelectItem>
+                    {DIFFICULTY_LEVELS.map((difficulty) => (
+                      <SelectItem
+                        className="capitalize"
+                        key={difficulty}
+                        value={difficulty}
+                      >
+                        {difficulty}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -383,7 +401,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({ randomUsername }) => 
                   Time per Question (seconds)
                 </Label>
                 <Select
-                  value={settings.timePerQuestion?.toString() || "30"}
+                  value={settings.timePerQuestion?.toString()}
                   onValueChange={(value) =>
                     setSettings((prev) => ({
                       ...prev,
@@ -392,12 +410,12 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({ randomUsername }) => 
                   }
                 >
                   <SelectTrigger className="h-11 rounded-xl">
-                    <SelectValue />
+                    <SelectValue>{settings.timePerQuestion}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {timePerQuestionOptions.map((t) => (
-                      <SelectItem key={t} value={t.toString()}>
-                        {t} seconds
+                    {TIME_PER_QUESTION_OPTIONS.map((time) => (
+                      <SelectItem key={time} value={time.toString()}>
+                        {time} seconds
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -409,15 +427,15 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({ randomUsername }) => 
                 </Label>
                 <Select
                   value={settings.gameMode}
-                  onValueChange={(value) =>
+                  onValueChange={(value: GameMode) =>
                     setSettings((prev) => ({
                       ...prev,
                       gameMode: value,
                     }))
                   }
                 >
-                  <SelectTrigger className="h-11 rounded-xl">
-                    <SelectValue />
+                  <SelectTrigger className="h-11 rounded-xl capitalize">
+                    <SelectValue>{settings.gameMode}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="classic">Classic</SelectItem>

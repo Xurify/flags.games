@@ -17,36 +17,67 @@ export interface Room {
   members: User[];
   maxRoomSize: number;
   settings: RoomSettings;
-  gameState: 'waiting' | 'playing' | 'paused' | 'finished';
+  gameState: GameState;
   createdAt: string;
   createdBy: string;
   host?: string;
 }
 
 export interface RoomSettings {
+  private?: boolean;
   maxRoomSize: number;
   difficulty: Difficulty;
-  gameMode: string;
+  //questionCount: number;
   timePerQuestion?: number;
+  //allowSpectators: boolean;
+  showLeaderboard?: boolean;
+  gameMode?: GameMode;
+};
+
+export type GameMode = "classic" | "speed" | "elimination";
+export interface GameQuestion {
+  questionNumber: number;
+  country: Country;
+  options: Country[];
+  correctAnswer: string;
+  startTime: number;
+  endTime: number;
 }
 
-// Game State Types for multiplayer
-export interface MultiplayerGameState {
-  currentQuestion?: {
-    id: string;
-    country: Country;
-    options: Country[];
-    correctAnswer: string;
-  };
-  scores: Record<string, number>;
-  timeRemaining?: number;
-  roundNumber?: number;
-  totalRounds?: number;
+export interface GameAnswer {
+  userId: string;
+  username: string;
+  answer: string;
+  timeToAnswer: number;
+  isCorrect: boolean;
+  pointsAwarded: number;
+  timestamp: number;
+}
+
+
+export interface GameState {
   isActive: boolean;
-  answers: Record<string, string>; // userId -> answer
+  isPaused: boolean;
+  phase: 'waiting' | 'starting' | 'question' | 'results' | 'finished';
+  currentQuestion: GameQuestion | null;
+  answers: GameAnswer[];
+  currentQuestionIndex: number;
+  totalQuestions: number;
+  difficulty: Difficulty;
+  gameStartTime: number | null;
+  gameEndTime: number | null;
+  usedCountries: Set<string>;
+  questionTimer: NodeJS.Timeout | null;
+  resultTimer: NodeJS.Timeout | null;
+  leaderboard: Array<{
+    userId: string;
+    username: string;
+    score: number;
+    correctAnswers: number;
+    averageTime: number;
+  }>;
 }
 
-// API Response Types
 export interface HealthResponse {
   status: 'ok';
   timestamp: string;
@@ -92,11 +123,11 @@ export interface UserLeftEvent {
 }
 
 export interface GameStartedEvent {
-  gameState: MultiplayerGameState;
+  gameState: GameState;
 }
 
 export interface GameStateUpdateEvent {
-  gameState: MultiplayerGameState;
+  gameState: GameState;
 }
 
 export interface AnswerSubmittedEvent {

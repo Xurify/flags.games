@@ -16,7 +16,7 @@ class FlagsApiClient {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.error(`HTTP error! status: ${response.status}`);
       }
 
       return await response.json();
@@ -45,7 +45,6 @@ class FlagsApiClient {
 
 export const flagsApi = new FlagsApiClient();
 
-// Utility functions for common operations
 export async function checkServerHealth(): Promise<boolean> {
   try {
     const health = await flagsApi.getHealth();

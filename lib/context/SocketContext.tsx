@@ -11,6 +11,7 @@ import React, {
 } from "react";
 import { logger } from "@/lib/utils/logger";
 import { WS_MESSAGE_TYPES } from "@/lib/types/socket";
+import { Room } from "../types/multiplayer";
 
 export interface User {
   id: string;
@@ -68,25 +69,6 @@ export interface GameState {
     correctAnswers: number;
     averageTime: number;
   }>;
-}
-
-export interface Room {
-  id: string;
-  name: string;
-  host: string;
-  inviteCode: string;
-  passcode: string | null;
-  gameState: GameState;
-  members: User[];
-  created: string;
-  settings: {
-    private: boolean;
-    maxRoomSize: number;
-    difficulty: string;
-    questionCount: number;
-    timePerQuestion: number;
-    showLeaderboard: boolean;
-  };
 }
 
 export interface WebSocketMessage<T = any> {
