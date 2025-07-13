@@ -16,7 +16,7 @@ const buttonVariants = cva(
         outline:
           "border-2 bg-[oklch(1_0_0)] hover:bg-[oklch(0.97_0.01_240_/_0.4)] hover:border-[oklch(0.7_0.01_240)] hover:-translate-y-1 border-[oklch(0.92_0_0)] dark:bg-[oklch(0.17_0.002_240)] dark:border-[oklch(0.7_0.01_240)]",
         neutral:
-          "border-2 bg-[oklch(0.95_0.01_100)] hover:bg-[oklch(0.93_0.012_100)] hover:-translate-y-1 border-[oklch(0.92_0.008_100)] text-foreground dark:bg-[#2e2e2e] dark:border-[#1d1d1d]",
+          "border-2 bg-[oklch(0.95_0.01_100)]/40 hover:bg-[oklch(0.93_0.012_100)]/50 hover:-translate-y-1 border-[oklch(0.92_0.008_100)] text-foreground dark:bg-[#2e2e2e] dark:border-[#1d1d1d]",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:shadow-md hover:bg-secondary/80 hover:-translate-y-0.5",
         ghost:
