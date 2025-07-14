@@ -40,7 +40,7 @@ const RestartDialog: React.FC<RestartDialogProps> = ({
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction onClick={onRestart}>Restart</AlertDialogAction>
+        <AlertDialogAction variant="destructive" onClick={onRestart}>Restart</AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
