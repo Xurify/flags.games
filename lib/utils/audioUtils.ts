@@ -255,25 +255,25 @@ class AudioManager {
       oscillator.connect(gainNode);
       gainNode.connect(this.audioContext.destination);
   
-      // Quick, sharp click: high frequency with very short duration
+      // Softer click: lower frequency with gentler ramp
       oscillator.frequency.setValueAtTime(
-        800,
+        500,
         this.audioContext.currentTime
       );
       oscillator.frequency.exponentialRampToValueAtTime(
-        400,
-        this.audioContext.currentTime + 0.05
+        250,
+        this.audioContext.currentTime + 0.08
       );
   
-      oscillator.type = "square";
-      gainNode.gain.setValueAtTime(0.15, this.audioContext.currentTime);
+      oscillator.type = "sine";
+      gainNode.gain.setValueAtTime(0.08, this.audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(
-        0.01,
-        this.audioContext.currentTime + 0.1
+        0.001,
+        this.audioContext.currentTime + 0.15
       );
   
       oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + 0.1);
+      oscillator.stop(this.audioContext.currentTime + 0.15);
     } catch (error) {
       console.error("Error playing button click sound:", error);
     }
