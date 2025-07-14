@@ -1,8 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { useSoundEffect } from "../hooks/useSoundEffect";
 import { AUDIO_URLS, AUDIO_URLS_KEYS } from "../constants";
+import { audioManager } from "../utils/audioUtils";
 
 export interface GameSettings {
   soundEffectsEnabled: boolean;
@@ -26,11 +26,10 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [settings, setSettings] = useState<GameSettings>(defaultSettings);
 
-  const { playSound: playButtonClickSound } = useSoundEffect({
-    audioUrl: AUDIO_URLS.BUTTON_CLICK,
-    volume: 0.5,
-    cacheKey: AUDIO_URLS_KEYS.BUTTON_CLICK,
-  });
+  useEffect(() => {
+    audioManager.preloadAudio(AUDIO_URLS.BUTTON_CLICK, AUDIO_URLS_KEYS.BUTTON_CLICK);
+    audioManager.setupAutoResumeOnUserInteraction();
+  }, []);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", settings.darkMode);
@@ -49,7 +48,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const updateSetting = (key: keyof GameSettings, value: any) => {
-    playButtonClickSound();
+    audioManager.playButtonClickSound();
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
     localStorage.setItem("flagGameSettings", JSON.stringify(newSettings));

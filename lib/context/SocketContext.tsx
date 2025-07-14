@@ -173,14 +173,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const maxReconnectAttempts = 5;
   const reconnectDelay = 3000;
 
-  // Fixed: Use a Map with proper typing
   const messageHandlers = useRef<Map<keyof typeof WS_MESSAGE_TYPES, (data: any) => void>>(new Map());
 
   const setupMessageHandlers = useCallback(() => {
-    // Clear existing handlers
     messageHandlers.current.clear();
 
-    // Typed handler functions
     const heartbeatHandler: MessageHandler<typeof WS_MESSAGE_TYPES.HEARTBEAT> = () => {
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(

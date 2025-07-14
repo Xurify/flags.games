@@ -15,8 +15,7 @@ import {
 import { Country } from "@/lib/data/countries";
 import { useGameSettings } from "@/lib/hooks/useGameSettings";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
-import { useSoundEffect } from "@/lib/hooks/useSoundEffect";
-import { playErrorSound, playSuccessSound } from "@/lib/utils/audioUtils";
+import { audioManager, playErrorSound, playSuccessSound } from "@/lib/utils/audioUtils";
 import { prefetchAllFlagsForDifficulty } from "@/lib/utils/imageUtils";
 
 import { Button } from "@/components/ui/button";
@@ -58,12 +57,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const { playSound: playButtonClickSound } = useSoundEffect({
-    audioUrl: AUDIO_URLS.BUTTON_CLICK,
-    volume: 0.5,
-    cacheKey: AUDIO_URLS_KEYS.BUTTON_CLICK,
-  });
-
   const [gameState, setGameState] = useState<GameState>({
     currentQuestion: 1,
     score: 0,
@@ -79,13 +72,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     hearts: MAX_HEARTS,
   });
 
-  const { playSound: playVictorySound } = useSoundEffect({
-    audioUrl: AUDIO_URLS.VICTORY,
-    volume: 0.7,
-    cacheKey: AUDIO_URLS_KEYS.VICTORY,
-    preload: gameState.currentQuestion >= gameState.totalQuestions - 2,
-  });
-
   const [heartsModeEnabled, setHeartsModeEnabled] = useState(false);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
@@ -97,6 +83,12 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   useEffect(() => {
     prefetchAllFlagsForDifficulty(gameState.difficulty);
   }, [gameState.difficulty]);
+
+  useEffect(() => {
+    if (gameState.currentQuestion >= gameState.totalQuestions - 2) {
+      audioManager.preloadAudio(AUDIO_URLS.VICTORY, AUDIO_URLS_KEYS.VICTORY);
+    }
+  }, [gameState.currentQuestion, gameState.totalQuestions]);
 
   const clearGameTimeout = () => {
     if (timeoutRef.current) {
@@ -292,7 +284,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
   const handleToggleHeartsMode = (value: boolean) => {
     if (gameState.currentQuestion === 1) {
-      playButtonClickSound();
+      audioManager.playButtonClickSound();
       setHeartsModeEnabled(value);
     }
   };
@@ -332,7 +324,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
         (gameState.score / (gameState.totalQuestions * CORRECT_POINT_COST)) *
         100;
       if (percentage >= 60) {
-        playVictorySound();
+        audioManager.playVictorySound();
       }
     }
   }, [gameState.gameCompleted, settings.soundEffectsEnabled]);
