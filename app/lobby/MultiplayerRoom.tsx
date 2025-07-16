@@ -72,9 +72,9 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
   const [username, setUsername] = useState("");
   const [settings, setSettings] = useState<RoomSettings>({
     maxRoomSize: 2,
-    difficulty: "easy",
+    difficulty: DIFFICULTY_LEVELS[0],
     gameMode: "classic",
-    timePerQuestion: 30,
+    timePerQuestion: TIME_PER_QUESTION_OPTIONS[3],
   });
   const [formErrors, setFormErrors] = useState<{
     username?: string;
