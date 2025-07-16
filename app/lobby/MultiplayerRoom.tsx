@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { z } from "zod";
 import {
   UsersIcon,
   SettingsIcon,
@@ -11,6 +12,7 @@ import {
   PlayIcon,
   LinkIcon,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,22 +30,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GameMode, RoomSettings } from "@/lib/types/multiplayer";
+import { GameMode, RoomSettings, User } from "@/lib/types/multiplayer";
 import {
   Difficulty,
   DIFFICULTY_LEVELS,
   ROOM_SIZES,
   TIME_PER_QUESTION_OPTIONS,
 } from "@/lib/constants";
+import { cn } from "@/lib/utils/strings";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
-import { z, ZodIssue } from "zod";
 
 const roomSettingsSchema = z.object({
   maxRoomSize: z
     .number()
     .min(2)
     .max(ROOM_SIZES[ROOM_SIZES.length - 1]),
-  difficulty: z.enum(["easy", "medium", "hard", "expert"]),
+  difficulty: z.enum(DIFFICULTY_LEVELS),
   gameMode: z.string(),
   timePerQuestion: z.number().min(10).max(60),
 });
@@ -84,9 +86,9 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     const result = formSchema.safeParse({ username: finalUsername, settings });
     if (!result.success) {
       const errors: { username?: string; settings?: string } = {};
-      result.error.issues.forEach((err: ZodIssue) => {
-        if (err.path[0] === "username") errors.username = err.message;
-        if (err.path[0] === "settings") errors.settings = err.message;
+      result.error.issues.forEach((error) => {
+        if (error.path[0] === "username") errors.username = error.message;
+        if (error.path[0] === "settings") errors.settings = error.message;
       });
       setFormErrors(errors);
       return;
@@ -133,34 +135,24 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
               {[
                 ...members,
                 ...Array(maxPlayers - members.length).fill(null),
-              ].map((player, idx) => (
+              ].map((player: User | null, index) => (
                 <div
-                  key={idx}
-                  className={`flex items-center gap-4 lg:gap-5 px-3 lg:px-4 py-3 rounded-2xl shadow-card bg-white/70 border border-border transition-all ${
-                    player ? "" : "opacity-60 bg-muted/60 border-dashed"
-                  }`}
+                  key={`player-${index}`}
+                  className={cn(
+                    "flex items-center gap-4 lg:gap-5 px-3 lg:px-4 py-3 rounded-2xl shadow-card bg-white/70 dark:bg-black/40 border border-border dark:border-border/70 transition-all",
+                    !player &&
+                      "opacity-60 bg-muted/60 dark:bg-muted/30 border-dashed"
+                  )}
                 >
-                  <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-accent flex items-center justify-center border-2 border-accent/40 flex-shrink-0">
-                    {player ? (
-                      player.avatar ? (
-                        <img
-                          src={player.avatar}
-                          alt={player.name}
-                          className="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover"
-                        />
-                      ) : (
-                        <UserIcon className="w-6 h-6 lg:w-7 lg:h-7 text-muted-foreground" />
-                      )
-                    ) : (
-                      <UserIcon className="w-6 h-6 lg:w-7 lg:h-7 text-muted-foreground" />
-                    )}
+                  <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-accent dark:bg-accent/40 flex items-center justify-center border-2 border-accent/40 dark:border-accent/30 flex-shrink-0">
+                    <UserIcon className="w-6 h-6 lg:w-7 lg:h-7 text-muted-foreground dark:text-muted-foreground" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="block font-semibold text-foreground truncate text-sm lg:text-base">
-                      {player ? player.name || player.username : "Waiting..."}
+                    <span className="block font-semibold text-foreground dark:text-foreground truncate text-sm lg:text-base">
+                      {player ? player.username : "Waiting..."}
                     </span>
                     {player && (
-                      <span className="block text-xs text-muted-foreground truncate">
+                      <span className="block text-xs text-muted-foreground dark:text-muted-foreground truncate">
                         {currentRoom?.host === player.id ? "Host" : "Player"}
                       </span>
                     )}
