@@ -88,7 +88,6 @@ export interface MessageDataTypes {
   [WS_MESSAGE_TYPES.USER_PROFILE_UPDATED]: {
     userId: string;
     username: string;
-    color: string;
   };
   [WS_MESSAGE_TYPES.ERROR]: {
     message: string;
@@ -328,7 +327,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
               ...prev,
               members: prev.members.map((member) =>
                 member.id === data.userId
-                  ? { ...member, username: data.username, color: data.color }
+                  ? { ...member, username: data.username }
                   : member
               ),
             }

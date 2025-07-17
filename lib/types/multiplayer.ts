@@ -7,7 +7,6 @@ export interface User {
   username: string;
   roomId: string;
   created: string;
-  color: string;
   isAdmin: boolean;
   score: number;
   currentAnswer?: string;
@@ -23,7 +22,6 @@ export interface Room {
   passcode: string | null;
   gameState: GameState;
   members: User[];
-  previouslyConnectedMembers: Array<{ userId: string; username: string }>;
   created: string;
   settings: RoomSettings;
 }

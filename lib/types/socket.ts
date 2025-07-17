@@ -173,7 +173,6 @@ export interface ProfileUpdatedData {
 export interface UserProfileUpdatedData {
   userId: string;
   username: string;
-  color: string;
 }
 
 export interface ErrorData {
@@ -182,7 +181,6 @@ export interface ErrorData {
   details?: any;
 }
 
-// Message type unions for better type safety
 export type ClientToServerMessage = 
   | { type: typeof WS_MESSAGE_TYPES.AUTH; data: AuthData }
   | { type: typeof WS_MESSAGE_TYPES.CREATE_ROOM; data: CreateRoomData }
