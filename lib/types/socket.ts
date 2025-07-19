@@ -67,7 +67,6 @@ export interface CreateRoomData {
 export interface JoinRoomData {
   inviteCode: string;
   username: string;
-  passcode?: string;
 }
 
 export interface SubmitAnswerData {

@@ -19,7 +19,6 @@ export interface Room {
   name: string;
   host: string;
   inviteCode: string;
-  passcode: string | null;
   gameState: GameState;
   members: User[];
   created: string;
@@ -27,7 +26,6 @@ export interface Room {
 }
 
 export interface RoomSettings {
-  private?: boolean;
   maxRoomSize: number;
   difficulty: Difficulty;
   //questionCount: number;

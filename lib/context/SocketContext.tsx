@@ -112,7 +112,6 @@ export interface SocketContextType {
   joinRoom: (
     inviteCode: string,
     username: string,
-    passcode?: string
   ) => Promise<void>;
   leaveRoom: () => Promise<void>;
 
@@ -488,10 +487,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   );
 
   const joinRoom = useCallback(
-    async (inviteCode: string, username: string, passcode?: string) => {
+    async (inviteCode: string, username: string) => {
       sendMessage({
         type: WS_MESSAGE_TYPES.JOIN_ROOM,
-        data: { inviteCode, username, passcode },
+        data: { inviteCode, username },
       });
     },
     [sendMessage]
