@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { z } from "zod";
 import {
@@ -67,12 +67,14 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
   const inviteCode = searchParams.get("c");
 
   const [isCreating, setIsCreating] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
   const {
     currentRoom: room,
     isHost,
     canStartGame,
     updateRoomSettings,
     createRoom,
+    joinRoom,
   } = useRoomManagement();
 
   const [username, setUsername] = useState("");
@@ -104,6 +106,81 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     await createRoom(finalUsername, settings);
     setIsCreating(false);
   };
+
+  if (inviteCode) {
+    const handleJoinRoom = async () => {
+      const finalUsername = username.trim() || randomUsername;
+      const result = formSchema.safeParse({
+        username: finalUsername,
+        settings,
+      });
+      if (!result.success) {
+        const errors: { username?: string; settings?: string } = {};
+        result.error.issues.forEach((error) => {
+          if (error.path[0] === "username") errors.username = error.message;
+        });
+        setFormErrors(errors);
+        return;
+      }
+      setFormErrors({});
+      setIsJoining(true);
+      inviteCode && (await joinRoom(inviteCode, username));
+      setIsJoining(false);
+    };
+
+    return (
+      <div className="max-w-lg w-full mx-auto">
+        <Card className="shadow-card hover:shadow-card-hover transition-all duration-300">
+          <CardHeader>
+            <CardTitle className="text-center flex items-center justify-center gap-2 font-semibold">
+              <UsersIcon className="w-5 h-5 text-primary" />
+              Join Room
+            </CardTitle>
+            <CardDescription className="text-center">
+              Join a new multiplayer game room with you and your friends
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-sm font-medium">
+                Username
+              </Label>
+              <Input
+                id="username"
+                placeholder={randomUsername}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="h-11 rounded-xl"
+                maxLength={30}
+              />
+              {formErrors.username && (
+                <p className="text-xs text-red-500">{formErrors.username}</p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                {username.length}/30 characters
+              </p>
+            </div>
+
+            <Button
+              onClick={handleJoinRoom}
+              disabled={isJoining}
+              className="w-full"
+              size="lg"
+            >
+              {isJoining ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                  Joining Room...
+                </>
+              ) : (
+                "Join Room"
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (room && room.settings) {
     const members = room.members;
@@ -315,13 +392,13 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="h-11 rounded-xl"
-              maxLength={24}
+              maxLength={30}
             />
             {formErrors.username && (
               <p className="text-xs text-red-500">{formErrors.username}</p>
             )}
             <p className="text-xs text-muted-foreground">
-              {username.length}/24 characters
+              {username.length}/30 characters
             </p>
           </div>
           <div className="space-y-4">
