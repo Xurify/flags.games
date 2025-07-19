@@ -124,7 +124,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
       }
       setFormErrors({});
       setIsJoining(true);
-      inviteCode && (await joinRoom(inviteCode, username));
+      inviteCode && (await joinRoom(inviteCode, finalUsername));
       setIsJoining(false);
     };
 
@@ -181,6 +181,8 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
       </div>
     );
   }
+
+  console.log('MULTIPLAYER_ROOM', room);
 
   if (room && room.settings) {
     const members = room.members;
