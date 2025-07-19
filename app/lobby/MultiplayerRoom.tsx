@@ -12,6 +12,7 @@ import {
   PlayIcon,
   LinkIcon,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,7 +31,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GameMode, RoomSettings, User } from "@/lib/types/multiplayer";
 import {
   Difficulty,
   DIFFICULTY_LEVELS,
@@ -39,6 +39,7 @@ import {
 } from "@/lib/constants";
 import { cn } from "@/lib/utils/strings";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
+import { GameMode, RoomSettings, User } from "@/lib/types/multiplayer";
 
 const roomSettingsSchema = z.object({
   maxRoomSize: z
@@ -66,8 +67,13 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
   const inviteCode = searchParams.get("c");
 
   const [isCreating, setIsCreating] = useState(false);
-  const { currentRoom, isHost, canStartGame, updateRoomSettings, createRoom } =
-    useRoomManagement();
+  const {
+    currentRoom: room,
+    isHost,
+    canStartGame,
+    updateRoomSettings,
+    createRoom,
+  } = useRoomManagement();
 
   const [username, setUsername] = useState("");
   const [settings, setSettings] = useState<RoomSettings>({
@@ -99,16 +105,16 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     setIsCreating(false);
   };
 
-  if (currentRoom && currentRoom.settings) {
-    const members = currentRoom.members;
-    const maxPlayers = currentRoom.settings.maxRoomSize;
+  if (room && room.settings) {
+    const members = room.members;
+    const maxPlayers = room.settings.maxRoomSize;
 
     const handleSettingChange = (
-      key: keyof typeof currentRoom.settings,
+      key: keyof typeof room.settings,
       value: any
     ) => {
       if (isHost()) {
-        updateRoomSettings({ ...currentRoom.settings, [key]: value });
+        updateRoomSettings({ ...room.settings, [key]: value });
       }
     };
 
@@ -117,11 +123,11 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
     };
 
     const handleInvite = () => {
-      const roomInviteCode = currentRoom.inviteCode || "";
-      const inviteLink = roomInviteCode
-        ? `${window.location.origin}/lobby?c=${roomInviteCode}`
+      const inviteLink = room.inviteCode
+        ? `${window.location.origin}/lobby?c=${room.inviteCode}`
         : "";
       if (inviteLink) navigator.clipboard.writeText(inviteLink);
+      toast.success("Copied invited url");
     };
 
     return (
@@ -153,11 +159,11 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                     </span>
                     {player && (
                       <span className="block text-xs text-muted-foreground dark:text-muted-foreground truncate">
-                        {currentRoom?.host === player.id ? "Host" : "Player"}
+                        {room?.host === player.id ? "Host" : "Player"}
                       </span>
                     )}
                   </div>
-                  {player && currentRoom?.host === player.id && (
+                  {player && room?.host === player.id && (
                     <CrownIcon
                       className="w-4 h-4 lg:w-5 lg:h-5 text-yellow-400 flex-shrink-0"
                       aria-label="Host"
@@ -185,15 +191,13 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                     Difficulty
                   </Label>
                   <Select
-                    value={currentRoom.settings.difficulty}
+                    value={room.settings.difficulty}
                     onValueChange={(v) => handleSettingChange("difficulty", v)}
                     disabled={!isHost()}
                     variant="neutral"
                   >
                     <SelectTrigger className="h-12 rounded-xl mt-2 capitalize">
-                      <SelectValue>
-                        {currentRoom.settings.difficulty}
-                      </SelectValue>
+                      <SelectValue>{room.settings.difficulty}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {DIFFICULTY_LEVELS.map((difficulty) => (
@@ -213,7 +217,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                     Max Players
                   </Label>
                   <Select
-                    value={String(currentRoom.settings.maxRoomSize)}
+                    value={String(room.settings.maxRoomSize)}
                     variant="neutral"
                     onValueChange={(v) =>
                       handleSettingChange("maxRoomSize", Number(v))
@@ -222,7 +226,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                   >
                     <SelectTrigger className="h-12 rounded-xl mt-2">
                       <SelectValue>
-                        {currentRoom.settings.maxRoomSize} players
+                        {room.settings.maxRoomSize} players
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
@@ -243,16 +247,14 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                   </Label>
                   <Select
                     variant="neutral"
-                    value={String(currentRoom.settings.timePerQuestion)}
+                    value={String(room.settings.timePerQuestion)}
                     onValueChange={(v) =>
                       handleSettingChange("timePerQuestion", Number(v))
                     }
                     disabled={!isHost()}
                   >
                     <SelectTrigger className="h-12 rounded-xl mt-2">
-                      <SelectValue>
-                        {currentRoom.settings.timePerQuestion}
-                      </SelectValue>
+                      <SelectValue>{room.settings.timePerQuestion}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {TIME_PER_QUESTION_OPTIONS.map((time) => (

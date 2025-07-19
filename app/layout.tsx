@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { SettingsProvider } from "@/lib/context/SettingsContext";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -61,7 +62,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const theme = (await cookies()).get("theme")?.value;
+  const theme = (await cookies()).get("theme")?.value as "light" | "dark" | undefined;
   const isDark = theme === "dark";
   return (
     <html lang="en" className={isDark ? `dark` : undefined}>
@@ -72,6 +73,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SettingsProvider>
+          <Toaster theme={theme} />
           {children}
         </SettingsProvider>
         {process.env.NODE_ENV !== "development" && <Analytics />}
