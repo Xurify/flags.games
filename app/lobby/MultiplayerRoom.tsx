@@ -196,9 +196,8 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                     value={room.settings.difficulty}
                     onValueChange={(v) => handleSettingChange("difficulty", v)}
                     disabled={!isHost()}
-                    variant="neutral"
                   >
-                    <SelectTrigger className="h-12 rounded-xl mt-2 capitalize">
+                    <SelectTrigger variant="neutral" className="h-12 rounded-xl mt-2 capitalize">
                       <SelectValue>{room.settings.difficulty}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
@@ -220,13 +219,12 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                   </Label>
                   <Select
                     value={String(room.settings.maxRoomSize)}
-                    variant="neutral"
                     onValueChange={(v) =>
                       handleSettingChange("maxRoomSize", Number(v))
                     }
                     disabled={!isHost()}
                   >
-                    <SelectTrigger className="h-12 rounded-xl mt-2">
+                    <SelectTrigger variant="neutral" className="h-12 rounded-xl mt-2">
                       <SelectValue>
                         {room.settings.maxRoomSize} players
                       </SelectValue>
@@ -248,14 +246,13 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                     Time per Question (seconds)
                   </Label>
                   <Select
-                    variant="neutral"
                     value={String(room.settings.timePerQuestion)}
                     onValueChange={(v) =>
                       handleSettingChange("timePerQuestion", Number(v))
                     }
                     disabled={!isHost()}
                   >
-                    <SelectTrigger className="h-12 rounded-xl mt-2">
+                    <SelectTrigger variant="neutral" className="h-12 rounded-xl mt-2">
                       <SelectValue>{room.settings.timePerQuestion}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
@@ -414,7 +411,6 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                 </Label>
                 <Select
                   value={settings.maxRoomSize.toString()}
-                  variant="neutral"
                   onValueChange={(value) =>
                     setSettings((prev) => ({
                       ...prev,
@@ -422,7 +418,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                     }))
                   }
                 >
-                  <SelectTrigger className="h-11 rounded-xl">
+                  <SelectTrigger variant="neutral" className="h-11 rounded-xl">
                     <SelectValue>{settings.maxRoomSize} players</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
@@ -443,7 +439,6 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                 </Label>
                 <Select
                   value={settings.difficulty}
-                  variant="neutral"
                   onValueChange={(value: Difficulty) =>
                     setSettings((prev) => ({
                       ...prev,
@@ -451,7 +446,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                     }))
                   }
                 >
-                  <SelectTrigger className="h-11 rounded-xl capitalize">
+                  <SelectTrigger variant="neutral" className="h-11 rounded-xl capitalize">
                     <SelectValue className="capitalize">
                       {settings.difficulty}
                     </SelectValue>
@@ -478,7 +473,6 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                 </Label>
                 <Select
                   value={settings.timePerQuestion?.toString()}
-                  variant="neutral"
                   onValueChange={(value) =>
                     setSettings((prev) => ({
                       ...prev,
@@ -486,7 +480,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                     }))
                   }
                 >
-                  <SelectTrigger className="h-11 rounded-xl">
+                  <SelectTrigger variant="neutral" className="h-11 rounded-xl">
                     <SelectValue>{settings.timePerQuestion}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
@@ -504,7 +498,6 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                 </Label>
                 <Select
                   value={settings.gameMode}
-                  variant="neutral"
                   onValueChange={(value: GameMode) =>
                     setSettings((prev) => ({
                       ...prev,
@@ -512,7 +505,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                     }))
                   }
                 >
-                  <SelectTrigger className="h-11 rounded-xl capitalize">
+                  <SelectTrigger variant="neutral" className="h-11 rounded-xl capitalize">
                     <SelectValue>{settings.gameMode}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>

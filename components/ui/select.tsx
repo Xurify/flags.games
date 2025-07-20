@@ -13,7 +13,7 @@ const selectTriggerVariants = cva(
     variants: {
       variant: {
         default: "bg-transparent dark:bg-popover border-border",
-        neutral: "bg-input/40 dark:bg-input border-border",
+        neutral: "bg-input/10 dark:bg-input border-transparent",
       },
     },
     defaultVariants: {
@@ -22,18 +22,8 @@ const selectTriggerVariants = cva(
   }
 )
 
-function Select({ variant = "default", children, ...props }: React.ComponentProps<typeof SelectPrimitive.Root> & { variant?: "default" | "neutral" }) {
-  // Automatically inject variant into all SelectTrigger children
-  const injectedChildren = React.Children.map(children, (child) => {
-    if (
-      React.isValidElement(child) &&
-      (child.type as any).displayName === "SelectTrigger"
-    ) {
-      return React.cloneElement(child as React.ReactElement<any>, { variant });
-    }
-    return child;
-  });
-  return <SelectPrimitive.Root data-slot="select" {...props}>{injectedChildren}</SelectPrimitive.Root>;
+function Select({ children, ...props }: React.ComponentProps<typeof SelectPrimitive.Root>) {
+  return <SelectPrimitive.Root data-slot="select" {...props}>{children}</SelectPrimitive.Root>;
 }
 Select.displayName = "Select";
 

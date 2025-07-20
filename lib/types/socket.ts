@@ -87,7 +87,6 @@ export interface Room {
 }
 
 export const WS_MESSAGE_TYPES = {
-  // Client-to-server message types
   AUTH: "AUTH",
   AUTH_SUCCESS: "AUTH_SUCCESS",
   SUBMIT_ANSWER: "SUBMIT_ANSWER",
@@ -105,8 +104,7 @@ export const WS_MESSAGE_TYPES = {
   REACTION: "REACTION",
   UPDATE_PROFILE: "UPDATE_PROFILE",
   TOGGLE_READY: "TOGGLE_READY",
-  
-  // Server-to-client message types
+
   JOIN_ROOM_SUCCESS: "JOIN_ROOM_SUCCESS",
   CREATE_ROOM_SUCCESS: "CREATE_ROOM_SUCCESS",
   USER_JOINED: "USER_JOINED",
