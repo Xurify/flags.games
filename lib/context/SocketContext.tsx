@@ -774,8 +774,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     getConnectionStats,
   };
 
-  console.log("currentRoom", currentRoom);
-
   return (
     <SocketContext.Provider value={contextValue}>
       {children}
