@@ -10,8 +10,16 @@ import React, {
   ReactNode,
 } from "react";
 import { logger } from "@/lib/utils/logger";
-import { WS_MESSAGE_TYPES } from "@/lib/types/socket";
-import { Room, RoomSettings, User, GameState, GameQuestion, GameAnswer, GameStateLeaderboard } from "../types/multiplayer";
+import {
+  WS_MESSAGE_TYPES,
+  Room,
+  RoomSettings,
+  User,
+  GameState,
+  GameQuestion,
+  GameAnswer,
+  GameStateLeaderboard,
+} from "@/lib/types/multiplayer";
 import { GameSettings } from "./SettingsContext";
 
 export interface WebSocketMessage<T = any> {
@@ -47,10 +55,12 @@ export interface MessageDataTypes {
     settings: RoomSettings;
   };
   [WS_MESSAGE_TYPES.USER_JOINED]: {
-    members: User[];
+    user: User;
+    room: Room;
   };
   [WS_MESSAGE_TYPES.USER_LEFT]: {
-    members: User[];
+    userId: string;
+    room: Room | null;
   };
   [WS_MESSAGE_TYPES.HOST_CHANGED]: {
     newHost: User;
@@ -108,11 +118,11 @@ export interface SocketContextType {
   connect: () => void;
   disconnect: () => void;
 
-  createRoom: (username: string, settings: Partial<RoomSettings>) => Promise<void>;
-  joinRoom: (
-    inviteCode: string,
+  createRoom: (
     username: string,
+    settings: Partial<RoomSettings>
   ) => Promise<void>;
+  joinRoom: (inviteCode: string, username: string) => Promise<void>;
   leaveRoom: () => Promise<void>;
 
   startGame: () => Promise<void>;
@@ -126,7 +136,10 @@ export interface SocketContextType {
   kickUser: (userId: string) => Promise<void>;
 
   sendReaction: (reaction: string, targetUserId?: string) => Promise<void>;
-  updateProfile: (updates: { color?: string; username?: string }) => Promise<void>;
+  updateProfile: (updates: {
+    color?: string;
+    username?: string;
+  }) => Promise<void>;
 
   sendMessage: (message: WebSocketMessage) => void;
   getConnectionStats: () => {
@@ -171,79 +184,109 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const maxReconnectAttempts = 5;
   const reconnectDelay = 3000;
 
-  const messageHandlers = useRef<Map<keyof typeof WS_MESSAGE_TYPES, (data: any) => void>>(new Map());
+  const messageHandlers = useRef<
+    Map<keyof typeof WS_MESSAGE_TYPES, (data: any) => void>
+  >(new Map());
 
   const setupMessageHandlers = useCallback(() => {
     messageHandlers.current.clear();
 
-    const heartbeatHandler: MessageHandler<typeof WS_MESSAGE_TYPES.HEARTBEAT> = () => {
+    const heartbeatHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.HEARTBEAT
+    > = () => {
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(
-          JSON.stringify({ type: WS_MESSAGE_TYPES.HEARTBEAT_RESPONSE, data: {} })
+          JSON.stringify({
+            type: WS_MESSAGE_TYPES.HEARTBEAT_RESPONSE,
+            data: {},
+          })
         );
       }
     };
 
-    const authSuccessHandler: MessageHandler<typeof WS_MESSAGE_TYPES.AUTH_SUCCESS> = (data) => {
+    const authSuccessHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.AUTH_SUCCESS
+    > = (data) => {
       data.user && setCurrentUser(data.user);
       data.room && setCurrentRoom(data.room);
     };
 
-    const createRoomSuccessHandler: MessageHandler<typeof WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS> = (data) => {
+    const createRoomSuccessHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS
+    > = (data) => {
       setCurrentRoom(data.room);
       setCurrentUser(data.user);
       logger.info("Room created successfully (CREATE_ROOM_SUCCESS)");
     };
 
-    const joinRoomSuccessHandler: MessageHandler<typeof WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS> = (data) => {
+    const joinRoomSuccessHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS
+    > = (data) => {
       setCurrentRoom(data.room);
       setCurrentUser(data.user);
       logger.info("Joined room successfully (JOIN_ROOM_SUCCESS)");
+      console.log(data);
     };
 
-    const leaveRoomHandler: MessageHandler<typeof WS_MESSAGE_TYPES.LEAVE_ROOM> = () => {
+    const leaveRoomHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.LEAVE_ROOM
+    > = () => {
       setCurrentRoom(null);
       setCurrentUser(null);
       setGameState(null);
       logger.info("Left room");
     };
 
-    const settingsUpdatedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED> = (data) => {
+    const settingsUpdatedHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED
+    > = (data) => {
       if (currentRoom && data.settings) {
-        setCurrentRoom({ ...currentRoom as Room, settings: data.settings });
+        setCurrentRoom({ ...(currentRoom as Room), settings: data.settings });
       }
     };
 
-    const userJoinedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_JOINED> = (data) => {
+    const userJoinedHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.USER_JOINED
+    > = (data) => {
       setCurrentRoom((prev) =>
-        prev ? { ...prev, members: data.members } : null
+        prev && data.room ? { ...prev, members: data.room.members } : null
       );
     };
 
-    const userLeftHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_LEFT> = (data) => {
+    const userLeftHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_LEFT> = (
+      data
+    ) => {
       setCurrentRoom((prev) =>
-        prev ? { ...prev, members: data.members } : null
+        prev && data.room ? { ...prev, members: data.room.members } : null
       );
     };
 
-    const hostChangedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.HOST_CHANGED> = (data) => {
+    const hostChangedHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.HOST_CHANGED
+    > = (data) => {
       setCurrentRoom((prev) =>
         prev ? { ...prev, host: data.newHost.id } : null
       );
     };
 
-    const kickedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.KICKED> = (data) => {
+    const kickedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.KICKED> = (
+      data
+    ) => {
       setCurrentRoom(null);
       setCurrentUser(null);
       setGameState(null);
       logger.info("Kicked from room:", data.reason);
     };
 
-    const gameStartingHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_STARTING> = () => {
+    const gameStartingHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.GAME_STARTING
+    > = () => {
       setGameState((prev) => (prev ? { ...prev, phase: "starting" } : null));
     };
 
-    const newQuestionHandler: MessageHandler<typeof WS_MESSAGE_TYPES.NEW_QUESTION> = (data) => {
+    const newQuestionHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.NEW_QUESTION
+    > = (data) => {
       setGameState((prev) =>
         prev
           ? {
@@ -256,11 +299,15 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const answerSubmittedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ANSWER_SUBMITTED> = (data) => {
+    const answerSubmittedHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.ANSWER_SUBMITTED
+    > = (data) => {
       logger.info(`${data.username} submitted an answer`);
     };
 
-    const questionResultsHandler: MessageHandler<typeof WS_MESSAGE_TYPES.QUESTION_RESULTS> = (data) => {
+    const questionResultsHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.QUESTION_RESULTS
+    > = (data) => {
       setGameState((prev) =>
         prev
           ? {
@@ -273,7 +320,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const gameEndedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_ENDED> = (data) => {
+    const gameEndedHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.GAME_ENDED
+    > = (data) => {
       setGameState((prev) =>
         prev
           ? {
@@ -286,7 +335,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const gameStoppedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_STOPPED> = () => {
+    const gameStoppedHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.GAME_STOPPED
+    > = () => {
       setGameState((prev) =>
         prev
           ? {
@@ -299,27 +350,39 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const gamePausedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_PAUSED> = () => {
+    const gamePausedHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.GAME_PAUSED
+    > = () => {
       setGameState((prev) => (prev ? { ...prev, isPaused: true } : null));
     };
 
-    const gameResumedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_RESUMED> = () => {
+    const gameResumedHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.GAME_RESUMED
+    > = () => {
       setGameState((prev) => (prev ? { ...prev, isPaused: false } : null));
     };
 
-    const questionSkippedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.QUESTION_SKIPPED> = (data) => {
+    const questionSkippedHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.QUESTION_SKIPPED
+    > = (data) => {
       logger.info(`Question skipped by ${data.skippedBy}`);
     };
 
-    const userReactionHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_REACTION> = (data) => {
+    const userReactionHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.USER_REACTION
+    > = (data) => {
       logger.info(`Reaction from ${data.fromUsername}: ${data.reaction}`);
     };
 
-    const profileUpdatedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.PROFILE_UPDATED> = (data) => {
+    const profileUpdatedHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.PROFILE_UPDATED
+    > = (data) => {
       setCurrentUser(data.user);
     };
 
-    const userProfileUpdatedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_PROFILE_UPDATED> = (data) => {
+    const userProfileUpdatedHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.USER_PROFILE_UPDATED
+    > = (data) => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -334,33 +397,86 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const errorHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ERROR> = (data) => {
+    const errorHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ERROR> = (
+      data
+    ) => {
       setLastError(data.message || "An error occurred");
       logger.error("Socket error:", data);
     };
 
     messageHandlers.current.set(WS_MESSAGE_TYPES.HEARTBEAT, heartbeatHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.AUTH_SUCCESS, authSuccessHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS, createRoomSuccessHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS, joinRoomSuccessHandler);
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.AUTH_SUCCESS,
+      authSuccessHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS,
+      createRoomSuccessHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS,
+      joinRoomSuccessHandler
+    );
     messageHandlers.current.set(WS_MESSAGE_TYPES.LEAVE_ROOM, leaveRoomHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.SETTINGS_UPDATED, settingsUpdatedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_JOINED, userJoinedHandler);
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.SETTINGS_UPDATED,
+      settingsUpdatedHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.USER_JOINED,
+      userJoinedHandler
+    );
     messageHandlers.current.set(WS_MESSAGE_TYPES.USER_LEFT, userLeftHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.HOST_CHANGED, hostChangedHandler);
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.HOST_CHANGED,
+      hostChangedHandler
+    );
     messageHandlers.current.set(WS_MESSAGE_TYPES.KICKED, kickedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_STARTING, gameStartingHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.NEW_QUESTION, newQuestionHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.ANSWER_SUBMITTED, answerSubmittedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.QUESTION_RESULTS, questionResultsHandler);
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.GAME_STARTING,
+      gameStartingHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.NEW_QUESTION,
+      newQuestionHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.ANSWER_SUBMITTED,
+      answerSubmittedHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.QUESTION_RESULTS,
+      questionResultsHandler
+    );
     messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_ENDED, gameEndedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_STOPPED, gameStoppedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_PAUSED, gamePausedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_RESUMED, gameResumedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.QUESTION_SKIPPED, questionSkippedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_REACTION, userReactionHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.PROFILE_UPDATED, profileUpdatedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_PROFILE_UPDATED, userProfileUpdatedHandler);
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.GAME_STOPPED,
+      gameStoppedHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.GAME_PAUSED,
+      gamePausedHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.GAME_RESUMED,
+      gameResumedHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.QUESTION_SKIPPED,
+      questionSkippedHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.USER_REACTION,
+      userReactionHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.PROFILE_UPDATED,
+      profileUpdatedHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.USER_PROFILE_UPDATED,
+      userProfileUpdatedHandler
+    );
     messageHandlers.current.set(WS_MESSAGE_TYPES.ERROR, errorHandler);
   }, [currentRoom]);
 
@@ -658,6 +774,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     sendMessage,
     getConnectionStats,
   };
+
+  console.log("currentRoom", currentRoom);
 
   return (
     <SocketContext.Provider value={contextValue}>
