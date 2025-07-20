@@ -13,7 +13,7 @@ const selectTriggerVariants = cva(
     variants: {
       variant: {
         default: "bg-transparent dark:bg-popover border-border",
-        neutral: "bg-input/10 dark:bg-input border-transparent",
+        neutral: "bg-input/10 dark:bg-input border-border dark:border-transparents",
       },
     },
     defaultVariants: {
