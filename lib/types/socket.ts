@@ -1,7 +1,6 @@
 import { Country } from "@/lib/data/countries";
 import { Difficulty } from "@/lib/constants";
 
-// Core game types
 export interface User {
   id: string;
   socketId: string;
@@ -66,7 +65,6 @@ export interface Timer {
   endTime: number;
 }
 
-// Room and settings types
 export interface RoomSettings {
   maxRoomSize: number;
   difficulty: Difficulty;
@@ -88,7 +86,6 @@ export interface Room {
   settings: RoomSettings;
 }
 
-// WebSocket message types
 export const WS_MESSAGE_TYPES = {
   // Client-to-server message types
   AUTH: "AUTH",
@@ -143,7 +140,6 @@ export interface WebSocketMessage<T = any> {
   timestamp?: number;
 }
 
-// Client-to-server message data types
 export interface AuthData {
   token: string;
   adminToken?: string;
@@ -189,7 +185,6 @@ export interface ToggleReadyData {
   isReady: boolean;
 }
 
-// Server-to-client message data types
 export interface AuthSuccessData {
   userId: string;
   isAdmin: boolean;
@@ -286,7 +281,6 @@ export interface ErrorData {
   details?: any;
 }
 
-// Message type unions
 export type ClientToServerMessage = 
   | { type: typeof WS_MESSAGE_TYPES.AUTH; data: AuthData }
   | { type: typeof WS_MESSAGE_TYPES.CREATE_ROOM; data: CreateRoomData }
@@ -331,26 +325,3 @@ export type ServerToClientMessage =
   | { type: typeof WS_MESSAGE_TYPES.ERROR; data: ErrorData }
   | { type: typeof WS_MESSAGE_TYPES.HEARTBEAT; data: {} };
 
-// API response types
-export interface HealthResponse {
-  status: 'ok';
-  timestamp: string;
-}
-
-export interface StatsResponse {
-  rooms: number;
-  users: number;
-  activeGames: number;
-  timestamp: string;
-  metrics: Record<string, unknown>;
-}
-
-export interface RoomsResponse {
-  rooms: Record<string, Room>;
-  count: number;
-}
-
-export interface UsersResponse {
-  users: Record<string, User>;
-  count: number;
-}

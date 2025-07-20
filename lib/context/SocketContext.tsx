@@ -19,7 +19,7 @@ import {
   GameQuestion,
   GameAnswer,
   GameStateLeaderboard,
-} from "@/lib/types/multiplayer";
+} from "@/lib/types/socket";
 import { GameSettings } from "./SettingsContext";
 
 export interface WebSocketMessage<T = any> {
@@ -225,7 +225,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       setCurrentRoom(data.room);
       setCurrentUser(data.user);
       logger.info("Joined room successfully (JOIN_ROOM_SUCCESS)");
-      console.log(data);
     };
 
     const leaveRoomHandler: MessageHandler<

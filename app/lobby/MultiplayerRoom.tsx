@@ -39,7 +39,7 @@ import {
 } from "@/lib/constants";
 import { cn } from "@/lib/utils/strings";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
-import { GameMode, RoomSettings, User } from "@/lib/types/multiplayer";
+import { GameMode, RoomSettings, User } from "@/lib/types/socket";
 
 const roomSettingsSchema = z.object({
   maxRoomSize: z
@@ -181,8 +181,6 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
       </div>
     );
   }
-
-  console.log('MULTIPLAYER_ROOM', room);
 
   if (room && room.settings) {
     const members = room.members;

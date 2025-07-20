@@ -1,11 +1,35 @@
-import { HealthResponse, StatsResponse, RoomsResponse, UsersResponse } from '@/lib/types/multiplayer';
+import { Room, User } from "../types/socket";
+
+export interface HealthResponse {
+  status: 'ok';
+  timestamp: string;
+}
+
+export interface StatsResponse {
+  rooms: number;
+  users: number;
+  activeGames: number;
+  timestamp: string;
+  metrics: Record<string, unknown>;
+}
+
+export interface RoomsResponse {
+  rooms: Record<string, Room>;
+  count: number;
+}
+
+export interface UsersResponse {
+  users: Record<string, User>;
+  count: number;
+}
+
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_FLAGS_API_URL || 'http://localhost:3001/api';
 
 class FlagsApiClient {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
-    
+
     try {
       const response = await fetch(url, {
         headers: {
