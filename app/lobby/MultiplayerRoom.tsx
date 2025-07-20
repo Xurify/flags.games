@@ -174,7 +174,7 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
                 </div>
               ))}
             </div>
-            <div className="text-sm text-muted-foreground mt-4 text-center">
+            <div className="text-sm text-muted-foreground mb-4 lg:mb-0 text-center">
               {members.length < maxPlayers
                 ? `Waiting for ${maxPlayers - members.length} more player${
                     maxPlayers - members.length > 1 ? "s" : ""
