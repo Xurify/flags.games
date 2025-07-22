@@ -17,16 +17,6 @@ import RoomLobby from "@/components/multiplayer/RoomLobby";
 import JoinRoomForm from "@/components/multiplayer/JoinRoomForm";
 import CreateRoomForm from "@/components/multiplayer/CreateRoomForm";
 
-const roomSettingsSchema = z.object({
-  maxRoomSize: z
-    .number()
-    .min(2)
-    .max(ROOM_SIZES[ROOM_SIZES.length - 1]),
-  difficulty: z.enum(DIFFICULTY_LEVELS),
-  gameMode: z.string(),
-  timePerQuestion: z.number().min(10).max(60),
-});
-
 interface MultiplayerRoomProps {
  randomUsername: string;
 }
