@@ -1,0 +1,107 @@
+import React from "react";
+import { z } from "zod";
+import { UsersIcon } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RoomSettings } from "@/lib/types/socket";
+
+const formSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  settings: z.object({
+    maxRoomSize: z.number(),
+    difficulty: z.string(),
+    gameMode: z.string(),
+    timePerQuestion: z.number(),
+  }),
+});
+
+interface JoinRoomFormProps {
+  randomUsername: string;
+  username: string;
+  setUsername: (username: string) => void;
+  isJoining: boolean;
+  handleJoinRoom: (finalUsername: string) => Promise<void>;
+  formErrors: { username?: string };
+  settings: RoomSettings;
+}
+
+const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
+  randomUsername,
+  username,
+  setUsername,
+  isJoining,
+  handleJoinRoom,
+  formErrors,
+  settings,
+}) => {
+  const handleSubmit = async () => {
+    const finalUsername = username.trim() || randomUsername;
+    const result = formSchema.safeParse({ username: finalUsername, settings });
+    if (!result.success) {
+      const errors: { username?: string } = {};
+      result.error.issues.forEach((error) => {
+        if (error.path[0] === "username") errors.username = error.message;
+      });
+      return;
+    }
+    await handleJoinRoom(finalUsername);
+  };
+
+  return (
+    <div className="max-w-lg w-full mx-auto">
+      <Card className="shadow-card hover:shadow-card-hover transition-all duration-300">
+        <CardHeader>
+          <CardTitle className="text-center flex items-center justify-center gap-2 font-semibold">
+            <UsersIcon className="w-5 h-5 text-primary" />
+            Join Room
+          </CardTitle>
+          <CardDescription className="text-center">
+            Join a new multiplayer game room with you and your friends
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="username" className="text-sm font-medium">
+              Username
+            </Label>
+            <Input
+              id="username"
+              placeholder={randomUsername}
+              value={username}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+              className="h-11 rounded-xl"
+              maxLength={30}
+            />
+            {formErrors.username && (
+              <p className="text-xs text-red-500">{formErrors.username}</p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              {username.length}/30 characters
+            </p>
+          </div>
+
+          <Button
+            onClick={handleSubmit}
+            disabled={isJoining}
+            className="w-full"
+            size="lg"
+          >
+            {isJoining ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                Joining Room...
+              </>
+            ) : (
+              "Join Room"
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default JoinRoomForm;
