@@ -70,7 +70,7 @@ export interface RoomSettings {
   difficulty: Difficulty;
   timePerQuestion?: number;
   showLeaderboard?: boolean;
-  gameMode?: GameMode;
+  gameMode: GameMode;
 }
 
 export type GameMode = "classic" | "speed" | "elimination";
