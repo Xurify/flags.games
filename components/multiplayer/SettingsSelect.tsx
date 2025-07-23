@@ -14,6 +14,7 @@ interface SettingsSelectProps<T extends string | number> {
   options: {
     value: T;
     label: string;
+    disabled?: boolean;
   }[];
   onValueChange: (value: T) => void;
   renderValue?: (value: T) => string;
@@ -45,7 +46,7 @@ export function SettingsSelect<T extends string | number>({
       </SelectTrigger>
       <SelectContent>
         {options.map((option) => (
-          <SelectItem key={String(option.value)} value={String(option.value)}>
+          <SelectItem key={String(option.value)} value={String(option.value)} disabled={option.disabled}>
             {option.label}
           </SelectItem>
         ))}

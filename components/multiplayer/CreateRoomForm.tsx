@@ -10,7 +10,13 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SettingsSelect } from "./SettingsSelect";
@@ -44,7 +50,10 @@ interface CreateRoomFormProps {
   settings: RoomSettings;
   setSettings: React.Dispatch<React.SetStateAction<RoomSettings>>;
   isCreating: boolean;
-  handleCreateRoom: (finalUsername: string, settings: RoomSettings) => Promise<void>;
+  handleCreateRoom: (
+    finalUsername: string,
+    settings: RoomSettings
+  ) => Promise<void>;
   formErrors: { username?: string; settings?: string };
 }
 
@@ -93,7 +102,9 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
               id="username"
               placeholder={randomUsername}
               value={username}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setUsername(e.target.value)
+              }
               className="h-11 rounded-xl"
               maxLength={30}
             />
@@ -158,8 +169,16 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
                 value={settings.gameMode}
                 options={[
                   { value: "classic", label: "Classic" },
-                  { value: "speed", label: "Speed Round (soon)" },
-                  { value: "elimination", label: "Elimination (soon)" },
+                  {
+                    value: "speed",
+                    label: "Speed Round (soon)",
+                    disabled: true,
+                  },
+                  {
+                    value: "elimination",
+                    label: "Elimination (soon)",
+                    disabled: true,
+                  },
                 ]}
                 onValueChange={(value) =>
                   setSettings((prev) => ({ ...prev, gameMode: value }))
