@@ -1,18 +1,19 @@
 import React from "react";
 import { z } from "zod";
-import { SettingsIcon, UsersIcon } from "lucide-react";
+import {
+  SettingsIcon,
+  UsersIcon,
+  Users,
+  Timer,
+  BarChart,
+  Swords,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { SettingsSelect } from "./SettingsSelect";
 import {
   Difficulty,
   DIFFICULTY_LEVELS,
@@ -109,121 +110,64 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
               Game Settings
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2 h-[64px]">
-                <Label htmlFor="maxPlayers" className="text-sm font-medium">
-                  Max Players
-                </Label>
-                <Select
-                  value={settings.maxRoomSize.toString()}
-                  onValueChange={(value) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      maxRoomSize: parseInt(value),
-                    }))
-                  }
-                >
-                  <SelectTrigger variant="neutral" className="h-11 rounded-xl">
-                    <SelectValue>{settings.maxRoomSize} players</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ROOM_SIZES.map((roomSize) => (
-                      <SelectItem
-                        key={`room-sizes-${roomSize}`}
-                        value={roomSize.toString()}
-                      >
-                        {roomSize} Players
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2 h-[64px]">
-                <Label htmlFor="difficulty" className="text-sm font-medium">
-                  Difficulty
-                </Label>
-                <Select
-                  value={settings.difficulty}
-                  onValueChange={(value: Difficulty) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      difficulty: value,
-                    }))
-                  }
-                >
-                  <SelectTrigger variant="neutral" className="h-11 rounded-xl capitalize">
-                    <SelectValue className="capitalize">
-                      {settings.difficulty}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DIFFICULTY_LEVELS.map((difficulty) => (
-                      <SelectItem
-                        className="capitalize"
-                        key={difficulty}
-                        value={difficulty}
-                      >
-                        {difficulty}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2 h-[64px]">
-                <Label
-                  htmlFor="timePerQuestion"
-                  className="text-sm font-medium"
-                >
-                  Time per Question (seconds)
-                </Label>
-                <Select
-                  value={settings.timePerQuestion?.toString()}
-                  onValueChange={(value) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      timePerQuestion: parseInt(value),
-                    }))
-                  }
-                >
-                  <SelectTrigger variant="neutral" className="h-11 rounded-xl">
-                    <SelectValue>{settings.timePerQuestion}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TIME_PER_QUESTION_OPTIONS.map((time) => (
-                      <SelectItem key={time} value={time.toString()}>
-                        {time} seconds
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2 h-[64px]">
-                <Label htmlFor="gameMode" className="text-sm font-medium">
-                  Game Mode
-                </Label>
-                <Select
-                  value={settings.gameMode}
-                  onValueChange={(value: GameMode) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      gameMode: value,
-                    }))
-                  }
-                >
-                  <SelectTrigger variant="neutral" className="h-11 rounded-xl capitalize">
-                    <SelectValue>{settings.gameMode}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="classic">Classic</SelectItem>
-                    <SelectItem disabled={true} value="speed">
-                      Speed Round
-                    </SelectItem>
-                    <SelectItem disabled={true} value="elimination">
-                      Elimination
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <SettingsSelect
+                icon={<Users className="w-5 h-5" />}
+                label="Max Players"
+                value={settings.maxRoomSize}
+                options={ROOM_SIZES.map((size) => ({
+                  value: size,
+                  label: `${size} players`,
+                }))}
+                onValueChange={(value) =>
+                  setSettings((prev) => ({ ...prev, maxRoomSize: value }))
+                }
+                renderValue={(value) => `${value} players`}
+              />
+              <SettingsSelect
+                icon={<BarChart className="w-5 h-5" />}
+                label="Difficulty"
+                value={settings.difficulty}
+                options={DIFFICULTY_LEVELS.map((level) => ({
+                  value: level,
+                  label: level.charAt(0).toUpperCase() + level.slice(1),
+                }))}
+                onValueChange={(value) =>
+                  setSettings((prev) => ({ ...prev, difficulty: value }))
+                }
+                renderValue={(value) =>
+                  value.charAt(0).toUpperCase() + value.slice(1)
+                }
+              />
+              <SettingsSelect
+                icon={<Timer className="w-5 h-5" />}
+                label="Time per Question"
+                value={settings.timePerQuestion ?? 10}
+                options={TIME_PER_QUESTION_OPTIONS.map((time) => ({
+                  value: time,
+                  label: `${time} seconds`,
+                }))}
+                onValueChange={(value) =>
+                  setSettings((prev) => ({ ...prev, timePerQuestion: value }))
+                }
+                renderValue={(value) => `${value}s`}
+              />
+              <SettingsSelect
+                icon={<Swords className="w-5 h-5" />}
+                label="Game Mode"
+                value={settings.gameMode}
+                options={[
+                  { value: "classic", label: "Classic" },
+                  { value: "speed", label: "Speed Round (soon)" },
+                  { value: "elimination", label: "Elimination (soon)" },
+                ]}
+                onValueChange={(value) =>
+                  setSettings((prev) => ({ ...prev, gameMode: value }))
+                }
+                renderValue={(value) =>
+                  value.charAt(0).toUpperCase() + value.slice(1)
+                }
+              />
             </div>
           </div>
           <div className="pt-4">
