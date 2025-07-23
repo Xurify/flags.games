@@ -35,9 +35,9 @@ export function SettingsSelect<T extends string | number>({
   return (
     <Select
       value={String(value)}
-      onValueChange={(v) => {
+      onValueChange={(value) => {
         const isNumber = typeof value === "number";
-        onValueChange((isNumber ? Number(v) : v) as T);
+        onValueChange((isNumber ? Number(value) : value) as T);
       }}
       disabled={disabled}
     >
