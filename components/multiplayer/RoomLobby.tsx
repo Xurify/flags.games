@@ -160,7 +160,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
               />
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center items-center mt-6 lg:mt-8">
+          <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center items-center">
             <Button
               variant="outline"
               className="flex items-center gap-2 h-12 px-6 text-base w-full sm:w-auto"
