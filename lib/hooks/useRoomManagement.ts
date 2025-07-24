@@ -17,7 +17,7 @@ export const useRoomManagement = () => {
   }, [currentUser, currentRoom]);
 
   const canStartGame = useCallback(() => {
-    if (!currentRoom || !isHost()) return false;
+    if (!currentRoom || !isHost() || currentRoom.members.length < 2) return false;
     return true;
   }, [currentRoom, isHost]);
 
