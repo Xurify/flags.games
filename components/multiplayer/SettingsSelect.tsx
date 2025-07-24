@@ -40,8 +40,9 @@ export function SettingsSelect<T extends string | number>({
         onValueChange((isNumber ? Number(value) : value) as T);
       }}
       disabled={disabled}
+      
     >
-      <SelectTrigger asChild>
+      <SelectTrigger asChild variant="neutral">
         <SettingsButton icon={icon} label={label} value={displayValue} />
       </SelectTrigger>
       <SelectContent>

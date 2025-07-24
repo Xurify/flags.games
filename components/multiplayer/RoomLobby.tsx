@@ -4,20 +4,15 @@ import {
   UserIcon,
   LinkIcon,
   PlayIcon,
-  SettingsIcon,
+  Users,
+  Timer,
+  BarChart,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
+import { SettingsSelect } from "./SettingsSelect";
 import {
   DIFFICULTY_LEVELS,
   ROOM_SIZES,
@@ -118,92 +113,51 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
             <h2 className="text-lg font-semibold text-primary mb-4 lg:mb-6 tracking-tight text-center lg:text-left">
               Game Settings
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
-              <div>
-                <Label htmlFor="difficulty" className="text-sm font-medium">
-                  Difficulty
-                </Label>
-                <Select
-                  value={room.settings.difficulty}
-                  onValueChange={(v) => handleSettingChange("difficulty", v)}
-                  disabled={!isHost()}
-                >
-                  <SelectTrigger
-                    variant="neutral"
-                    className="h-12 rounded-xl mt-2 capitalize"
-                  >
-                    <SelectValue>{room.settings.difficulty}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DIFFICULTY_LEVELS.map((difficulty) => (
-                      <SelectItem
-                        className="capitalize"
-                        key={difficulty}
-                        value={difficulty}
-                      >
-                        {difficulty}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="roomSize" className="text-sm font-medium">
-                  Max Players
-                </Label>
-                <Select
-                  value={String(room.settings.maxRoomSize)}
-                  onValueChange={(v) =>
-                    handleSettingChange("maxRoomSize", Number(v))
-                  }
-                  disabled={!isHost()}
-                >
-                  <SelectTrigger
-                    variant="neutral"
-                    className="h-12 rounded-xl mt-2"
-                  >
-                    <SelectValue>
-                      {room.settings.maxRoomSize} players
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ROOM_SIZES.map((n) => (
-                      <SelectItem key={n} value={n.toString()}>
-                        {n}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label
-                  htmlFor="timePerQuestion"
-                  className="text-sm font-medium"
-                >
-                  Time per Question (seconds)
-                </Label>
-                <Select
-                  value={String(room.settings.timePerQuestion)}
-                  onValueChange={(v) =>
-                    handleSettingChange("timePerQuestion", Number(v))
-                  }
-                  disabled={!isHost()}
-                >
-                  <SelectTrigger
-                    variant="neutral"
-                    className="h-12 rounded-xl mt-2"
-                  >
-                    <SelectValue>{room.settings.timePerQuestion}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TIME_PER_QUESTION_OPTIONS.map((time) => (
-                      <SelectItem key={time} value={time.toString()}>
-                        {time} seconds
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <SettingsSelect
+                icon={<Users className="w-5 h-5" />}
+                label="Max Players"
+                value={room.settings.maxRoomSize}
+                options={ROOM_SIZES.map((size) => ({
+                  value: size,
+                  label: `${size} players`,
+                }))}
+                onValueChange={(value) =>
+                  handleSettingChange("maxRoomSize", value)
+                }
+                renderValue={(value) => `${value} players`}
+                disabled={!isHost()}
+              />
+              <SettingsSelect
+                icon={<BarChart className="w-5 h-5" />}
+                label="Difficulty"
+                value={room.settings.difficulty}
+                options={DIFFICULTY_LEVELS.map((level) => ({
+                  value: level,
+                  label: level.charAt(0).toUpperCase() + level.slice(1),
+                }))}
+                onValueChange={(value) =>
+                  handleSettingChange("difficulty", value)
+                }
+                renderValue={(value) =>
+                  value.charAt(0).toUpperCase() + value.slice(1)
+                }
+                disabled={!isHost()}
+              />
+              <SettingsSelect
+                icon={<Timer className="w-5 h-5" />}
+                label="Time per Question"
+                value={room.settings.timePerQuestion ?? 10}
+                options={TIME_PER_QUESTION_OPTIONS.map((time) => ({
+                  value: time,
+                  label: `${time} seconds`,
+                }))}
+                onValueChange={(value) =>
+                  handleSettingChange("timePerQuestion", value)
+                }
+                renderValue={(value) => `${value}s`}
+                disabled={!isHost()}
+              />
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center items-center mt-6 lg:mt-8">
