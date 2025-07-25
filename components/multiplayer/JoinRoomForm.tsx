@@ -92,10 +92,10 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
             {isJoining ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                Joining Room...
+                Connecting...
               </>
             ) : (
-              "Join Room"
+              "Connect"
             )}
           </Button>
         </CardContent>
