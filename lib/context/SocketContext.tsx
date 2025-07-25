@@ -9,6 +9,8 @@ import React, {
   useCallback,
   ReactNode,
 } from "react";
+import { toast } from "sonner";
+
 import { logger } from "@/lib/utils/logger";
 import {
   WS_MESSAGE_TYPES,
@@ -20,7 +22,6 @@ import {
   GameAnswer,
   GameStateLeaderboard,
 } from "@/lib/types/socket";
-import { GameSettings } from "./SettingsContext";
 
 export interface WebSocketMessage<T = any> {
   type: keyof typeof WS_MESSAGE_TYPES;
@@ -101,6 +102,8 @@ export interface MessageDataTypes {
   };
   [WS_MESSAGE_TYPES.ERROR]: {
     message: string;
+    code: string;
+    timestamp: number;
   };
 }
 
@@ -183,6 +186,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const reconnectAttemptsRef = useRef(0);
   const maxReconnectAttempts = 5;
   const reconnectDelay = 3000;
+
+  useEffect(() => {
+    if (lastError) {
+      toast.error(lastError);
+    }
+  }, [lastError]);
 
   const messageHandlers = useRef<
     Map<keyof typeof WS_MESSAGE_TYPES, (data: any) => void>
