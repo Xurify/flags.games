@@ -122,9 +122,14 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
                   value: size,
                   label: `${size} players`,
                 }))}
-                onValueChange={(value) =>
-                  handleSettingChange("maxRoomSize", value)
-                }
+                onValueChange={(value) => {
+                  // TODO: Implement this in the backend
+                  if (members.length > value) {
+                    toast.error("Cannot reduce max players below current number of players");
+                    return;
+                  }
+                  return handleSettingChange("maxRoomSize", value);
+                }}
                 renderValue={(value) => `${value} players`}
                 disabled={!isHost()}
               />
