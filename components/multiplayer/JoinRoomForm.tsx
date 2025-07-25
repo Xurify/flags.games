@@ -1,9 +1,16 @@
 import React from "react";
+import Link from "next/link";
 import { z } from "zod";
 import { UsersIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RoomSettings } from "@/lib/types/socket";
@@ -71,7 +78,9 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
               id="username"
               placeholder={randomUsername}
               value={username}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setUsername(e.target.value)
+              }
               className="h-11 rounded-xl"
               maxLength={30}
             />
@@ -82,22 +91,30 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
               {username.length}/30 characters
             </p>
           </div>
-
-          <Button
-            onClick={handleSubmit}
-            disabled={isJoining}
-            className="w-full"
-            size="lg"
-          >
-            {isJoining ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                Connecting...
-              </>
-            ) : (
-              "Connect"
-            )}
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={handleSubmit}
+              disabled={isJoining}
+              className="w-full"
+              size="lg"
+            >
+              {isJoining ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                  Connecting...
+                </>
+              ) : (
+                "Connect"
+              )}
+            </Button>
+            <Link
+              href="/lobby"
+              className="text-sm text-muted-foreground text-center"
+            >
+              Need to create a room instead?{" "}
+              <span className="underline text-primary">Click here</span>
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>
