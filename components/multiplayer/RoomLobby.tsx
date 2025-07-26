@@ -4,12 +4,12 @@ import {
   UserIcon,
   LinkIcon,
   PlayIcon,
-  Users,
-  Timer,
-  BarChart,
-  Copy,
-  Settings,
-  CopyCheck,
+  UsersIcon,
+  TimerIcon,
+  BarChartIcon,
+  CopyIcon,
+  SettingsIcon,
+  CopyCheckIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -75,7 +75,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <Users className="w-4 h-4 text-primary" />
+                <UsersIcon className="w-4 h-4 text-primary" />
               </div>
               <div>
                 <h2 className="text-lg font-semibold text-foreground">
@@ -96,9 +96,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
                   className="h-5 w-5 p-0 transition-all duration-200 flex items-center justify-center"
                 >
                   {copied ? (
-                    <CopyCheck className="w-4 h-4 stroke-green-500" />
+                    <CopyCheckIcon className="w-4 h-4 stroke-green-500" />
                   ) : (
-                    <Copy className="w-4 h-4" />
+                    <CopyIcon className="w-4 h-4" />
                   )}
                 </button>
               </div>
@@ -157,14 +157,14 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
 
         <div className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <Settings className="w-4 h-4 text-muted-foreground" />
+            <SettingsIcon className="w-4 h-4 text-muted-foreground" />
             <h3 className="text-base font-medium text-foreground">
               Game Settings
             </h3>
           </div>
           <div className="space-y-3 mb-4">
             <SettingsSelect
-              icon={<Users className="w-3 h-3" />}
+              icon={<UsersIcon className="w-3 h-3" />}
               label="Max Players"
               value={room.settings.maxRoomSize}
               options={ROOM_SIZES.map((size) => ({
@@ -184,7 +184,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
               disabled={!isHost()}
             />
             <SettingsSelect
-              icon={<BarChart className="w-3 h-3" />}
+              icon={<BarChartIcon className="w-3 h-3" />}
               label="Difficulty"
               value={room.settings.difficulty}
               options={DIFFICULTY_LEVELS.map((level) => ({
@@ -200,7 +200,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
               disabled={!isHost()}
             />
             <SettingsSelect
-              icon={<Timer className="w-3 h-3" />}
+              icon={<TimerIcon className="w-3 h-3" />}
               label="Time per Question"
               value={room.settings.timePerQuestion ?? 10}
               options={TIME_PER_QUESTION_OPTIONS.map((time) => ({

@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { getDifficultySettings } from "@/lib/utils/gameLogic";
 import { Difficulty, DIFFICULTY_LEVELS } from "@/lib/constants";
-import { Heart } from "lucide-react";
+import { HeartIcon } from "lucide-react";
 import { GameState } from "./FlagGameClient";
 
 interface DifficultySelectorProps {
@@ -112,7 +112,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between p-3 rounded-lg border bg-card">
               <div className="flex items-center gap-3">
-                <Heart
+                <HeartIcon
                   className={`w-5 h-5 ${
                     heartsModeEnabled
                       ? "text-red-500 fill-red-500"

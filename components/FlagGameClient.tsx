@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { RotateCcw, HelpCircle, ArrowLeftRight } from "lucide-react";
+import { RotateCcwIcon, HelpCircleIcon, ArrowLeftRightIcon } from "lucide-react";
 
 import {
   CORRECT_POINT_COST,
@@ -363,7 +363,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                   className="text-muted-foreground hover:text-foreground"
                   title="Change difficulty"
                 >
-                  <ArrowLeftRight className="w-3 h-3" />
+                  <ArrowLeftRightIcon className="w-3 h-3" />
                 </Button>
                 <span className="text-sm font-medium text-foreground">LEVEL</span>
                 <LevelBadge difficulty={gameState.difficulty} />
@@ -450,7 +450,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             gameCompleted={gameState.gameCompleted}
           >
             <Button variant="destructive" className="w-full" size="lg">
-              <RotateCcw className="w-4 h-4 mr-2" />
+              <RotateCcwIcon className="w-4 h-4 mr-2" />
               Restart Game
             </Button>
           </RestartDialog>
@@ -460,7 +460,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             onOpenChange={setShowHowToPlayDialog}
           >
             <Button variant="ghost" className="text-muted-foreground" size="lg">
-              <HelpCircle className="w-4 h-4 mr-2" />
+              <HelpCircleIcon className="w-4 h-4 mr-2" />
               How to play?
             </Button>
           </HowToPlayDialog>

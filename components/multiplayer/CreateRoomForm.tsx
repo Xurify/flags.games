@@ -3,10 +3,9 @@ import { z } from "zod";
 import {
   SettingsIcon,
   UsersIcon,
-  Users,
-  Timer,
-  BarChart,
-  Swords,
+  TimerIcon,
+  BarChartIcon,
+  SwordsIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -122,10 +121,10 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
             </h3>
 
             <div className="space-y-2">
-              <SettingsSelect
-                icon={<Users className="w-5 h-5" />}
-                label="Max Players"
-                value={settings.maxRoomSize}
+                              <SettingsSelect
+                  icon={<UsersIcon className="w-5 h-5" />}
+                  label="Max Players"
+                  value={settings.maxRoomSize}
                 options={ROOM_SIZES.map((size) => ({
                   value: size,
                   label: `${size} players`,
@@ -136,7 +135,7 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
                 renderValue={(value) => `${value} players`}
               />
               <SettingsSelect
-                icon={<BarChart className="w-5 h-5" />}
+                icon={<BarChartIcon className="w-5 h-5" />}
                 label="Difficulty"
                 value={settings.difficulty}
                 options={DIFFICULTY_LEVELS.map((level) => ({
@@ -151,7 +150,7 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
                 }
               />
               <SettingsSelect
-                icon={<Timer className="w-5 h-5" />}
+                icon={<TimerIcon className="w-5 h-5" />}
                 label="Time per Question"
                 value={settings.timePerQuestion ?? 10}
                 options={TIME_PER_QUESTION_OPTIONS.map((time) => ({
@@ -164,7 +163,7 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
                 renderValue={(value) => `${value}s`}
               />
               <SettingsSelect
-                icon={<Swords className="w-5 h-5" />}
+                icon={<SwordsIcon className="w-5 h-5" />}
                 label="Game Mode"
                 value={settings.gameMode}
                 options={[

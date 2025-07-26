@@ -1,5 +1,5 @@
 import React from "react";
-import { Heart } from "lucide-react";
+import { HeartIcon } from "lucide-react";
 
 interface HeartsDisplayProps {
   hearts: number;
@@ -17,7 +17,7 @@ const HeartsDisplay: React.FC<HeartsDisplayProps> = ({
   return (
     <div className="flex items-center gap-1">
       {Array.from({ length: maxHearts }, (_, index) => (
-        <Heart
+        <HeartIcon
           key={index}
           className={`w-5 h-5 ${
             index < hearts

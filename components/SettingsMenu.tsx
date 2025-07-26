@@ -1,6 +1,6 @@
 import React from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Settings, Volume2, VolumeX, Sun, Moon, Users } from "lucide-react";
+import { SettingsIcon, Volume2Icon, VolumeXIcon, SunIcon, MoonIcon, UsersIcon } from "lucide-react";
 import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
@@ -36,7 +36,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
     <Select open={settingsOpen} onOpenChange={setSettingsOpen}>
       <SelectTrigger aria-label="Settings" className="w-auto border-none bg-transparent shadow-none p-0 h-auto">
         <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground dark:text-foreground transition-colors">
-          <Settings className="w-4 h-4" />
+          <SettingsIcon className="w-4 h-4" />
           <span className="text-sm font-medium">Settings</span>
         </div>
       </SelectTrigger>
@@ -77,9 +77,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                 className="w-full justify-start"
               >
                 {settings.soundEffectsEnabled ? (
-                  <Volume2 className="w-4 h-4 mr-2" />
+                  <Volume2Icon className="w-4 h-4 mr-2" />
                 ) : (
-                  <VolumeX className="w-4 h-4 mr-2" />
+                  <VolumeXIcon className="w-4 h-4 mr-2" />
                 )}
                 {settings.soundEffectsEnabled ? "Sound On" : "Sound Off"}
               </Button>
@@ -99,9 +99,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                 aria-pressed={settings.darkMode}
               >
                 {settings.darkMode ? (
-                  <Sun className="w-4 h-4 mr-2" />
+                  <SunIcon className="w-4 h-4 mr-2" />
                 ) : (
-                  <Moon className="w-4 h-4 mr-2" />
+                  <MoonIcon className="w-4 h-4 mr-2" />
                 )}
                 {settings.darkMode ? "On" : "Off"}
               </Button>
@@ -124,7 +124,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                     }}
                     className="w-full justify-start"
                   >
-                    <Users className="w-4 h-4 mr-2" />
+                    <UsersIcon className="w-4 h-4 mr-2" />
                     Multiplayer
                   </Button>
                 </div>
