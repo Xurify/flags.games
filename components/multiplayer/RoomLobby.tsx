@@ -118,7 +118,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
                 <div
                   key={`player-${index}`}
                   className={cn(
-                    "flex items-center gap-3 p-3 rounded-xl border transition-colors duration-200",
+                    "flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 ease-in-out min-h-[60px]",
                     player
                       ? "bg-card border-border/40 hover:bg-accent/30"
                       : "bg-muted/40 border-dashed border-border/60 opacity-80 animate-pulse"
@@ -127,23 +127,18 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
                   <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
                     <UserIcon className="w-4 h-4 text-accent-foreground" />
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-semibold text-foreground truncate">
                         {player ? player.username : "Waiting..."}
                       </span>
                       {player && room?.host === player.id && (
-                        <div className="flex items-center gap-1 px-2 py-0.5 bg-chart-5/20 rounded-full">
-                          <CrownIcon className="w-3 h-3 text-chart-5" />
-                          <span className="text-xs font-medium text-chart-5">
-                            Host
-                          </span>
-                        </div>
+                        <CrownIcon className="w-3 h-3 text-chart-5 flex-shrink-0" />
                       )}
                     </div>
-                    {player && room?.host !== player.id && (
+                    {player && (
                       <span className="text-xs text-muted-foreground">
-                        Player
+                        {room?.host === player.id ? "Host" : "Player"}
                       </span>
                     )}
                   </div>
