@@ -188,3 +188,8 @@
     }
   }
 }
+
+
+button {
+  @apply cursor-pointer;
+}

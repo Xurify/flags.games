@@ -7,6 +7,9 @@ import {
   Users,
   Timer,
   BarChart,
+  Copy,
+  Settings,
+  CopyCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -36,11 +39,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
 }) => {
   const members = room.members;
   const maxPlayers = room.settings.maxRoomSize;
+  const [copied, setCopied] = React.useState(false);
 
-  const handleSettingChange = (
-    key: keyof typeof room.settings,
-    value: any
-  ) => {
+  const handleSettingChange = (key: keyof typeof room.settings, value: any) => {
     if (isHost()) {
       updateRoomSettings({ ...room.settings, [key]: value });
     }
@@ -55,52 +56,102 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
       ? `${window.location.origin}/lobby?c=${room.inviteCode}`
       : "";
     if (inviteLink) navigator.clipboard.writeText(inviteLink);
-    toast.success("Copied invited url");
+    toast.success("Copied invite link to clipboard");
+  };
+
+  const handleCopyRoomCode = () => {
+    if (room.inviteCode) {
+      navigator.clipboard.writeText(room.inviteCode);
+      toast.success("Room code copied to clipboard");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   return (
-    <div className="flex items-center justify-center">
-      <Card className="w-full max-w-5xl flex flex-col lg:flex-row overflow-hidden">
-        <div className="lg:w-2/5 flex flex-col items-center justify-center px-6 lg:px-8 gap-6 lg:gap-8 border-b lg:border-b-0 lg:border-r border-border">
-          <h2 className="text-lg font-semibold text-primary mb-2 tracking-tight">
-            Players ({members.length}/{maxPlayers})
-          </h2>
-          <div className="flex flex-col gap-4 lg:gap-5 w-full">
-            {[
-              ...members,
-              ...Array(maxPlayers - members.length).fill(null),
-            ].map((player: User | null, index) => (
-              <div
-                key={`player-${index}`}
-                className={cn(
-                  "flex items-center gap-4 lg:gap-5 px-3 lg:px-4 py-3 rounded-2xl shadow-card bg-white/70 dark:bg-black/40 border border-border dark:border-border/70 transition-all",
-                  !player &&
-                    "opacity-60 bg-muted/60 dark:bg-muted/30 border-dashed"
-                )}
-              >
-                <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-accent dark:bg-accent/40 flex items-center justify-center border-2 border-accent/40 dark:border-accent/30 flex-shrink-0">
-                  <UserIcon className="w-6 h-6 lg:w-7 lg:h-7 text-muted-foreground dark:text-muted-foreground" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="block font-semibold text-foreground dark:text-foreground truncate text-sm lg:text-base">
-                    {player ? player.username : "Waiting..."}
-                  </span>
-                  {player && (
-                    <span className="block text-xs text-muted-foreground dark:text-muted-foreground truncate">
-                      {room?.host === player.id ? "Host" : "Player"}
-                    </span>
-                  )}
-                </div>
-                {player && room?.host === player.id && (
-                  <CrownIcon
-                    className="w-4 h-4 lg:w-5 lg:h-5 text-yellow-400 flex-shrink-0"
-                    aria-label="Host"
-                  />
-                )}
+    <div className="flex items-center justify-center p-2">
+      <Card className="w-full max-w-lg">
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <Users className="w-4 h-4 text-primary" />
               </div>
-            ))}
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">
+                  Room Lobby
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Waiting for players to join
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 px-2 py-1 bg-muted rounded text-xs">
+                <span className="font-mono text-foreground">
+                  {room.inviteCode}
+                </span>
+                <button
+                  onClick={handleCopyRoomCode}
+                  className="h-5 w-5 p-0 transition-all duration-200 flex items-center justify-center"
+                >
+                  {copied ? (
+                    <CopyCheck className="w-4 h-4 stroke-green-500" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="text-sm text-muted-foreground mb-4 lg:mb-0 text-center">
+        </div>
+
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center gap-2 mb-3">
+            <h3 className="text-base font-medium text-foreground">
+              Players ({members.length}/{maxPlayers})
+            </h3>
+          </div>
+          <div className="space-y-2">
+            {[...members, ...Array(maxPlayers - members.length).fill(null)].map(
+              (player: User | null, index) => (
+                <div
+                  key={`player-${index}`}
+                  className={cn(
+                    "flex items-center gap-3 p-3 rounded-xl border transition-colors duration-200",
+                    player
+                      ? "bg-card border-border/40 hover:bg-accent/30"
+                      : "bg-muted/40 border-dashed border-border/60 opacity-80 animate-pulse"
+                  )}
+                >
+                  <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+                    <UserIcon className="w-4 h-4 text-accent-foreground" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-foreground truncate">
+                        {player ? player.username : "Waiting..."}
+                      </span>
+                      {player && room?.host === player.id && (
+                        <div className="flex items-center gap-1 px-2 py-0.5 bg-chart-5/20 rounded-full">
+                          <CrownIcon className="w-3 h-3 text-chart-5" />
+                          <span className="text-xs font-medium text-chart-5">
+                            Host
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    {player && room?.host !== player.id && (
+                      <span className="text-xs text-muted-foreground">
+                        Player
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+          <div className="mt-3 text-xs text-muted-foreground text-center">
             {members.length < maxPlayers
               ? `Waiting for ${maxPlayers - members.length} more player${
                   maxPlayers - members.length > 1 ? "s" : ""
@@ -108,79 +159,87 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
               : "Room is full!"}
           </div>
         </div>
-        <div className="lg:w-3/5 flex flex-col justify-between px-6 lg:px-10 gap-8 lg:gap-10">
-          <div>
-            <h2 className="text-lg font-semibold text-primary mb-4 lg:mb-6 tracking-tight text-center lg:text-left">
+
+        <div className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Settings className="w-4 h-4 text-muted-foreground" />
+            <h3 className="text-base font-medium text-foreground">
               Game Settings
-            </h2>
-            <div className="space-y-2">
-              <SettingsSelect
-                icon={<Users className="w-5 h-5" />}
-                label="Max Players"
-                value={room.settings.maxRoomSize}
-                options={ROOM_SIZES.map((size) => ({
-                  value: size,
-                  label: `${size} players`,
-                }))}
-                onValueChange={(value) => {
-                  // TODO: Implement this in the backend
-                  if (members.length > value) {
-                    toast.error("Cannot reduce max players below current number of players");
-                    return;
-                  }
-                  return handleSettingChange("maxRoomSize", value);
-                }}
-                renderValue={(value) => `${value} players`}
-                disabled={!isHost()}
-              />
-              <SettingsSelect
-                icon={<BarChart className="w-5 h-5" />}
-                label="Difficulty"
-                value={room.settings.difficulty}
-                options={DIFFICULTY_LEVELS.map((level) => ({
-                  value: level,
-                  label: level.charAt(0).toUpperCase() + level.slice(1),
-                }))}
-                onValueChange={(value) =>
-                  handleSettingChange("difficulty", value)
-                }
-                renderValue={(value) =>
-                  value.charAt(0).toUpperCase() + value.slice(1)
-                }
-                disabled={!isHost()}
-              />
-              <SettingsSelect
-                icon={<Timer className="w-5 h-5" />}
-                label="Time per Question"
-                value={room.settings.timePerQuestion ?? 10}
-                options={TIME_PER_QUESTION_OPTIONS.map((time) => ({
-                  value: time,
-                  label: `${time} seconds`,
-                }))}
-                onValueChange={(value) =>
-                  handleSettingChange("timePerQuestion", value)
-                }
-                renderValue={(value) => `${value}s`}
-                disabled={!isHost()}
-              />
-            </div>
+            </h3>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center items-center">
+          <div className="space-y-3 mb-4">
+            <SettingsSelect
+              icon={<Users className="w-3 h-3" />}
+              label="Max Players"
+              value={room.settings.maxRoomSize}
+              options={ROOM_SIZES.map((size) => ({
+                value: size,
+                label: `${size} players`,
+              }))}
+              onValueChange={(value) => {
+                if (members.length > value) {
+                  toast.error(
+                    "Cannot reduce max players below current number of players"
+                  );
+                  return;
+                }
+                return handleSettingChange("maxRoomSize", value);
+              }}
+              renderValue={(value) => `${value} players`}
+              disabled={!isHost()}
+            />
+            <SettingsSelect
+              icon={<BarChart className="w-3 h-3" />}
+              label="Difficulty"
+              value={room.settings.difficulty}
+              options={DIFFICULTY_LEVELS.map((level) => ({
+                value: level,
+                label: level.charAt(0).toUpperCase() + level.slice(1),
+              }))}
+              onValueChange={(value) =>
+                handleSettingChange("difficulty", value)
+              }
+              renderValue={(value) =>
+                value.charAt(0).toUpperCase() + value.slice(1)
+              }
+              disabled={!isHost()}
+            />
+            <SettingsSelect
+              icon={<Timer className="w-3 h-3" />}
+              label="Time per Question"
+              value={room.settings.timePerQuestion ?? 10}
+              options={TIME_PER_QUESTION_OPTIONS.map((time) => ({
+                value: time,
+                label: `${time} seconds`,
+              }))}
+              onValueChange={(value) =>
+                handleSettingChange("timePerQuestion", value)
+              }
+              renderValue={(value) => `${value}s`}
+              disabled={!isHost()}
+            />
+          </div>
+
+          <div className="flex gap-2">
             <Button
               variant="outline"
-              className="flex items-center gap-2 h-12 px-6 text-base w-full sm:w-auto"
+              size="sm"
+              className="flex-1 flex items-center gap-1 text-sm"
               onClick={handleInvite}
             >
-              <LinkIcon className="w-5 h-5" /> Invite
+              <LinkIcon className="w-3 h-3" />
+              Invite
             </Button>
             {isHost() && (
               <Button
                 variant="default"
-                className="flex items-center gap-2 h-12 px-6 text-base w-full sm:w-auto"
+                size="sm"
+                className="flex-1 flex items-center gap-1 text-sm"
                 onClick={handleStart}
                 disabled={!canStartGame()}
               >
-                <PlayIcon className="w-5 h-5" /> Start
+                <PlayIcon className="w-3 h-3" />
+                Start
               </Button>
             )}
           </div>
