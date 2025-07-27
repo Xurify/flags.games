@@ -62,6 +62,10 @@ class FlagsApiClient {
     return this.request<RoomsResponse>('/rooms');
   }
 
+  async getRoomByInviteCode(inviteCode: string): Promise<Room | { error?: string }> {
+    return this.request<Room | { error?: string }>(`/rooms/${inviteCode}`);
+  }
+
   async getUsers(): Promise<UsersResponse> {
     return this.request<UsersResponse>('/users');
   }

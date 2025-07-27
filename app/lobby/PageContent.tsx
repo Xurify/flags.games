@@ -5,7 +5,6 @@ import { HomeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import MultiplayerRoom from "./MultiplayerRoom";
-
 interface MultiplayerPageContentProps {
   randomUsername: string;
 }

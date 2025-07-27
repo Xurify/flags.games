@@ -29,6 +29,7 @@ interface RoomLobbyProps {
   isHost: () => boolean;
   canStartGame: () => boolean;
   updateRoomSettings: (settings: RoomSettings) => void;
+  onStartGame: () => void;
 }
 
 const RoomLobby: React.FC<RoomLobbyProps> = ({
@@ -36,6 +37,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
   isHost,
   canStartGame,
   updateRoomSettings,
+  onStartGame,
 }) => {
   const members = room.members;
   const maxPlayers = room.settings.maxRoomSize;
@@ -48,7 +50,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({
   };
 
   const handleStart = () => {
-    // TODO: Implement start game logic via socket
+    onStartGame();
   };
 
   const handleInvite = () => {

@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 import { DIFFICULTY_LEVELS, TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
 import { RoomSettings } from "@/lib/types/socket";
 
-import RoomLobby from "@/components/multiplayer/RoomLobby";
 import JoinRoomForm from "@/components/multiplayer/JoinRoomForm";
 import CreateRoomForm from "@/components/multiplayer/CreateRoomForm";
 
@@ -18,6 +17,7 @@ interface MultiplayerRoomProps {
 const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
   randomUsername,
 }) => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const inviteCode = searchParams.get("c");
 
@@ -25,12 +25,15 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
   const [isJoining, setIsJoining] = useState(false);
   const {
     currentRoom: room,
-    isHost,
-    canStartGame,
-    updateRoomSettings,
     createRoom,
     joinRoom,
   } = useRoomManagement();
+
+  useEffect(() => {
+    if (room?.inviteCode) {
+      router.push(`/lobby/${room.inviteCode}`);
+    }
+  }, [room?.inviteCode, router]);
 
   const [username, setUsername] = useState("");
   const [settings, setSettings] = useState<RoomSettings>({
@@ -57,20 +60,11 @@ const MultiplayerRoom: React.FC<MultiplayerRoomProps> = ({
   const handleJoinRoom = async (finalUsername: string) => {
     setFormErrors({});
     setIsJoining(true);
-    inviteCode && (await joinRoom(inviteCode, finalUsername));
+    if (inviteCode) {
+      await joinRoom(inviteCode, finalUsername);
+    }
     setIsJoining(false);
   };
-
-  if (room?.settings) {
-    return (
-      <RoomLobby
-        room={room}
-        isHost={isHost}
-        canStartGame={canStartGame}
-        updateRoomSettings={updateRoomSettings}
-      />
-    );
-  }
 
   if (inviteCode) {
     return (

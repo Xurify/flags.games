@@ -9,7 +9,8 @@ export const useRoomManagement = () => {
     joinRoom,
     leaveRoom,
     updateRoomSettings,
-    kickUser
+    kickUser,
+    startGame,
   } = useSocket();
 
   const isHost = useCallback(() => {
@@ -40,7 +41,8 @@ export const useRoomManagement = () => {
     createRoom,
     joinRoom,
     leaveRoom,
+    startGame,
     updateRoomSettings,
-    kickUser
+    kickUser,
   };
 };

@@ -1,0 +1,76 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+
+interface TimerProps {
+  timePerQuestion: number;
+  questionNumber: number;
+  onTimeUp?: () => void;
+}
+
+export default function Timer({ timePerQuestion, questionNumber, onTimeUp }: TimerProps) {
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setTimeRemaining(timePerQuestion);
+    
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    
+    timerRef.current = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev === null || prev <= 0) {
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+          }
+          if (onTimeUp) {
+            onTimeUp();
+          }
+          return 0;
+        }
+        return prev - 0.5;
+      });
+    }, 500);
+    
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [questionNumber, timePerQuestion, onTimeUp]);
+
+  return (
+    <div className="relative w-8 h-8">
+      <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 32 32">
+        <circle
+          cx="16"
+          cy="16"
+          r="14"
+          stroke="currentColor"
+          strokeWidth="2"
+          fill="none"
+          className="text-muted-foreground/20"
+        />
+        <circle
+          cx="16"
+          cy="16"
+          r="14"
+          stroke="currentColor"
+          strokeWidth="2"
+          fill="none"
+          strokeLinecap="round"
+          className="text-primary transition-all duration-1000 ease-linear"
+          strokeDasharray={`${2 * Math.PI * 14}`}
+          strokeDashoffset={`${2 * Math.PI * 14 * (1 - (timeRemaining || 0) / timePerQuestion)}`}
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-xs font-bold text-primary">
+          {timeRemaining !== null ? Math.ceil(timeRemaining) : 0}
+        </span>
+      </div>
+    </div>
+  );
+} 

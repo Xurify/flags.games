@@ -100,7 +100,6 @@ export const WS_MESSAGE_TYPES = {
   RESUME_GAME: "RESUME_GAME",
   STOP_GAME: "STOP_GAME",
   HEARTBEAT_RESPONSE: "HEARTBEAT_RESPONSE",
-  SKIP_QUESTION: "SKIP_QUESTION",
   REACTION: "REACTION",
   UPDATE_PROFILE: "UPDATE_PROFILE",
   TOGGLE_READY: "TOGGLE_READY",
@@ -122,12 +121,7 @@ export const WS_MESSAGE_TYPES = {
   SETTINGS_UPDATED: "SETTINGS_UPDATED",
   ERROR: "ERROR",
   HEARTBEAT: "HEARTBEAT",
-  QUESTION_SKIPPED: "QUESTION_SKIPPED",
   USER_REACTION: "USER_REACTION",
-  PROFILE_UPDATED: "PROFILE_UPDATED",
-  USER_PROFILE_UPDATED: "USER_PROFILE_UPDATED",
-  USER_READY_CHANGED: "USER_READY_CHANGED",
-  CONNECTION_ESTABLISHED: "CONNECTION_ESTABLISHED",
 } as const;
 
 export type WSMessageType = typeof WS_MESSAGE_TYPES[keyof typeof WS_MESSAGE_TYPES];
@@ -158,7 +152,7 @@ export interface JoinRoomData {
 
 export interface SubmitAnswerData {
   answer: string;
-  questionId?: string;
+  questionId: string;
 }
 
 export interface UpdateSettingsData {
@@ -243,9 +237,7 @@ export interface SettingsUpdatedData {
   settings: RoomSettings;
 }
 
-export interface QuestionSkippedData {
-  skippedBy: string;
-}
+
 
 export interface UserReactionData {
   fromUserId: string;
@@ -294,7 +286,6 @@ export type ClientToServerMessage =
   | { type: typeof WS_MESSAGE_TYPES.PAUSE_GAME; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.RESUME_GAME; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.STOP_GAME; data: {} }
-  | { type: typeof WS_MESSAGE_TYPES.SKIP_QUESTION; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.HEARTBEAT_RESPONSE; data: {} };
 
 export type ServerToClientMessage =
@@ -314,12 +305,7 @@ export type ServerToClientMessage =
   | { type: typeof WS_MESSAGE_TYPES.GAME_RESUMED; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.GAME_STOPPED; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED; data: SettingsUpdatedData }
-  | { type: typeof WS_MESSAGE_TYPES.QUESTION_SKIPPED; data: QuestionSkippedData }
   | { type: typeof WS_MESSAGE_TYPES.USER_REACTION; data: UserReactionData }
-  | { type: typeof WS_MESSAGE_TYPES.PROFILE_UPDATED; data: ProfileUpdatedData }
-  | { type: typeof WS_MESSAGE_TYPES.USER_PROFILE_UPDATED; data: UserProfileUpdatedData }
-  | { type: typeof WS_MESSAGE_TYPES.USER_READY_CHANGED; data: UserReadyChangedData }
-  | { type: typeof WS_MESSAGE_TYPES.CONNECTION_ESTABLISHED; data: ConnectionEstablishedData }
   | { type: typeof WS_MESSAGE_TYPES.ERROR; data: ErrorData }
   | { type: typeof WS_MESSAGE_TYPES.HEARTBEAT; data: {} };
 

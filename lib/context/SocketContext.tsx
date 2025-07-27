@@ -69,12 +69,19 @@ export interface MessageDataTypes {
   [WS_MESSAGE_TYPES.KICKED]: {
     reason: string;
   };
-  [WS_MESSAGE_TYPES.GAME_STARTING]: {};
+  [WS_MESSAGE_TYPES.GAME_STARTING]: {
+    gameState: GameState;
+  };
   [WS_MESSAGE_TYPES.NEW_QUESTION]: {
     question: GameQuestion;
   };
   [WS_MESSAGE_TYPES.ANSWER_SUBMITTED]: {
+    userId: string;
     username: string;
+    answer: string;
+    isCorrect: boolean;
+    timeToAnswer: number;
+    pointsAwarded: number;
   };
   [WS_MESSAGE_TYPES.QUESTION_RESULTS]: {
     playerAnswers: GameAnswer[];
@@ -86,19 +93,9 @@ export interface MessageDataTypes {
   [WS_MESSAGE_TYPES.GAME_STOPPED]: {};
   [WS_MESSAGE_TYPES.GAME_PAUSED]: {};
   [WS_MESSAGE_TYPES.GAME_RESUMED]: {};
-  [WS_MESSAGE_TYPES.QUESTION_SKIPPED]: {
-    skippedBy: string;
-  };
   [WS_MESSAGE_TYPES.USER_REACTION]: {
     fromUsername: string;
     reaction: string;
-  };
-  [WS_MESSAGE_TYPES.PROFILE_UPDATED]: {
-    user: User;
-  };
-  [WS_MESSAGE_TYPES.USER_PROFILE_UPDATED]: {
-    userId: string;
-    username: string;
   };
   [WS_MESSAGE_TYPES.ERROR]: {
     message: string;
@@ -132,8 +129,6 @@ export interface SocketContextType {
   submitAnswer: (answer: string) => Promise<void>;
   pauseGame: () => Promise<void>;
   resumeGame: () => Promise<void>;
-  stopGame: () => Promise<void>;
-  skipQuestion: () => Promise<void>;
 
   updateRoomSettings: (settings: Partial<Room["settings"]>) => Promise<void>;
   kickUser: (userId: string) => Promise<void>;
@@ -288,8 +283,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
 
     const gameStartingHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.GAME_STARTING
-    > = () => {
-      setGameState((prev) => (prev ? { ...prev, phase: "starting" } : null));
+    > = (data) => {
+      setGameState((prev) => ({
+        ...prev,
+        ...data.gameState,
+        phase: "starting",
+        isActive: true,
+      }));
     };
 
     const newQuestionHandler: MessageHandler<
@@ -370,39 +370,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       setGameState((prev) => (prev ? { ...prev, isPaused: false } : null));
     };
 
-    const questionSkippedHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.QUESTION_SKIPPED
-    > = (data) => {
-      logger.info(`Question skipped by ${data.skippedBy}`);
-    };
-
     const userReactionHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.USER_REACTION
     > = (data) => {
       logger.info(`Reaction from ${data.fromUsername}: ${data.reaction}`);
-    };
-
-    const profileUpdatedHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.PROFILE_UPDATED
-    > = (data) => {
-      setCurrentUser(data.user);
-    };
-
-    const userProfileUpdatedHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.USER_PROFILE_UPDATED
-    > = (data) => {
-      setCurrentRoom((prev) =>
-        prev
-          ? {
-              ...prev,
-              members: prev.members.map((member) =>
-                member.id === data.userId
-                  ? { ...member, username: data.username }
-                  : member
-              ),
-            }
-          : null
-      );
     };
 
     const errorHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ERROR> = (
@@ -470,20 +441,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       gameResumedHandler
     );
     messageHandlers.current.set(
-      WS_MESSAGE_TYPES.QUESTION_SKIPPED,
-      questionSkippedHandler
-    );
-    messageHandlers.current.set(
       WS_MESSAGE_TYPES.USER_REACTION,
       userReactionHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.PROFILE_UPDATED,
-      profileUpdatedHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.USER_PROFILE_UPDATED,
-      userProfileUpdatedHandler
     );
     messageHandlers.current.set(WS_MESSAGE_TYPES.ERROR, errorHandler);
   }, [currentRoom]);
@@ -666,20 +625,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     });
   }, [sendMessage]);
 
-  const stopGame = useCallback(async () => {
-    sendMessage({
-      type: WS_MESSAGE_TYPES.STOP_GAME,
-      data: {},
-    });
-  }, [sendMessage]);
-
-  const skipQuestion = useCallback(async () => {
-    sendMessage({
-      type: WS_MESSAGE_TYPES.SKIP_QUESTION,
-      data: {},
-    });
-  }, [sendMessage]);
-
   const updateRoomSettings = useCallback(
     async (settings: Partial<Room["settings"]>) => {
       sendMessage({
@@ -773,8 +718,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     submitAnswer,
     pauseGame,
     resumeGame,
-    stopGame,
-    skipQuestion,
     updateRoomSettings,
     kickUser,
     sendReaction,

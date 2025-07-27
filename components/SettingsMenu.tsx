@@ -1,5 +1,5 @@
 import React from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { SettingsIcon, Volume2Icon, VolumeXIcon, SunIcon, MoonIcon, UsersIcon } from "lucide-react";
 import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -28,10 +28,8 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   showDifficultyOption = true,
   settings,
 }) => {
-  const pathname = usePathname();
   const router = useRouter();
   const showMultiplayer = process.env.NODE_ENV === "development";
-  //pathname !== "/multiplayer"
   return (
     <Select open={settingsOpen} onOpenChange={setSettingsOpen}>
       <SelectTrigger aria-label="Settings" className="w-auto border-none bg-transparent shadow-none p-0 h-auto">
