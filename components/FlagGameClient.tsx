@@ -20,6 +20,8 @@ import { prefetchAllFlagsForDifficulty } from "@/lib/utils/imageUtils";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+
+import Header from "./Header";
 import GameEndScreen from "./GameEndScreen";
 import LevelBadge from "./LevelBadge";
 import QuestionProgress from "./QuestionProgress";
@@ -28,8 +30,8 @@ import AnswerOptions from "./AnswerOptions";
 import HowToPlayDialog from "./HowToPlayDialog";
 import RestartDialog from "./RestartDialog";
 import DifficultySelector from "./DifficultySelector";
-import { InitialGameData } from "./FlagGameServer";
-import Header from "@/components/Header";
+
+import type { InitialGameData } from "./FlagGameServer";
 
 const Confetti = React.lazy(() => import("react-confetti"));
 
