@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   CrownIcon,
@@ -38,9 +38,11 @@ interface RoomLobbyProps {
 
 export default function RoomLobby({ room }: RoomLobbyProps) {
   const router = useRouter();
-  const { currentUser, leaveRoom } = useSocket();
+  const { currentUser, leaveRoom, gameState } = useSocket();
   const { isHost, canStartGame, startGame, updateRoomSettings } = useRoomManagement();
   const [copied, setCopied] = React.useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [isStarting, setIsStarting] = useState(false);
 
   const members = room.members;
   const maxPlayers = room.settings.maxRoomSize;
@@ -52,8 +54,36 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   };
 
   const handleStart = () => {
+    setIsStarting(true);
+    setCountdown(5);
     startGame();
   };
+
+  useEffect(() => {
+    if (isStarting && countdown !== null) {
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev === null || prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [isStarting, countdown]);
+
+  useEffect(() => {
+    if (gameState?.phase === "starting") {
+      setIsStarting(true);
+      setCountdown(5);
+    } else if (gameState?.phase === "question") {
+      setIsStarting(false);
+      setCountdown(null);
+    }
+  }, [gameState?.phase]);
 
   const handleInvite = () => {
     const inviteLink = room.inviteCode
@@ -180,11 +210,18 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 )}
               </div>
               <div className="mt-3 text-xs text-muted-foreground text-center">
-                {members.length < maxPlayers
-                  ? `Waiting for ${maxPlayers - members.length} more player${
-                      maxPlayers - members.length > 1 ? "s" : ""
-                    }...`
-                  : "Room is full!"}
+                {isStarting && countdown !== null ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <PlayIcon className="w-3 h-3 animate-pulse" />
+                    <span>Game starting in {countdown}...</span>
+                  </div>
+                ) : (
+                  members.length < maxPlayers
+                    ? `Waiting for ${maxPlayers - members.length} more player${
+                        maxPlayers - members.length > 1 ? "s" : ""
+                      }...`
+                    : "Room is full!"
+                )}
               </div>
             </div>
 
@@ -214,7 +251,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                     return handleSettingChange("maxRoomSize", value);
                   }}
                   renderValue={(value) => `${value} players`}
-                  disabled={!isHost()}
+                  disabled={!isHost() || isStarting}
                 />
                 <SettingsSelect
                   icon={<BarChartIcon className="w-3 h-3" />}
@@ -230,7 +267,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                   renderValue={(value) =>
                     value.charAt(0).toUpperCase() + value.slice(1)
                   }
-                  disabled={!isHost()}
+                  disabled={!isHost() || isStarting}
                 />
                 <SettingsSelect
                   icon={<TimerIcon className="w-3 h-3" />}
@@ -244,7 +281,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                     handleSettingChange("timePerQuestion", value)
                   }
                   renderValue={(value) => `${value}s`}
-                  disabled={!isHost()}
+                  disabled={!isHost() || isStarting}
                 />
               </div>
 
@@ -264,10 +301,10 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                     size="sm"
                     className="flex-1 flex items-center gap-1 text-sm"
                     onClick={handleStart}
-                    disabled={!canStartGame()}
+                    disabled={!canStartGame() || isStarting}
                   >
                     <PlayIcon className="w-3 h-3" />
-                    Start
+                    {isStarting && countdown !== null ? `Starting in ${countdown}...` : "Start"}
                   </Button>
                 )}
               </div>
