@@ -139,6 +139,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
                 <Timer
                   timePerQuestion={room.settings.timePerQuestion || 30}
                   questionNumber={currentQuestion?.questionNumber || 0}
+                  currentPhase={currentPhase}
                 />
               </div>
               {currentUser?.id === room.host && (

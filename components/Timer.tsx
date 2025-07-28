@@ -1,14 +1,16 @@
 "use client";
 
+import { GamePhase } from "@/lib/types/socket";
 import { useState, useEffect, useRef } from "react";
 
 interface TimerProps {
   timePerQuestion: number;
   questionNumber: number;
+  currentPhase: GamePhase;
   onTimeUp?: () => void;
 }
 
-export default function Timer({ timePerQuestion, questionNumber, onTimeUp }: TimerProps) {
+export default function Timer({ timePerQuestion, questionNumber, currentPhase, onTimeUp }: TimerProps) {
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -19,27 +21,29 @@ export default function Timer({ timePerQuestion, questionNumber, onTimeUp }: Tim
       clearInterval(timerRef.current);
     }
     
-    timerRef.current = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev === null || prev <= 0) {
-          if (timerRef.current) {
-            clearInterval(timerRef.current);
+    if (currentPhase === "question") {
+      timerRef.current = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev === null || prev <= 0) {
+            if (timerRef.current) {
+              clearInterval(timerRef.current);
+            }
+            if (onTimeUp) {
+              onTimeUp();
+            }
+            return 0;
           }
-          if (onTimeUp) {
-            onTimeUp();
-          }
-          return 0;
-        }
-        return prev - 0.5;
-      });
-    }, 500);
+          return prev - 0.5;
+        });
+      }, 500);
+    }
     
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
     };
-  }, [questionNumber, timePerQuestion, onTimeUp]);
+  }, [questionNumber, currentPhase, timePerQuestion, onTimeUp]);
 
   return (
     <div className="relative w-8 h-8">

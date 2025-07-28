@@ -42,10 +42,12 @@ export interface GameStateLeaderboard {
   averageTime: number;
 }
 
+export type GamePhase = "waiting" | "starting" | "question" | "results" | "finished";
+
 export interface GameState {
   isActive: boolean;
   isPaused: boolean;
-  phase: "waiting" | "starting" | "question" | "results" | "finished";
+  phase: GamePhase;
   currentQuestion: GameQuestion | null;
   answers: GameAnswer[];
   currentQuestionIndex: number;
