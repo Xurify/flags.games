@@ -42,7 +42,6 @@ export const useGameState = () => {
     currentUser,
     timeRemaining,
     isGameActive: gameState?.isActive || false,
-    isGamePaused: gameState?.isPaused || false,
     currentPhase: gameState?.phase || 'waiting',
     currentQuestion: gameState?.currentQuestion,
     leaderboard: gameState?.leaderboard || []

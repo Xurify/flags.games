@@ -356,13 +356,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const gamePausedHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.GAME_PAUSED
     > = () => {
-      setGameState((prev) => (prev ? { ...prev, isPaused: true } : null));
+      setGameState((prev) => (prev ? { ...prev, phase: "paused" } : null));
     };
 
     const gameResumedHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.GAME_RESUMED
     > = () => {
-      setGameState((prev) => (prev ? { ...prev, isPaused: false } : null));
+      setGameState((prev) => (prev ? { ...prev, phase: "question" } : null));
     };
 
     const errorHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ERROR> = (
