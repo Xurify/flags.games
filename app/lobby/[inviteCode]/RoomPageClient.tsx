@@ -25,7 +25,6 @@ export default function RoomPageClient() {
     return <RoomLobby room={currentRoom} />;
   }
 
-  
   if (currentPhase === "question") {
     return <GameQuestion room={currentRoom} />;
   }
