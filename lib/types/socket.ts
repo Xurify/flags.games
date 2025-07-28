@@ -100,7 +100,6 @@ export const WS_MESSAGE_TYPES = {
   RESUME_GAME: "RESUME_GAME",
   STOP_GAME: "STOP_GAME",
   HEARTBEAT_RESPONSE: "HEARTBEAT_RESPONSE",
-  REACTION: "REACTION",
   UPDATE_PROFILE: "UPDATE_PROFILE",
   TOGGLE_READY: "TOGGLE_READY",
 
@@ -121,7 +120,6 @@ export const WS_MESSAGE_TYPES = {
   SETTINGS_UPDATED: "SETTINGS_UPDATED",
   ERROR: "ERROR",
   HEARTBEAT: "HEARTBEAT",
-  USER_REACTION: "USER_REACTION",
 } as const;
 
 export type WSMessageType = typeof WS_MESSAGE_TYPES[keyof typeof WS_MESSAGE_TYPES];
@@ -161,11 +159,6 @@ export interface UpdateSettingsData {
 
 export interface KickUserData {
   userId: string;
-}
-
-export interface ReactionData {
-  reaction: string;
-  targetUserId?: string;
 }
 
 export interface UpdateProfileData {
@@ -237,16 +230,6 @@ export interface SettingsUpdatedData {
   settings: RoomSettings;
 }
 
-
-
-export interface UserReactionData {
-  fromUserId: string;
-  fromUsername: string;
-  targetUserId?: string;
-  reaction: string;
-  timestamp: number;
-}
-
 export interface ProfileUpdatedData {
   user: User;
 }
@@ -278,7 +261,6 @@ export type ClientToServerMessage =
   | { type: typeof WS_MESSAGE_TYPES.SUBMIT_ANSWER; data: SubmitAnswerData }
   | { type: typeof WS_MESSAGE_TYPES.UPDATE_SETTINGS; data: UpdateSettingsData }
   | { type: typeof WS_MESSAGE_TYPES.KICK_USER; data: KickUserData }
-  | { type: typeof WS_MESSAGE_TYPES.REACTION; data: ReactionData }
   | { type: typeof WS_MESSAGE_TYPES.UPDATE_PROFILE; data: UpdateProfileData }
   | { type: typeof WS_MESSAGE_TYPES.TOGGLE_READY; data: ToggleReadyData }
   | { type: typeof WS_MESSAGE_TYPES.LEAVE_ROOM; data: {} }
@@ -305,7 +287,6 @@ export type ServerToClientMessage =
   | { type: typeof WS_MESSAGE_TYPES.GAME_RESUMED; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.GAME_STOPPED; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED; data: SettingsUpdatedData }
-  | { type: typeof WS_MESSAGE_TYPES.USER_REACTION; data: UserReactionData }
   | { type: typeof WS_MESSAGE_TYPES.ERROR; data: ErrorData }
   | { type: typeof WS_MESSAGE_TYPES.HEARTBEAT; data: {} };
 

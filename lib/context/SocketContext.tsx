@@ -93,10 +93,6 @@ export interface MessageDataTypes {
   [WS_MESSAGE_TYPES.GAME_STOPPED]: {};
   [WS_MESSAGE_TYPES.GAME_PAUSED]: {};
   [WS_MESSAGE_TYPES.GAME_RESUMED]: {};
-  [WS_MESSAGE_TYPES.USER_REACTION]: {
-    fromUsername: string;
-    reaction: string;
-  };
   [WS_MESSAGE_TYPES.ERROR]: {
     message: string;
     code: string;
@@ -133,7 +129,6 @@ export interface SocketContextType {
   updateRoomSettings: (settings: Partial<Room["settings"]>) => Promise<void>;
   kickUser: (userId: string) => Promise<void>;
 
-  sendReaction: (reaction: string, targetUserId?: string) => Promise<void>;
   updateProfile: (updates: {
     color?: string;
     username?: string;
@@ -370,12 +365,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       setGameState((prev) => (prev ? { ...prev, isPaused: false } : null));
     };
 
-    const userReactionHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.USER_REACTION
-    > = (data) => {
-      logger.info(`Reaction from ${data.fromUsername}: ${data.reaction}`);
-    };
-
     const errorHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ERROR> = (
       data
     ) => {
@@ -439,10 +428,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     messageHandlers.current.set(
       WS_MESSAGE_TYPES.GAME_RESUMED,
       gameResumedHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.USER_REACTION,
-      userReactionHandler
     );
     messageHandlers.current.set(WS_MESSAGE_TYPES.ERROR, errorHandler);
   }, [currentRoom]);
@@ -520,7 +505,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
 
       wsRef.current.onerror = (error) => {
         logger.error("WebSocket error:", error);
-        setLastError("Connection error occurred");
+        //setLastError("Connection error occurred");
       };
     } catch (error) {
       setConnectionState("disconnected");
@@ -645,16 +630,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     [sendMessage]
   );
 
-  const sendReaction = useCallback(
-    async (reaction: string, targetUserId?: string) => {
-      sendMessage({
-        type: WS_MESSAGE_TYPES.REACTION,
-        data: { reaction, targetUserId },
-      });
-    },
-    [sendMessage]
-  );
-
   const updateProfile = useCallback(
     async (updates: { color?: string; username?: string }) => {
       sendMessage({
@@ -720,7 +695,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     resumeGame,
     updateRoomSettings,
     kickUser,
-    sendReaction,
     updateProfile,
     sendMessage,
     getConnectionStats,

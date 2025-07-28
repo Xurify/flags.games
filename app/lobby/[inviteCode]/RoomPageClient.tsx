@@ -7,7 +7,6 @@ import { useSocket } from "@/lib/context/SocketContext";
 import { useGameState } from "@/lib/hooks/useGameState";
 
 import RoomLobby from "@/components/multiplayer/phases/RoomLobby";
-import GameStarting from "@/components/multiplayer/phases/GameStarting";
 import GameQuestion from "@/components/multiplayer/phases/GameQuestion";
 
 import GameFinished from "@/components/multiplayer/phases/GameFinished";
@@ -22,14 +21,11 @@ export default function RoomPageClient() {
    redirect(`/lobby?c=${params.inviteCode}`)
   }
 
-  if (currentPhase === "waiting") {
+  if (currentPhase === "waiting" || currentPhase === "starting" ) {
     return <RoomLobby room={currentRoom} />;
   }
 
-  if (currentPhase === "starting") {
-    return <GameStarting room={currentRoom} />;
-  }
-
+  
   if (currentPhase === "question") {
     return <GameQuestion room={currentRoom} />;
   }
