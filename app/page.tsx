@@ -4,7 +4,7 @@ import { parseDifficultyFromQuery } from "@/lib/utils/gameLogic";
 export const dynamic = "force-dynamic";
 
 interface HomeProps {
-  searchParams: Promise<{ [key: string]: string | undefined }>;
+  searchParams: Promise<{ difficulty?: string }>;
 }
 
 export default async function Home({ searchParams }: HomeProps) {
