@@ -59,7 +59,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
 
     try {
       await submitAnswer(answer);
-      toast.success("Answer submitted!");
+      //toast.success("Answer submitted!");
     } catch (error) {
       toast.error("Failed to submit answer");
       setHasAnswered(false);
