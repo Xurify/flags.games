@@ -121,10 +121,10 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
             </h3>
 
             <div className="space-y-2">
-                              <SettingsSelect
-                  icon={<UsersIcon className="w-5 h-5" />}
-                  label="Max Players"
-                  value={settings.maxRoomSize}
+              <SettingsSelect
+                icon={<UsersIcon className="w-5 h-5" />}
+                label="Max Players"
+                value={settings.maxRoomSize}
                 options={ROOM_SIZES.map((size) => ({
                   value: size,
                   label: `${size} players`,
