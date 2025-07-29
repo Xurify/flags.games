@@ -91,8 +91,6 @@ export interface MessageDataTypes {
     leaderboard: GameStateLeaderboard[];
   };
   [WS_MESSAGE_TYPES.GAME_STOPPED]: {};
-  [WS_MESSAGE_TYPES.GAME_PAUSED]: {};
-  [WS_MESSAGE_TYPES.GAME_RESUMED]: {};
   [WS_MESSAGE_TYPES.ERROR]: {
     message: string;
     code: string;
@@ -123,8 +121,6 @@ export interface SocketContextType {
 
   startGame: () => Promise<void>;
   submitAnswer: (answer: string) => Promise<void>;
-  pauseGame: () => Promise<void>;
-  resumeGame: () => Promise<void>;
 
   updateRoomSettings: (settings: Partial<Room["settings"]>) => Promise<void>;
   kickUser: (userId: string) => Promise<void>;
@@ -341,35 +337,36 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const gameStoppedHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.GAME_STOPPED
     > = () => {
-      setGameState((prev) =>
+      setGameState((prev) => (prev ? { ...prev, phase: "waiting" } : null));
+      setCurrentRoom((prev) =>
         prev
           ? {
               ...prev,
-              phase: "waiting",
-              isActive: false,
-              currentQuestion: null,
+              gameState: {
+                ...prev.gameState,
+                phase: "waiting",
+                isActive: false,
+                currentQuestion: null,
+                answers: [],
+                currentQuestionIndex: 0,
+                totalQuestions: 0,
+                gameStartTime: null,
+                gameEndTime: null,
+                usedCountries: new Set(),
+                questionTimer: null,
+                resultTimer: null,
+                leaderboard: [],
+              },
             }
           : null
       );
     };
 
-    const gamePausedHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.GAME_PAUSED
-    > = () => {
-      setGameState((prev) => (prev ? { ...prev, phase: "paused" } : null));
-    };
-
-    const gameResumedHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.GAME_RESUMED
-    > = () => {
-      setGameState((prev) => (prev ? { ...prev, phase: "question" } : null));
-    };
-
     const errorHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ERROR> = (
       data
     ) => {
-      setLastError(data.message || "An error occurred");
-      logger.error("Socket error:", data);
+      setLastError(data.message);
+      toast.error(data.message);
     };
 
     messageHandlers.current.set(WS_MESSAGE_TYPES.HEARTBEAT, heartbeatHandler);
@@ -420,14 +417,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     messageHandlers.current.set(
       WS_MESSAGE_TYPES.GAME_STOPPED,
       gameStoppedHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.GAME_PAUSED,
-      gamePausedHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.GAME_RESUMED,
-      gameResumedHandler
     );
     messageHandlers.current.set(WS_MESSAGE_TYPES.ERROR, errorHandler);
   }, [currentRoom]);
@@ -596,20 +585,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     [sendMessage, gameState]
   );
 
-  const pauseGame = useCallback(async () => {
-    sendMessage({
-      type: WS_MESSAGE_TYPES.PAUSE_GAME,
-      data: {},
-    });
-  }, [sendMessage]);
-
-  const resumeGame = useCallback(async () => {
-    sendMessage({
-      type: WS_MESSAGE_TYPES.RESUME_GAME,
-      data: {},
-    });
-  }, [sendMessage]);
-
   const updateRoomSettings = useCallback(
     async (settings: Partial<Room["settings"]>) => {
       sendMessage({
@@ -691,8 +666,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     leaveRoom,
     startGame,
     submitAnswer,
-    pauseGame,
-    resumeGame,
     updateRoomSettings,
     kickUser,
     updateProfile,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PauseIcon, ArrowLeftRightIcon } from "lucide-react";
+import { ArrowLeftRightIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,7 +20,7 @@ interface GameQuestionProps {
 }
 
 export default function GameQuestion({ room }: GameQuestionProps) {
-  const { gameState, currentUser, submitAnswer, pauseGame } = useSocket();
+  const { gameState, currentUser, submitAnswer } = useSocket();
   const { currentQuestion, currentPhase } = useGameState();
 
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -142,20 +142,6 @@ export default function GameQuestion({ room }: GameQuestionProps) {
                   currentPhase={currentPhase}
                 />
               </div>
-              {currentUser?.id === room.host && (
-                <>
-                  <div className="w-px h-4 bg-border"></div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={pauseGame}
-                    className="flex items-center gap-1"
-                  >
-                    <PauseIcon className="w-3 h-3" />
-                    Pause
-                  </Button>
-                </>
-              )}
             </div>
           </div>
         </div>

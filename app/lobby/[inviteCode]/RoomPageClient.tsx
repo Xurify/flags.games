@@ -10,7 +10,6 @@ import RoomLobby from "@/components/multiplayer/phases/RoomLobby";
 import GameQuestion from "@/components/multiplayer/phases/GameQuestion";
 
 import GameFinished from "@/components/multiplayer/phases/GameFinished";
-import GamePaused from "@/components/multiplayer/phases/GamePaused";
 
 export default function RoomPageClient() {
   const params = useParams();
@@ -35,10 +34,6 @@ export default function RoomPageClient() {
 
   if (currentPhase === "finished") {
     return <GameFinished room={currentRoom} />;
-  }
-
-  if (currentPhase === "paused") {
-    return <GamePaused room={currentRoom} />;
   }
 
   return <GameQuestion room={currentRoom} />;

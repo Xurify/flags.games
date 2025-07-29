@@ -42,7 +42,7 @@ export interface GameStateLeaderboard {
   averageTime: number;
 }
 
-export type GamePhase = "waiting" | "starting" | "question" | "results" | "finished" | "paused";
+export type GamePhase = "waiting" | "starting" | "question" | "results" | "finished";
 
 export interface GameState {
   isActive: boolean;
@@ -97,15 +97,14 @@ export const WS_MESSAGE_TYPES = {
   UPDATE_SETTINGS: "UPDATE_SETTINGS",
   KICK_USER: "KICK_USER",
   LEAVE_ROOM: "LEAVE_ROOM",
-  PAUSE_GAME: "PAUSE_GAME",
   RESUME_GAME: "RESUME_GAME",
   STOP_GAME: "STOP_GAME",
-  HEARTBEAT_RESPONSE: "HEARTBEAT_RESPONSE",
   UPDATE_PROFILE: "UPDATE_PROFILE",
   TOGGLE_READY: "TOGGLE_READY",
-
-  JOIN_ROOM_SUCCESS: "JOIN_ROOM_SUCCESS",
+  HEARTBEAT: "HEARTBEAT",
+  HEARTBEAT_RESPONSE: "HEARTBEAT_RESPONSE",
   CREATE_ROOM_SUCCESS: "CREATE_ROOM_SUCCESS",
+  JOIN_ROOM_SUCCESS: "JOIN_ROOM_SUCCESS",
   USER_JOINED: "USER_JOINED",
   USER_LEFT: "USER_LEFT",
   HOST_CHANGED: "HOST_CHANGED",
@@ -115,12 +114,13 @@ export const WS_MESSAGE_TYPES = {
   ANSWER_SUBMITTED: "ANSWER_SUBMITTED",
   QUESTION_RESULTS: "QUESTION_RESULTS",
   GAME_ENDED: "GAME_ENDED",
-  GAME_PAUSED: "GAME_PAUSED",
-  GAME_RESUMED: "GAME_RESUMED",
   GAME_STOPPED: "GAME_STOPPED",
   SETTINGS_UPDATED: "SETTINGS_UPDATED",
+  PROFILE_UPDATED: "PROFILE_UPDATED",
+  USER_PROFILE_UPDATED: "USER_PROFILE_UPDATED",
+  USER_READY_CHANGED: "USER_READY_CHANGED",
+  CONNECTION_ESTABLISHED: "CONNECTION_ESTABLISHED",
   ERROR: "ERROR",
-  HEARTBEAT: "HEARTBEAT",
 } as const;
 
 export type WSMessageType = typeof WS_MESSAGE_TYPES[keyof typeof WS_MESSAGE_TYPES];
@@ -266,7 +266,6 @@ export type ClientToServerMessage =
   | { type: typeof WS_MESSAGE_TYPES.TOGGLE_READY; data: ToggleReadyData }
   | { type: typeof WS_MESSAGE_TYPES.LEAVE_ROOM; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.START_GAME; data: {} }
-  | { type: typeof WS_MESSAGE_TYPES.PAUSE_GAME; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.RESUME_GAME; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.STOP_GAME; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.HEARTBEAT_RESPONSE; data: {} };
@@ -284,8 +283,6 @@ export type ServerToClientMessage =
   | { type: typeof WS_MESSAGE_TYPES.ANSWER_SUBMITTED; data: AnswerSubmittedData }
   | { type: typeof WS_MESSAGE_TYPES.QUESTION_RESULTS; data: QuestionResultsData }
   | { type: typeof WS_MESSAGE_TYPES.GAME_ENDED; data: GameEndedData }
-  | { type: typeof WS_MESSAGE_TYPES.GAME_PAUSED; data: {} }
-  | { type: typeof WS_MESSAGE_TYPES.GAME_RESUMED; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.GAME_STOPPED; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED; data: SettingsUpdatedData }
   | { type: typeof WS_MESSAGE_TYPES.ERROR; data: ErrorData }

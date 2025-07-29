@@ -11,7 +11,7 @@ interface TimerProps {
 }
 
 export default function Timer({ timePerQuestion, questionNumber, currentPhase, onTimeUp }: TimerProps) {
-  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState<number>(timePerQuestion);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function Timer({ timePerQuestion, questionNumber, currentPhase, o
     if (currentPhase === "question") {
       timerRef.current = setInterval(() => {
         setTimeRemaining((prev) => {
-          if (prev === null || prev <= 0) {
+          if (prev <= 0) {
             if (timerRef.current) {
               clearInterval(timerRef.current);
             }
@@ -67,12 +67,12 @@ export default function Timer({ timePerQuestion, questionNumber, currentPhase, o
           strokeLinecap="round"
           className="text-primary transition-all duration-1000 ease-linear"
           strokeDasharray={`${2 * Math.PI * 14}`}
-          strokeDashoffset={`${2 * Math.PI * 14 * (1 - (timeRemaining || 0) / timePerQuestion)}`}
+          strokeDashoffset={`${2 * Math.PI * 14 * (1 - timeRemaining / timePerQuestion)}`}
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <span className="text-xs font-bold text-primary">
-          {timeRemaining !== null ? Math.ceil(timeRemaining) : 0}
+          {Math.ceil(timeRemaining)}
         </span>
       </div>
     </div>
