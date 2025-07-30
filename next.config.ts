@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/ingest/static/(web-vitals.js|dead-clicks-autocapture.js|recorder.js)',
+        source: '/ingest/static/(web-vitals.js|dead-clicks-autocapture.js|recorder.js|exception-autocapture.js|surveys.js)',
         headers: [
           {
             key: 'Cache-Control',
