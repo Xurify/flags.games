@@ -16,6 +16,19 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: '/ingest/static/(web-vitals.js|dead-clicks-autocapture.js|recorder.js)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=15768000, immutable', // 6 months,
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+        ],
+      },
     ]
   },
 
