@@ -1,6 +1,8 @@
 export const CORRECT_POINT_COST = 1;
 export const MAX_HEARTS = 3;
 
+export const SETTINGS_STORAGE_KEY = 'settings';
+
 export const DEFAULT_DIFFICULTY: Difficulty = "easy";
 export const EXPERT_DIFFICULTY: Difficulty = "expert";
 export const HARD_DIFFICULTY: Difficulty = "hard";

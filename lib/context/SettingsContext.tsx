@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { AUDIO_URLS, AUDIO_URLS_KEYS } from "../constants";
+import { AUDIO_URLS, AUDIO_URLS_KEYS, SETTINGS_STORAGE_KEY } from "../constants";
 import { audioManager } from "../utils/audioUtils";
 
 export interface GameSettings {
@@ -36,7 +36,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   }, [settings.darkMode]);
 
   useEffect(() => {
-    const saved = localStorage.getItem("flagGameSettings");
+    const saved = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (saved) {
       const parsedSettings = JSON.parse(saved);
       setSettings({
@@ -51,7 +51,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     audioManager.playButtonClickSound();
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
-    localStorage.setItem("flagGameSettings", JSON.stringify(newSettings));
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings));
   };
 
   return (

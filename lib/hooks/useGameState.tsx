@@ -1,5 +1,5 @@
-import { useSocket } from '@/lib/context/SocketContext';
 import { useEffect, useState } from 'react';
+import { useSocket } from '@/lib/context/SocketContext';
 
 export const useGameState = () => {
   const { gameState, currentRoom, currentUser } = useSocket();

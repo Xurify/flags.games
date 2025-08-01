@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { SETTINGS_STORAGE_KEY } from '../constants';
 
 export interface GameSettings {
   soundEffectsEnabled: boolean;
@@ -20,7 +21,7 @@ export const useGameSettings = () => {
   }, [settings.darkMode]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('flagGameSettings');
+    const saved = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (saved) {
       const parsedSettings = JSON.parse(saved);
       setSettings({
@@ -34,7 +35,7 @@ export const useGameSettings = () => {
   const updateSetting = (key: keyof GameSettings, value: any) => {
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
-    localStorage.setItem('flagGameSettings', JSON.stringify(newSettings));
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings));
   };
 
   return { settings, updateSetting };
