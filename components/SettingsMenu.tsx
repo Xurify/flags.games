@@ -1,6 +1,14 @@
 import React from "react";
 import { useRouter } from "next/navigation";
-import { SettingsIcon, Volume2Icon, VolumeXIcon, SunIcon, MoonIcon, UsersIcon } from "lucide-react";
+import {
+  SettingsIcon,
+  Volume2Icon,
+  VolumeXIcon,
+  SunIcon,
+  MoonIcon,
+  UserIcon,
+  UsersIcon,
+} from "lucide-react";
 import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
@@ -29,10 +37,12 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   settings,
 }) => {
   const router = useRouter();
-  const showMultiplayer = process.env.NODE_ENV === "development";
   return (
     <Select open={settingsOpen} onOpenChange={setSettingsOpen}>
-      <SelectTrigger aria-label="Settings" className="w-auto border-none bg-transparent shadow-none p-0 h-auto">
+      <SelectTrigger
+        aria-label="Settings"
+        className="w-auto border-none bg-transparent shadow-none p-0 h-auto"
+      >
         <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground dark:text-foreground transition-colors">
           <SettingsIcon className="w-4 h-4" />
           <span className="text-sm font-medium">Settings</span>
@@ -105,29 +115,37 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
               </Button>
             </div>
 
-            {showMultiplayer && (
-              <>
-                <div className="w-full h-px bg-border"></div>
+            <div className="w-full h-px bg-border"></div>
 
-                <div>
-                  <h4 className="text-sm font-medium text-foreground mb-2">
-                    Game Modes
-                  </h4>
-                  <Button
-                    variant="neutral"
-                    size="sm"
-                    onClick={() => {
-                      setSettingsOpen(false);
-                      router.push("/lobby");
-                    }}
-                    className="w-full justify-start"
-                  >
-                    <UsersIcon className="w-4 h-4 mr-2" />
-                    Multiplayer
-                  </Button>
-                </div>
-              </>
-            )}
+            <div>
+              <h4 className="text-sm font-medium text-foreground mb-2">
+                Game Modes
+              </h4>
+              <Button
+                variant="neutral"
+                size="sm"
+                onClick={() => {
+                  setSettingsOpen(false);
+                  router.push("/");
+                }}
+                className="w-full justify-start mb-2"
+              >
+                <UserIcon className="w-4 h-4 mr-2" />
+                Singleplayer
+              </Button>
+              <Button
+                variant="neutral"
+                size="sm"
+                onClick={() => {
+                  setSettingsOpen(false);
+                  router.push("/lobby");
+                }}
+                className="w-full justify-start"
+              >
+                <UsersIcon className="w-4 h-4 mr-2" />
+                Multiplayer (Coming Soon)
+              </Button>
+            </div>
 
             <div className="w-full h-px bg-border"></div>
 
