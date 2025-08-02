@@ -45,7 +45,7 @@ const HowToPlayDialog: React.FC<HowToPlayDialogProps> = ({
                   <span className="block text-xs text-muted-foreground ml-5">Only the most recognizable/distinctive flags worldwide.</span>
                 </li>
                 <li>
-                  <span className="inline-block w-3 h-3 bg-yellow-400 rounded mr-2"></span>
+                  <span className="inline-block w-3 h-3 bg-yellow-500 rounded mr-2"></span>
                   <strong>Medium</strong> (25 countries)
                   <span className="block text-xs text-muted-foreground ml-5">Like easy difficulty, includes moderately recognizable flags.</span>
                 </li>
@@ -55,7 +55,7 @@ const HowToPlayDialog: React.FC<HowToPlayDialogProps> = ({
                   <span className="block text-xs text-muted-foreground ml-5">All countries, more obscure/unknown flags.</span>
                 </li>
                 <li>
-                  <span className="inline-block w-3 h-3 bg-red-400 rounded mr-2"></span>
+                  <span className="inline-block w-3 h-3 bg-red-500 rounded mr-2"></span>
                   <strong>Expert</strong> (197 countries)
                   <span className="block text-xs text-muted-foreground ml-5">All countries, similar to hard difficulty, but with more challenging options</span>
                 </li>
