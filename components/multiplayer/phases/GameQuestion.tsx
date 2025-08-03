@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ArrowLeftRightIcon } from "lucide-react";
 import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import FlagDisplay from "@/components/FlagDisplay";
@@ -10,10 +11,10 @@ import AnswerOptions from "@/components/AnswerOptions";
 import Header from "@/components/Header";
 import LevelBadge from "@/components/LevelBadge";
 import Timer from "@/components/Timer";
+import Leaderboard from "@/components/multiplayer/Leaderboard";
 import { useSocket } from "@/lib/context/SocketContext";
 import { useGameState } from "@/lib/hooks/useGameState";
 import { Room } from "@/lib/types/socket";
-import { cn } from "@/lib/utils/strings";
 
 interface GameQuestionProps {
   room: Room;
@@ -99,30 +100,30 @@ export default function GameQuestion({ room }: GameQuestionProps) {
 
   return (
     <div className="min-h-screen h-screen sm:min-h-screen sm:h-auto bg-background overflow-y-auto">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-        <div className="mb-4">
-          <Header
-            leftContent={
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => setShowDifficultyDialog(true)}
-                  className="text-muted-foreground hover:text-foreground"
-                  title="Change difficulty"
-                >
-                  <ArrowLeftRightIcon className="w-3 h-3" />
-                </Button>
-                <span className="text-sm font-medium text-foreground">
-                  LEVEL
-                </span>
-                <LevelBadge difficulty={room.settings.difficulty} />
-              </div>
-            }
-            showDifficultyDialog={showDifficultyDialog}
-            setShowDifficultyDialog={setShowDifficultyDialog}
-          />
-        </div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+          <div className="mb-4">
+            <Header
+              leftContent={
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => setShowDifficultyDialog(true)}
+                    className="text-muted-foreground hover:text-foreground"
+                    title="Change difficulty"
+                  >
+                    <ArrowLeftRightIcon className="w-3 h-3" />
+                  </Button>
+                  <span className="text-sm font-medium text-foreground">
+                    LEVEL
+                  </span>
+                  <LevelBadge difficulty={room.settings.difficulty} />
+                </div>
+              }
+              showDifficultyDialog={showDifficultyDialog}
+              setShowDifficultyDialog={setShowDifficultyDialog}
+            />
+          </div>
 
         <div className="mb-4">
           <div className="flex justify-center items-center">
@@ -146,47 +147,57 @@ export default function GameQuestion({ room }: GameQuestionProps) {
           </div>
         </div>
 
-        <Card className="shadow-card hover:shadow-card-hover transition-all duration-300 py-4 sm:py-8 px-4 sm:px-6 relative">
-          <CardContent className="p-3 sm:p-4">
-            <div className="text-center mb-4 sm:mb-8">
-              <h1 className="text-lg sm:text-xl font-semibold text-foreground mb-1 sm:mb-2">
-                Guess the Country
-              </h1>
-              <p className="text-muted-foreground text-sm">
-                Test your knowledge and identify countries by their flags
-              </p>
-            </div>
+        <div className="flex gap-6 items-start">
+          <Leaderboard 
+            members={room.members}
+            currentUser={currentUser}
+            hostId={room.host}
+            isGameActive={gameState?.isActive || false}
+          />
+          <div className="flex-1">
+            <Card className="shadow-card hover:shadow-card-hover transition-all duration-300 py-4 sm:py-8 px-4 sm:px-6 relative">
+              <CardContent className="p-3 sm:p-4">
+                <div className="text-center mb-4 sm:mb-8">
+                  <h1 className="text-lg sm:text-xl font-semibold text-foreground mb-1 sm:mb-2">
+                    Guess the Country
+                  </h1>
+                  <p className="text-muted-foreground text-sm">
+                    Test your knowledge and identify countries by their flags
+                  </p>
+                </div>
 
-            <div className="mb-4 sm:mb-8">
-              <FlagDisplay
-                flag={`/images/flags/${currentQuestion.country.code}.svg`}
-                countryName={currentQuestion.country.name}
-              />
-            </div>
+                <div className="mb-4 sm:mb-8">
+                  <FlagDisplay
+                    flag={`/images/flags/${currentQuestion.country.code}.svg`}
+                    countryName={currentQuestion.country.name}
+                  />
+                </div>
 
-            <AnswerOptions
-              options={currentQuestion.options}
-              showResult={hasAnswered || currentPhase === "results"}
-              handleAnswer={(country) => handleAnswerSelect(country.name)}
-              selectedAnswer={selectedAnswer}
-              getButtonClass={getButtonClass}
-              disabled={hasAnswered || currentPhase === "results"}
-            />
-          </CardContent>
+                <AnswerOptions
+                  options={currentQuestion.options}
+                  showResult={hasAnswered || currentPhase === "results"}
+                  handleAnswer={(country) => handleAnswerSelect(country.name)}
+                  selectedAnswer={selectedAnswer}
+                  getButtonClass={getButtonClass}
+                  disabled={hasAnswered || currentPhase === "results"}
+                />
+              </CardContent>
 
-          <div
-            className={`absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center transition-all duration-500 ease-in-out ${
-              currentPhase === "results"
-                ? "opacity-100"
-                : "opacity-0 pointer-events-none"
-            }`}
-          >
-            <div className="text-center">
-              <p className="text-white mb-2">Next question in:</p>
-              <div className="text-4xl font-bold text-white">{countdown}</div>
-            </div>
+              <div
+                className={`absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center transition-all duration-500 ease-in-out ${
+                  currentPhase === "results"
+                    ? "opacity-100"
+                    : "opacity-0 pointer-events-none"
+                }`}
+              >
+                <div className="text-center">
+                  <p className="text-white mb-2">Next question in:</p>
+                  <div className="text-4xl font-bold text-white">{countdown}</div>
+                </div>
+              </div>
+            </Card>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );
