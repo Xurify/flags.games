@@ -588,7 +588,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const updateRoomSettings = useCallback(
     async (settings: Partial<Room["settings"]>) => {
       sendMessage({
-        type: WS_MESSAGE_TYPES.UPDATE_SETTINGS,
+        type: WS_MESSAGE_TYPES.UPDATE_ROOM_SETTINGS,
         data: { settings },
       });
     },

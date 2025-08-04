@@ -94,7 +94,7 @@ export const WS_MESSAGE_TYPES = {
   START_GAME: "START_GAME",
   JOIN_ROOM: "JOIN_ROOM",
   CREATE_ROOM: "CREATE_ROOM",
-  UPDATE_SETTINGS: "UPDATE_SETTINGS",
+  UPDATE_ROOM_SETTINGS: "UPDATE_ROOM_SETTINGS",
   KICK_USER: "KICK_USER",
   LEAVE_ROOM: "LEAVE_ROOM",
   RESUME_GAME: "RESUME_GAME",
@@ -260,7 +260,7 @@ export type ClientToServerMessage =
   | { type: typeof WS_MESSAGE_TYPES.CREATE_ROOM; data: CreateRoomData }
   | { type: typeof WS_MESSAGE_TYPES.JOIN_ROOM; data: JoinRoomData }
   | { type: typeof WS_MESSAGE_TYPES.SUBMIT_ANSWER; data: SubmitAnswerData }
-  | { type: typeof WS_MESSAGE_TYPES.UPDATE_SETTINGS; data: UpdateSettingsData }
+  | { type: typeof WS_MESSAGE_TYPES.UPDATE_ROOM_SETTINGS; data: UpdateSettingsData }
   | { type: typeof WS_MESSAGE_TYPES.KICK_USER; data: KickUserData }
   | { type: typeof WS_MESSAGE_TYPES.UPDATE_PROFILE; data: UpdateProfileData }
   | { type: typeof WS_MESSAGE_TYPES.TOGGLE_READY; data: ToggleReadyData }
