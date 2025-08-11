@@ -570,7 +570,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const submitAnswer = useCallback(
     async (answer: string) => {
       if (!gameState?.currentQuestion) {
-        console.error("No active question");
+        logger.error("No active question");
         return;
       }
 

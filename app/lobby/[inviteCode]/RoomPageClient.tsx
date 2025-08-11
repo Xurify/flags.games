@@ -1,7 +1,6 @@
 "use client";
 
-import { redirect } from "next/navigation";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useGameState } from "@/lib/hooks/useGameState";
 
 import RoomLobby from "@/components/multiplayer/phases/RoomLobby";
@@ -9,11 +8,13 @@ import GameQuestion from "@/components/multiplayer/phases/GameQuestion";
 import GameFinished from "@/components/multiplayer/phases/GameFinished";
 
 export default function RoomPageClient() {
-  const params = useParams();
+  const params = useParams<{ inviteCode: string }>();
+  const router = useRouter();
   const { currentPhase, currentRoom } = useGameState();
 
   if (!currentRoom) {
-   redirect(`/lobby?c=${params.inviteCode}`)
+    router.replace(`/lobby?c=${params.inviteCode}`);
+    return null;
   }
 
   if (currentPhase === "waiting" || currentPhase === "starting" ) {

@@ -25,7 +25,7 @@ import {
   ROOM_SIZES,
   TIME_PER_QUESTION_OPTIONS,
 } from "@/lib/constants";
-import { GameMode, RoomSettings } from "@/lib/types/socket";
+import { RoomSettings } from "@/lib/types/socket";
 
 const roomSettingsSchema = z.object({
   maxRoomSize: z
