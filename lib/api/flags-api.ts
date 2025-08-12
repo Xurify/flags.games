@@ -55,19 +55,45 @@ class FlagsApiClient {
   }
 
   async getStats(): Promise<StatsResponse> {
-    return this.request<StatsResponse>('/stats');
+    try {
+      return await this.request<StatsResponse>('/stats');
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+      return {
+        rooms: 0,
+        users: 0,
+        activeGames: 0,
+        timestamp: new Date().toISOString(),
+        metrics: {},
+      };
+    }
   }
 
   async getRooms(): Promise<RoomsResponse> {
-    return this.request<RoomsResponse>('/rooms');
+    try {
+      return await this.request<RoomsResponse>('/rooms');
+    } catch (error) {
+      console.error('Failed to fetch rooms:', error);
+      return { rooms: {}, count: 0 };
+    }
   }
 
   async getRoomByInviteCode(inviteCode: string): Promise<Room | { error?: string }> {
-    return this.request<Room | { error?: string }>(`/rooms/${inviteCode}`);
+    try {
+      return await this.request<Room | { error?: string }>(`/rooms/${inviteCode}`);
+    } catch (error) {
+      console.error(`Failed to fetch room ${inviteCode}:`, error);
+      return { error: 'Unable to fetch room' };
+    }
   }
 
   async getUsers(): Promise<UsersResponse> {
-    return this.request<UsersResponse>('/users');
+    try {
+      return await this.request<UsersResponse>('/users');
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+      return { users: {}, count: 0 };
+    }
   }
 }
 
