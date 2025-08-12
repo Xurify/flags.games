@@ -18,7 +18,7 @@ import {
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
 import { SettingsSelect } from "@/components/multiplayer/SettingsSelect";
@@ -111,26 +111,26 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     <div className="min-h-screen h-screen sm:min-h-screen sm:h-auto bg-background overflow-y-auto">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <div className="mb-4">
-          <Header
-            leftContent={
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={handleLeaveGame}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <HomeIcon className="w-3 h-3" />
-                </Button>
-                <span className="text-sm font-medium text-foreground">MULTIPLAYER</span>
-                <Badge variant="outline" className="flex items-center gap-1">
-                  <UsersIcon className="w-3 h-3" />
-                  {room.members.length}
-                </Badge>
-              </div>
-            }
-          />
-        </div>
+            <Header
+              leftContent={
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={handleLeaveGame}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <HomeIcon className="w-3 h-3" />
+                  </Button>
+                  <span className="text-sm font-medium text-foreground">MULTIPLAYER</span>
+                  <Badge variant="outline" className="flex items-center gap-1">
+                    <UsersIcon className="w-3 h-3" />
+                    {room.members.length}
+                  </Badge>
+                </div>
+              }
+            />
+          </div>
 
         <div className="flex items-center justify-center">
           <Card className="w-full max-w-lg">

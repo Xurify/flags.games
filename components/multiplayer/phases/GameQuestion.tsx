@@ -125,45 +125,27 @@ export default function GameQuestion({ room }: GameQuestionProps) {
             />
           </div>
 
-        <div className="mb-4">
-          <div className="flex justify-center items-center">
-            <div className="relative flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-primary rounded-full"></div>
-                <span className="text-sm font-medium text-muted-foreground">
-                  Question {currentQuestion.questionNumber} of{" "}
-                  {gameState?.totalQuestions || 0}
-                </span>
-              </div>
-              <div className="w-px h-4 bg-border"></div>
-              <div className="flex items-center gap-2">
-                <Timer
-                  timePerQuestion={room.settings.timePerQuestion || 30}
-                  questionNumber={currentQuestion?.questionNumber || 0}
-                  currentPhase={currentPhase}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* meta moved into content area below */}
 
         <div className="flex gap-6 items-start">
-          <Leaderboard 
-            members={room.members}
-            currentUser={currentUser}
-            hostId={room.host}
-            isGameActive={gameState?.isActive || false}
-          />
           <div className="flex-1">
             <Card className="shadow-card hover:shadow-card-hover transition-all duration-300 py-4 sm:py-8 px-4 sm:px-6 relative">
               <CardContent className="p-3 sm:p-4">
-                <div className="text-center mb-4 sm:mb-8">
-                  <h1 className="text-lg sm:text-xl font-semibold text-foreground mb-1 sm:mb-2">
+                <div className="flex items-center justify-between mb-3 sm:mb-5">
+                  <h1 className="text-base sm:text-lg font-semibold text-foreground">
                     Guess the Country
                   </h1>
-                  <p className="text-muted-foreground text-sm">
-                    Test your knowledge and identify countries by their flags
-                  </p>
+                  <div className="text-sm text-muted-foreground flex items-center gap-3">
+                    <span>
+                      Q{currentQuestion.questionNumber}/{gameState?.totalQuestions || 0}
+                    </span>
+                    <span className="text-border">•</span>
+                    <Timer
+                      timePerQuestion={room.settings.timePerQuestion || 30}
+                      questionNumber={currentQuestion?.questionNumber || 0}
+                      currentPhase={currentPhase}
+                    />
+                  </div>
                 </div>
 
                 <div className="mb-4 sm:mb-8">
@@ -184,19 +166,26 @@ export default function GameQuestion({ room }: GameQuestionProps) {
               </CardContent>
 
               <div
-                className={`absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center transition-all duration-500 ease-in-out ${
+                className={`absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center transition-opacity duration-300 ease-in-out ${
                   currentPhase === "results"
                     ? "opacity-100"
                     : "opacity-0 pointer-events-none"
                 }`}
               >
                 <div className="text-center">
-                  <p className="text-white mb-2">Next question in:</p>
+                  <p className="text-white/90 mb-1 text-sm">Next question in</p>
                   <div className="text-4xl font-bold text-white">{countdown}</div>
                 </div>
               </div>
             </Card>
           </div>
+          <Leaderboard 
+            members={room.members}
+            currentUser={currentUser}
+            hostId={room.host}
+            isGameActive={gameState?.isActive || false}
+            variant="inline"
+          />
         </div>
       </div>
     </div>
