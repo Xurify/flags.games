@@ -101,43 +101,42 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   return (
     <div className="min-h-screen h-screen sm:min-h-screen sm:h-auto bg-background overflow-y-auto">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-          <div className="mb-4">
-            <Header
-              leftContent={
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    onClick={() => setShowDifficultyDialog(true)}
-                    className="text-muted-foreground hover:text-foreground"
-                    title="Change difficulty"
-                  >
-                    <ArrowLeftRightIcon className="w-3 h-3" />
-                  </Button>
-                  <span className="text-sm font-medium text-foreground">
-                    LEVEL
-                  </span>
-                  <LevelBadge difficulty={room.settings.difficulty} />
-                </div>
-              }
-              showDifficultyDialog={showDifficultyDialog}
-              setShowDifficultyDialog={setShowDifficultyDialog}
-            />
-          </div>
-
-        {/* meta moved into content area below */}
+        <div className="mb-4">
+          <Header
+            leftContent={
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => setShowDifficultyDialog(true)}
+                  className="text-muted-foreground hover:text-foreground"
+                  title="Change difficulty"
+                >
+                  <ArrowLeftRightIcon className="w-3 h-3" />
+                </Button>
+                <span className="text-sm font-medium text-foreground">
+                  LEVEL
+                </span>
+                <LevelBadge difficulty={room.settings.difficulty} />
+              </div>
+            }
+            showDifficultyDialog={showDifficultyDialog}
+            setShowDifficultyDialog={setShowDifficultyDialog}
+          />
+        </div>
 
         <div className="flex gap-6 items-start">
           <div className="flex-1">
             <Card className="shadow-card hover:shadow-card-hover transition-all duration-300 py-4 sm:py-8 px-4 sm:px-6 relative">
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center justify-between mb-3 sm:mb-5">
-                  <h1 className="text-base sm:text-lg font-semibold text-foreground">
-                    Guess the Country
-                  </h1>
+                  <div className="text-sm font-medium text-foreground">
+                    Question {currentQuestion.questionNumber} of{" "}
+                    {gameState?.totalQuestions || 0}
+                  </div>
                   <div className="text-sm text-muted-foreground flex items-center gap-3">
-                    <span>
-                      Q{currentQuestion.questionNumber}/{gameState?.totalQuestions || 0}
+                    <span className="font-medium text-foreground">
+                      Score: {currentUser?.score ?? 0}
                     </span>
                     <span className="text-border">•</span>
                     <Timer
@@ -174,12 +173,14 @@ export default function GameQuestion({ room }: GameQuestionProps) {
               >
                 <div className="text-center">
                   <p className="text-white/90 mb-1 text-sm">Next question in</p>
-                  <div className="text-4xl font-bold text-white">{countdown}</div>
+                  <div className="text-4xl font-bold text-white">
+                    {countdown}
+                  </div>
                 </div>
               </div>
             </Card>
           </div>
-          <Leaderboard 
+          <Leaderboard
             members={room.members}
             currentUser={currentUser}
             hostId={room.host}

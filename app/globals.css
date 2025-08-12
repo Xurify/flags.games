@@ -187,6 +187,38 @@
       opacity: 1;
     }
   }
+
+  .animate-rank-up {
+    animation: rank-up 1.2s ease-out;
+  }
+
+  .animate-rank-down {
+    animation: rank-down 1.2s ease-out;
+  }
+
+  @keyframes rank-up {
+    0% {
+      background-color: transparent;
+    }
+    25% {
+      background-color: rgba(16, 185, 129, 0.12); /* emerald-500 */
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+
+  @keyframes rank-down {
+    0% {
+      background-color: transparent;
+    }
+    25% {
+      background-color: rgba(239, 68, 68, 0.12); /* red-500 */
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
 }
 
 
