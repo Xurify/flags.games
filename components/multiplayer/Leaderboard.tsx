@@ -134,7 +134,7 @@ export default function Leaderboard({
                 {isHost && <CrownIcon className="w-3 h-3 text-muted-foreground" />}
                 {hasAnswered && <CheckIcon className="w-3 h-3 text-muted-foreground/70" />}
                 {isCurrentUser && (
-                  <span className="text-[11px] text-muted-foreground">(You)</span>
+                  <span className="text-[11px] font-semibold text-primary">(You)</span>
                 )}
               </div>
               <div className={cn("text-xs font-semibold tabular-nums text-foreground", movementClass)}>
