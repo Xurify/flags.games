@@ -21,6 +21,7 @@ import {
   GameQuestion,
   GameAnswer,
   GameStateLeaderboard,
+  AnswerSubmittedData,
 } from "@/lib/types/socket";
 
 export interface WebSocketMessage<T = any> {
@@ -70,31 +71,40 @@ export interface MessageDataTypes {
     reason: string;
   };
   [WS_MESSAGE_TYPES.GAME_STARTING]: {
-    gameState: GameState;
+    countdown: number;
   };
   [WS_MESSAGE_TYPES.NEW_QUESTION]: {
     question: GameQuestion;
+    totalQuestions: number;
   };
-  [WS_MESSAGE_TYPES.ANSWER_SUBMITTED]: {
-    userId: string;
-    username: string;
-    answer: string;
-    isCorrect: boolean;
-    timeToAnswer: number;
-    pointsAwarded: number;
-  };
+  [WS_MESSAGE_TYPES.ANSWER_SUBMITTED]: AnswerSubmittedData;
   [WS_MESSAGE_TYPES.QUESTION_RESULTS]: {
+    correctAnswer: string;
+    correctCountry: {
+      name: string;
+      flag: string;
+      code: string;
+    };
     playerAnswers: GameAnswer[];
     leaderboard: GameStateLeaderboard[];
   };
   [WS_MESSAGE_TYPES.GAME_ENDED]: {
     leaderboard: GameStateLeaderboard[];
+    gameStats: {
+      totalQuestions: number;
+      totalAnswers: number;
+      correctAnswers: number;
+      accuracy: number;
+      averageTime: number;
+      difficulty: string;
+      duration: number;
+    };
   };
-  [WS_MESSAGE_TYPES.GAME_STOPPED]: {};
+  [WS_MESSAGE_TYPES.GAME_STOPPED]: { timestamp: number };
   [WS_MESSAGE_TYPES.ERROR]: {
     message: string;
-    code: string;
-    timestamp: number;
+    code?: string;
+    details?: any;
   };
 }
 
@@ -108,6 +118,7 @@ export interface SocketContextType {
   currentRoom: Room | null;
   currentUser: User | null;
   gameState: GameState | null;
+  answersProgress: { totalAnswers: number; totalPlayers: number };
 
   connect: () => void;
   disconnect: () => void;
@@ -165,6 +176,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [lastError, setLastError] = useState<string | null>(null);
+  const [answersProgress, setAnswersProgress] = useState({
+    totalAnswers: 0,
+    totalPlayers: 0,
+  });
 
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -275,17 +290,38 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const gameStartingHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.GAME_STARTING
     > = (data) => {
-      setGameState((prev) => ({
-        ...prev,
-        ...data.gameState,
-        phase: "starting",
-        isActive: true,
-      }));
+      setGameState((prev) => (
+        prev
+          ? {
+              ...prev,
+              phase: "starting",
+              isActive: true,
+            }
+          : {
+              isActive: true,
+              phase: "starting",
+              currentQuestion: null,
+              answers: [],
+              currentQuestionIndex: 0,
+              totalQuestions: 0,
+              difficulty: "easy",
+              gameStartTime: Date.now(),
+              gameEndTime: null,
+              usedCountries: new Set<string>(),
+              questionTimer: null,
+              resultTimer: null,
+              leaderboard: [],
+            }
+      ));
     };
 
     const newQuestionHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.NEW_QUESTION
     > = (data) => {
+      setAnswersProgress({
+        totalAnswers: 0,
+        totalPlayers: currentRoom?.members.length ?? 0,
+      });
       setGameState((prev) =>
         prev
           ? {
@@ -301,7 +337,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const answerSubmittedHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.ANSWER_SUBMITTED
     > = (data) => {
-      logger.info(`${data.username} submitted an answer`);
+      logger.info(
+        `${data.username} submitted an answer (${data.totalAnswers}/${data.totalPlayers})`
+      );
     };
 
     const questionResultsHandler: MessageHandler<
@@ -337,6 +375,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const gameStoppedHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.GAME_STOPPED
     > = () => {
+      setAnswersProgress({ totalAnswers: 0, totalPlayers: 0 });
       setGameState((prev) => (prev ? { ...prev, phase: "waiting" } : null));
       setCurrentRoom((prev) =>
         prev
@@ -419,7 +458,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       gameStoppedHandler
     );
     messageHandlers.current.set(WS_MESSAGE_TYPES.ERROR, errorHandler);
-  }, [currentRoom]);
+  }, [currentRoom, currentUser]);
 
   const handleMessage = useCallback((event: MessageEvent) => {
     try {
@@ -659,6 +698,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     currentRoom,
     currentUser,
     gameState,
+    answersProgress,
     connect,
     disconnect,
     createRoom,

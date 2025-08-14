@@ -202,29 +202,40 @@ export interface KickedData {
 }
 
 export interface GameStartingData {
-  gameState: GameState;
+  countdown: number;
 }
 
 export interface NewQuestionData {
   question: GameQuestion;
+  totalQuestions: number;
 }
 
 export interface AnswerSubmittedData {
   userId: string;
   username: string;
-  answer: string;
-  isCorrect: boolean;
-  timeToAnswer: number;
-  pointsAwarded: number;
+  hasAnswered: boolean;
+  totalAnswers: number;
+  totalPlayers: number;
 }
 
 export interface QuestionResultsData {
+  correctAnswer: string;
+  correctCountry: Country;
   playerAnswers: GameAnswer[];
   leaderboard: GameStateLeaderboard[];
 }
 
 export interface GameEndedData {
   leaderboard: GameStateLeaderboard[];
+  gameStats: {
+    totalQuestions: number;
+    totalAnswers: number;
+    correctAnswers: number;
+    accuracy: number;
+    averageTime: number;
+    difficulty: Difficulty;
+    duration: number;
+  };
 }
 
 export interface SettingsUpdatedData {
