@@ -11,6 +11,7 @@ import AnswerOptions from "@/components/AnswerOptions";
 import Header from "@/components/Header";
 import LevelBadge from "@/components/LevelBadge";
 import Timer from "@/components/Timer";
+import { Progress } from "@/components/ui/progress";
 import Leaderboard from "@/components/multiplayer/Leaderboard";
 import { useSocket } from "@/lib/context/SocketContext";
 import { useGameState } from "@/lib/hooks/useGameState";
@@ -28,6 +29,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   const [hasAnswered, setHasAnswered] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [countdown, setCountdown] = useState(8);
+  const [progressPercent, setProgressPercent] = useState(100);
 
   useEffect(() => {
     if (currentQuestion) {
@@ -51,6 +53,22 @@ export default function GameQuestion({ room }: GameQuestionProps) {
       return () => clearInterval(timer);
     }
   }, [currentPhase]);
+
+  useEffect(() => {
+    const timePerQuestion = room.settings.timePerQuestion || 30;
+    if (currentPhase !== "question") {
+      setProgressPercent(0);
+      return;
+    }
+    setProgressPercent(100);
+    const start = performance.now();
+    const interval = setInterval(() => {
+      const elapsedSec = (performance.now() - start) / 1000;
+      const pct = Math.max(0, 100 - (elapsedSec / timePerQuestion) * 100);
+      setProgressPercent(pct);
+    }, 500);
+    return () => clearInterval(interval);
+  }, [currentPhase, currentQuestion?.questionNumber, room.settings.timePerQuestion]);
 
   const handleAnswerSelect = async (answer: string) => {
     if (hasAnswered || !currentQuestion) return;
@@ -146,6 +164,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
                     />
                   </div>
                 </div>
+                <Progress value={progressPercent} className="mb-4" />
 
                 <div className="mb-4 sm:mb-8">
                   <FlagDisplay
