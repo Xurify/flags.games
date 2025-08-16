@@ -1,5 +1,6 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
+import { Trophy } from "lucide-react";
 
 interface GameEndScreenProps {
   score: number;
@@ -11,8 +12,8 @@ interface GameEndScreenProps {
   hearts?: number;
 }
 
-const CIRCLE_SIZE = 240;
-const STROKE_WIDTH = 10;
+const CIRCLE_SIZE = 180;
+const STROKE_WIDTH = 12;
 const RADIUS = (CIRCLE_SIZE - STROKE_WIDTH) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
@@ -41,60 +42,75 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
     return "Try again to beat your own score. 👏";
   }, []);
 
+  const accuracyLabel = useMemo(() => `${progress}%`, [progress]);
+
   return (
     <div className="w-full">
-      <div className="text-center mb-4">
-        <h1 className="text-3xl font-semibold text-foreground leading-[1] mb-6">
+      <div className="text-center mb-6">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 text-primary mb-3">
+          <Trophy className="w-7 h-7" aria-hidden />
+        </div>
+        <h1 className="text-2xl font-bold text-foreground leading-tight">
           {isHeartsModeGameOver ? "Game Over" : "Game Complete"}
         </h1>
+        <p className="text-muted-foreground text-sm mt-1">{getGameOverMessage()}</p>
       </div>
+
       <div className="relative flex items-center justify-center mb-6">
         <svg width={CIRCLE_SIZE} height={CIRCLE_SIZE}>
+          <defs>
+            <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={isHeartsModeGameOver ? "#ef4444" : "#3b82f6"} />
+              <stop offset="100%" stopColor={isHeartsModeGameOver ? "#f97316" : "#22d3ee"} />
+            </linearGradient>
+          </defs>
+          <circle cx={CIRCLE_SIZE / 2} cy={CIRCLE_SIZE / 2} r={RADIUS} stroke="#e5e7eb" strokeWidth={STROKE_WIDTH} fill="none" />
           <circle
             cx={CIRCLE_SIZE / 2}
             cy={CIRCLE_SIZE / 2}
             r={RADIUS}
-            stroke="#e5e7eb"
-            strokeWidth={STROKE_WIDTH}
-            fill="none"
-          />
-          <circle
-            cx={CIRCLE_SIZE / 2}
-            cy={CIRCLE_SIZE / 2}
-            r={RADIUS}
-            stroke={isHeartsModeGameOver ? "#ef4444" : "#2563eb"}
+            stroke="url(#progressGradient)"
             strokeWidth={STROKE_WIDTH}
             fill="none"
             strokeDasharray={CIRCUMFERENCE}
             strokeDashoffset={offset}
             strokeLinecap="round"
-            style={{
-              transition: "stroke-dashoffset 0.6s cubic-bezier(.4,2,.6,1)",
-            }}
+            style={{ transition: "stroke-dashoffset 0.6s cubic-bezier(.4,2,.6,1)" }}
             transform={`rotate(-90 ${CIRCLE_SIZE / 2} ${CIRCLE_SIZE / 2})`}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className={`text-4xl font-extrabold ${isHeartsModeGameOver ? "text-red-600" : "text-blue-700"}`}>
-            {score}/{totalPossible}
-          </span>
+          <div className="text-xs uppercase text-muted-foreground">Accuracy</div>
+          <div className="text-4xl font-extrabold text-foreground">{accuracyLabel}</div>
+          <div className="text-xs text-muted-foreground mt-1">{score}/{totalPossible} pts</div>
         </div>
       </div>
-      <div className="text-sm text-muted-foreground mb-8 text-center">
-        {getGameOverMessage()}
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+        <div className="rounded-lg border bg-card p-4 text-center">
+          <div className="text-xs uppercase text-muted-foreground mb-1">Score</div>
+          <div className="text-2xl font-bold">{score}</div>
+        </div>
+        <div className="rounded-lg border bg-card p-4 text-center">
+          <div className="text-xs uppercase text-muted-foreground mb-1">Max</div>
+          <div className="text-2xl font-bold">{totalPossible}</div>
+        </div>
+        {heartsModeEnabled ? (
+          <div className="rounded-lg border bg-card p-4 text-center">
+            <div className="text-xs uppercase text-muted-foreground mb-1">Hearts Left</div>
+            <div className={`text-2xl font-bold ${isHeartsModeGameOver ? "text-red-600" : ""}`}>{hearts ?? 0}</div>
+          </div>
+        ) : (
+          <div className="rounded-lg border bg-card p-4 text-center">
+            <div className="text-xs uppercase text-muted-foreground mb-1">Status</div>
+            <div className="text-2xl font-bold">{progress === 100 ? "Perfect" : "Completed"}</div>
+          </div>
+        )}
       </div>
-      <div className="flex flex-col gap-3 w-full">
-        <Button onClick={onPlayAgain} className="w-full" size="lg">
-          Play Again
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full"
-          size="lg"
-          onClick={onChangeDifficulty}
-        >
-          Change Difficulty
-        </Button>
+
+      <div className="flex flex-col sm:flex-row gap-3 w-full">
+        <Button onClick={onPlayAgain} className="w-full sm:w-1/2" size="lg">Play Again</Button>
+        <Button variant="outline" className="w-full sm:w-1/2" size="lg" onClick={onChangeDifficulty}>Change Difficulty</Button>
       </div>
     </div>
   );
