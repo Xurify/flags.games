@@ -534,6 +534,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       wsRef.current.onerror = (error) => {
         logger.error("WebSocket error:", error);
         //setLastError("Connection error occurred");
+        toast.error("WebSocket connection error occurred", { duration: 10000 });
       };
     } catch (error) {
       setConnectionState("disconnected");
@@ -569,6 +570,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     } else {
       logger.warn("Cannot send message: WebSocket not connected");
+      toast.error("Cannot send message: WebSocket not connected", { duration: 10000 });
     }
   }, []);
 
