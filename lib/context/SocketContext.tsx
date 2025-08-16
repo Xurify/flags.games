@@ -145,7 +145,6 @@ export interface SocketContextType {
   getConnectionStats: () => {
     connectionState: ConnectionState;
     reconnectAttempts: number;
-    lastError: string | null;
   };
 }
 
@@ -175,7 +174,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [lastError, setLastError] = useState<string | null>(null);
   const [answersProgress, setAnswersProgress] = useState({
     totalAnswers: 0,
     totalPlayers: 0,
@@ -185,14 +183,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const heartbeatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttemptsRef = useRef(0);
-  const maxReconnectAttempts = 5;
+  const maxReconnectAttempts = 3;
   const reconnectDelay = 3000;
 
-  useEffect(() => {
-    if (lastError) {
-      toast.error(lastError);
-    }
-  }, [lastError]);
+  
 
   const messageHandlers = useRef<
     Map<keyof typeof WS_MESSAGE_TYPES, (data: any) => void>
@@ -404,7 +398,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const errorHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ERROR> = (
       data
     ) => {
-      setLastError(data.message);
       toast.error(data.message);
     };
 
@@ -481,7 +474,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     }
 
     setConnectionState("connecting");
-    setLastError(null);
 
     try {
       wsRef.current = new WebSocket(wsUrl);
@@ -526,19 +518,18 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
               connect();
             }, reconnectDelay * Math.pow(2, reconnectAttemptsRef.current - 1));
           } else {
-            setLastError("Failed to reconnect after multiple attempts");
+            toast.error("Failed to reconnect after multiple attempts", { duration: 10000 });
           }
         }
       };
 
       wsRef.current.onerror = (error) => {
         logger.error("WebSocket error:", error);
-        //setLastError("Connection error occurred");
         toast.error("WebSocket connection error occurred", { duration: 10000 });
       };
     } catch (error) {
       setConnectionState("disconnected");
-      setLastError("Failed to create WebSocket connection");
+      toast.error("Failed to create WebSocket connection", { duration: 10000 });
       logger.error("WebSocket connection error:", error);
     }
   }, [wsUrl, handleMessage]);
@@ -660,9 +651,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     () => ({
       connectionState,
       reconnectAttempts: reconnectAttemptsRef.current,
-      lastError,
     }),
-    [connectionState, lastError]
+    [connectionState]
   );
 
   useEffect(() => {
