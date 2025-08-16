@@ -123,7 +123,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                     <HomeIcon className="w-3 h-3" />
                   </Button>
                   <span className="text-sm font-medium text-foreground">MULTIPLAYER</span>
-                  <Badge variant="outline" className="flex items-center gap-1">
+                  <Badge variant="default" className="flex items-center gap-1">
                     <UsersIcon className="w-3 h-3" />
                     {room.members.length}
                   </Badge>

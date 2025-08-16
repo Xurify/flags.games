@@ -82,31 +82,18 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <div className="text-xs uppercase text-muted-foreground">Accuracy</div>
           <div className="text-4xl font-extrabold text-foreground">{accuracyLabel}</div>
-          <div className="text-xs text-muted-foreground mt-1">{score}/{totalPossible} pts</div>
+          <div className="text-xs text-muted-foreground mt-1">{score}/{totalPossible} correct</div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-        <div className="rounded-lg border bg-card p-4 text-center">
-          <div className="text-xs uppercase text-muted-foreground mb-1">Score</div>
-          <div className="text-2xl font-bold">{score}</div>
-        </div>
-        <div className="rounded-lg border bg-card p-4 text-center">
-          <div className="text-xs uppercase text-muted-foreground mb-1">Max</div>
-          <div className="text-2xl font-bold">{totalPossible}</div>
-        </div>
-        {heartsModeEnabled ? (
+      {heartsModeEnabled && (
+        <div className="grid grid-cols-1 sm:grid-cols-1 gap-3 mb-6">
           <div className="rounded-lg border bg-card p-4 text-center">
             <div className="text-xs uppercase text-muted-foreground mb-1">Hearts Left</div>
             <div className={`text-2xl font-bold ${isHeartsModeGameOver ? "text-red-600" : ""}`}>{hearts ?? 0}</div>
           </div>
-        ) : (
-          <div className="rounded-lg border bg-card p-4 text-center">
-            <div className="text-xs uppercase text-muted-foreground mb-1">Status</div>
-            <div className="text-2xl font-bold">{progress === 100 ? "Perfect" : "Completed"}</div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="flex flex-col sm:flex-row gap-3 w-full">
         <Button onClick={onPlayAgain} className="w-full sm:w-1/2" size="lg">Play Again</Button>

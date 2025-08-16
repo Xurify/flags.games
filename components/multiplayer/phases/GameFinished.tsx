@@ -7,9 +7,8 @@ import { useSocket } from "@/lib/context/SocketContext";
 import { useGameState } from "@/lib/hooks/useGameState";
 import { Room } from "@/lib/types/socket";
 import { cn } from "@/lib/utils/strings";
-import { Button } from "@/components/ui/button";
-import LevelBadge from "@/components/LevelBadge";
 import Header from "@/components/Header";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -54,15 +53,13 @@ export default function GameFinished({ room }: GameFinishedProps) {
                 >
                   <HomeIcon className="w-3 h-3" />
                 </Button>
-                <span className="text-sm font-medium text-foreground">MULTIPLAYER</span>
-                <Badge variant="outline" className="flex items-center gap-1">
+                <span className="text-sm font-medium text-foreground">
+                  MULTIPLAYER
+                </span>
+                <Badge variant="default" className="flex items-center gap-1">
                   <UsersIcon className="w-3 h-3" />
                   {room.members.length}
                 </Badge>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-foreground">LEVEL</span>
-                  <LevelBadge difficulty={room.settings.difficulty} />
-                </div>
               </div>
             }
           />
@@ -75,9 +72,10 @@ export default function GameFinished({ room }: GameFinishedProps) {
                 <h2 className="text-lg font-semibold">Final results</h2>
                 <p className="text-sm text-muted-foreground">
                   {leaderboard[0]
-                    ? (currentUser?.id && leaderboard[0].userId === currentUser.id
-                        ? "You placed #1."
-                        : `Winner: ${leaderboard[0].username}`)
+                    ? currentUser?.id &&
+                      leaderboard[0].userId === currentUser.id
+                      ? "You placed #1."
+                      : `Winner: ${leaderboard[0].username}`
                     : "Thanks for playing."}
                 </p>
               </div>
@@ -85,17 +83,24 @@ export default function GameFinished({ room }: GameFinishedProps) {
               <div className="flex items-center justify-center gap-6 text-sm">
                 <div>
                   <span className="text-muted-foreground">Your rank </span>
-                  <span className="font-semibold">{myPlacement?.rank ? `#${myPlacement.rank}` : "-"}</span>
+                  <span className="font-semibold">
+                    {myPlacement?.rank ? `#${myPlacement.rank}` : "-"}
+                  </span>
                 </div>
                 <span className="text-border">•</span>
                 <div>
                   <span className="text-muted-foreground">Score </span>
-                  <span className="font-semibold">{myPlacement?.me?.score ?? 0} pts</span>
+                  <span className="font-semibold">
+                    {myPlacement?.me?.score ?? 0} pts
+                  </span>
                 </div>
                 <span className="text-border">•</span>
                 <div>
                   <span className="text-muted-foreground">Correct </span>
-                  <span className="font-semibold">{myPlacement?.me?.correctAnswers ?? 0}/{gameState?.totalQuestions || 0}</span>
+                  <span className="font-semibold">
+                    {myPlacement?.me?.correctAnswers ?? 0}/
+                    {gameState?.totalQuestions || 0}
+                  </span>
                 </div>
               </div>
 
@@ -108,20 +113,37 @@ export default function GameFinished({ room }: GameFinishedProps) {
                         key={player.userId}
                         className={cn(
                           "grid grid-cols-[2ch_1fr_auto] items-center gap-3 px-3 py-2",
-                          isYou && "[&>*:nth-child(2)>span:first-child]:font-semibold"
+                          isYou &&
+                            "[&>*:nth-child(2)>span:first-child]:font-semibold"
                         )}
                       >
-                        <div className="text-xs tabular-nums text-muted-foreground">{index + 1}</div>
+                        <div className="text-xs tabular-nums text-muted-foreground">
+                          {index + 1}
+                        </div>
                         <div className="min-w-0 flex items-center gap-1">
-                          <span className={cn("truncate", isYou ? "font-semibold" : "font-medium")}>{player.username}</span>
+                          <span
+                            className={cn(
+                              "truncate",
+                              isYou ? "font-semibold" : "font-medium"
+                            )}
+                          >
+                            {player.username}
+                          </span>
                           {isYou && (
-                            <span className="text-[11px] font-semibold text-primary">(You)</span>
+                            <span className="text-[11px] font-semibold text-primary">
+                              (You)
+                            </span>
                           )}
                         </div>
                         <div className="text-xs tabular-nums text-muted-foreground flex items-center gap-3">
-                          <span>{player.correctAnswers}/{gameState?.totalQuestions || 0}</span>
+                          <span>
+                            {player.correctAnswers}/
+                            {gameState?.totalQuestions || 0}
+                          </span>
                           <span className="text-border">•</span>
-                          <span className="font-semibold text-foreground">{player.score}</span>
+                          <span className="font-semibold text-foreground">
+                            {player.score}
+                          </span>
                         </div>
                       </div>
                     );
@@ -131,9 +153,20 @@ export default function GameFinished({ room }: GameFinishedProps) {
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 {isHost && (
-                  <Button onClick={() => startGame()} className="w-full sm:w-auto">Play Again</Button>
+                  <Button
+                    onClick={() => startGame()}
+                    className="w-full sm:w-auto"
+                  >
+                    Play Again
+                  </Button>
                 )}
-                <Button onClick={handleLeaveGame} variant="outline" className="w-full sm:w-auto">Back to Lobby</Button>
+                <Button
+                  onClick={handleLeaveGame}
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                >
+                  Back to Lobby
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -141,4 +174,4 @@ export default function GameFinished({ room }: GameFinishedProps) {
       </div>
     </div>
   );
-} 
+}
