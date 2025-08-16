@@ -131,8 +131,8 @@ export default function Leaderboard({
               </div>
               <div className={cn("min-w-0 flex items-center gap-1", movementClass)}>
                 <span className={cn("truncate", isCurrentUser ? "font-semibold" : "font-medium")}>{member.username}</span>
-                {isHost && <CrownIcon className="w-3 h-3 text-muted-foreground" />}
-                {hasAnswered && <CheckIcon className="w-3 h-3 text-muted-foreground/70" />}
+                {isHost && <CrownIcon className="w-3.5 h-3.5 text-muted-foreground fill-yellow-500 stroke-black" />}
+                {hasAnswered && <CheckIcon className="w-3.5 h-3.5 text-muted-foreground/70" />}
                 {isCurrentUser && (
                   <span className="text-[11px] font-semibold text-primary">(You)</span>
                 )}
