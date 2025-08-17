@@ -34,7 +34,7 @@ const roomSettingsSchema = z.object({
     .max(ROOM_SIZES[ROOM_SIZES.length - 1]),
   difficulty: z.enum(DIFFICULTY_LEVELS),
   gameMode: z.string(),
-  timePerQuestion: z.number().min(10).max(60),
+  timePerQuestion: z.number().min(10).max(30),
 });
 
 const formSchema = z.object({

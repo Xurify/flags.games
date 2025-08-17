@@ -11,7 +11,7 @@ export const MEDIUM_DIFFICULTY: Difficulty = "medium";
 export type Difficulty = "easy" | "medium" | "hard" | "expert";
 export const DIFFICULTY_LEVELS: Difficulty[] = ["easy", "medium", "hard", "expert"];
 
-export const TIME_PER_QUESTION_OPTIONS = [10, 15, 20, 30, 60];
+export const TIME_PER_QUESTION_OPTIONS = [10, 15, 20, 30];
 export const ROOM_SIZES = [2, 3, 4, 5];
 
 export const AUDIO_URLS = {
