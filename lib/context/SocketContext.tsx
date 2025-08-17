@@ -136,11 +136,6 @@ export interface SocketContextType {
   updateRoomSettings: (settings: Partial<Room["settings"]>) => Promise<void>;
   kickUser: (userId: string) => Promise<void>;
 
-  updateProfile: (updates: {
-    color?: string;
-    username?: string;
-  }) => Promise<void>;
-
   sendMessage: (message: WebSocketMessage) => void;
   getConnectionStats: () => {
     connectionState: ConnectionState;
@@ -697,7 +692,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     submitAnswer,
     updateRoomSettings,
     kickUser,
-    updateProfile,
     sendMessage,
     getConnectionStats,
   };
