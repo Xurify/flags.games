@@ -282,7 +282,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const gameStartingHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.GAME_STARTING
     > = (data) => {
-      setGameState((prev) => (
+      setGameState((prev) =>
         prev
           ? {
               ...prev,
@@ -304,7 +304,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
               resultTimer: null,
               leaderboard: [],
             }
-      ));
+      );
     };
 
     const newQuestionHandler: MessageHandler<
@@ -516,14 +516,21 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
               connect();
             }, reconnectDelay * Math.pow(2, reconnectAttemptsRef.current - 1));
           } else {
-            toast.error("Failed to reconnect after multiple attempts", { duration: 10000 });
+            toast.error("Failed to reconnect after multiple attempts", {
+              duration: 10000,
+            });
           }
         }
       };
 
       wsRef.current.onerror = (error) => {
         logger.error("WebSocket error:", error);
-        toast.error(`WebSocket connection error occurred - Retrying ${maxReconnectAttempts - reconnectAttemptsRef.current} more times`, { duration: 10000 });
+        toast.error("WebSocket connection error occurred", {
+          duration: 10000,
+          description: `Retrying ${
+            maxReconnectAttempts - reconnectAttemptsRef.current
+          } more time(s)`,
+        });
       };
     } catch (error) {
       setConnectionState("disconnected");
@@ -559,7 +566,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     } else {
       logger.warn("Cannot send message: WebSocket not connected");
-      toast.error("Cannot send message: WebSocket not connected", { duration: 10000 });
+      toast.error("Cannot send message: WebSocket not connected", {
+        duration: 10000,
+      });
     }
   }, []);
 
