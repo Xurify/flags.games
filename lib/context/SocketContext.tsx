@@ -523,7 +523,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
 
       wsRef.current.onerror = (error) => {
         logger.error("WebSocket error:", error);
-        toast.error(`WebSocket connection error occurred - Retrying ${reconnectAttemptsRef.current} more times`, { duration: 10000 });
+        toast.error(`WebSocket connection error occurred - Retrying ${maxReconnectAttempts - reconnectAttemptsRef.current} more times`, { duration: 10000 });
       };
     } catch (error) {
       setConnectionState("disconnected");
