@@ -31,6 +31,8 @@ import { cn } from "@/lib/utils/strings";
 import { useSocket } from "@/lib/context/SocketContext";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
 import { Room, User } from "@/lib/types/socket";
+import { useSettings } from "@/lib/context/SettingsContext";
+import { audioManager } from "@/lib/utils/audioUtils";
 
 interface RoomLobbyProps {
   room: Room;
@@ -40,6 +42,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   const router = useRouter();
   const { currentUser, leaveRoom, gameState } = useSocket();
   const { isHost, canStartGame, startGame, updateRoomSettings } = useRoomManagement();
+  const { settings } = useSettings();
   const [copied, setCopied] = React.useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isStarting, setIsStarting] = useState(false);
@@ -74,6 +77,15 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
       return () => clearInterval(timer);
     }
   }, [isStarting, countdown]);
+
+  useEffect(() => {
+    if (!isStarting || countdown === null) return;
+    if (!settings.soundEffectsEnabled) return;
+    if (countdown > 0) {
+      const frequency = countdown <= 1 ? 800 : 600;
+      audioManager.playTone(frequency, 0.18, "sine");
+    }
+  }, [isStarting, countdown, settings.soundEffectsEnabled]);
 
   useEffect(() => {
     if (gameState?.phase === "starting") {
@@ -183,7 +195,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                       className={cn(
                         "flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 ease-in-out min-h-[60px]",
                         player
-                          ? "bg-card border-border/40 hover:bg-accent/30"
+                          ? "bg-card border-border/40 dark:border-border/90 hover:bg-accent/30"
                           : "bg-muted/40 border-dashed border-border/60 opacity-80 animate-pulse"
                       )}
                     >
