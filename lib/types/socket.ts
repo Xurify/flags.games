@@ -99,8 +99,6 @@ export const WS_MESSAGE_TYPES = {
   LEAVE_ROOM: "LEAVE_ROOM",
   RESUME_GAME: "RESUME_GAME",
   STOP_GAME: "STOP_GAME",
-  UPDATE_PROFILE: "UPDATE_PROFILE",
-  TOGGLE_READY: "TOGGLE_READY",
   HEARTBEAT: "HEARTBEAT",
   HEARTBEAT_RESPONSE: "HEARTBEAT_RESPONSE",
   CREATE_ROOM_SUCCESS: "CREATE_ROOM_SUCCESS",
@@ -160,11 +158,6 @@ export interface UpdateSettingsData {
 
 export interface KickUserData {
   userId: string;
-}
-
-export interface UpdateProfileData {
-  color?: string;
-  username?: string;
 }
 
 export interface ToggleReadyData {
@@ -273,8 +266,6 @@ export type ClientToServerMessage =
   | { type: typeof WS_MESSAGE_TYPES.SUBMIT_ANSWER; data: SubmitAnswerData }
   | { type: typeof WS_MESSAGE_TYPES.UPDATE_ROOM_SETTINGS; data: UpdateSettingsData }
   | { type: typeof WS_MESSAGE_TYPES.KICK_USER; data: KickUserData }
-  | { type: typeof WS_MESSAGE_TYPES.UPDATE_PROFILE; data: UpdateProfileData }
-  | { type: typeof WS_MESSAGE_TYPES.TOGGLE_READY; data: ToggleReadyData }
   | { type: typeof WS_MESSAGE_TYPES.LEAVE_ROOM; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.START_GAME; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.RESUME_GAME; data: {} }

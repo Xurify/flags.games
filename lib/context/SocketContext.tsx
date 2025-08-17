@@ -644,16 +644,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     [sendMessage]
   );
 
-  const updateProfile = useCallback(
-    async (updates: { color?: string; username?: string }) => {
-      sendMessage({
-        type: WS_MESSAGE_TYPES.UPDATE_PROFILE,
-        data: updates,
-      });
-    },
-    [sendMessage]
-  );
-
   const getConnectionStats = useCallback(
     () => ({
       connectionState,
