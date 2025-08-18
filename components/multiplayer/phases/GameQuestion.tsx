@@ -28,7 +28,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
-  const [countdown, setCountdown] = useState(8);
+  const [countdown, setCountdown] = useState(5);
   const [progressPercent, setProgressPercent] = useState(100);
 
   useEffect(() => {
