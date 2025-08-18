@@ -91,13 +91,13 @@ export default function GameQuestion({ room }: GameQuestionProps) {
       return "border-border hover:border-primary/50 hover:bg-primary/5 dark:border-primary/50 dark:bg-primary/5 dark:hover:border-primary/70 transition-all duration-200";
     }
 
-    const correctAnswer = currentQuestion?.country?.name;
+    const correctAnswer = currentQuestion?.country?.code;
 
-    if (country.name === correctAnswer) {
+    if (country.code === correctAnswer) {
       return "bg-green-100 border-green-500 text-green-700 dark:bg-green-700/40 dark:border-green-500 dark:text-white dark:shadow-lg hover:text-green-700 focus:text-green-700 dark:hover:text-white dark:focus:text-white disabled:bg-green-100 disabled:text-green-700 disabled:dark:bg-green-700/40 disabled:dark:text-white !opacity-100 !grayscale-0 shadow";
     }
 
-    if (country.name === selectedAnswer && country.name !== correctAnswer) {
+    if (country.code === selectedAnswer && country.code !== correctAnswer) {
       return "bg-red-50 border-red-400 text-red-700 dark:bg-red-700/40 dark:border-red-500 dark:text-white dark:shadow-lg hover:text-red-700 focus:text-red-700 dark:hover:text-red-700 dark:focus:text-red-700 disabled:bg-red-50 disabled:text-red-700 disabled:dark:bg-red-700/40 disabled:dark:text-white !opacity-100 !grayscale-0 shadow";
     }
 
@@ -176,7 +176,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
                 <AnswerOptions
                   options={currentQuestion.options}
                   showResult={hasAnswered || currentPhase === "results"}
-                  handleAnswer={(country) => handleAnswerSelect(country.name)}
+                  handleAnswer={(country) => handleAnswerSelect(country.code)}
                   selectedAnswer={selectedAnswer}
                   getButtonClass={getButtonClass}
                   disabled={hasAnswered || currentPhase === "results"}
