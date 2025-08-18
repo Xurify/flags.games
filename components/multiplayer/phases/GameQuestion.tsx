@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ArrowLeftRightIcon } from "lucide-react";
 import { toast } from "sonner";
 
@@ -30,6 +30,9 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [progressPercent, setProgressPercent] = useState(100);
+  const [progressDurationMs, setProgressDurationMs] = useState<number | undefined>(undefined);
+  const rafId1 = useRef<number | null>(null);
+  const rafId2 = useRef<number | null>(null);
 
   useEffect(() => {
     if (currentQuestion) {
@@ -40,7 +43,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
 
   useEffect(() => {
     if (currentPhase === "results") {
-      setCountdown(8);
+      setCountdown(5);
       const timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -56,18 +59,35 @@ export default function GameQuestion({ room }: GameQuestionProps) {
 
   useEffect(() => {
     const timePerQuestion = room.settings.timePerQuestion || 30;
+
+    // Cleanup any pending animation frames
+    if (rafId1.current) cancelAnimationFrame(rafId1.current);
+    if (rafId2.current) cancelAnimationFrame(rafId2.current);
+    rafId1.current = null;
+    rafId2.current = null;
+
     if (currentPhase !== "question") {
+      setProgressDurationMs(200);
       setProgressPercent(0);
       return;
     }
+
+    // Reset to full instantly, then animate down to 0 over the question duration
+    setProgressDurationMs(0);
     setProgressPercent(100);
-    const start = performance.now();
-    const interval = setInterval(() => {
-      const elapsedSec = (performance.now() - start) / 1000;
-      const pct = Math.max(0, 100 - (elapsedSec / timePerQuestion) * 100);
-      setProgressPercent(pct);
-    }, 500);
-    return () => clearInterval(interval);
+    rafId1.current = requestAnimationFrame(() => {
+      rafId2.current = requestAnimationFrame(() => {
+        setProgressDurationMs(timePerQuestion * 1000);
+        setProgressPercent(0);
+      });
+    });
+
+    return () => {
+      if (rafId1.current) cancelAnimationFrame(rafId1.current);
+      if (rafId2.current) cancelAnimationFrame(rafId2.current);
+      rafId1.current = null;
+      rafId2.current = null;
+    };
   }, [currentPhase, currentQuestion?.questionNumber, room.settings.timePerQuestion]);
 
   const handleAnswerSelect = async (answer: string) => {
@@ -163,7 +183,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
                     />
                   </div>
                 </div>
-                <Progress value={progressPercent} className="mb-4" />
+                <Progress value={progressPercent} durationMs={progressDurationMs} className="mb-4" />
 
                 <div className="mb-4 sm:mb-8">
                   <FlagDisplay
