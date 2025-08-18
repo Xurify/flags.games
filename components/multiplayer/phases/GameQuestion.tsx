@@ -183,7 +183,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
               </CardContent>
 
               <div
-                className={`absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center transition-opacity duration-300 ease-in-out ${
+                className={`absolute inset-0 bg-black/40 rounded-[2rem] flex items-center justify-center transition-opacity duration-300 ease-in-out ${
                   currentPhase === "results"
                     ? "opacity-100"
                     : "opacity-0 pointer-events-none"

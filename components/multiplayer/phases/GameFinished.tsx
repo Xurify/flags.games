@@ -80,21 +80,21 @@ export default function GameFinished({ room }: GameFinishedProps) {
                 </p>
               </div>
 
-              <div className="flex items-center justify-center gap-6 text-sm">
+              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm">
                 <div>
                   <span className="text-muted-foreground">Your rank </span>
                   <span className="font-semibold">
                     {myPlacement?.rank ? `#${myPlacement.rank}` : "-"}
                   </span>
                 </div>
-                <span className="text-border">•</span>
+                <span className="text-border hidden sm:inline">•</span>
                 <div>
                   <span className="text-muted-foreground">Score </span>
                   <span className="font-semibold">
                     {myPlacement?.me?.score ?? 0} pts
                   </span>
                 </div>
-                <span className="text-border">•</span>
+                <span className="text-border hidden sm:inline">•</span>
                 <div>
                   <span className="text-muted-foreground">Correct </span>
                   <span className="font-semibold">
@@ -105,7 +105,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
               </div>
 
               <div>
-                <div className="divide-y divide-border/50">
+                <div className="divide-y divide-border/50 max-h-[45vh] overflow-y-auto sm:max-h-none">
                   {leaderboard.map((player, index) => {
                     const isYou = currentUser?.id === player.userId;
                     return (
