@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSocket } from '@/lib/context/SocketContext';
 
 export const useGameState = () => {
-  const { gameState, currentRoom, currentUser } = useSocket();
+  const { currentRoom, currentUser } = useSocket();
+  const gameState = useMemo(() => currentRoom?.gameState ?? null, [currentRoom]);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const [questionStartTime, setQuestionStartTime] = useState<number | null>(null);
 

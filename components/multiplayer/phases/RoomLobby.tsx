@@ -29,6 +29,7 @@ import {
 } from "@/lib/constants";
 import { cn } from "@/lib/utils/strings";
 import { useSocket } from "@/lib/context/SocketContext";
+import { useGameState } from "@/lib/hooks/useGameState";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
 import { Room, User } from "@/lib/types/socket";
 import { useSettings } from "@/lib/context/SettingsContext";
@@ -40,7 +41,7 @@ interface RoomLobbyProps {
 
 export default function RoomLobby({ room }: RoomLobbyProps) {
   const router = useRouter();
-  const { currentUser, leaveRoom, gameState } = useSocket();
+  const { leaveRoom, currentRoom } = useSocket();
   const { isHost, canStartGame, startGame, updateRoomSettings } = useRoomManagement();
   const { settings } = useSettings();
   const [copied, setCopied] = React.useState(false);
@@ -88,14 +89,14 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   }, [isStarting, countdown, settings.soundEffectsEnabled]);
 
   useEffect(() => {
-    if (gameState?.phase === "starting") {
+    if (currentRoom?.gameState?.phase === "starting") {
       setIsStarting(true);
       setCountdown(5);
-    } else if (gameState?.phase === "question") {
+    } else if (currentRoom?.gameState?.phase === "question") {
       setIsStarting(false);
       setCountdown(null);
     }
-  }, [gameState?.phase]);
+  }, [currentRoom?.gameState?.phase]);
 
   const handleInvite = () => {
     const inviteLink = room.inviteCode

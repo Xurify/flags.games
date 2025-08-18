@@ -22,8 +22,8 @@ interface GameQuestionProps {
 }
 
 export default function GameQuestion({ room }: GameQuestionProps) {
-  const { gameState, currentUser, submitAnswer } = useSocket();
-  const { currentQuestion, currentPhase } = useGameState();
+  const { currentUser, submitAnswer } = useSocket();
+  const { currentQuestion, currentPhase, isGameActive, gameState } = useGameState();
 
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
@@ -149,8 +149,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center justify-between mb-3 sm:mb-5">
                   <div className="text-sm font-medium text-foreground">
-                    Question {currentQuestion.questionNumber} of{" "}
-                    {gameState?.totalQuestions || 0}
+                    Question {currentQuestion.questionNumber} of {gameState?.totalQuestions || 0}
                   </div>
                   <div className="text-sm text-muted-foreground flex items-center gap-3">
                     <span className="font-medium text-foreground">
@@ -203,7 +202,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
             members={room.members}
             currentUser={currentUser}
             hostId={room.host}
-            isGameActive={gameState?.isActive || false}
+            isGameActive={isGameActive}
             variant="inline"
           />
         </div>

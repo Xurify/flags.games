@@ -17,7 +17,6 @@ import {
   Room,
   RoomSettings,
   User,
-  GameState,
   GameQuestion,
   GameAnswer,
   GameStateLeaderboard,
@@ -117,7 +116,6 @@ export interface SocketContextType {
   isConnected: boolean;
   currentRoom: Room | null;
   currentUser: User | null;
-  gameState: GameState | null;
   answersProgress: { totalAnswers: number; totalPlayers: number };
 
   connect: () => void;
@@ -168,7 +166,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     useState<ConnectionState>("disconnected");
   const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [gameState, setGameState] = useState<GameState | null>(null);
   const [answersProgress, setAnswersProgress] = useState({
     totalAnswers: 0,
     totalPlayers: 0,
@@ -229,7 +226,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     > = () => {
       setCurrentRoom(null);
       setCurrentUser(null);
-      setGameState(null);
       logger.info("Left room");
     };
 
@@ -270,35 +266,39 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     ) => {
       setCurrentRoom(null);
       setCurrentUser(null);
-      setGameState(null);
       logger.info("Kicked from room:", data.reason);
     };
 
     const gameStartingHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.GAME_STARTING
     > = (data) => {
-      setGameState((prev) =>
+      setCurrentRoom((prev) =>
         prev
           ? {
               ...prev,
-              phase: "starting",
-              isActive: true,
+              gameState: prev.gameState
+                ? {
+                    ...prev.gameState,
+                    phase: "starting",
+                    isActive: true,
+                  }
+                : {
+                    isActive: true,
+                    phase: "starting",
+                    currentQuestion: null,
+                    answers: [],
+                    currentQuestionIndex: 0,
+                    totalQuestions: 0,
+                    difficulty: "easy",
+                    gameStartTime: Date.now(),
+                    gameEndTime: null,
+                    usedCountries: new Set<string>(),
+                    questionTimer: null,
+                    resultTimer: null,
+                    leaderboard: [],
+                  },
             }
-          : {
-              isActive: true,
-              phase: "starting",
-              currentQuestion: null,
-              answers: [],
-              currentQuestionIndex: 0,
-              totalQuestions: 0,
-              difficulty: "easy",
-              gameStartTime: Date.now(),
-              gameEndTime: null,
-              usedCountries: new Set<string>(),
-              questionTimer: null,
-              resultTimer: null,
-              leaderboard: [],
-            }
+          : null
       );
     };
 
@@ -309,13 +309,18 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
         totalAnswers: 0,
         totalPlayers: currentRoom?.members.length ?? 0,
       });
-      setGameState((prev) =>
+      setCurrentRoom((prev) =>
         prev
           ? {
               ...prev,
-              phase: "question",
-              currentQuestion: data.question,
-              answers: [],
+              gameState: prev.gameState
+                ? {
+                    ...prev.gameState,
+                    phase: "question",
+                    currentQuestion: data.question,
+                    answers: [],
+                  }
+                : prev.gameState,
             }
           : null
       );
@@ -332,13 +337,26 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const questionResultsHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.QUESTION_RESULTS
     > = (data) => {
-      setGameState((prev) =>
+      // Single source of truth: update room's gameState and members; the effect syncing
+      // currentRoom -> gameState will propagate changes to `gameState`
+      setCurrentRoom((prev) =>
         prev
           ? {
               ...prev,
-              phase: "results",
-              answers: data.playerAnswers,
-              leaderboard: data.leaderboard,
+              gameState: prev.gameState
+                ? {
+                    ...prev.gameState,
+                    phase: "results",
+                    answers: data.playerAnswers,
+                    leaderboard: data.leaderboard,
+                  }
+                : prev.gameState,
+              members: prev.members.map((member) => {
+                const updated = data.leaderboard.find(
+                  (entry) => entry.userId === member.id
+                );
+                return updated ? { ...member, score: updated.score } : member;
+              }),
             }
           : null
       );
@@ -347,13 +365,18 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const gameEndedHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.GAME_ENDED
     > = (data) => {
-      setGameState((prev) =>
+      setCurrentRoom((prev) =>
         prev
           ? {
               ...prev,
-              phase: "finished",
-              isActive: false,
-              leaderboard: data.leaderboard,
+              gameState: prev.gameState
+                ? {
+                    ...prev.gameState,
+                    phase: "finished",
+                    isActive: false,
+                    leaderboard: data.leaderboard,
+                  }
+                : prev.gameState,
             }
           : null
       );
@@ -363,26 +386,27 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       typeof WS_MESSAGE_TYPES.GAME_STOPPED
     > = () => {
       setAnswersProgress({ totalAnswers: 0, totalPlayers: 0 });
-      setGameState((prev) => (prev ? { ...prev, phase: "waiting" } : null));
       setCurrentRoom((prev) =>
         prev
           ? {
               ...prev,
-              gameState: {
-                ...prev.gameState,
-                phase: "waiting",
-                isActive: false,
-                currentQuestion: null,
-                answers: [],
-                currentQuestionIndex: 0,
-                totalQuestions: 0,
-                gameStartTime: null,
-                gameEndTime: null,
-                usedCountries: new Set(),
-                questionTimer: null,
-                resultTimer: null,
-                leaderboard: [],
-              },
+              gameState: prev.gameState
+                ? {
+                    ...prev.gameState,
+                    phase: "waiting",
+                    isActive: false,
+                    currentQuestion: null,
+                    answers: [],
+                    currentQuestionIndex: 0,
+                    totalQuestions: 0,
+                    gameStartTime: null,
+                    gameEndTime: null,
+                    usedCountries: new Set(),
+                    questionTimer: null,
+                    resultTimer: null,
+                    leaderboard: [],
+                  }
+                : prev.gameState,
             }
           : null
       );
@@ -548,7 +572,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     setConnectionState("disconnected");
     setCurrentRoom(null);
     setCurrentUser(null);
-    setGameState(null);
   }, []);
 
   const sendMessage = useCallback((message: WebSocketMessage) => {
@@ -603,7 +626,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
 
   const submitAnswer = useCallback(
     async (answer: string) => {
-      if (!gameState?.currentQuestion) {
+      const activeQuestion = currentRoom?.gameState?.currentQuestion;
+      if (!activeQuestion) {
         logger.error("No active question");
         return;
       }
@@ -612,11 +636,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
         type: WS_MESSAGE_TYPES.SUBMIT_ANSWER,
         data: {
           answer,
-          questionId: gameState.currentQuestion.questionNumber.toString(),
+          questionId: activeQuestion.questionNumber.toString(),
         },
       });
     },
-    [sendMessage, gameState]
+    [sendMessage, currentRoom]
   );
 
   const updateRoomSettings = useCallback(
@@ -651,11 +675,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     setupMessageHandlers();
   }, [setupMessageHandlers]);
 
-  useEffect(() => {
-    if (currentRoom) {
-      setGameState(currentRoom.gameState);
-    }
-  }, [currentRoom]);
+  // gameState is derived from currentRoom in consumers via useGameState; no mirror state here
 
   useEffect(() => {
     connect();
@@ -681,7 +701,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     isConnected: connectionState === "connected",
     currentRoom,
     currentUser,
-    gameState,
     answersProgress,
     connect,
     disconnect,
