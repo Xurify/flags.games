@@ -2,6 +2,7 @@
 
 import React from "react";
 import { CrownIcon, CheckIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { User } from "@/lib/types/socket";
 import { cn } from "@/lib/utils/strings";
 
@@ -92,17 +93,15 @@ export default function Leaderboard({
   return (
     <div
       className={cn(
-        variant === "sidebar" && "hidden lg:block w-72",
+        variant === "sidebar" && "hidden lg:block w-64",
         variant === "inline" && "w-full lg:w-64 lg:border-l lg:border-border/50 lg:pl-4"
       )}
     >
-      <div className={cn("px-3 py-2", variant === "inline" && "px-0 pb-2")}> 
-        <div className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-          Leaderboard
-        </div>
-        <div className="text-[11px] text-muted-foreground/80">
+      <div className={cn("px-3 py-2 flex items-center justify-between", variant === "inline" && "px-0 pb-2")}> 
+        <div className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">Leaderboard</div>
+        <Badge size="sm" variant={isGameActive ? "success" : "outline"}>
           {isGameActive ? "Live" : "Waiting"}
-        </div>
+        </Badge>
       </div>
 
       <div className={cn("max-h-[500px] overflow-y-auto divide-y divide-border/50", variant === "inline" && "max-h-none")}> 
@@ -131,8 +130,8 @@ export default function Leaderboard({
               </div>
               <div className={cn("min-w-0 flex items-center gap-1", movementClass)}>
                 <span className={cn("truncate", isCurrentUser ? "font-semibold" : "font-medium")}>{member.username}</span>
-                {isHost && <CrownIcon className="w-3.5 h-3.5 text-muted-foreground fill-yellow-500 stroke-black" />}
-                {hasAnswered && <CheckIcon className="w-3.5 h-3.5 text-muted-foreground/70" />}
+                {isHost && <CrownIcon className="w-3.5 h-3.5 text-chart-5" />}
+                {hasAnswered && <CheckIcon className="w-3.5 h-3.5 text-chart-2" />}
                 {isCurrentUser && (
                   <span className="text-[11px] font-semibold text-primary">(You)</span>
                 )}

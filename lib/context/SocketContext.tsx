@@ -544,12 +544,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
 
       wsRef.current.onerror = (error) => {
         logger.error("WebSocket error:", error);
+        if (reconnectAttemptsRef.current < maxReconnectAttempts) {
         toast.error("WebSocket connection error occurred", {
           duration: 10000,
           description: `Retrying ${
-            maxReconnectAttempts - reconnectAttemptsRef.current
-          } more time(s)`,
-        });
+              maxReconnectAttempts - reconnectAttemptsRef.current
+            } more time(s)`,
+          });
+        }
       };
     } catch (error) {
       setConnectionState("disconnected");
@@ -615,6 +617,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       type: WS_MESSAGE_TYPES.LEAVE_ROOM,
       data: {},
     });
+    wsRef.current?.close();
   }, [sendMessage]);
 
   const startGame = useCallback(async () => {
