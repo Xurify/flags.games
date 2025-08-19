@@ -87,14 +87,14 @@ export default function GameFinished({ room }: GameFinishedProps) {
                     {myPlacement?.rank ? `#${myPlacement.rank}` : "-"}
                   </span>
                 </div>
-                <span className="text-border hidden sm:inline">•</span>
+                <span className="text-border dark:text-white hidden sm:inline">•</span>
                 <div>
                   <span className="text-muted-foreground">Score </span>
                   <span className="font-semibold">
                     {myPlacement?.me?.score ?? 0} pts
                   </span>
                 </div>
-                <span className="text-border hidden sm:inline">•</span>
+                <span className="text-border dark:text-white hidden sm:inline">•</span>
                 <div>
                   <span className="text-muted-foreground">Correct </span>
                   <span className="font-semibold">
