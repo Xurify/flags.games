@@ -112,9 +112,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   };
 
   const userScore = currentUser
-    ? room.members.find((member) => member.id === currentUser.id)?.score ??
-      currentUser.score ??
-      0
+    ? room.members.find((member) => member.id === currentUser.id)?.score ?? 0
     : 0;
 
   if (!currentQuestion) {

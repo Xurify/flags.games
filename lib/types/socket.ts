@@ -209,6 +209,8 @@ export interface AnswerSubmittedData {
   hasAnswered: boolean;
   totalAnswers: number;
   totalPlayers: number;
+  pointsAwarded: number;
+  score: number;
 }
 
 export interface QuestionResultsData {
