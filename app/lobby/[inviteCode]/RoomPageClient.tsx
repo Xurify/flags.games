@@ -8,12 +8,11 @@ import GameQuestion from "@/components/multiplayer/phases/GameQuestion";
 import GameFinished from "@/components/multiplayer/phases/GameFinished";
 
 export default function RoomPageClient() {
-  const params = useParams<{ inviteCode: string }>();
   const router = useRouter();
   const { currentPhase, currentRoom } = useGameState();
 
   if (!currentRoom) {
-    router.replace(`/lobby?c=${params.inviteCode}`);
+    router.replace(`/lobby`);
     return null;
   }
 

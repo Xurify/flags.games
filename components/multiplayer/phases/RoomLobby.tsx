@@ -196,7 +196,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                       className={cn(
                         "flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 ease-in-out min-h-[60px]",
                         player
-                          ? "bg-card border-border/40 dark:border-border/90 hover:bg-accent/30"
+                          ? "bg-card dark:bg-input border-border/60 dark:border-border/90 hover:bg-accent/30 dark:hover:bg-input/30"
                           : "bg-muted/40 border-dashed border-border/60 opacity-80 animate-pulse"
                       )}
                     >
