@@ -12,6 +12,8 @@ import React, {
 import { toast } from "sonner";
 
 import { logger } from "@/lib/utils/logger";
+import { audioManager } from "@/lib/utils/audioUtils";
+import { useSettings } from "@/lib/context/SettingsContext";
 import {
   WS_MESSAGE_TYPES,
   Room,
@@ -116,7 +118,6 @@ export interface SocketContextType {
   isConnected: boolean;
   currentRoom: Room | null;
   currentUser: User | null;
-  answersProgress: { totalAnswers: number; totalPlayers: number };
 
   connect: () => void;
   disconnect: () => void;
@@ -166,17 +167,16 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     useState<ConnectionState>("disconnected");
   const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [answersProgress, setAnswersProgress] = useState({
-    totalAnswers: 0,
-    totalPlayers: 0,
-  });
 
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const heartbeatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttemptsRef = useRef(0);
-  const maxReconnectAttempts = 3;
-  const reconnectDelay = 3000;
+
+  const MAX_RECONNECT_ATTEMPTS = 3;
+  const RECONNECT_DELAY = 3000;
+
+  const { settings } = useSettings();
 
   const messageHandlers = useRef<
     Map<keyof typeof WS_MESSAGE_TYPES, (data: any) => void>
@@ -305,10 +305,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const newQuestionHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.NEW_QUESTION
     > = (data) => {
-      setAnswersProgress({
-        totalAnswers: 0,
-        totalPlayers: currentRoom?.members.length ?? 0,
-      });
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -332,6 +328,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       logger.info(
         `${data.username} submitted an answer (${data.totalAnswers}/${data.totalPlayers})`
       );
+      if (
+        settings.soundEffectsEnabled &&
+        data.userId !== currentUser?.id
+      ) {
+        audioManager.playAnswerSubmittedSound();
+      }
     };
 
     const questionResultsHandler: MessageHandler<
@@ -385,7 +387,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const gameStoppedHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.GAME_STOPPED
     > = () => {
-      setAnswersProgress({ totalAnswers: 0, totalPlayers: 0 });
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -468,7 +469,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       gameStoppedHandler
     );
     messageHandlers.current.set(WS_MESSAGE_TYPES.ERROR, errorHandler);
-  }, [currentRoom, currentUser]);
+  }, [currentRoom, currentUser, settings.soundEffectsEnabled]);
 
   const handleMessage = useCallback((event: MessageEvent) => {
     try {
@@ -527,13 +528,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
             event.reason
           );
 
-          if (reconnectAttemptsRef.current < maxReconnectAttempts) {
+          if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
             setConnectionState("reconnecting");
             reconnectAttemptsRef.current += 1;
 
             reconnectTimeoutRef.current = setTimeout(() => {
               connect();
-            }, reconnectDelay * Math.pow(2, reconnectAttemptsRef.current - 1));
+            }, RECONNECT_DELAY * Math.pow(2, reconnectAttemptsRef.current - 1));
           } else {
             toast.error("Failed to reconnect after multiple attempts", {
               duration: 10000,
@@ -544,11 +545,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
 
       wsRef.current.onerror = (error) => {
         logger.error("WebSocket error:", error);
-        if (reconnectAttemptsRef.current < maxReconnectAttempts) {
+        if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
         toast.error("WebSocket connection error occurred", {
           duration: 10000,
           description: `Retrying ${
-              maxReconnectAttempts - reconnectAttemptsRef.current
+              MAX_RECONNECT_ATTEMPTS - reconnectAttemptsRef.current
             } more time(s)`,
           });
         }
@@ -704,7 +705,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     isConnected: connectionState === "connected",
     currentRoom,
     currentUser,
-    answersProgress,
     connect,
     disconnect,
     createRoom,

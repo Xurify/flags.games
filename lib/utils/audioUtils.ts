@@ -241,6 +241,10 @@ class AudioManager {
     });
   }
 
+  playAnswerSubmittedSound(): void {
+    this.playTone(700, 0.12, "sine");
+  }
+
   playButtonClickTone(): void {
     if (!this.audioEnabled) return;
     if (!this.audioContext) {
