@@ -23,17 +23,19 @@ interface GameQuestionProps {
 
 export default function GameQuestion({ room }: GameQuestionProps) {
   const { currentUser, submitAnswer } = useSocket();
-  const { currentQuestion, currentPhase, isGameActive, gameState } = useGameState();
+  const { currentQuestion, currentPhase, isGameActive, gameState } =
+    useGameState();
 
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [progressPercent, setProgressPercent] = useState(100);
-  const [progressDurationMs, setProgressDurationMs] = useState<number | undefined>(undefined);
+  const [progressDurationMs, setProgressDurationMs] = useState<
+    number | undefined
+  >(undefined);
   const rafId1 = useRef<number | null>(null);
   const rafId2 = useRef<number | null>(null);
-  const progressStartTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (currentQuestion) {
@@ -87,7 +89,11 @@ export default function GameQuestion({ room }: GameQuestionProps) {
       rafId1.current = null;
       rafId2.current = null;
     };
-  }, [currentPhase, currentQuestion?.questionNumber, room.settings.timePerQuestion]);
+  }, [
+    currentPhase,
+    currentQuestion?.questionNumber,
+    room.settings.timePerQuestion,
+  ]);
 
   const handleAnswerSelect = async (answer: string) => {
     if (hasAnswered || !currentQuestion) return;
@@ -104,6 +110,12 @@ export default function GameQuestion({ room }: GameQuestionProps) {
       setSelectedAnswer(null);
     }
   };
+
+  const userScore = currentUser
+    ? room.members.find((member) => member.id === currentUser.id)?.score ??
+      currentUser.score ??
+      0
+    : 0;
 
   if (!currentQuestion) {
     return (
@@ -150,11 +162,12 @@ export default function GameQuestion({ room }: GameQuestionProps) {
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center justify-between mb-3 sm:mb-5">
                   <div className="text-sm font-medium text-foreground">
-                    Question {currentQuestion.questionNumber} of {gameState?.totalQuestions || 0}
+                    Question {currentQuestion.questionNumber} of{" "}
+                    {gameState?.totalQuestions || 0}
                   </div>
                   <div className="text-sm text-muted-foreground flex items-center gap-3">
                     <span className="font-medium text-foreground">
-                      Score: {currentUser?.score ?? 0}
+                      Score: {userScore}
                     </span>
                     <span className="text-border dark:text-white">•</span>
                     <Timer
@@ -164,7 +177,11 @@ export default function GameQuestion({ room }: GameQuestionProps) {
                     />
                   </div>
                 </div>
-                <Progress value={progressPercent} durationMs={progressDurationMs} className="mb-4" />
+                <Progress
+                  value={progressPercent}
+                  durationMs={progressDurationMs}
+                  className="mb-4"
+                />
 
                 <div className="mb-4 sm:mb-8">
                   <FlagDisplay
