@@ -6,7 +6,6 @@ interface AudioCache {
 
 class AudioManager {
   private audioCache: AudioCache = {};
-  private audioEnabled: boolean = true;
   private audioContext: AudioContext | null = null;
   private autoResumeSetup = false;
 
@@ -22,6 +21,22 @@ class AudioManager {
         (window as any).webkitAudioContext)();
     } catch (error) {
       console.warn("AudioContext not supported:", error);
+    }
+  }
+
+  private playWithAudioContext(
+    actionName: string,
+    action: (context: AudioContext) => void
+  ): void {
+    if (!this.audioContext) {
+      console.warn(`AudioContext not available for ${actionName}.`);
+      return;
+    }
+
+    try {
+      action(this.audioContext);
+    } catch (error) {
+      console.error(`Error playing ${actionName}:`, error);
     }
   }
 
@@ -86,14 +101,9 @@ class AudioManager {
     options: {
       volume?: number;
       key?: string;
-      force?: boolean;
     } = {}
   ): Promise<void> {
-    const { volume = 0.5, key, force = false } = options;
-
-    if (!this.audioEnabled && !force) {
-      return;
-    }
+    const { volume = 0.5, key } = options;
 
     try {
       const audio = await this.preloadAudio(url, key);
@@ -119,112 +129,66 @@ class AudioManager {
     duration: number = 0.3,
     type: OscillatorType = "sine"
   ): void {
-    if (!this.audioEnabled || !this.audioContext) {
-      return;
-    }
-
-    try {
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
+    this.playWithAudioContext("TONE", (ctx) => {
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
 
       oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
+      gainNode.connect(ctx.destination);
 
-      oscillator.frequency.setValueAtTime(
-        frequency,
-        this.audioContext.currentTime
-      );
+      oscillator.frequency.setValueAtTime(frequency, ctx.currentTime);
       oscillator.type = type;
 
-      gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.01,
-        this.audioContext.currentTime + duration
-      );
+      gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
 
-      oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + duration);
-    } catch (error) {
-      console.error("Failed to play tone:", error);
-    }
+      oscillator.start(ctx.currentTime);
+      oscillator.stop(ctx.currentTime + duration);
+    });
   }
 
   playSuccessSound(): void {
-    if (!this.audioEnabled) return;
-    if (!this.audioContext) {
-      console.warn("AudioContext not available for success sound.");
-      return;
-    }
-
-    try {
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
+    this.playWithAudioContext("SUCCESS", (ctx) => {
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
 
       oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
+      gainNode.connect(ctx.destination);
 
       // Ascending chord: C, E, G
-      oscillator.frequency.setValueAtTime(523.25, this.audioContext.currentTime); // C
-      oscillator.frequency.setValueAtTime(
-        659.25,
-        this.audioContext.currentTime + 0.1
-      ); // E
-      oscillator.frequency.setValueAtTime(
-        783.99,
-        this.audioContext.currentTime + 0.2
-      ); // G
+      oscillator.frequency.setValueAtTime(523.25, ctx.currentTime); // C
+      oscillator.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E
+      oscillator.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); // G
 
       oscillator.type = "sine";
-      gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.01,
-        this.audioContext.currentTime + 0.3
-      );
+      gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
 
-      oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + 0.3);
-    } catch (error) {
-      console.error("Error playing success sound:", error);
-    }
+      oscillator.start(ctx.currentTime);
+      oscillator.stop(ctx.currentTime + 0.3);
+    });
   }
 
   playErrorSound(): void {
-    if (!this.audioEnabled) return;
-    if (!this.audioContext) {
-      console.warn("AudioContext not available for error sound.");
-      return;
-    }
-
-    try {
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
+    this.playWithAudioContext("ERROR", (ctx) => {
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
 
       oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
+      gainNode.connect(ctx.destination);
 
       // Descending chord: B, G, E
-      oscillator.frequency.setValueAtTime(493.88, this.audioContext.currentTime); // B
-      oscillator.frequency.setValueAtTime(
-        415.3,
-        this.audioContext.currentTime + 0.1
-      ); // G#
-      oscillator.frequency.setValueAtTime(
-        369.99,
-        this.audioContext.currentTime + 0.2
-      ); // F#
+      oscillator.frequency.setValueAtTime(493.88, ctx.currentTime); // B
+      oscillator.frequency.setValueAtTime(415.3, ctx.currentTime + 0.1); // G#
+      oscillator.frequency.setValueAtTime(369.99, ctx.currentTime + 0.2); // F#
 
       oscillator.type = "sine";
-      gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.01,
-        this.audioContext.currentTime + 0.3
-      );
+      gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
 
-      oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + 0.3);
-    } catch (error) {
-      console.error("Error playing error sound:", error);
-    }
+      oscillator.start(ctx.currentTime);
+      oscillator.stop(ctx.currentTime + 0.3);
+    });
   }
 
   playButtonClickSound(): void {
@@ -242,24 +206,18 @@ class AudioManager {
   }
 
   playAnswerSubmittedSound(): void {
-    if (!this.audioEnabled) return;
-    if (!this.audioContext) {
-      console.warn("AudioContext not available for answer submitted sound.");
-      return;
-    }
-
-    try {
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
+    this.playWithAudioContext("ANSWER_SUBMITTED", (ctx) => {
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
 
       oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
+      gainNode.connect(ctx.destination);
 
       // Lively but short: two quick triangle blips (bounce up)
       oscillator.type = "triangle";
-      const now = this.audioContext.currentTime;
+      const now = ctx.currentTime;
       const blip = 0.05; // 50ms blip
-      const gap = 0.02;  // 20ms gap between blips
+      const gap = 0.02; // 20ms gap between blips
       const secondStart = now + blip + gap; // start of second blip
 
       // Frequencies: G#5 -> C6 for a playful bounce
@@ -281,47 +239,28 @@ class AudioManager {
 
       oscillator.start(now);
       oscillator.stop(secondStart + blip);
-    } catch (error) {
-      console.error("Error playing answer submitted sound:", error);
-    }
+    });
   }
 
   playButtonClickTone(): void {
-    if (!this.audioEnabled) return;
-    if (!this.audioContext) {
-      console.warn("AudioContext not available for button click sound.");
-      return;
-    }
-  
-    try {
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
-  
+    this.playWithAudioContext("BUTTON_CLICK", (ctx) => {
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+
       oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
-  
+      gainNode.connect(ctx.destination);
+
       // Softer click: lower frequency with gentler ramp
-      oscillator.frequency.setValueAtTime(
-        500,
-        this.audioContext.currentTime
-      );
-      oscillator.frequency.exponentialRampToValueAtTime(
-        250,
-        this.audioContext.currentTime + 0.08
-      );
-  
+      oscillator.frequency.setValueAtTime(500, ctx.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(250, ctx.currentTime + 0.08);
+
       oscillator.type = "sine";
-      gainNode.gain.setValueAtTime(0.08, this.audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.001,
-        this.audioContext.currentTime + 0.15
-      );
-  
-      oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + 0.15);
-    } catch (error) {
-      console.error("Error playing button click sound:", error);
-    }
+      gainNode.gain.setValueAtTime(0.08, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+
+      oscillator.start(ctx.currentTime);
+      oscillator.stop(ctx.currentTime + 0.15);
+    });
   }
 
   clearCache(): void {
