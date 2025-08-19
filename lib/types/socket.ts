@@ -8,7 +8,6 @@ export interface User {
   roomId: string;
   created: string;
   isAdmin: boolean;
-  score: number;
   currentAnswer?: string;
   answerTime?: number;
   lastActiveTime: string;

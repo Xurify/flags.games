@@ -112,7 +112,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   };
 
   const userScore = currentUser
-    ? room.members.find((member) => member.id === currentUser.id)?.score ?? 0
+    ? (gameState?.leaderboard.find((user) => user.userId === currentUser.id)?.score ?? 0)
     : 0;
 
   if (!currentQuestion) {
@@ -216,6 +216,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
           </div>
           <Leaderboard
             members={room.members}
+            leaderboard={gameState?.leaderboard ?? []}
             currentUser={currentUser}
             hostId={room.host}
             isGameActive={isGameActive}

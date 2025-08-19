@@ -3,11 +3,12 @@
 import React from "react";
 import { CrownIcon, CheckIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { User } from "@/lib/types/socket";
+import { GameStateLeaderboard, User } from "@/lib/types/socket";
 import { cn } from "@/lib/utils/strings";
 
 interface LeaderboardProps {
   members: User[];
+  leaderboard: GameStateLeaderboard[];
   currentUser: User | null;
   hostId: string;
   isGameActive: boolean;
@@ -16,25 +17,38 @@ interface LeaderboardProps {
 
 export default function Leaderboard({
   members,
+  leaderboard,
   currentUser,
   hostId,
   isGameActive,
   variant = "sidebar",
 }: LeaderboardProps) {
-  // Preserve previous order to detect rank changes
   const previousOrderRef = React.useRef<string[]>([]);
   const rowRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
   const positionsRef = React.useRef<Record<string, number>>({});
 
+  const scoreByUserId = React.useMemo(() => {
+    const map: Record<string, number> = {};
+    leaderboard.forEach((entry) => {
+      map[entry.userId] = entry.score;
+    });
+    return map;
+  }, [leaderboard]);
+
   const sortedMembers = [...members].sort((a, b) => {
-    if (b.score !== a.score) {
-      return b.score - a.score;
+    const aScore = scoreByUserId[a.id] ?? 0;
+    const bScore = scoreByUserId[b.id] ?? 0;
+    if (bScore !== aScore) {
+      return bScore - aScore;
     }
     return a.username.localeCompare(b.username);
   });
 
-  // Build current order
   const currentOrder = sortedMembers.map((member) => member.id);
+
+  React.useEffect(() => {
+    previousOrderRef.current = currentOrder;
+  }, [leaderboard.map((user) => `${user.userId}:${user.score}`).join("|")]);
 
   // Determine rank delta per user
   const rankDelta: Record<string, number> = {};
@@ -44,11 +58,6 @@ export default function Leaderboard({
       rankDelta[id] = prevIndex - newIndex; // positive -> moved up
     }
   });
-
-  // On first render, set previous order
-  React.useEffect(() => {
-    previousOrderRef.current = currentOrder;
-  }, [members.map((m) => `${m.id}:${m.score}`).join("|")]);
 
   // FLIP: animate vertical movement on re-rank
   React.useLayoutEffect(() => {
@@ -88,7 +97,7 @@ export default function Leaderboard({
       positionsRef.current = newPositions;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortedMembers.map((member) => `${member.id}:${member.score}`).join("|")]);
+  }, [sortedMembers.map((member) => `${member.id}:${scoreByUserId[member.id] ?? 0}`).join("|")]);
 
   return (
     <div
@@ -137,7 +146,7 @@ export default function Leaderboard({
                 )}
               </div>
               <div className={cn("text-xs font-semibold tabular-nums text-foreground", movementClass)}>
-                {member.score}
+                {scoreByUserId[member.id] ?? 0}
               </div>
             </div>
           );
