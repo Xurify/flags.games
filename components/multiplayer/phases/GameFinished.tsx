@@ -140,7 +140,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
                             {player.correctAnswers}/
                             {gameState?.totalQuestions || 0}
                           </span>
-                          <span className="text-border">•</span>
+                          <span className="text-border dark:text-white">•</span>
                           <span className="font-semibold text-foreground">
                             {player.score}
                           </span>

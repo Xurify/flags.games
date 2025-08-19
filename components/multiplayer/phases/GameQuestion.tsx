@@ -175,7 +175,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
                     <span className="font-medium text-foreground">
                       Score: {currentUser?.score ?? 0}
                     </span>
-                    <span className="text-border">•</span>
+                    <span className="text-border dark:text-white">•</span>
                     <Timer
                       timePerQuestion={room.settings.timePerQuestion || 30}
                       questionNumber={currentQuestion?.questionNumber || 0}
