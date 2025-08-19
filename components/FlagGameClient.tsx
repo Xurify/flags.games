@@ -301,25 +301,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     return "Keep learning! Practice makes perfect! 📚";
   };
 
-  const getButtonClass = (country: Country) => {
-    if (!gameState.showResult || !gameState.selectedAnswer) {
-      return "border-border hover:border-primary/50 hover:bg-primary/5 dark:border-primary/50 dark:bg-primary/5 dark:hover:border-primary/70 transition-all duration-200";
-    }
-
-    if (country.code === gameState.currentCountry.code) {
-      return "bg-green-100 border-green-500 text-green-700 dark:bg-green-700/40 dark:border-green-500 dark:text-white dark:shadow-lg hover:text-green-700 focus:text-green-700 dark:hover:text-white dark:focus:text-white disabled:bg-green-100 disabled:text-green-700 disabled:dark:bg-green-700/40 disabled:dark:text-white !opacity-100 !grayscale-0 shadow";
-    }
-
-    if (
-      country.code === gameState.selectedAnswer &&
-      country.code !== gameState.currentCountry.code
-    ) {
-      return "bg-red-50 border-red-400 text-red-700 dark:bg-red-700/40 dark:border-red-500 dark:text-white dark:shadow-lg hover:text-red-700 focus:text-red-700 dark:hover:text-white dark:focus:text-white disabled:bg-red-50 disabled:text-red-700 disabled:dark:bg-red-700/40 disabled:dark:text-white !opacity-100 !grayscale-0 shadow";
-    }
-
-    return "!opacity-40 border-border/50 !grayscale-0";
-  };
-
   useEffect(() => {
     if (gameState.gameCompleted && settings.soundEffectsEnabled) {
       const percentage =
@@ -428,8 +409,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                   showResult={gameState.showResult}
                   handleAnswer={handleAnswer}
                   selectedAnswer={gameState.selectedAnswer}
-                  getButtonClass={getButtonClass}
                   disabled={gameState.showResult}
+                  correctAnswer={gameState.currentCountry.code}
                 />
 
                 {gameState.showResult && !settings.autoAdvanceEnabled && (
