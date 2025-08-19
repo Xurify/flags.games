@@ -242,7 +242,48 @@ class AudioManager {
   }
 
   playAnswerSubmittedSound(): void {
-    this.playTone(700, 0.12, "sine");
+    if (!this.audioEnabled) return;
+    if (!this.audioContext) {
+      console.warn("AudioContext not available for answer submitted sound.");
+      return;
+    }
+
+    try {
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      // Lively but short: two quick triangle blips (bounce up)
+      oscillator.type = "triangle";
+      const now = this.audioContext.currentTime;
+      const blip = 0.05; // 50ms blip
+      const gap = 0.02;  // 20ms gap between blips
+      const secondStart = now + blip + gap; // start of second blip
+
+      // Frequencies: G#5 -> C6 for a playful bounce
+      oscillator.frequency.setValueAtTime(830.61, now);
+      oscillator.frequency.setValueAtTime(1046.5, secondStart);
+
+      // Envelope for first blip
+      gainNode.gain.cancelScheduledValues(now);
+      gainNode.gain.setValueAtTime(0.001, now);
+      gainNode.gain.linearRampToValueAtTime(0.12, now + 0.005);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + blip);
+
+      // Brief silence (gap)
+      gainNode.gain.setValueAtTime(0.001, secondStart - 0.001);
+
+      // Envelope for second blip
+      gainNode.gain.linearRampToValueAtTime(0.12, secondStart + 0.005);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, secondStart + blip);
+
+      oscillator.start(now);
+      oscillator.stop(secondStart + blip);
+    } catch (error) {
+      console.error("Error playing answer submitted sound:", error);
+    }
   }
 
   playButtonClickTone(): void {
