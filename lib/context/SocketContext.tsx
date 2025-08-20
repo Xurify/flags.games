@@ -619,6 +619,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       data: {},
     });
     wsRef.current?.close();
+    setCurrentRoom(null);
+    setCurrentUser(null);
   }, [sendMessage]);
 
   const startGame = useCallback(async () => {
