@@ -61,7 +61,6 @@ export default function GameQuestion({ room }: GameQuestionProps) {
 
     try {
       await submitAnswer(answer);
-      //toast.success("Answer submitted!");
     } catch (error) {
       toast.error("Failed to submit answer");
       setHasAnswered(false);
@@ -70,7 +69,8 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   };
 
   const userScore = currentUser
-    ? (gameState?.leaderboard.find((user) => user.userId === currentUser.id)?.score ?? 0)
+    ? gameState?.leaderboard.find((user) => user.userId === currentUser.id)
+        ?.score ?? 0
     : 0;
 
   if (!currentQuestion) {

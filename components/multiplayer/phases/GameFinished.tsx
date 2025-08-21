@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import { HomeIcon, UsersIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useSocket } from "@/lib/context/SocketContext";
 import { useGameState } from "@/lib/hooks/useGameState";
 import { Room } from "@/lib/types/socket";
@@ -17,7 +16,6 @@ interface GameFinishedProps {
 }
 
 export default function GameFinished({ room }: GameFinishedProps) {
-  const router = useRouter();
   const { leaveRoom, startGame, currentUser } = useSocket();
   const { gameState, leaderboard } = useGameState();
 

@@ -24,17 +24,12 @@ export function useWallClockCountdown(
   const [timeRemainingSec, setTimeRemainingSec] = useState<number>(durationSec);
   const endTimeRef = useRef<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const rafRef = useRef<number | null>(null);
   const hasFiredTimeoutRef = useRef<boolean>(false);
 
   const clear = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
-    }
-    if (rafRef.current) {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
     }
   };
 
@@ -91,7 +86,6 @@ export function useWallClockCountdown(
       document.removeEventListener("visibilitychange", handleVisibility);
       clear();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, durationSec, resetKey]);
 
   const restart = (nextDurationSec?: number) => {

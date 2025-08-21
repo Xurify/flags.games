@@ -18,7 +18,6 @@ interface SettingsMenuProps {
   setShowDifficultyDialog: (open: boolean) => void;
   toggleSound: () => void;
   toggleDarkMode: () => void;
-  onNavigateToMultiplayer?: () => void;
   showDifficultyOption?: boolean;
   settings: {
     soundEffectsEnabled: boolean;
@@ -32,7 +31,6 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   setShowDifficultyDialog,
   toggleSound,
   toggleDarkMode,
-  onNavigateToMultiplayer,
   showDifficultyOption = true,
   settings,
 }) => {
@@ -143,7 +141,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                 className="w-full justify-start"
               >
                 <UsersIcon className="w-4 h-4 mr-2" />
-                Multiplayer (Coming Soon)
+                Multiplayer (Beta)
               </Button>
             </div>
 

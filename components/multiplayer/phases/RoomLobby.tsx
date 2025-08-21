@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import {
   CrownIcon,
   UserIcon,
@@ -40,7 +39,6 @@ interface RoomLobbyProps {
 }
 
 export default function RoomLobby({ room }: RoomLobbyProps) {
-  const router = useRouter();
   const { leaveRoom, currentRoom } = useSocket();
   const { isHost, canStartGame, startGame, updateRoomSettings } = useRoomManagement();
   const { settings } = useSettings();

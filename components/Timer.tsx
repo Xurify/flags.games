@@ -1,7 +1,6 @@
 "use client";
 
 import { GamePhase } from "@/lib/types/socket";
-import { useState } from "react";
 import { useWallClockCountdown } from "@/lib/hooks/useWallClockCountdown";
 
 interface TimerProps {
@@ -18,7 +17,6 @@ export default function Timer({ timePerQuestion, questionNumber, currentPhase, o
     onTimeUp,
     resetKey: questionNumber,
   });
-  const [timeRemaining] = useState<number>(timeRemainingSec);
 
   return (
     <div className="relative w-8 h-8">

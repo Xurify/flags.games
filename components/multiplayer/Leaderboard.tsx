@@ -96,7 +96,6 @@ export default function Leaderboard({
     if (Object.keys(positionsRef.current).length === 0) {
       positionsRef.current = newPositions;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortedMembers.map((member) => `${member.id}:${scoreByUserId[member.id] ?? 0}`).join("|")]);
 
   return (
