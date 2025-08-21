@@ -135,10 +135,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
                 </div>
 
                 <div className="mb-4 sm:mb-8">
-                  <FlagDisplay
-                    flag={`/images/flags/${currentQuestion.country.code}.svg`}
-                    countryName={currentQuestion.country.name}
-                  />
+                  <FlagDisplay countryCode={currentQuestion.country.code} />
                 </div>
 
                 <AnswerOptions

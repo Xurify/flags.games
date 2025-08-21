@@ -399,8 +399,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
                 <div className="mb-4 sm:mb-8">
                   <FlagDisplay
-                    flag={gameState.currentCountry.flag}
                     countryName={gameState.currentCountry.name}
+                    countryCode={gameState.currentCountry.code}
                   />
                 </div>
 
