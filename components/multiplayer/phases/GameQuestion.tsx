@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowLeftRightIcon } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import FlagDisplay from "@/components/FlagDisplay";
 import AnswerOptions from "@/components/AnswerOptions";
@@ -12,6 +10,7 @@ import Header from "@/components/Header";
 import LevelBadge from "@/components/LevelBadge";
 import Timer from "@/components/Timer";
 import Leaderboard from "@/components/multiplayer/Leaderboard";
+
 import { useSocket } from "@/lib/context/SocketContext";
 import { useGameState } from "@/lib/hooks/useGameState";
 import { Room } from "@/lib/types/socket";
@@ -92,15 +91,6 @@ export default function GameQuestion({ room }: GameQuestionProps) {
           <Header
             leftContent={
               <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => setShowDifficultyDialog(true)}
-                  className="text-muted-foreground hover:text-foreground"
-                  title="Change difficulty"
-                >
-                  <ArrowLeftRightIcon className="w-3 h-3" />
-                </Button>
                 <span className="text-sm font-medium text-foreground">
                   LEVEL
                 </span>
