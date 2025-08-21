@@ -54,7 +54,9 @@ export function MultiplayerPageContent({
     setFormErrors({});
     setIsCreating(true);
     await createRoom(username, roomSettings);
-    setIsCreating(false);
+    if (room) {
+      setIsCreating(false);
+    }
   };
 
   const handleJoinRoom = async (username: string) => {
