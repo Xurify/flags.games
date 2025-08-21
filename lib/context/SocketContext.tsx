@@ -243,6 +243,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       setCurrentRoom((prev) =>
         prev && data.room ? { ...prev, members: data.room.members } : null
       );
+      if (settings.soundEffectsEnabled && data.user.id !== currentUser?.id) {
+        audioManager.playTone(440, 0.14, "triangle");
+        audioManager.playTone(554.37, 0.14, "triangle");
+      }
     };
 
     const userLeftHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_LEFT> = (
@@ -251,6 +255,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       setCurrentRoom((prev) =>
         prev && data.room ? { ...prev, members: data.room.members } : null
       );
+      if (settings.soundEffectsEnabled && data.userId !== currentUser?.id) {
+        audioManager.playTone(330, 0.18, "triangle");
+      }
     };
 
     const hostChangedHandler: MessageHandler<
