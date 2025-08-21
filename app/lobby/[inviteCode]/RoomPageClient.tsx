@@ -10,14 +10,14 @@ import GameQuestion from "@/components/multiplayer/phases/GameQuestion";
 import GameFinished from "@/components/multiplayer/phases/GameFinished";
 
 export default function RoomPageClient() {
-  const { currentPhase, currentRoom } = useGameState();
   const router = useRouter();
+  const { currentPhase, currentRoom, connectionState } = useGameState();
 
   useEffect(() => {
-    if (!currentRoom) {
+    if (connectionState === "connected" && !currentRoom) {
       router.push("/lobby");
     }
-  }, [currentPhase]);
+  }, [connectionState, currentRoom, router]);
 
   if (!currentRoom) return null;
 

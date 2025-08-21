@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSocket } from '@/lib/context/SocketContext';
 
 export const useGameState = () => {
-  const { currentRoom, currentUser } = useSocket();
-  const gameState = useMemo(() => currentRoom?.gameState ?? null, [currentRoom]);
+  const { currentRoom, currentUser, connectionState } = useSocket();
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const [questionStartTime, setQuestionStartTime] = useState<number | null>(null);
+  const gameState = useMemo(() => currentRoom?.gameState ?? null, [currentRoom]);
 
   useEffect(() => {
     if (!gameState?.currentQuestion || gameState.phase !== 'question') {
@@ -42,6 +42,7 @@ export const useGameState = () => {
     currentRoom,
     currentUser,
     timeRemaining,
+    connectionState,
     isGameActive: gameState?.isActive || false,
     currentPhase: gameState?.phase || 'waiting',
     currentQuestion: gameState?.currentQuestion,
