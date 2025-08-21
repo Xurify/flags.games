@@ -243,7 +243,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       setCurrentRoom((prev) =>
         prev && data.room ? { ...prev, members: data.room.members } : null
       );
-      if (settings.soundEffectsEnabled && data.user.id !== currentUser?.id) {
+      if (
+        settings.soundEffectsEnabled &&
+        data.user.id !== currentUser?.id &&
+        data.room?.gameState?.phase !== "finished"
+      ) {
         audioManager.playTone(440, 0.14, "triangle");
         audioManager.playTone(554.37, 0.14, "triangle");
       }
@@ -255,7 +259,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       setCurrentRoom((prev) =>
         prev && data.room ? { ...prev, members: data.room.members } : null
       );
-      if (settings.soundEffectsEnabled && data.userId !== currentUser?.id) {
+      if (
+        settings.soundEffectsEnabled &&
+        data.userId !== currentUser?.id &&
+        data.room?.gameState?.phase !== "finished"
+      ) {
         audioManager.playTone(330, 0.18, "triangle");
       }
     };
@@ -335,10 +343,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       logger.info(
         `${data.username} submitted an answer (${data.totalAnswers}/${data.totalPlayers})`
       );
-      if (
-        settings.soundEffectsEnabled &&
-        data.userId !== currentUser?.id
-      ) {
+      if (settings.soundEffectsEnabled && data.userId !== currentUser?.id) {
         audioManager.playAnswerSubmittedSound();
       }
     };
@@ -553,9 +558,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       wsRef.current.onerror = (error) => {
         logger.error("WebSocket error:", error);
         if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
-        toast.error("WebSocket connection error occurred", {
-          duration: 10000,
-          description: `Retrying ${
+          toast.error("WebSocket connection error occurred", {
+            duration: 10000,
+            description: `Retrying ${
               MAX_RECONNECT_ATTEMPTS - reconnectAttemptsRef.current
             } more time(s)`,
           });
@@ -685,7 +690,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   useEffect(() => {
     setupMessageHandlers();
   }, [setupMessageHandlers]);
-  
+
   useEffect(() => {
     connect();
 
