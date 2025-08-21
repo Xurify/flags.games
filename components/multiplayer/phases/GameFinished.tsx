@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { HomeIcon, UsersIcon } from "lucide-react";
+import { UsersIcon } from "lucide-react";
 import { useSocket } from "@/lib/context/SocketContext";
 import { useGameState } from "@/lib/hooks/useGameState";
 import { Room } from "@/lib/types/socket";
 import { cn } from "@/lib/utils/strings";
-import Header from "@/components/Header";
+ 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,7 +23,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
 
   const myPlacement = useMemo(() => {
     if (!currentUser) return null;
-    const index = leaderboard.findIndex((p) => p.userId === currentUser.id);
+    const index = leaderboard.findIndex((player) => player.userId === currentUser.id);
     if (index === -1) return null;
     return {
       rank: index + 1,
@@ -36,35 +36,9 @@ export default function GameFinished({ room }: GameFinishedProps) {
   };
 
   return (
-    <div className="min-h-screen h-screen sm:min-h-screen sm:h-auto bg-background overflow-y-auto">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-        <div className="mb-4">
-          <Header
-            leftContent={
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={handleLeaveGame}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <HomeIcon className="w-3 h-3" />
-                </Button>
-                <span className="text-sm font-medium text-foreground">
-                  MULTIPLAYER
-                </span>
-                <Badge variant="default" className="flex items-center gap-1">
-                  <UsersIcon className="w-3 h-3" />
-                  {room.members.length}
-                </Badge>
-              </div>
-            }
-          />
-        </div>
-
-        <Card className="shadow-card hover:shadow-card-hover transition-all duration-300 py-4 sm:py-8 px-4 sm:px-6">
-          <CardContent className="p-3 sm:p-4">
-            <div className="space-y-5">
+    <Card className="shadow-card hover:shadow-card-hover transition-all duration-300 py-4 sm:py-8 px-4 sm:px-6">
+      <CardContent className="p-3 sm:p-4">
+        <div className="space-y-5">
               <div className="text-center space-y-1">
                 <h2 className="text-lg font-semibold">Final results</h2>
                 <p className="text-sm text-muted-foreground">
@@ -148,27 +122,22 @@ export default function GameFinished({ room }: GameFinishedProps) {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                {isHost && (
-                  <Button
-                    onClick={() => startGame()}
-                    className="w-full sm:w-auto"
-                  >
-                    Play Again
-                  </Button>
-                )}
-                <Button
-                  onClick={handleLeaveGame}
-                  variant="outline"
-                  className="w-full sm:w-auto"
-                >
-                  Back to Lobby
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            {isHost && (
+              <Button onClick={() => startGame()} className="w-full sm:w-auto">
+                Play Again
+              </Button>
+            )}
+            <Button
+              onClick={handleLeaveGame}
+              variant="outline"
+              className="w-full sm:w-auto"
+            >
+              Back to Lobby
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

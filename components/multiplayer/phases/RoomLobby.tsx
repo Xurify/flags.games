@@ -12,14 +12,11 @@ import {
   CopyIcon,
   SettingsIcon,
   CopyCheckIcon,
-  HomeIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import Header from "@/components/Header";
 import { SettingsSelect } from "@/components/multiplayer/SettingsSelect";
 import {
   DIFFICULTY_LEVELS,
@@ -40,7 +37,8 @@ interface RoomLobbyProps {
 
 export default function RoomLobby({ room }: RoomLobbyProps) {
   const { leaveRoom, currentRoom } = useSocket();
-  const { isHost, canStartGame, startGame, updateRoomSettings } = useRoomManagement();
+  const { isHost, canStartGame, startGame, updateRoomSettings } =
+    useRoomManagement();
   const { settings } = useSettings();
   const [copied, setCopied] = React.useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -118,32 +116,8 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   };
 
   return (
-    <div className="min-h-screen h-screen sm:min-h-screen sm:h-auto bg-background overflow-y-auto">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-        <div className="mb-4">
-            <Header
-              leftContent={
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    onClick={handleLeaveGame}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <HomeIcon className="w-3 h-3" />
-                  </Button>
-                  <span className="text-sm font-medium text-foreground">MULTIPLAYER</span>
-                  <Badge variant="default" className="flex items-center gap-1">
-                    <UsersIcon className="w-3 h-3" />
-                    {room.members.length}
-                  </Badge>
-                </div>
-              }
-            />
-          </div>
-
-        <div className="flex items-center justify-center">
-          <Card className="w-full max-w-lg">
+    <div className="flex items-center justify-center">
+      <Card className="w-full max-w-lg">
             <div className="p-4 border-b border-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -186,38 +160,39 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 </h3>
               </div>
               <div className="space-y-2">
-                {[...members, ...Array(maxPlayers - members.length).fill(null)].map(
-                  (player: User | null, index) => (
-                    <div
-                      key={`player-${index}`}
-                      className={cn(
-                        "flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 ease-in-out min-h-[60px]",
-                        player
-                          ? "bg-card dark:bg-input border-border/60 dark:border-border/90 hover:bg-accent/30 dark:hover:bg-input/30"
-                          : "bg-muted/40 border-dashed border-border/60 opacity-80 animate-pulse"
-                      )}
-                    >
-                      <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
-                        <UserIcon className="w-4 h-4 text-accent-foreground" />
-                      </div>
-                      <div className="flex-1 min-w-0 flex flex-col justify-center">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-foreground truncate">
-                            {player ? player.username : "Waiting..."}
-                          </span>
-                          {player && room?.host === player.id && (
-                            <CrownIcon className="w-3 h-3 text-chart-5 flex-shrink-0" />
-                          )}
-                        </div>
-                        {player && (
-                          <span className="text-xs text-muted-foreground">
-                            {room?.host === player.id ? "Host" : "Player"}
-                          </span>
+                {[
+                  ...members,
+                  ...Array(maxPlayers - members.length).fill(null),
+                ].map((player: User | null, index) => (
+                  <div
+                    key={`player-${index}`}
+                    className={cn(
+                      "flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 ease-in-out min-h-[60px]",
+                      player
+                        ? "bg-card dark:bg-input border-border/60 dark:border-border/90 hover:bg-accent/30 dark:hover:bg-input/30"
+                        : "bg-muted/40 border-dashed border-border/60 opacity-80 animate-pulse"
+                    )}
+                  >
+                    <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+                      <UserIcon className="w-4 h-4 text-accent-foreground" />
+                    </div>
+                    <div className="flex-1 min-w-0 flex flex-col justify-center">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-foreground truncate">
+                          {player ? player.username : "Waiting..."}
+                        </span>
+                        {player && room?.host === player.id && (
+                          <CrownIcon className="w-3 h-3 text-chart-5 flex-shrink-0" />
                         )}
                       </div>
+                      {player && (
+                        <span className="text-xs text-muted-foreground">
+                          {room?.host === player.id ? "Host" : "Player"}
+                        </span>
+                      )}
                     </div>
-                  )
-                )}
+                  </div>
+                ))}
               </div>
               <div className="mt-3 text-xs text-muted-foreground text-center">
                 {isStarting && countdown !== null ? (
@@ -225,12 +200,12 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                     <PlayIcon className="w-3 h-3 animate-pulse" />
                     <span>Game starting in {countdown}...</span>
                   </div>
+                ) : members.length < maxPlayers ? (
+                  `Waiting for ${maxPlayers - members.length} more player${
+                    maxPlayers - members.length > 1 ? "s" : ""
+                  }...`
                 ) : (
-                  members.length < maxPlayers
-                    ? `Waiting for ${maxPlayers - members.length} more player${
-                        maxPlayers - members.length > 1 ? "s" : ""
-                      }...`
-                    : "Room is full!"
+                  "Room is full!"
                 )}
               </div>
             </div>
@@ -314,14 +289,14 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                     disabled={!canStartGame() || isStarting}
                   >
                     <PlayIcon className="w-3 h-3" />
-                    {isStarting && countdown !== null ? `Starting in ${countdown}...` : "Start"}
+                    {isStarting && countdown !== null
+                      ? `Starting in ${countdown}...`
+                      : "Start"}
                   </Button>
                 )}
               </div>
             </div>
-          </Card>
-        </div>
-      </div>
+      </Card>
     </div>
   );
-} 
+}
