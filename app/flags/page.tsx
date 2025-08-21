@@ -13,7 +13,6 @@ const FlagsPage = () => {
                 {country.name}
               </div>
               <FlagDisplay
-                flag={`/images/flags/${country.code.toLowerCase()}.svg`}
                 countryCode={country.code}
                 countryName={country.name}
               />
