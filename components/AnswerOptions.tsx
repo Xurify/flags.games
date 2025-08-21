@@ -21,7 +21,7 @@ const AnswerOptions: React.FC<AnswerOptionsProps> = ({
 }) => {
   const getButtonClass = (country: Country) => {
     if (!showResult || !selectedAnswer) {
-      return "border-border hover:border-primary/50 hover:bg-primary/5 dark:border-primary/50 dark:bg-primary/5 dark:hover:border-primary/70 transition-all duration-200";
+      return "border-border hover:border-primary/50 hover:bg-primary/5 dark:border-white/20 dark:bg-white/5 dark:hover:border-white/40 dark:hover:bg-white/10 transition-all duration-200";
     }
 
     if (country.code === correctAnswer) {
