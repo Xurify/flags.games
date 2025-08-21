@@ -16,7 +16,7 @@ interface GameFinishedProps {
 }
 
 export default function GameFinished({ room }: GameFinishedProps) {
-  const { leaveRoom, startGame, currentUser } = useSocket();
+  const { startGame, currentUser } = useSocket();
   const { gameState, leaderboard } = useGameState();
 
   const isHost = currentUser?.id === room.host;
