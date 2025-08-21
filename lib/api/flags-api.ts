@@ -24,7 +24,7 @@ export interface UsersResponse {
 }
 
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_FLAGS_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_SERVER_API_URL || 'http://localhost:3001/api';
 
 class FlagsApiClient {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
