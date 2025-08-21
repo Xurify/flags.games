@@ -79,15 +79,15 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   }
 
   return (
-    <div className="flex gap-6 items-start">
+    <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-stretch lg:items-start">
       <div className="flex-1">
         <Card className="shadow-card hover:shadow-card-hover transition-all duration-300 py-4 sm:py-8 px-4 sm:px-6 relative">
           <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center justify-between mb-3 sm:mb-5">
+            <div className="flex flex-wrap items-center justify-between gap-y-2 mb-3 sm:mb-5">
               <div className="text-sm font-medium text-foreground">
                 Question {currentQuestion.questionNumber} of {gameState?.totalQuestions || 0}
               </div>
-              <div className="text-sm text-muted-foreground flex items-center gap-3">
+              <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-2 sm:gap-3">
                 <span className="font-medium text-foreground">Score: {userScore}</span>
                 <span className="text-border dark:text-white">•</span>
                 <Timer
