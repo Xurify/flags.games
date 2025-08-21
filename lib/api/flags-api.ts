@@ -29,6 +29,8 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_SERVER_API_URL || 'http://localhost
 class FlagsApiClient {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     try {
       const response = await fetch(url, {
@@ -36,17 +38,22 @@ class FlagsApiClient {
           'Content-Type': 'application/json',
           ...options?.headers,
         },
+        signal: controller.signal,
         ...options,
       });
 
       if (!response.ok) {
-        console.error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP ${response.status} for ${endpoint}`);
       }
 
-      return await response.json();
-    } catch (error) {
-      console.error(`API request failed for ${endpoint}:`, error);
-      throw error;
+      try {
+        return (await response.json()) as T;
+      } catch {
+        // No JSON body; return as empty object to avoid throwing
+        return {} as T;
+      }
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -82,7 +89,6 @@ class FlagsApiClient {
     try {
       return await this.request<Room | { error?: string }>(`/rooms/${inviteCode}`);
     } catch (error) {
-      console.error(`Failed to fetch room ${inviteCode}:`, error);
       return { error: 'Unable to fetch room' };
     }
   }
