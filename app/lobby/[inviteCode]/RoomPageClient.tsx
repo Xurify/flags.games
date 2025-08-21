@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 import { useGameState } from "@/lib/hooks/useGameState";
 
 import RoomLobby from "@/components/multiplayer/phases/RoomLobby";
@@ -8,6 +11,13 @@ import GameFinished from "@/components/multiplayer/phases/GameFinished";
 
 export default function RoomPageClient() {
   const { currentPhase, currentRoom } = useGameState();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!currentRoom) {
+      router.push("/lobby");
+    }
+  }, [currentPhase]);
 
   if (!currentRoom) return null;
 
