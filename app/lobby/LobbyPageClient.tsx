@@ -13,20 +13,20 @@ import Header from "@/components/Header";
 import JoinRoomForm from "@/components/multiplayer/JoinRoomForm";
 import CreateRoomForm from "@/components/multiplayer/CreateRoomForm";
 
-interface MultiplayerPageContentProps {
+interface LobbyPageClientProps {
   randomUsername: string;
 }
 
-export function MultiplayerPageContent({
+export function LobbyPageClient({
   randomUsername,
-}: MultiplayerPageContentProps) {
+}: LobbyPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteCode = searchParams.get("c");
 
   const [isCreating, setIsCreating] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
-  
+
   const { currentRoom: room, createRoom, joinRoom } = useRoomManagement();
 
   useEffect(() => {
