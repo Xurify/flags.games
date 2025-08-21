@@ -11,7 +11,6 @@ import AnswerOptions from "@/components/AnswerOptions";
 import Header from "@/components/Header";
 import LevelBadge from "@/components/LevelBadge";
 import Timer from "@/components/Timer";
-import { Progress } from "@/components/ui/progress";
 import Leaderboard from "@/components/multiplayer/Leaderboard";
 import { useSocket } from "@/lib/context/SocketContext";
 import { useGameState } from "@/lib/hooks/useGameState";
@@ -30,12 +29,6 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   const [hasAnswered, setHasAnswered] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [countdown, setCountdown] = useState(5);
-  const [progressPercent, setProgressPercent] = useState(100);
-  const [progressDurationMs, setProgressDurationMs] = useState<
-    number | undefined
-  >(undefined);
-  const rafId1 = useRef<number | null>(null);
-  const rafId2 = useRef<number | null>(null);
 
   useEffect(() => {
     if (currentQuestion) {
@@ -59,41 +52,6 @@ export default function GameQuestion({ room }: GameQuestionProps) {
       return () => clearInterval(timer);
     }
   }, [currentPhase]);
-
-  useEffect(() => {
-    const timePerQuestion = room.settings.timePerQuestion || 30;
-
-    if (rafId1.current) cancelAnimationFrame(rafId1.current);
-    if (rafId2.current) cancelAnimationFrame(rafId2.current);
-    rafId1.current = null;
-    rafId2.current = null;
-
-    if (currentPhase !== "question") {
-      setProgressDurationMs(0);
-      setProgressPercent(100);
-      return;
-    }
-
-    setProgressDurationMs(0);
-    setProgressPercent(100);
-    rafId1.current = requestAnimationFrame(() => {
-      rafId2.current = requestAnimationFrame(() => {
-        setProgressDurationMs(timePerQuestion * 1000);
-        setProgressPercent(0);
-      });
-    });
-
-    return () => {
-      if (rafId1.current) cancelAnimationFrame(rafId1.current);
-      if (rafId2.current) cancelAnimationFrame(rafId2.current);
-      rafId1.current = null;
-      rafId2.current = null;
-    };
-  }, [
-    currentPhase,
-    currentQuestion?.questionNumber,
-    room.settings.timePerQuestion,
-  ]);
 
   const handleAnswerSelect = async (answer: string) => {
     if (hasAnswered || !currentQuestion) return;
@@ -175,11 +133,6 @@ export default function GameQuestion({ room }: GameQuestionProps) {
                     />
                   </div>
                 </div>
-                <Progress
-                  value={progressPercent}
-                  durationMs={progressDurationMs}
-                  className="mb-4"
-                />
 
                 <div className="mb-4 sm:mb-8">
                   <FlagDisplay

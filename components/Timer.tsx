@@ -1,7 +1,8 @@
 "use client";
 
 import { GamePhase } from "@/lib/types/socket";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+import { useWallClockCountdown } from "@/lib/hooks/useWallClockCountdown";
 
 interface TimerProps {
   timePerQuestion: number;
@@ -11,39 +12,13 @@ interface TimerProps {
 }
 
 export default function Timer({ timePerQuestion, questionNumber, currentPhase, onTimeUp }: TimerProps) {
-  const [timeRemaining, setTimeRemaining] = useState<number>(timePerQuestion);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    setTimeRemaining(timePerQuestion);
-    
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    
-    if (currentPhase === "question") {
-      timerRef.current = setInterval(() => {
-        setTimeRemaining((prev) => {
-          if (prev <= 0) {
-            if (timerRef.current) {
-              clearInterval(timerRef.current);
-            }
-            if (onTimeUp) {
-              onTimeUp();
-            }
-            return 0;
-          }
-          return prev - 0.5;
-        });
-      }, 500);
-    }
-    
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-    };
-  }, [questionNumber, currentPhase, timePerQuestion, onTimeUp]);
+  const { timeRemainingSec } = useWallClockCountdown({
+    durationSec: timePerQuestion,
+    isActive: currentPhase === "question",
+    onTimeUp,
+    resetKey: questionNumber,
+  });
+  const [timeRemaining] = useState<number>(timeRemainingSec);
 
   return (
     <div className="relative w-8 h-8">
@@ -67,12 +42,12 @@ export default function Timer({ timePerQuestion, questionNumber, currentPhase, o
           strokeLinecap="round"
           className="text-primary transition-all duration-1000 ease-linear"
           strokeDasharray={`${2 * Math.PI * 14}`}
-          strokeDashoffset={`${2 * Math.PI * 14 * (1 - timeRemaining / timePerQuestion)}`}
+          strokeDashoffset={`${2 * Math.PI * 14 * (1 - timeRemainingSec / timePerQuestion)}`}
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <span className="text-xs font-bold text-primary">
-          {Math.ceil(timeRemaining)}
+          {Math.ceil(timeRemainingSec)}
         </span>
       </div>
     </div>

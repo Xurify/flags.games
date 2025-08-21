@@ -34,8 +34,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
   }, [leaderboard, currentUser]);
 
   const handleLeaveGame = async () => {
-    await leaveRoom();
-    router.push("/lobby");
+    window.location.href = "/lobby";
   };
 
   return (

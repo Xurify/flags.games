@@ -116,8 +116,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   };
 
   const handleLeaveGame = async () => {
-    await leaveRoom();
-    router.push("/lobby");
+    window.location.href = "/lobby";
   };
 
   return (

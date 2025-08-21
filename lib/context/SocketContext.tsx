@@ -618,9 +618,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       type: WS_MESSAGE_TYPES.LEAVE_ROOM,
       data: {},
     });
-    wsRef.current?.close();
-    setCurrentRoom(null);
-    setCurrentUser(null);
+    disconnect();
   }, [sendMessage]);
 
   const startGame = useCallback(async () => {
@@ -680,9 +678,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   useEffect(() => {
     setupMessageHandlers();
   }, [setupMessageHandlers]);
-
-  // gameState is derived from currentRoom in consumers via useGameState; no mirror state here
-
+  
   useEffect(() => {
     connect();
 
