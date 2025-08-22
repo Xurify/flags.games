@@ -115,7 +115,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     <div className="flex items-center justify-center">
       <Card className="w-full max-w-lg">
         <div className="p-4 border-b border-border">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                 <UsersIcon className="w-4 h-4 text-primary" />
@@ -129,22 +129,27 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="flex items-center gap-1 px-2 py-1 bg-muted rounded text-xs">
-                <span className="font-mono text-foreground">
-                  {room.inviteCode}
-                </span>
-                <button
-                  onClick={handleCopyRoomCode}
-                  className="h-5 w-5 p-0 transition-all duration-200 flex items-center justify-center"
-                >
-                  {copied ? (
-                    <CopyCheckIcon className="w-4 h-4 stroke-green-500" />
-                  ) : (
-                    <CopyIcon className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
+            <div
+              className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded bg-primary/5 border border-primary/20 text-xs cursor-pointer hover:bg-primary/10 transition-colors w-fit"
+              onClick={handleCopyRoomCode}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  handleCopyRoomCode();
+                }
+              }}
+            >
+              <LinkIcon className="w-3 h-3 text-primary flex-shrink-0" />
+              <span className="text-muted-foreground">Invite Code:</span>
+              <span className="font-mono font-semibold text-primary tracking-wide">
+                {room.inviteCode}
+              </span>
+              {copied ? (
+                <CopyCheckIcon className="w-3 h-3 text-green-600 flex-shrink-0" />
+              ) : (
+                <CopyIcon className="w-3 h-3 text-primary flex-shrink-0" />
+              )}
             </div>
           </div>
         </div>
