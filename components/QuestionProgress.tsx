@@ -31,9 +31,18 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
         </span>
       </div>
       <div className="w-px h-4 bg-border"></div>
-      <span className="text-sm font-medium text-muted-foreground">
-        Score: {score}
-      </span>
+      <div className="relative">
+        <span className="text-sm font-medium text-muted-foreground">
+          Score: {score}
+        </span>
+        {showScorePopup && (
+          <div className="absolute -top-8 left-1/2 -translate-x-1/2 animate-score-popup">
+            <span className="text-green-600 font-bold text-lg">
+              +{CORRECT_POINT_COST}
+            </span>
+          </div>
+        )}
+      </div>
       {heartsModeEnabled && hearts !== undefined && maxHearts !== undefined && (
         <>
           <div className="w-px h-4 bg-border"></div>
@@ -43,13 +52,6 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
             enabled={heartsModeEnabled}
           />
         </>
-      )}
-      {showScorePopup && (
-        <div className="absolute -top-8 right-0 animate-score-popup">
-          <span className="text-green-600 font-bold text-lg">
-            +{CORRECT_POINT_COST}
-          </span>
-        </div>
       )}
     </div>
   </div>
