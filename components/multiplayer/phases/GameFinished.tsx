@@ -16,7 +16,7 @@ interface GameFinishedProps {
 }
 
 export default function GameFinished({ room }: GameFinishedProps) {
-  const { startGame, currentUser } = useSocket();
+  const { restartGame, currentUser } = useSocket();
   const { gameState, leaderboard } = useGameState();
 
   const isHost = currentUser?.id === room.host;
@@ -124,7 +124,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             {isHost && (
-              <Button onClick={() => startGame()} className="w-full sm:w-auto">
+              <Button onClick={() => restartGame()} className="w-full sm:w-auto">
                 Play Again
               </Button>
             )}
