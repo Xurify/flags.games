@@ -16,7 +16,7 @@ interface GameFinishedProps {
 }
 
 export default function GameFinished({ room }: GameFinishedProps) {
-  const { restartGame, currentUser } = useSocket();
+  const { restartGame, stopGame, currentUser } = useSocket();
   const { gameState, leaderboard } = useGameState();
 
   const isHost = currentUser?.id === room.host;
@@ -31,8 +31,8 @@ export default function GameFinished({ room }: GameFinishedProps) {
     };
   }, [leaderboard, currentUser]);
 
-  const handleLeaveGame = async () => {
-    window.location.href = "/lobby";
+  const handleBackToLobby = async () => {
+    await stopGame();
   };
 
   return (
@@ -129,7 +129,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
               </Button>
             )}
             <Button
-              onClick={handleLeaveGame}
+              onClick={handleBackToLobby}
               variant="outline"
               className="w-full sm:w-auto"
             >

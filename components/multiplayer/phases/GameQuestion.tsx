@@ -91,7 +91,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
                 <span className="font-medium text-foreground">Score: {userScore}</span>
                 <span className="text-border dark:text-white">•</span>
                 <Timer
-                  timePerQuestion={room.settings.timePerQuestion || 30}
+                  timePerQuestion={room.settings.timePerQuestion}
                   questionNumber={currentQuestion?.questionNumber || 0}
                   currentPhase={currentPhase}
                 />

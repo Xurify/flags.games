@@ -71,7 +71,7 @@ export interface Timer {
 export interface RoomSettings {
   maxRoomSize: number;
   difficulty: Difficulty;
-  timePerQuestion?: number;
+  timePerQuestion: number;
   showLeaderboard?: boolean;
   gameMode: GameMode;
 }

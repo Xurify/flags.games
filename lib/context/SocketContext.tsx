@@ -134,6 +134,7 @@ export interface SocketContextType {
 
   startGame: () => Promise<void>;
   restartGame: () => Promise<void>;
+  stopGame: () => Promise<void>;
   submitAnswer: (answer: string) => Promise<void>;
 
   updateRoomSettings: (settings: Partial<Room["settings"]>) => Promise<void>;
@@ -694,6 +695,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     });
   }, [sendMessage]);
 
+  const stopGame = useCallback(async () => {
+    sendMessage({
+      type: WS_MESSAGE_TYPES.STOP_GAME,
+      data: {},
+    });
+  }, [sendMessage]);
+
   const submitAnswer = useCallback(
     async (answer: string) => {
       const activeQuestion = currentRoom?.gameState?.currentQuestion;
@@ -776,6 +784,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     leaveRoom,
     startGame,
     restartGame,
+    stopGame,
     submitAnswer,
     updateRoomSettings,
     kickUser,
