@@ -74,6 +74,9 @@ export interface MessageDataTypes {
   [WS_MESSAGE_TYPES.GAME_STARTING]: {
     countdown: number;
   };
+  [WS_MESSAGE_TYPES.GAME_RESTARTED]: {
+    countdown: number;
+  };
   [WS_MESSAGE_TYPES.NEW_QUESTION]: {
     question: GameQuestion;
     totalQuestions: number;
@@ -130,6 +133,7 @@ export interface SocketContextType {
   leaveRoom: () => Promise<void>;
 
   startGame: () => Promise<void>;
+  restartGame: () => Promise<void>;
   submitAnswer: (answer: string) => Promise<void>;
 
   updateRoomSettings: (settings: Partial<Room["settings"]>) => Promise<void>;
@@ -317,6 +321,39 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
+    const gameRestartedHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.GAME_RESTARTED
+    > = (data) => {
+      setCurrentRoom((prev) =>
+        prev
+          ? {
+              ...prev,
+              gameState: {
+                isActive: true,
+                phase: "starting",
+                currentQuestion: null,
+                answers: [],
+                currentQuestionIndex: 0,
+                totalQuestions: 0,
+                difficulty: prev.gameState?.difficulty || "easy",
+                gameStartTime: Date.now(),
+                gameEndTime: null,
+                usedCountries: new Set<string>(),
+                questionTimer: null,
+                resultTimer: null,
+                leaderboard: [],
+              },
+              // Reset all member scores and answered status
+              members: prev.members.map((member) => ({
+                ...member,
+                hasAnswered: false,
+                score: 0,
+              })),
+            }
+          : null
+      );
+    };
+
     const newQuestionHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.NEW_QUESTION
     > = (data) => {
@@ -468,6 +505,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     messageHandlers.current.set(
       WS_MESSAGE_TYPES.GAME_STARTING,
       gameStartingHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.GAME_RESTARTED,
+      gameRestartedHandler
     );
     messageHandlers.current.set(
       WS_MESSAGE_TYPES.NEW_QUESTION,
@@ -646,6 +687,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     });
   }, [sendMessage]);
 
+  const restartGame = useCallback(async () => {
+    sendMessage({
+      type: WS_MESSAGE_TYPES.RESTART_GAME,
+      data: {},
+    });
+  }, [sendMessage]);
+
   const submitAnswer = useCallback(
     async (answer: string) => {
       const activeQuestion = currentRoom?.gameState?.currentQuestion;
@@ -727,6 +775,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     joinRoom,
     leaveRoom,
     startGame,
+    restartGame,
     submitAnswer,
     updateRoomSettings,
     kickUser,

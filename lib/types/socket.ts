@@ -101,6 +101,7 @@ export const WS_MESSAGE_TYPES = {
   LEAVE_ROOM: "LEAVE_ROOM",
   RESUME_GAME: "RESUME_GAME",
   STOP_GAME: "STOP_GAME",
+  RESTART_GAME: "RESTART_GAME",
   HEARTBEAT: "HEARTBEAT",
   HEARTBEAT_RESPONSE: "HEARTBEAT_RESPONSE",
   CREATE_ROOM_SUCCESS: "CREATE_ROOM_SUCCESS",
@@ -115,6 +116,7 @@ export const WS_MESSAGE_TYPES = {
   QUESTION_RESULTS: "QUESTION_RESULTS",
   GAME_ENDED: "GAME_ENDED",
   GAME_STOPPED: "GAME_STOPPED",
+  GAME_RESTARTED: "GAME_RESTARTED",
   SETTINGS_UPDATED: "SETTINGS_UPDATED",
   PROFILE_UPDATED: "PROFILE_UPDATED",
   USER_PROFILE_UPDATED: "USER_PROFILE_UPDATED",
@@ -200,6 +202,10 @@ export interface GameStartingData {
   countdown: number;
 }
 
+export interface GameRestartedData {
+  countdown: number;
+}
+
 export interface NewQuestionData {
   question: GameQuestion;
   totalQuestions: number;
@@ -263,6 +269,7 @@ export type ClientToServerMessage =
   | { type: typeof WS_MESSAGE_TYPES.START_GAME; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.RESUME_GAME; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.STOP_GAME; data: {} }
+  | { type: typeof WS_MESSAGE_TYPES.RESTART_GAME; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.HEARTBEAT_RESPONSE; data: {} };
 
 export type ServerToClientMessage =
@@ -279,6 +286,7 @@ export type ServerToClientMessage =
   | { type: typeof WS_MESSAGE_TYPES.QUESTION_RESULTS; data: QuestionResultsData }
   | { type: typeof WS_MESSAGE_TYPES.GAME_ENDED; data: GameEndedData }
   | { type: typeof WS_MESSAGE_TYPES.GAME_STOPPED; data: {} }
+  | { type: typeof WS_MESSAGE_TYPES.GAME_RESTARTED; data: GameRestartedData }
   | { type: typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED; data: SettingsUpdatedData }
   | { type: typeof WS_MESSAGE_TYPES.ERROR; data: ErrorData }
   | { type: typeof WS_MESSAGE_TYPES.HEARTBEAT; data: {} };
