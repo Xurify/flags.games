@@ -210,7 +210,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     > = (data) => {
       setCurrentRoom(data.room);
       setCurrentUser(data.user);
-      logger.info("Room created successfully (CREATE_ROOM_SUCCESS)");
+      logger.info("Created room successfully (CREATE_ROOM_SUCCESS)");
     };
 
     const joinRoomSuccessHandler: MessageHandler<
@@ -330,8 +330,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
                     phase: "question",
                     currentQuestion: data.question,
                     answers: [],
+                    totalQuestions: data.totalQuestions,
                   }
                 : prev.gameState,
+              members: prev.members.map((m) => ({ ...m, hasAnswered: false })),
             }
           : null
       );
@@ -343,6 +345,18 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       logger.info(
         `${data.username} submitted an answer (${data.totalAnswers}/${data.totalPlayers})`
       );
+      setCurrentRoom((prev) =>
+        prev
+          ? {
+              ...prev,
+              members: prev.members.map((member) =>
+                member.id === data.userId
+                  ? { ...member, hasAnswered: true }
+                  : member
+              ),
+            }
+          : null
+      );
       if (settings.soundEffectsEnabled && data.userId !== currentUser?.id) {
         audioManager.playAnswerSubmittedSound();
       }
@@ -351,8 +365,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const questionResultsHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.QUESTION_RESULTS
     > = (data) => {
-      // Single source of truth: update room's gameState and members; the effect syncing
-      // currentRoom -> gameState will propagate changes to `gameState`
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -365,12 +377,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
                     leaderboard: data.leaderboard,
                   }
                 : prev.gameState,
-              members: prev.members.map((member) => {
-                const updated = data.leaderboard.find(
-                  (entry) => entry.userId === member.id
-                );
-                return updated ? { ...member, score: updated.score } : member;
-              }),
             }
           : null
       );

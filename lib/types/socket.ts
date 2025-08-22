@@ -1,5 +1,5 @@
-import { Country } from "@/lib/data/countries";
-import { Difficulty } from "@/lib/constants";
+import { Difficulty } from "../constants";
+import { Country } from "../data/countries";
 
 export interface User {
   id: string;
@@ -8,10 +8,14 @@ export interface User {
   roomId: string;
   created: string;
   isAdmin: boolean;
-  currentAnswer?: string;
-  answerTime?: number;
   lastActiveTime: string;
 }
+
+export interface RoomMember extends User {
+  hasAnswered: boolean;
+  score: number;
+}
+
 
 export interface GameQuestion {
   questionNumber: number;
@@ -20,7 +24,6 @@ export interface GameQuestion {
   correctAnswer: string;
   startTime: number;
   endTime: number;
-  timeLimit: number;
 }
 
 export interface GameAnswer {
@@ -81,7 +84,7 @@ export interface Room {
   host: string;
   inviteCode: string;
   gameState: GameState;
-  members: User[];
+  members: RoomMember[];
   created: string;
   settings: RoomSettings;
 }
@@ -240,19 +243,8 @@ export interface ProfileUpdatedData {
   user: User;
 }
 
-export interface UserProfileUpdatedData {
-  userId: string;
-  username: string;
-}
 
-export interface UserReadyChangedData {
-  userId: string;
-  isReady: boolean;
-}
 
-export interface ConnectionEstablishedData {
-  timestamp: number;
-}
 
 export interface ErrorData {
   message: string;

@@ -19,7 +19,7 @@ interface GameQuestionProps {
 }
 
 export default function GameQuestion({ room }: GameQuestionProps) {
-  const { currentUser, submitAnswer } = useSocket();
+  const { currentUser, submitAnswer, currentRoom } = useSocket();
   const { currentQuestion, currentPhase, isGameActive, gameState } =
     useGameState();
 
@@ -125,10 +125,11 @@ export default function GameQuestion({ room }: GameQuestionProps) {
         </Card>
       </div>
       <Leaderboard
-        members={room.members}
-        leaderboard={gameState?.leaderboard ?? []}
+            members={currentRoom?.members ?? room.members}
+            leaderboard={gameState?.leaderboard ?? []}
+            answers={gameState?.answers ?? []}
         currentUser={currentUser}
-        hostId={room.host}
+        hostId={currentRoom?.host ?? room.host}
         isGameActive={isGameActive}
         variant="inline"
       />

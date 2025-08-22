@@ -38,7 +38,7 @@ export default function MultiplayerHeader({
           </span>
           <Badge variant="default" className="flex items-center gap-1">
             <UsersIcon className="w-3 h-3" />
-            {room.members.length ?? 0}
+            {room?.members?.length ?? 0}
           </Badge>
         </div>
       }

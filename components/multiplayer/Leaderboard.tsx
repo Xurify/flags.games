@@ -3,12 +3,13 @@
 import React from "react";
 import { CrownIcon, CheckIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { GameStateLeaderboard, User } from "@/lib/types/socket";
+import { GameStateLeaderboard, RoomMember, User, GameAnswer } from "@/lib/types/socket";
 import { cn } from "@/lib/utils/strings";
 
 interface LeaderboardProps {
-  members: User[];
+  members: RoomMember[];
   leaderboard: GameStateLeaderboard[];
+  answers: GameAnswer[];
   currentUser: User | null;
   hostId: string;
   isGameActive: boolean;
@@ -18,6 +19,7 @@ interface LeaderboardProps {
 export default function Leaderboard({
   members,
   leaderboard,
+  answers,
   currentUser,
   hostId,
   isGameActive,
@@ -98,6 +100,7 @@ export default function Leaderboard({
     }
   }, [sortedMembers.map((member) => `${member.id}:${scoreByUserId[member.id] ?? 0}`).join("|")]);
 
+  
   return (
     <div
       className={cn(
@@ -116,7 +119,7 @@ export default function Leaderboard({
         {sortedMembers.map((member, index) => {
           const isCurrentUser = currentUser?.id === member.id;
           const isHost = member.id === hostId;
-          const hasAnswered = isGameActive && member.currentAnswer !== undefined;
+          const hasAnswered = isGameActive && member.hasAnswered === true;
 
           const delta = rankDelta[member.id] ?? 0;
           const movementClass = delta > 0 ? "animate-rank-up" : delta < 0 ? "animate-rank-down" : "";
