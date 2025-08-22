@@ -7,6 +7,7 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
   AlertDialog,
+  AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -42,6 +43,9 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   gameState,
 }) => {
   const [selectedDifficulty, setSelectedDifficulty] = useState(currentDifficulty);
+  const [showDifficultyRestartDialog, setShowDifficultyRestartDialog] = useState(false);
+  const [showHeartsRestartDialog, setShowHeartsRestartDialog] = useState(false);
+  const [pendingHeartsMode, setPendingHeartsMode] = useState(false);
   const settings = getDifficultySettings(selectedDifficulty);
 
   useEffect(() => {
@@ -49,6 +53,33 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
       setSelectedDifficulty(currentDifficulty);
     }
   }, [open, currentDifficulty]);
+
+  const handleDifficultyChange = () => {
+    if (gameState.currentQuestion > 1 && selectedDifficulty !== currentDifficulty) {
+      setShowDifficultyRestartDialog(true);
+    } else {
+      onChangeDifficulty(selectedDifficulty);
+    }
+  };
+
+  const handleHeartsToggle = (value: boolean) => {
+    if (gameState.currentQuestion > 1 && value !== heartsModeEnabled) {
+      setPendingHeartsMode(value);
+      setShowHeartsRestartDialog(true);
+    } else {
+      onToggleHeartsMode(value);
+    }
+  };
+
+  const handleConfirmDifficultyRestart = () => {
+    setShowDifficultyRestartDialog(false);
+    onChangeDifficulty(selectedDifficulty);
+  };
+
+  const handleConfirmHeartsModeRestart = () => {
+    setShowHeartsRestartDialog(false);
+    onToggleHeartsMode(pendingHeartsMode);
+  };
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -128,22 +159,16 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
               </div>
               <Switch
                 checked={heartsModeEnabled}
-                onCheckedChange={onToggleHeartsMode}
+                onCheckedChange={handleHeartsToggle}
                 className={
                   heartsModeEnabled ? "data-[state=checked]:bg-red-500" : ""
-                }
-                disabled={gameState.currentQuestion > 1}
-                title={
-                  gameState.currentQuestion > 1
-                    ? "You cannot change while the game is in session"
-                    : undefined
                 }
               />
             </div>
           </div>
 
           <Button
-            onClick={() => onChangeDifficulty(selectedDifficulty)}
+            onClick={handleDifficultyChange}
             className="w-full mt-2"
             disabled={selectedDifficulty === currentDifficulty}
           >
@@ -154,6 +179,44 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
           <AlertDialogCancel className="w-full">Cancel</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
+
+      <AlertDialog open={showDifficultyRestartDialog} onOpenChange={setShowDifficultyRestartDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Restart Game?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Changing the difficulty will restart the game and you'll lose your current progress. Are you sure you want to continue?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDifficultyRestartDialog(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDifficultyRestart} variant="destructive">
+              Restart Game
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showHeartsRestartDialog} onOpenChange={setShowHeartsRestartDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Restart Game?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Changing hearts mode will restart the game and you'll lose your current progress. Are you sure you want to continue?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowHeartsRestartDialog(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmHeartsModeRestart} variant="destructive">
+              Restart Game
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AlertDialog>
   );
 };

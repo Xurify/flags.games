@@ -288,7 +288,29 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     if (gameState.currentQuestion === 1) {
       audioManager.playButtonClickSound();
       setHeartsModeEnabled(value);
+    } else {
+      restartGameWithHeartsMode(value);
     }
+  };
+
+  const restartGameWithHeartsMode = (newHeartsMode: boolean) => {
+    clearGameTimeout();
+
+    setGameState((prev) => ({
+      ...prev,
+      currentQuestion: 1,
+      score: 0,
+      totalQuestions: getDifficultySettings(prev.difficulty).count,
+      selectedAnswer: null,
+      showResult: false,
+      gameCompleted: false,
+      usedCountries: new Set(),
+      hearts: MAX_HEARTS,
+    }));
+
+    setHeartsModeEnabled(newHeartsMode);
+    generateQuestionHandler();
+    setShowDifficultyDialog(false);
   };
 
   const getScoreMessage = () => {
