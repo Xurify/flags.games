@@ -31,6 +31,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
     if (currentQuestion) {
       setSelectedAnswer(null);
       setHasAnswered(false);
+      setCountdown(0);
     }
   }, [currentQuestion?.questionNumber]);
 
@@ -38,13 +39,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
     if (currentPhase === "results") {
       setCountdown(5);
       const timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prev - 1;
-        });
+        setCountdown((prev) => Math.max(0, prev - 1));
       }, 1000);
       return () => clearInterval(timer);
     }
@@ -114,7 +109,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
 
           <div
             className={`absolute inset-0 bg-black/40 rounded-[2rem] flex items-center justify-center transition-opacity duration-300 ease-in-out ${
-              currentPhase === "results" ? "opacity-100" : "opacity-0 pointer-events-none"
+              currentPhase === "results" && countdown > 0 ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
           >
             <div className="text-center">
