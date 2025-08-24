@@ -25,7 +25,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
 
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
     if (currentQuestion) {
@@ -37,7 +37,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
 
   useEffect(() => {
     if (currentPhase === "results") {
-      setCountdown(5);
+      setCountdown(3);
       const timer = setInterval(() => {
         setCountdown((prev) => Math.max(0, prev - 1));
       }, 1000);
