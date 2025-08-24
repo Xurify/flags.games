@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import { useGameState } from "@/lib/hooks/useGameState";
-import { useSocket } from "@/lib/context/SocketContext";
 import { Room } from "@/lib/types/socket";
+import { useGameState } from "@/lib/hooks/useGameState";
 import MultiplayerHeader from "@/components/multiplayer/MultiplayerHeader";
 
 export default function InviteCodeLayout({
@@ -12,7 +11,6 @@ export default function InviteCodeLayout({
   children: React.ReactNode;
 }) {
   const { currentRoom } = useGameState();
-  const { leaveRoom } = useSocket();
 
   const handleLeaveGame = () => {
     window.location.href = "/lobby";

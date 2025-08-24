@@ -1,14 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { UsersIcon } from "lucide-react";
 import { useSocket } from "@/lib/context/SocketContext";
 import { useGameState } from "@/lib/hooks/useGameState";
 import { Room } from "@/lib/types/socket";
 import { cn } from "@/lib/utils/strings";
  
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface GameFinishedProps {
@@ -16,7 +14,7 @@ interface GameFinishedProps {
 }
 
 export default function GameFinished({ room }: GameFinishedProps) {
-  const { restartGame, stopGame, currentUser } = useSocket();
+  const { restartGame, stopGame, leaveRoom, currentUser } = useSocket();
   const { gameState, leaderboard } = useGameState();
 
   const isHost = currentUser?.id === room.host;
@@ -32,7 +30,11 @@ export default function GameFinished({ room }: GameFinishedProps) {
   }, [leaderboard, currentUser]);
 
   const handleBackToLobby = async () => {
-    await stopGame();
+    if (isHost) {
+      await stopGame();
+    } else {
+      window.location.href = "/lobby";
+    }
   };
 
   return (
@@ -133,7 +135,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
               variant="outline"
               className="w-full sm:w-auto"
             >
-              Back to Lobby
+              {isHost ? "Back to Lobby" : "Leave Room"}
             </Button>
           </div>
         </div>
