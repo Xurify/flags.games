@@ -257,7 +257,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
             <SettingsSelect
               icon={<TimerIcon className="w-3 h-3" />}
               label="Time per Question"
-              value={room.settings.timePerQuestion ?? 10}
+              value={room.settings.timePerQuestion}
               options={TIME_PER_QUESTION_OPTIONS.map((time) => ({
                 value: time,
                 label: `${time} seconds`,

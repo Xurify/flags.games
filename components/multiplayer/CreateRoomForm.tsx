@@ -152,7 +152,7 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
               <SettingsSelect
                 icon={<TimerIcon className="w-5 h-5" />}
                 label="Time per Question"
-                value={settings.timePerQuestion ?? 10}
+                value={settings.timePerQuestion ?? TIME_PER_QUESTION_OPTIONS[1]}
                 options={TIME_PER_QUESTION_OPTIONS.map((time) => ({
                   value: time,
                   label: `${time} seconds`,

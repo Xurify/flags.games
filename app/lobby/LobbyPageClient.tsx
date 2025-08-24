@@ -40,7 +40,7 @@ export function LobbyPageClient({
     maxRoomSize: 2,
     difficulty: DIFFICULTY_LEVELS[0],
     gameMode: "classic",
-    timePerQuestion: TIME_PER_QUESTION_OPTIONS[3],
+    timePerQuestion: TIME_PER_QUESTION_OPTIONS[1],
   });
   const [formErrors, setFormErrors] = useState<{
     username?: string;
