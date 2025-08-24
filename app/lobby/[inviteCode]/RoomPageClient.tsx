@@ -9,6 +9,7 @@ import { usePageReloadProtection } from "@/lib/hooks/usePageReloadProtection";
 import RoomLobby from "@/components/multiplayer/phases/RoomLobby";
 import GameQuestion from "@/components/multiplayer/phases/GameQuestion";
 import GameFinished from "@/components/multiplayer/phases/GameFinished";
+import LoadingScreen from "@/components/LoadingScreen";
 
 export default function RoomPageClient() {
   const router = useRouter();
@@ -29,7 +30,9 @@ export default function RoomPageClient() {
     }
   }, [connectionState, currentRoom, router]);
 
-  if (!currentRoom) return null;
+  if (!currentRoom) {
+    return <LoadingScreen message="Finding room..." fullscreen />;
+  }
 
   if (currentPhase === "waiting" || currentPhase === "starting") {
     return <RoomLobby room={currentRoom} />;
