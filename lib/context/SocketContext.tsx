@@ -575,12 +575,15 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
 
       wsRef.current.onopen = () => {
         setConnectionState("connected");
+        const wasReconnecting = reconnectAttemptsRef.current > 0;
         reconnectAttemptsRef.current = 0;
         if (reconnectToastIdRef.current) {
           toast.dismiss(reconnectToastIdRef.current);
           reconnectToastIdRef.current = null;
         }
-        toast.success("Reconnected");
+        if (wasReconnecting) {
+          toast.success("Reconnected");
+        }
         logger.info("WebSocket connected");
 
         if (sessionToken) {
