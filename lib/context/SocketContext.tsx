@@ -180,6 +180,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconnectAttemptsRef = useRef(0);
+  const reconnectToastIdRef = useRef<string | number | null>(null);
 
   const MAX_RECONNECT_ATTEMPTS = 3;
   const RECONNECT_DELAY = 3000;
@@ -575,6 +576,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       wsRef.current.onopen = () => {
         setConnectionState("connected");
         reconnectAttemptsRef.current = 0;
+        if (reconnectToastIdRef.current) {
+          toast.dismiss(reconnectToastIdRef.current);
+          reconnectToastIdRef.current = null;
+        }
+        toast.success("Reconnected");
         logger.info("WebSocket connected");
 
         if (sessionToken) {
@@ -607,11 +613,21 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
           if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
             setConnectionState("reconnecting");
             reconnectAttemptsRef.current += 1;
+            if (!reconnectToastIdRef.current) {
+              reconnectToastIdRef.current = toast.loading("Reconnecting...", {
+                duration: Infinity,
+              });
+            }
             reconnectTimeoutRef.current = setTimeout(() => {
               connect();
             }, RECONNECT_DELAY * Math.pow(2, reconnectAttemptsRef.current - 1));
           } else {
+            if (reconnectToastIdRef.current) {
+              toast.dismiss(reconnectToastIdRef.current);
+              reconnectToastIdRef.current = null;
+            }
             toast.error("Failed to reconnect after multiple attempts", {
+              description: "Please refresh the page or try again later.",
               duration: 10000,
             });
           }
@@ -620,14 +636,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
 
       wsRef.current.onerror = (error) => {
         logger.error("WebSocket error:", error);
-        if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
-          toast.error("WebSocket connection error occurred", {
-            duration: 10000,
-            description: `Retrying ${
-              MAX_RECONNECT_ATTEMPTS - reconnectAttemptsRef.current
-            } more time(s)`,
-          });
-        }
       };
     } catch (error) {
       setConnectionState("disconnected");
@@ -640,6 +648,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
+    }
+    if (reconnectToastIdRef.current) {
+      toast.dismiss(reconnectToastIdRef.current);
+      reconnectToastIdRef.current = null;
     }
 
     if (wsRef.current) {
@@ -780,6 +792,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     return () => {
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
+      }
+      if (reconnectToastIdRef.current) {
+        toast.dismiss(reconnectToastIdRef.current);
+        reconnectToastIdRef.current = null;
       }
     };
   }, []);
