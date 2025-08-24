@@ -616,6 +616,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
             if (!reconnectToastIdRef.current) {
               reconnectToastIdRef.current = toast.loading("Reconnecting...", {
                 duration: Infinity,
+                style: {
+                  "--normal-bg": "#fef3c7",
+                  "--normal-text": "#78350f",
+                  "--normal-border": "#fcd34d",
+                } as React.CSSProperties,
               });
             }
             reconnectTimeoutRef.current = setTimeout(() => {
