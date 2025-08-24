@@ -65,6 +65,10 @@ export interface MessageDataTypes {
     userId: string;
     room: Room | null;
   };
+  [WS_MESSAGE_TYPES.USER_KICKED]: {
+    userId: string;
+    room: Room | null;
+  };
   [WS_MESSAGE_TYPES.HOST_CHANGED]: {
     newHost: User;
   };
@@ -174,8 +178,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const heartbeatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconnectAttemptsRef = useRef(0);
 
   const MAX_RECONNECT_ATTEMPTS = 3;
@@ -237,9 +240,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const settingsUpdatedHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED
     > = (data) => {
-      if (currentRoom && data.settings) {
-        setCurrentRoom({ ...(currentRoom as Room), settings: data.settings });
-      }
+      setCurrentRoom((prev) => (prev ? { ...prev, settings: data.settings } : prev));
     };
 
     const userJoinedHandler: MessageHandler<
@@ -270,6 +271,21 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
         data.room?.gameState?.phase !== "finished"
       ) {
         audioManager.playTone(330, 0.18, "triangle");
+      }
+    };
+
+    const userKickedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_KICKED> = (
+      data
+    ) => {
+      setCurrentRoom((prev) =>
+        prev && data.room ? { ...prev, members: data.room.members } : null
+      );
+      if (
+        settings.soundEffectsEnabled &&
+        data.userId !== currentUser?.id &&
+        data.room?.gameState?.phase !== "finished"
+      ) {
+        audioManager.playTone(300, 0.16, "triangle");
       }
     };
 
@@ -344,7 +360,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
                 resultTimer: null,
                 leaderboard: [],
               },
-              // Reset all member scores and answered status
               members: prev.members.map((member) => ({
                 ...member,
                 hasAnswered: false,
@@ -498,6 +513,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       userJoinedHandler
     );
     messageHandlers.current.set(WS_MESSAGE_TYPES.USER_LEFT, userLeftHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_KICKED, userKickedHandler);
     messageHandlers.current.set(
       WS_MESSAGE_TYPES.HOST_CHANGED,
       hostChangedHandler
@@ -591,7 +607,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
           if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
             setConnectionState("reconnecting");
             reconnectAttemptsRef.current += 1;
-
             reconnectTimeoutRef.current = setTimeout(() => {
               connect();
             }, RECONNECT_DELAY * Math.pow(2, reconnectAttemptsRef.current - 1));
@@ -678,7 +693,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       type: WS_MESSAGE_TYPES.LEAVE_ROOM,
       data: {},
     });
-    disconnect();
+    setCurrentRoom(null);
   }, [sendMessage]);
 
   const startGame = useCallback(async () => {
@@ -765,9 +780,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     return () => {
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
-      }
-      if (heartbeatTimeoutRef.current) {
-        clearTimeout(heartbeatTimeoutRef.current);
       }
     };
   }, []);

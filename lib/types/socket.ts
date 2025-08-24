@@ -108,6 +108,7 @@ export const WS_MESSAGE_TYPES = {
   JOIN_ROOM_SUCCESS: "JOIN_ROOM_SUCCESS",
   USER_JOINED: "USER_JOINED",
   USER_LEFT: "USER_LEFT",
+  USER_KICKED: "USER_KICKED",
   HOST_CHANGED: "HOST_CHANGED",
   KICKED: "KICKED",
   GAME_STARTING: "GAME_STARTING",
@@ -186,6 +187,11 @@ export interface UserJoinedData {
 }
 
 export interface UserLeftData {
+  userId: string;
+  room: Room | null;
+}
+
+export interface UserKickedData {
   userId: string;
   room: Room | null;
 }
@@ -278,6 +284,7 @@ export type ServerToClientMessage =
   | { type: typeof WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS; data: RoomSuccessData }
   | { type: typeof WS_MESSAGE_TYPES.USER_JOINED; data: UserJoinedData }
   | { type: typeof WS_MESSAGE_TYPES.USER_LEFT; data: UserLeftData }
+  | { type: typeof WS_MESSAGE_TYPES.USER_KICKED; data: UserKickedData }
   | { type: typeof WS_MESSAGE_TYPES.HOST_CHANGED; data: HostChangedData }
   | { type: typeof WS_MESSAGE_TYPES.KICKED; data: KickedData }
   | { type: typeof WS_MESSAGE_TYPES.GAME_STARTING; data: GameStartingData }
