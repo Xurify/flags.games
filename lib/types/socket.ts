@@ -90,7 +90,6 @@ export interface Room {
 }
 
 export const WS_MESSAGE_TYPES = {
-  AUTH: "AUTH",
   AUTH_SUCCESS: "AUTH_SUCCESS",
   SUBMIT_ANSWER: "SUBMIT_ANSWER",
   START_GAME: "START_GAME",
@@ -132,11 +131,6 @@ export interface WebSocketMessage<T = any> {
   type: string;
   data: T;
   timestamp?: number;
-}
-
-export interface AuthData {
-  token: string;
-  adminToken?: string;
 }
 
 export interface CreateRoomData {
@@ -265,7 +259,6 @@ export interface ErrorData {
 }
 
 export type ClientToServerMessage = 
-  | { type: typeof WS_MESSAGE_TYPES.AUTH; data: AuthData }
   | { type: typeof WS_MESSAGE_TYPES.CREATE_ROOM; data: CreateRoomData }
   | { type: typeof WS_MESSAGE_TYPES.JOIN_ROOM; data: JoinRoomData }
   | { type: typeof WS_MESSAGE_TYPES.SUBMIT_ANSWER; data: SubmitAnswerData }

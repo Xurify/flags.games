@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { flagsApi } from "@/lib/api/flags-api";
-import RoomPageClient from "./RoomPageClient";
 import { logger } from "@/lib/utils/logger";
+import RoomPageClient from "./RoomPageClient";
 
 interface RoomPageProps {
   params: Promise<{ inviteCode: string }>;

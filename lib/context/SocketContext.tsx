@@ -164,13 +164,11 @@ export const useSocket = () => {
 interface SocketProviderProps {
   children: ReactNode;
   wsUrl?: string;
-  sessionToken: string | null;
 }
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({
   children,
   wsUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "ws://localhost:3001/ws",
-  sessionToken,
 }) => {
   const [connectionState, setConnectionState] =
     useState<ConnectionState>("disconnected");
@@ -585,20 +583,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
           toast.success("Reconnected");
         }
         logger.info("WebSocket connected");
-
-        if (sessionToken) {
-          wsRef.current?.send(
-            JSON.stringify({
-              type: WS_MESSAGE_TYPES.AUTH,
-              data: {
-                token: sessionToken,
-              },
-              timestamp: Date.now(),
-            })
-          );
-        } else {
-          logger.error("No sessionToken provided for AUTH handshake");
-        }
       };
 
       wsRef.current.onmessage = handleMessage;
