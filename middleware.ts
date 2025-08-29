@@ -36,6 +36,7 @@ const middleware = async (req: NextRequest): Promise<NextResponse> => {
             sameSite: "strict",
             maxAge: 3600 * 24 * 365,
             path: "/",
+            ...(process.env.NODE_ENV === "production" ? { domain: ".flags.games" } : {}),
         });
         return res;
     }
