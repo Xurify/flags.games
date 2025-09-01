@@ -36,7 +36,7 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
           Score: {score}
         </span>
         {showScorePopup && (
-          <div className="absolute -top-8 left-1/2 -translate-x-1/2 animate-score-popup">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 animate-score-popup">
             <span className="text-green-600 font-bold text-lg">
               +{CORRECT_POINT_COST}
             </span>
