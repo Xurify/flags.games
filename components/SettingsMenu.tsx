@@ -1,5 +1,5 @@
 import React from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   SettingsIcon,
   Volume2Icon,
@@ -35,6 +35,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   settings,
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
   return (
     <Select open={settingsOpen} onOpenChange={setSettingsOpen}>
       <SelectTrigger
@@ -136,7 +137,11 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                 size="sm"
                 onClick={() => {
                   setSettingsOpen(false);
-                  router.push("/lobby");
+                  if (pathname === "/lobby") {
+                    router.refresh();
+                  } else {
+                    router.push("/lobby");
+                  }
                 }}
                 className="w-full justify-start"
               >

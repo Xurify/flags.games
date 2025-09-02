@@ -28,6 +28,7 @@ export default function Leaderboard({
   const previousOrderRef = React.useRef<string[]>([]);
   const rowRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
   const positionsRef = React.useRef<Record<string, number>>({});
+  const highlightTimeoutsRef = React.useRef<Record<string, number>>({});
 
   const scoreByUserId = React.useMemo(() => {
     const map: Record<string, number> = {};
@@ -43,23 +44,25 @@ export default function Leaderboard({
     if (bScore !== aScore) {
       return bScore - aScore;
     }
+    // Stable tie-breaker: preserve previous visual order when scores are equal
+    const prevOrder = previousOrderRef.current;
+    const aPrevIndex = prevOrder.indexOf(a.id);
+    const bPrevIndex = prevOrder.indexOf(b.id);
+    if (aPrevIndex !== -1 && bPrevIndex !== -1 && aPrevIndex !== bPrevIndex) {
+      return aPrevIndex - bPrevIndex;
+    }
+    // Fallback to username for deterministic order if previous order unknown
     return a.username.localeCompare(b.username);
   });
 
   const currentOrder = sortedMembers.map((member) => member.id);
 
+  // Track previous order so we can compute stable ties and FLIP deltas
   React.useEffect(() => {
     previousOrderRef.current = currentOrder;
-  }, [leaderboard.map((user) => `${user.userId}:${user.score}`).join("|")]);
+  }, [currentOrder.join("|")]);
 
-  // Determine rank delta per user
-  const rankDelta: Record<string, number> = {};
-  previousOrderRef.current.forEach((id, prevIndex) => {
-    const newIndex = currentOrder.indexOf(id);
-    if (newIndex !== -1) {
-      rankDelta[id] = prevIndex - newIndex; // positive -> moved up
-    }
-  });
+  // We use FLIP pixel delta to derive movement direction; no rank delta map needed
 
   // FLIP: animate vertical movement on re-rank
   React.useLayoutEffect(() => {
@@ -78,13 +81,37 @@ export default function Leaderboard({
         if (prevTop === undefined || newTop === undefined) return;
         const deltaY = prevTop - newTop;
         if (Math.abs(deltaY) < 1) return;
-        element.style.transform = `translateY(${deltaY}px) scale(0.98)`;
+        // Deterministic highlight on the overlay
+        const overlay = element.querySelector<HTMLDivElement>('div[data-role="highlight"]');
+        if (overlay) {
+          const movedUp = deltaY < 0 ? false : true; // prevTop - newTop; positive means moved up
+          // Pull colors from app theme variables for consistency
+          const rootVars = getComputedStyle(document.documentElement);
+          const upColor = (rootVars.getPropertyValue('--success') || '').trim() || 'oklch(0.65 0.18 140)';
+          const downColor = (rootVars.getPropertyValue('--destructive') || '').trim() || 'oklch(0.62 0.21 25)';
+          const existing = highlightTimeoutsRef.current[m.id];
+          if (existing) {
+            window.clearTimeout(existing);
+          }
+          overlay.style.backgroundColor = movedUp ? upColor : downColor;
+          overlay.style.transition = 'opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1)';
+          overlay.style.opacity = movedUp ? '0.08' : '0.06';
+          overlay.style.borderRadius = '0px';
+          const timeoutId = window.setTimeout(() => {
+            overlay.style.opacity = '0';
+            delete highlightTimeoutsRef.current[m.id];
+          }, 1200);
+          highlightTimeoutsRef.current[m.id] = timeoutId;
+        }
+        // Invert
+        element.style.transition = "transform 0s";
+        element.style.transform = `translateY(${deltaY}px)`;
+        // Force reflow so the browser picks up the starting transform
+        void element.offsetHeight;
+        // Play
         element.style.transition = "transform 600ms cubic-bezier(0.22, 1, 0.36, 1)";
+        element.style.transform = "translateY(0)";
         element.style.willChange = "transform";
-        // next frame: reset transform to animate to natural position
-        requestAnimationFrame(() => {
-          element.style.transform = "";
-        });
         const handleEnd = () => {
           element.style.transition = "";
           element.style.willChange = "";
@@ -99,8 +126,7 @@ export default function Leaderboard({
       positionsRef.current = newPositions;
     }
   }, [sortedMembers.map((member) => `${member.id}:${scoreByUserId[member.id] ?? 0}`).join("|")]);
-
-  
+    
   return (
     <div
       className={cn(
@@ -121,14 +147,11 @@ export default function Leaderboard({
           const isHost = member.id === hostId;
           const hasAnswered = isGameActive && member.hasAnswered === true;
 
-          const delta = rankDelta[member.id] ?? 0;
-          const movementClass = delta > 0 ? "animate-rank-up" : delta < 0 ? "animate-rank-down" : "";
-
           return (
             <div
               key={member.id}
               className={cn(
-                "grid grid-cols-[2ch_1fr_auto] items-center gap-3 px-3 py-2",
+                "relative overflow-hidden rounded-none grid grid-cols-[2ch_1fr_auto] items-center gap-3 px-3 py-2 h-[41px] max-h-[41px]",
                 isCurrentUser && "[&>*:nth-child(2)>span:first-child]:font-semibold",
                 variant === "inline" && "px-0"
               )}
@@ -136,10 +159,11 @@ export default function Leaderboard({
                 rowRefs.current[member.id] = element;
               }}
             >
-              <div className={cn("text-xs tabular-nums text-muted-foreground", movementClass)}>
+              <div data-role="highlight" className={cn("absolute inset-0 pointer-events-none z-0 rounded-none")} />
+              <div className={cn("text-xs tabular-nums text-muted-foreground z-10")}>
                 {index + 1}
               </div>
-              <div className={cn("min-w-0 flex items-center gap-1", movementClass)}>
+              <div className={cn("min-w-0 flex items-center gap-1 z-10")}>
                 <span className={cn("truncate", isCurrentUser ? "font-semibold" : "font-medium")}>{member.username}</span>
                 {isHost && <CrownIcon className="w-3.5 h-3.5 text-chart-5" />}
                 {hasAnswered && <CheckIcon className="w-3.5 h-3.5 text-chart-2" />}
@@ -147,7 +171,7 @@ export default function Leaderboard({
                   <span className="text-[11px] font-semibold text-primary">(You)</span>
                 )}
               </div>
-              <div className={cn("text-xs font-semibold tabular-nums text-foreground", movementClass)}>
+              <div className={cn("text-xs font-semibold tabular-nums text-foreground z-10")}>
                 {scoreByUserId[member.id] ?? 0}
               </div>
             </div>
