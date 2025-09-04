@@ -123,6 +123,8 @@ export const WS_MESSAGE_TYPES = {
   USER_READY_CHANGED: "USER_READY_CHANGED",
   CONNECTION_ESTABLISHED: "CONNECTION_ESTABLISHED",
   ERROR: "ERROR",
+  ROOM_TTL_WARNING: "ROOM_TTL_WARNING",
+  ROOM_EXPIRED: "ROOM_EXPIRED",
 } as const;
 
 export type WSMessageType = typeof WS_MESSAGE_TYPES[keyof typeof WS_MESSAGE_TYPES];
@@ -258,6 +260,17 @@ export interface ErrorData {
   details?: any;
 }
 
+export interface RoomTtlWarningData {
+  roomId: string;
+  expiresAt: number;
+  remainingMs: number;
+}
+
+export interface RoomExpiredData {
+  roomId: string;
+  expiredAt: number;
+}
+
 export type ClientToServerMessage = 
   | { type: typeof WS_MESSAGE_TYPES.CREATE_ROOM; data: CreateRoomData }
   | { type: typeof WS_MESSAGE_TYPES.JOIN_ROOM; data: JoinRoomData }
@@ -289,5 +302,7 @@ export type ServerToClientMessage =
   | { type: typeof WS_MESSAGE_TYPES.GAME_RESTARTED; data: GameRestartedData }
   | { type: typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED; data: SettingsUpdatedData }
   | { type: typeof WS_MESSAGE_TYPES.ERROR; data: ErrorData }
-  | { type: typeof WS_MESSAGE_TYPES.HEARTBEAT; data: {} };
+  | { type: typeof WS_MESSAGE_TYPES.HEARTBEAT; data: {} }
+  | { type: typeof WS_MESSAGE_TYPES.ROOM_TTL_WARNING; data: RoomTtlWarningData }
+  | { type: typeof WS_MESSAGE_TYPES.ROOM_EXPIRED; data: RoomExpiredData };
 

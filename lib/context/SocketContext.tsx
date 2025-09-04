@@ -114,6 +114,15 @@ export interface MessageDataTypes {
     code?: string;
     details?: any;
   };
+  [WS_MESSAGE_TYPES.ROOM_TTL_WARNING]: {
+    roomId: string;
+    expiresAt: number;
+    remainingMs: number;
+  };
+  [WS_MESSAGE_TYPES.ROOM_EXPIRED]: {
+    roomId: string;
+    expiredAt: number;
+  };
 }
 
 type MessageHandler<T extends keyof MessageDataTypes> = (
@@ -489,6 +498,27 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       toast.error(data.message);
     };
 
+    const ttlWarningHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.ROOM_TTL_WARNING
+    > = (data) => {
+      const seconds = Math.max(0, Math.floor(data.remainingMs / 1000));
+      toast.warning("Room will expire soon", {
+        description: `This room will be deleted in ${seconds}s. Finish up or create a new room.`,
+        duration: 5000,
+      });
+    };
+
+    const roomExpiredHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.ROOM_EXPIRED
+    > = () => {
+      setCurrentRoom(null);
+      toast.warning("Room expired", {
+        description: "This room reached its maximum lifetime and was deleted.",
+        duration: Infinity,
+        dismissible: true,
+      });
+    };
+
     messageHandlers.current.set(WS_MESSAGE_TYPES.HEARTBEAT, heartbeatHandler);
     messageHandlers.current.set(
       WS_MESSAGE_TYPES.AUTH_SUCCESS,
@@ -544,6 +574,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       gameStoppedHandler
     );
     messageHandlers.current.set(WS_MESSAGE_TYPES.ERROR, errorHandler);
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.ROOM_TTL_WARNING,
+      ttlWarningHandler
+    );
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.ROOM_EXPIRED,
+      roomExpiredHandler
+    );
   }, [currentRoom, currentUser, settings.soundEffectsEnabled]);
 
   const handleMessage = useCallback((event: MessageEvent) => {
