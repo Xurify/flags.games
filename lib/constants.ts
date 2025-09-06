@@ -19,9 +19,12 @@ export const AUDIO_URLS = {
     "https://qqu03sron6.ufs.sh/f/jU7cOp6GbyJPgMfH3ZgX8X5HeUlLvVymNa4CbMGB6tSrRJ7W",
   VICTORY:
     "https://qqu03sron6.ufs.sh/f/jU7cOp6GbyJPw2QMei0KClrayjzQ8DWSYEnsNML1tURiPcX0",
+  TICK:
+    "https://qqu03sron6.ufs.sh/f/jU7cOp6GbyJPiyGH6OhSgo7pEyWSMGVxaC1eZIhB6HNrbPcl",
 } as const;
 
 export const AUDIO_URLS_KEYS = {
   BUTTON_CLICK: "BUTTON_CLICK",
   VICTORY: "VICTORY",
+  TICK: "TICK",
 };

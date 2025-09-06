@@ -2,6 +2,9 @@
 
 import { GamePhase } from "@/lib/types/socket";
 import { useWallClockCountdown } from "@/lib/hooks/useWallClockCountdown";
+import { useEffect, useRef } from "react";
+import { useSettings } from "@/lib/context/SettingsContext";
+import { audioManager } from "@/lib/utils/audioUtils";
 
 interface TimerProps {
   timePerQuestion: number;
@@ -10,13 +13,52 @@ interface TimerProps {
   onTimeUp?: () => void;
 }
 
-export default function Timer({ timePerQuestion, questionNumber, currentPhase, onTimeUp }: TimerProps) {
+export default function Timer({
+  timePerQuestion,
+  questionNumber,
+  currentPhase,
+  onTimeUp,
+}: TimerProps) {
   const { timeRemainingSec } = useWallClockCountdown({
     durationSec: timePerQuestion,
     isActive: currentPhase === "question",
     onTimeUp,
     resetKey: questionNumber,
   });
+
+  const { settings } = useSettings();
+  const previousWholeSecondsRef = useRef<number | null>(null);
+  const shouldAnimate =
+    currentPhase === "question" && timeRemainingSec < timePerQuestion;
+
+  useEffect(() => {
+    previousWholeSecondsRef.current = Math.ceil(timeRemainingSec);
+  }, [questionNumber, currentPhase]);
+
+  useEffect(() => {
+    if (currentPhase !== "question") return;
+    if (!settings.soundEffectsEnabled) return;
+
+    const currentWhole = Math.ceil(timeRemainingSec);
+    const previousWhole = previousWholeSecondsRef.current;
+    const THRESHOLD_SECONDS = 5;
+
+    if (
+      previousWhole !== null &&
+      currentWhole < previousWhole &&
+      currentWhole <= THRESHOLD_SECONDS &&
+      currentWhole > 0
+    ) {
+      audioManager.playClockTick(0.18);
+    }
+
+    previousWholeSecondsRef.current = currentWhole;
+  }, [
+    timeRemainingSec,
+    currentPhase,
+    settings.soundEffectsEnabled,
+    timePerQuestion,
+  ]);
 
   return (
     <div className="relative w-8 h-8">
@@ -38,9 +80,15 @@ export default function Timer({ timePerQuestion, questionNumber, currentPhase, o
           strokeWidth="2"
           fill="none"
           strokeLinecap="round"
-          className="text-primary transition-all duration-1000 ease-linear"
+          className={`text-primary ${
+            shouldAnimate
+              ? "transition-all duration-1000 ease-linear"
+              : "transition-none"
+          }`}
           strokeDasharray={`${2 * Math.PI * 14}`}
-          strokeDashoffset={`${2 * Math.PI * 14 * (1 - timeRemainingSec / timePerQuestion)}`}
+          strokeDashoffset={`${
+            2 * Math.PI * 14 * (1 - timeRemainingSec / timePerQuestion)
+          }`}
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
@@ -50,4 +98,4 @@ export default function Timer({ timePerQuestion, questionNumber, currentPhase, o
       </div>
     </div>
   );
-} 
+}

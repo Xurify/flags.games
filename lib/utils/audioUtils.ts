@@ -57,9 +57,6 @@ class AudioManager {
     document.addEventListener("touchstart", resume);
   }
 
-  /**
-   * Preload an audio file and cache it
-   */
   async preloadAudio(url: string, key?: string): Promise<HTMLAudioElement> {
     const cacheKey = key || url;
 
@@ -93,9 +90,6 @@ class AudioManager {
     });
   }
 
-  /**
-   * Play a preloaded audio file
-   */
   async playAudio(
     url: string,
     options: {
@@ -263,6 +257,13 @@ class AudioManager {
     });
   }
 
+  /**
+   * One-shot clock tick using external audio asset.
+   */
+  async playClockTick(volume: number = 0.25): Promise<void> {
+    await this.playAudio(AUDIO_URLS.TICK, { volume, key: AUDIO_URLS_KEYS.TICK });
+  }
+
   clearCache(): void {
     Object.values(this.audioCache).forEach((audio) => {
       audio.pause();
@@ -289,3 +290,4 @@ export const audioManager = new AudioManager();
 
 export const playSuccessSound = () => audioManager.playSuccessSound();
 export const playErrorSound = () => audioManager.playErrorSound();
+export const playClockTick = (volume?: number) => audioManager.playClockTick(volume);
