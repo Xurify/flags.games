@@ -8,11 +8,12 @@ interface UseWallClockCountdownParams {
   onTimeUp?: () => void;
   resetKey?: unknown;
   intervalMs?: number; // fallback/alternative interval (default 250ms)
+  startTimeMs?: number; // optional anchor start time (e.g., server-authoritative)
 }
 
 interface UseWallClockCountdownResult {
   timeRemainingSec: number;
-  progress: number; // 0..1, where 1 means full time remaining
+  progress: number;
   restart: (nextDurationSec?: number) => void;
 }
 
@@ -25,17 +26,26 @@ export function useWallClockCountdown(
   const endTimeRef = useRef<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const hasFiredTimeoutRef = useRef<boolean>(false);
+  const rafIdRef = useRef<number | null>(null);
 
   const clear = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
+    if (rafIdRef.current !== null && typeof cancelAnimationFrame !== "undefined") {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
   };
 
   const start = (dSec: number) => {
-    endTimeRef.current = Date.now() + dSec * 1000;
-    setTimeRemainingSec(dSec);
+    const plannedEndTime = (params.startTimeMs ?? Date.now()) + dSec * 1000;
+    endTimeRef.current = plannedEndTime;
+
+    const nowAtStart = Date.now();
+    const initialRemainingMs = Math.max(0, plannedEndTime - nowAtStart);
+    setTimeRemainingSec(initialRemainingMs / 1000);
     hasFiredTimeoutRef.current = false;
 
     clear();
@@ -52,13 +62,30 @@ export function useWallClockCountdown(
       }
     };
 
-    const interval = Math.max(16, params.intervalMs ?? 250);
-    intervalRef.current = setInterval(tick, interval);
+    const scheduleWithInterval = () => {
+      const interval = Math.max(16, params.intervalMs ?? 250);
+      intervalRef.current = setInterval(tick, interval);
+    };
+
+    const scheduleWithRaf = () => {
+      const loop = () => {
+        tick();
+        if (document.visibilityState === "visible") {
+          rafIdRef.current = requestAnimationFrame(loop);
+        }
+      };
+      rafIdRef.current = requestAnimationFrame(loop);
+    };
+
+    if (typeof document !== "undefined" && document.visibilityState === "visible" && typeof requestAnimationFrame !== "undefined") {
+      scheduleWithRaf();
+    } else {
+      scheduleWithInterval();
+    }
   };
 
   useEffect(() => {
     if (!isActive) {
-      // hold at full when inactive
       setTimeRemainingSec(durationSec);
       endTimeRef.current = null;
       clear();
@@ -68,16 +95,49 @@ export function useWallClockCountdown(
     start(durationSec);
 
     const handleVisibility = () => {
-      if (document.visibilityState === "visible" && endTimeRef.current) {
-        const now = Date.now();
-        const remainingMs = Math.max(0, endTimeRef.current - now);
-        const remaining = remainingMs / 1000;
-        setTimeRemainingSec(remaining);
-        if (remainingMs <= 0 && !hasFiredTimeoutRef.current) {
-          hasFiredTimeoutRef.current = true;
-          clear();
-          if (onTimeUp) onTimeUp();
-        }
+      if (!endTimeRef.current) return;
+      const now = Date.now();
+      const remainingMs = Math.max(0, endTimeRef.current - now);
+      const remainingSeconds = remainingMs / 1000;
+      setTimeRemainingSec(remainingSeconds);
+      if (remainingMs <= 0 && !hasFiredTimeoutRef.current) {
+        hasFiredTimeoutRef.current = true;
+        clear();
+        if (onTimeUp) onTimeUp();
+        return;
+      }
+
+      clear();
+      if (document.visibilityState === "visible" && typeof requestAnimationFrame !== "undefined") {
+        const loop = () => {
+          const now2 = Date.now();
+          const remainingMs2 = Math.max(0, (endTimeRef.current ?? now2) - now2);
+          const remaining2 = remainingMs2 / 1000;
+          setTimeRemainingSec(remaining2);
+          if (remainingMs2 <= 0 && !hasFiredTimeoutRef.current) {
+            hasFiredTimeoutRef.current = true;
+            clear();
+            if (onTimeUp) onTimeUp();
+            return;
+          }
+          if (document.visibilityState === "visible") {
+            rafIdRef.current = requestAnimationFrame(loop);
+          }
+        };
+        rafIdRef.current = requestAnimationFrame(loop);
+      } else {
+        const interval = Math.max(16, params.intervalMs ?? 250);
+        intervalRef.current = setInterval(() => {
+          const now2 = Date.now();
+          const remainingMs2 = Math.max(0, (endTimeRef.current ?? now2) - now2);
+          const remaining2 = remainingMs2 / 1000;
+          setTimeRemainingSec(remaining2);
+          if (remainingMs2 <= 0 && !hasFiredTimeoutRef.current) {
+            hasFiredTimeoutRef.current = true;
+            clear();
+            if (onTimeUp) onTimeUp();
+          }
+        }, interval);
       }
     };
     document.addEventListener("visibilitychange", handleVisibility);

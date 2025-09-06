@@ -1,41 +1,24 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useSocket } from '@/lib/context/SocketContext';
+import { useWallClockCountdown } from '@/lib/hooks/useWallClockCountdown';
 
 export const useGameState = () => {
   const { currentRoom, currentUser, connectionState } = useSocket();
-  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
-  const [questionStartTime, setQuestionStartTime] = useState<number | null>(null);
   const gameState = useMemo(() => currentRoom?.gameState ?? null, [currentRoom]);
 
-  useEffect(() => {
-    if (!gameState?.currentQuestion || gameState.phase !== 'question') {
-      setTimeRemaining(null);
-      setQuestionStartTime(null);
-      return;
-    }
+  const currentQuestion = gameState?.currentQuestion;
+  const isQuestionPhase = gameState?.phase === 'question' && !!currentQuestion;
+  const durationSec = currentRoom?.settings?.timePerQuestion || 10;
 
-    if (questionStartTime === null) {
-      const startTime = gameState.currentQuestion?.startTime || Date.now();
-      setQuestionStartTime(startTime);
-    }
+  const { timeRemainingSec } = useWallClockCountdown({
+    durationSec,
+    isActive: isQuestionPhase,
+    resetKey: currentQuestion?.questionNumber,
+    startTimeMs: currentQuestion?.startTime,
+    intervalMs: 250,
+  });
 
-    const updateTimer = () => {
-      if (questionStartTime === null) return;
-      
-      const now = Date.now();
-      const timePerQuestion = currentRoom?.settings?.timePerQuestion || 10;
-      const elapsed = now - questionStartTime;
-      const remaining = Math.max(0, timePerQuestion * 1000 - elapsed);
-      const timeRemainingSeconds = Math.ceil(remaining / 1000);
-      
-      setTimeRemaining(timeRemainingSeconds);
-    };
-
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-
-    return () => clearInterval(interval);
-  }, [gameState?.currentQuestion, gameState?.phase, currentRoom?.settings?.timePerQuestion, questionStartTime]);
+  const timeRemaining = isQuestionPhase ? Math.ceil(timeRemainingSec) : null;
 
   return {
     gameState,

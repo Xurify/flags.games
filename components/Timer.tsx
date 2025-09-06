@@ -80,15 +80,13 @@ export default function Timer({
           strokeWidth="2"
           fill="none"
           strokeLinecap="round"
-          className={`text-primary ${
-            shouldAnimate
-              ? "transition-all duration-1000 ease-linear"
-              : "transition-none"
-          }`}
-          strokeDasharray={`${2 * Math.PI * 14}`}
-          strokeDashoffset={`${
-            2 * Math.PI * 14 * (1 - timeRemainingSec / timePerQuestion)
-          }`}
+          className={"text-primary"}
+          style={{
+            strokeDasharray: `${2 * Math.PI * 14}`,
+            strokeDashoffset:
+              2 * Math.PI * 14 * (1 - timeRemainingSec / timePerQuestion),
+            willChange: shouldAnimate ? "stroke-dashoffset" : undefined,
+          }}
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
