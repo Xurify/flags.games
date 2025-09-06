@@ -41,7 +41,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     useRoomManagement();
   const { settings } = useSettings();
   const [copied, setCopied] = React.useState(false);
-  const [countdown, setCountdown] = useState<number | null>(null);
+  const [gameStartingCountdown, setGameStartingCountdown] = useState<number | null>(null);
   const [isStarting, setIsStarting] = useState(false);
 
   const members = room.members;
@@ -55,14 +55,14 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
 
   const handleStart = () => {
     setIsStarting(true);
-    setCountdown(5);
+    setGameStartingCountdown(5);
     startGame();
   };
 
   useEffect(() => {
-    if (isStarting && countdown !== null) {
+    if (isStarting && gameStartingCountdown !== null) {
       const timer = setInterval(() => {
-        setCountdown((prev) => {
+        setGameStartingCountdown((prev) => {
           if (prev === null || prev <= 1) {
             clearInterval(timer);
             return 0;
@@ -73,24 +73,24 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
 
       return () => clearInterval(timer);
     }
-  }, [isStarting, countdown]);
+  }, [isStarting, gameStartingCountdown]);
 
   useEffect(() => {
-    if (!isStarting || countdown === null) return;
+    if (!isStarting || gameStartingCountdown === null) return;
     if (!settings.soundEffectsEnabled) return;
-    if (countdown > 0) {
-      const frequency = countdown <= 1 ? 800 : 600;
+    if (gameStartingCountdown > 0) {
+      const frequency = gameStartingCountdown <= 1 ? 800 : 600;
       audioManager.playTone(frequency, 0.18, "sine");
     }
-  }, [isStarting, countdown, settings.soundEffectsEnabled]);
+  }, [isStarting, gameStartingCountdown, settings.soundEffectsEnabled]);
 
   useEffect(() => {
     if (currentRoom?.gameState?.phase === "starting") {
       setIsStarting(true);
-      setCountdown(5);
+      setGameStartingCountdown(5);
     } else if (currentRoom?.gameState?.phase === "question") {
       setIsStarting(false);
-      setCountdown(null);
+      setGameStartingCountdown(null);
     }
   }, [currentRoom?.gameState?.phase]);
 
@@ -195,10 +195,10 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
             )}
           </div>
           <div className="mt-3 text-xs text-muted-foreground text-center">
-            {isStarting && countdown !== null ? (
+            {isStarting && gameStartingCountdown !== null ? (
               <div className="flex items-center justify-center gap-2">
                 <PlayIcon className="w-3 h-3 animate-pulse" />
-                <span>Game starting in {countdown}...</span>
+                <span>Game starting in {gameStartingCountdown}...</span>
               </div>
             ) : members.length < maxPlayers ? (
               `Waiting for ${maxPlayers - members.length} more player${
@@ -289,8 +289,8 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 disabled={!canStartGame() || isStarting}
               >
                 <PlayIcon className="w-3 h-3" />
-                {isStarting && countdown !== null
-                  ? `Starting in ${countdown}...`
+                {isStarting && gameStartingCountdown !== null
+                  ? `Starting in ${gameStartingCountdown}...`
                   : "Start"}
               </Button>
             )}
