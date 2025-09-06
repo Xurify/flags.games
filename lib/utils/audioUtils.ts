@@ -257,11 +257,8 @@ class AudioManager {
     });
   }
 
-  /**
-   * One-shot clock tick using external audio asset.
-   */
   async playClockTick(volume: number = 0.25): Promise<void> {
-    await this.playAudio(AUDIO_URLS.TICK, { volume, key: AUDIO_URLS_KEYS.TICK });
+    await this.playAudio(AUDIO_URLS.CLOCK_TICK, { volume, key: AUDIO_URLS_KEYS.CLOCK_TICK });
   }
 
   clearCache(): void {
