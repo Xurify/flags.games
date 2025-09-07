@@ -55,14 +55,15 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   const updateSetting = (key: keyof GameSettings, value: any) => {
     audioManager.playButtonClickSound();
-    const newSettings = { ...settings, [key]: value };
-    setSettings(newSettings);
-    // Persist only app-level preferences
-    const persisted = {
-      soundEffectsEnabled: newSettings.soundEffectsEnabled,
-      darkMode: newSettings.darkMode,
-    };
-    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(persisted));
+    setSettings((prev) => {
+      const next = { ...prev, [key]: value } as GameSettings;
+      const persisted = {
+        soundEffectsEnabled: next.soundEffectsEnabled,
+        darkMode: next.darkMode,
+      };
+      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(persisted));
+      return next;
+    });
   };
 
   return (

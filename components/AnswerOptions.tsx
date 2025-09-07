@@ -20,9 +20,10 @@ const AnswerOptions: React.FC<AnswerOptionsProps> = ({
   correctAnswer,
 }) => {
   const getButtonClass = (country: Country) => {
-    if (!showResult || !selectedAnswer) {
+    if (!showResult) {
       return "border-border hover:border-primary/50 hover:bg-primary/5 dark:border-white/20 dark:bg-white/5 dark:hover:border-white/40 dark:hover:bg-white/10 transition-all duration-200";
     }
+
 
     if (country.code === correctAnswer) {
       return "bg-green-100 border-green-500 text-green-700 dark:bg-green-700/40 dark:border-green-500 dark:text-white dark:shadow-lg hover:text-green-700 focus:text-green-700 dark:hover:text-white dark:focus:text-white disabled:bg-green-100 disabled:text-green-700 disabled:dark:bg-green-700/40 disabled:dark:text-white !opacity-100 !grayscale-0 shadow";

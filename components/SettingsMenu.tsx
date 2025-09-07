@@ -16,6 +16,7 @@ interface SettingsMenuProps {
   settingsOpen: boolean;
   setSettingsOpen: (open: boolean) => void;
   setShowDifficultyDialog: (open: boolean) => void;
+  setShowModesDialog?: (open: boolean) => void;
   toggleSound: () => void;
   toggleDarkMode: () => void;
   showDifficultyOption?: boolean;
@@ -29,6 +30,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   settingsOpen,
   setSettingsOpen,
   setShowDifficultyDialog,
+  setShowModesDialog,
   toggleSound,
   toggleDarkMode,
   showDifficultyOption = true,
@@ -54,67 +56,37 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
               <>
                 <div>
                   <h4 className="text-sm font-medium text-foreground mb-2">
-                    Difficulty Level
+                    Gameplay
                   </h4>
-                  <Button
-                    onClick={() => {
-                      setSettingsOpen(false);
-                      setShowDifficultyDialog(true);
-                    }}
-                    size="sm"
-                    className="w-full mt-2"
-                    variant="neutral"
-                  >
-                    Change Difficulty
-                  </Button>
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      onClick={() => {
+                        setSettingsOpen(false);
+                        setShowDifficultyDialog(true);
+                      }}
+                      size="sm"
+                      className="w-full"
+                      variant="neutral"
+                    >
+                      Change Difficulty
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setSettingsOpen(false);
+                        setShowModesDialog && setShowModesDialog(true);
+                      }}
+                      size="sm"
+                      className="w-full"
+                      variant="neutral"
+                    >
+                      Change Modes
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="w-full h-px bg-border"></div>
               </>
             )}
-
-            <div>
-              <h4 className="text-sm font-medium text-foreground mb-2">
-                Sound Effects
-              </h4>
-              <Button
-                variant="neutral"
-                size="sm"
-                onClick={toggleSound}
-                className="w-full justify-start"
-              >
-                {settings.soundEffectsEnabled ? (
-                  <Volume2Icon className="w-4 h-4 mr-2" />
-                ) : (
-                  <VolumeXIcon className="w-4 h-4 mr-2" />
-                )}
-                {settings.soundEffectsEnabled ? "Sound On" : "Sound Off"}
-              </Button>
-            </div>
-
-            <div className="w-full h-px bg-border"></div>
-
-            <div>
-              <h4 className="text-sm font-medium text-foreground mb-2">
-                Dark Mode
-              </h4>
-              <Button
-                variant="neutral"
-                size="sm"
-                onClick={toggleDarkMode}
-                className="w-full justify-start"
-                aria-pressed={settings.darkMode}
-              >
-                {settings.darkMode ? (
-                  <SunIcon className="w-4 h-4 mr-2" />
-                ) : (
-                  <MoonIcon className="w-4 h-4 mr-2" />
-                )}
-                {settings.darkMode ? "On" : "Off"}
-              </Button>
-            </div>
-
-            <div className="w-full h-px bg-border"></div>
 
             <div>
               <h4 className="text-sm font-medium text-foreground mb-2">
@@ -151,6 +123,41 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
             </div>
 
             <div className="w-full h-px bg-border"></div>
+
+            <div>
+              <h4 className="text-sm font-medium text-foreground mb-2">
+                Preferences
+              </h4>
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="neutral"
+                  size="sm"
+                  onClick={toggleSound}
+                  className="w-full justify-start"
+                >
+                  {settings.soundEffectsEnabled ? (
+                    <Volume2Icon className="w-4 h-4 mr-2" />
+                  ) : (
+                    <VolumeXIcon className="w-4 h-4 mr-2" />
+                  )}
+                  {settings.soundEffectsEnabled ? "Sound On" : "Sound Off"}
+                </Button>
+                <Button
+                  variant="neutral"
+                  size="sm"
+                  onClick={toggleDarkMode}
+                  className="w-full justify-start"
+                  aria-pressed={settings.darkMode}
+                >
+                  {settings.darkMode ? (
+                    <SunIcon className="w-4 h-4 mr-2" />
+                  ) : (
+                    <MoonIcon className="w-4 h-4 mr-2" />
+                  )}
+                  {settings.darkMode ? "On" : "Off"}
+                </Button>
+              </div>
+            </div>
 
             <div>
               <a

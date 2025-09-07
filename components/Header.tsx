@@ -6,9 +6,10 @@ interface HeaderProps {
   leftContent: ReactNode;
   showDifficultyDialog?: boolean;
   setShowDifficultyDialog?: (open: boolean) => void;
+  setShowModesDialog?: (open: boolean) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ leftContent, showDifficultyDialog, setShowDifficultyDialog }) => {
+const Header: React.FC<HeaderProps> = ({ leftContent, showDifficultyDialog, setShowDifficultyDialog, setShowModesDialog }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { settings, updateSetting } = useSettings();
 
@@ -32,6 +33,7 @@ const Header: React.FC<HeaderProps> = ({ leftContent, showDifficultyDialog, setS
             settingsOpen={settingsOpen}
             setSettingsOpen={setSettingsOpen}
             setShowDifficultyDialog={setShowDifficultyDialog || (() => {})}
+            setShowModesDialog={setShowModesDialog}
             toggleSound={toggleSound}
             toggleDarkMode={toggleDarkMode}
             settings={settings}

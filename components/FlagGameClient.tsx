@@ -13,7 +13,7 @@ import {
   DEFAULT_DIFFICULTY,
 } from "@/lib/constants";
 import { Country } from "@/lib/data/countries";
-import { useGameSettings } from "@/lib/hooks/useGameSettings";
+import { useSettings } from "@/lib/context/SettingsContext";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
 import { audioManager, playErrorSound, playSuccessSound } from "@/lib/utils/audioUtils";
 import { prefetchAllFlagsForDifficulty } from "@/lib/utils/imageUtils";
@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 import Header from "./Header";
+import ModesDialog from "./ModesDialog";
 import GameEndScreen from "./GameEndScreen";
 import LevelBadge from "./LevelBadge";
 import QuestionProgress from "./QuestionProgress";
@@ -55,7 +56,7 @@ export interface GameState {
 }
 
 const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
-  const { settings } = useGameSettings();
+  const { settings, updateSetting } = useSettings();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -75,9 +76,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   });
 
   const [heartsModeEnabled, setHeartsModeEnabled] = useState(false);
+  const [timedDurationSec, setTimedDurationSec] = useState<number | null>(null);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
+  const [showModesDialog, setShowModesDialog] = useState(false);
   const [showScorePopup, setShowScorePopup] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -196,6 +199,36 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
           }));
         }
       }, delay);
+    }
+  };
+
+  const handleTimeUp = () => {
+    if (gameState.showResult || gameState.gameCompleted) return;
+
+    setGameState((prev) => {
+      const newHearts = heartsModeEnabled ? prev.hearts - 1 : prev.hearts;
+      const gameOver = heartsModeEnabled && newHearts <= 0;
+      return {
+        ...prev,
+        selectedAnswer: null,
+        showResult: true,
+        hearts: newHearts,
+        gameCompleted: gameOver || prev.gameCompleted,
+      };
+    });
+
+    if (settings.autoAdvanceEnabled) {
+      setGameTimeout(() => {
+        if (gameState.currentQuestion < gameState.totalQuestions) {
+          setGameState((prev) => ({
+            ...prev,
+            currentQuestion: prev.currentQuestion + 1,
+          }));
+          generateQuestionHandler();
+        } else {
+          setGameState((prev) => ({ ...prev, gameCompleted: true }));
+        }
+      }, 2000);
     }
   };
 
@@ -351,9 +384,30 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
         onOpenChange={setShowDifficultyDialog}
         onChangeDifficulty={handleChangeDifficulty}
         currentDifficulty={gameState.difficulty}
-        onToggleHeartsMode={handleToggleHeartsMode}
-        heartsModeEnabled={heartsModeEnabled}
         gameState={gameState}
+      />
+
+      <ModesDialog
+        open={showModesDialog}
+        onOpenChange={setShowModesDialog}
+        heartsModeEnabled={heartsModeEnabled}
+        onToggleHeartsMode={setHeartsModeEnabled}
+        onRequestRestart={restartGame}
+        onStartClassic={() => {
+          setTimedDurationSec(null);
+          setHeartsModeEnabled(false);
+          restartGame();
+        }}
+        onStartHearts={() => {
+          setTimedDurationSec(null);
+          setHeartsModeEnabled(true);
+          restartGame();
+        }}
+        onStartTimedMode={(durationSec) => {
+          setTimedDurationSec(durationSec);
+          setHeartsModeEnabled(false);
+          restartGame();
+        }}
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
@@ -376,6 +430,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             }
             showDifficultyDialog={showDifficultyDialog}
             setShowDifficultyDialog={setShowDifficultyDialog}
+            setShowModesDialog={setShowModesDialog}
           />
         </div>
 
@@ -389,6 +444,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             hearts={gameState.hearts}
             maxHearts={MAX_HEARTS}
             heartsModeEnabled={heartsModeEnabled}
+            timedModeEnabled={timedDurationSec !== null}
+            timePerQuestionSec={timedDurationSec ?? undefined}
+            questionNumber={gameState.currentQuestion}
+            currentPhase={gameState.gameCompleted ? "finished" : (gameState.showResult ? "results" : "question")}
+            onTimeUp={handleTimeUp}
           />
         </div>
 

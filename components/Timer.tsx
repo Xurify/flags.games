@@ -23,7 +23,7 @@ export default function Timer({
     durationSec: timePerQuestion,
     isActive: currentPhase === "question",
     onTimeUp,
-    resetKey: questionNumber,
+    resetKey: `${questionNumber}-${timePerQuestion}`,
   });
 
   const { settings } = useSettings();

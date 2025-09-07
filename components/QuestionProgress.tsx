@@ -1,4 +1,6 @@
 import React from "react";
+import Timer from "@/components/Timer";
+import { GamePhase } from "@/lib/types/socket";
 import HeartsDisplay from "./HeartsDisplay";
 
 interface QuestionProgressProps {
@@ -10,6 +12,11 @@ interface QuestionProgressProps {
   hearts?: number;
   maxHearts?: number;
   heartsModeEnabled?: boolean;
+  timedModeEnabled?: boolean;
+  timePerQuestionSec?: number;
+  questionNumber?: number;
+  currentPhase?: GamePhase;
+  onTimeUp?: () => void;
 }
 
 const QuestionProgress: React.FC<QuestionProgressProps> = ({
@@ -21,6 +28,11 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
   hearts,
   maxHearts,
   heartsModeEnabled,
+  timedModeEnabled,
+  timePerQuestionSec,
+  questionNumber,
+  currentPhase,
+  onTimeUp,
 }) => (
   <div className="flex justify-center items-center">
     <div className="relative flex items-center gap-4">
@@ -53,6 +65,20 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
           />
         </>
       )}
+      {timedModeEnabled &&
+        timePerQuestionSec !== undefined &&
+        questionNumber !== undefined &&
+        currentPhase !== undefined && (
+          <>
+            <div className="w-px h-4 bg-border"></div>
+            <Timer
+              timePerQuestion={timePerQuestionSec}
+              questionNumber={questionNumber}
+              currentPhase={currentPhase}
+              onTimeUp={onTimeUp}
+            />
+          </>
+        )}
     </div>
   </div>
 );
