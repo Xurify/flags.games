@@ -38,7 +38,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
   };
 
   return (
-    <Card className="shadow-card hover:shadow-card-hover transition-all duration-300 py-4 sm:py-8 px-4 sm:px-6">
+    <Card className="transition-all duration-300 py-4 sm:py-8 px-4 sm:px-6">
       <CardContent className="p-3 sm:p-4">
         <div className="space-y-5">
               <div className="text-center space-y-1">

@@ -451,7 +451,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
           />
         </div>
 
-        <Card className="mb-3 sm:mb-6 shadow-card hover:shadow-card-hover transition-all duration-300 py-4 sm:py-8 px-4 sm:px-6">
+        <Card className="mb-3 sm:mb-6 py-4 sm:py-8 px-4 sm:px-6">
           <CardContent className="p-3 sm:p-4">
             {gameState.gameCompleted ? (
               <GameEndScreen

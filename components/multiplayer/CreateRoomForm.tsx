@@ -82,7 +82,7 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
 
   return (
     <div className="max-w-lg w-full mx-auto">
-      <Card className="shadow-card hover:shadow-card-hover transition-all duration-300">
+      <Card className="transition-all duration-300">
         <CardHeader>
           <CardTitle className="text-center flex items-center justify-center gap-2 font-semibold">
             <UsersIcon className="w-5 h-5 text-primary" />
