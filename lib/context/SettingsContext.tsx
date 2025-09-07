@@ -1,19 +1,23 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { AUDIO_URLS, AUDIO_URLS_KEYS, SETTINGS_STORAGE_KEY } from "../constants";
+import { AUDIO_URLS, AUDIO_URLS_KEYS, SETTINGS_STORAGE_KEY, TIME_PER_QUESTION_OPTIONS } from "../constants";
 import { audioManager } from "../utils/audioUtils";
 
 export interface GameSettings {
   soundEffectsEnabled: boolean;
   autoAdvanceEnabled: boolean;
   darkMode: boolean;
+  timedModeEnabled: boolean;
+  timePerQuestion: number;
 }
 
-const defaultSettings: GameSettings = {
+export const defaultSettings: GameSettings = {
   soundEffectsEnabled: true,
   autoAdvanceEnabled: true,
   darkMode: false,
+  timedModeEnabled: false,
+  timePerQuestion: TIME_PER_QUESTION_OPTIONS[0],
 };
 
 interface SettingsContextType {
@@ -40,9 +44,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const saved = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (saved) {
       const parsedSettings = JSON.parse(saved);
+      // Only hydrate app-level preferences; keep gameplay in-memory per session
       setSettings({
+        ...defaultSettings,
         soundEffectsEnabled: parsedSettings.soundEffectsEnabled ?? defaultSettings.soundEffectsEnabled,
-        autoAdvanceEnabled: parsedSettings.autoAdvanceEnabled ?? defaultSettings.autoAdvanceEnabled,
         darkMode: parsedSettings.darkMode ?? defaultSettings.darkMode,
       });
     }
@@ -52,7 +57,12 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     audioManager.playButtonClickSound();
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
-    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings));
+    // Persist only app-level preferences
+    const persisted = {
+      soundEffectsEnabled: newSettings.soundEffectsEnabled,
+      darkMode: newSettings.darkMode,
+    };
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(persisted));
   };
 
   return (
