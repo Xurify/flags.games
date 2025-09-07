@@ -25,11 +25,11 @@ import {
 } from "@/lib/constants";
 import { cn } from "@/lib/utils/strings";
 import { useSocket } from "@/lib/context/SocketContext";
-import { useGameState } from "@/lib/hooks/useGameState";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
-import { Room, User } from "@/lib/types/socket";
 import { useSettings } from "@/lib/context/SettingsContext";
+import { Room, User } from "@/lib/types/socket";
 import { audioManager } from "@/lib/utils/audio-manager";
+import { prefetchAllFlags } from "@/lib/utils/image";
 
 interface RoomLobbyProps {
   room: Room;
@@ -47,17 +47,9 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   const members = room.members;
   const maxPlayers = room.settings.maxRoomSize;
 
-  const handleSettingChange = (key: keyof typeof room.settings, value: any) => {
-    if (isHost()) {
-      updateRoomSettings({ ...room.settings, [key]: value });
-    }
-  };
-
-  const handleStart = () => {
-    setIsStarting(true);
-    setGameStartingCountdown(5);
-    startGame();
-  };
+  useEffect(() => {
+    prefetchAllFlags(room.settings.difficulty);
+  }, [room.settings.difficulty]);
 
   useEffect(() => {
     if (isStarting && gameStartingCountdown !== null) {
@@ -109,6 +101,18 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const handleSettingChange = (key: keyof typeof room.settings, value: any) => {
+    if (isHost()) {
+      updateRoomSettings({ ...room.settings, [key]: value });
+    }
+  };
+
+  const handleStart = () => {
+    setIsStarting(true);
+    setGameStartingCountdown(5);
+    startGame();
   };
 
   return (
