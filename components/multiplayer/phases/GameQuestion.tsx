@@ -78,7 +78,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   return (
     <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-stretch lg:items-start">
       <div className="flex-1">
-        <Card className="transition-all duration-300 py-4 sm:py-8 px-4 sm:px-6 relative">
+        <Card className="py-4 sm:py-8 px-4 sm:px-6 relative">
           <CardContent className="p-3 sm:p-4">
             <div className="flex flex-wrap items-center justify-between gap-y-2 mb-3 sm:mb-5">
               <div className="text-sm font-medium text-foreground">
