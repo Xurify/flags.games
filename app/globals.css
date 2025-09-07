@@ -88,6 +88,13 @@
   --sidebar-ring: oklch(0.5 0.28 260);
 }
 
+[data-sonner-toast][data-styled=true] [data-close-button] {
+  --toast-close-button-start: auto !important;
+  --toast-close-button-end: -15px;
+}
+
+
+
 .dark {
   --background: oklch(0.15 0.002 240); /* Darker background */
   --foreground: oklch(0.98 0.005 240);
