@@ -47,14 +47,6 @@ export default function GameQuestion({ room }: GameQuestionProps) {
     }
   }, [currentPhase]);
 
-  useEffect(() => {
-    const totalQuestions = Number(gameState?.totalQuestions);
-    const currentQuestion = Number(gameState?.currentQuestion?.index);
-    if (totalQuestions > 0 && currentQuestion >= totalQuestions - 4) {
-      audioManager.preloadAudio(AUDIO_URLS.VICTORY, AUDIO_URLS_KEYS.VICTORY);
-    }
-  }, [gameState?.totalQuestions, gameState?.currentQuestion?.index]);
-
   const handleAnswerSelect = async (answer: string) => {
     if (hasAnswered || !currentQuestion) return;
 
