@@ -80,7 +80,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
         </AlertDialogHeader>
 
         <div className="space-y-2 mt-1 sm:mt-2">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border bg-card">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-2 sm:gap-3 p-3 rounded-lg border bg-card">
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <CompassIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0 text-muted-foreground" />
               <div className="min-w-0">
@@ -109,7 +109,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
               </Button>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border bg-card">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-2 sm:gap-3 p-3 rounded-lg border bg-card">
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <HeartIcon
                 className={`w-6 h-6 sm:w-5 sm:h-5 shrink-0 ${
@@ -144,7 +144,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
               </Button>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border bg-card">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-2 sm:gap-3 p-3 rounded-lg border bg-card">
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <TimerIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0 text-muted-foreground" />
               <div className="min-w-0">
