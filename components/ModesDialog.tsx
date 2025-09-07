@@ -71,7 +71,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-[92vw] sm:max-w-lg p-3 sm:p-4">
+      <AlertDialogContent className="max-w-[92vw] sm:max-w-lg">
         <AlertDialogHeader>
           <AlertDialogTitle>Modes</AlertDialogTitle>
           <AlertDialogDescription>
