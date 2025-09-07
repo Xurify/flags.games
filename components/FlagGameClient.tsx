@@ -15,8 +15,8 @@ import {
 import { Country } from "@/lib/data/countries";
 import { useSettings } from "@/lib/context/SettingsContext";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
-import { audioManager, playErrorSound, playSuccessSound } from "@/lib/utils/audioUtils";
-import { prefetchAllFlagsForDifficulty } from "@/lib/utils/imageUtils";
+import { audioManager, playErrorSound, playSuccessSound } from "@/lib/utils/audio-manager";
+import { prefetchAllFlags } from "@/lib/utils/image";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -86,7 +86,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    prefetchAllFlagsForDifficulty(gameState.difficulty);
+    prefetchAllFlags(gameState.difficulty);
   }, [gameState.difficulty]);
 
   useEffect(() => {

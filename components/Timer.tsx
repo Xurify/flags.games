@@ -4,7 +4,7 @@ import { GamePhase } from "@/lib/types/socket";
 import { useWallClockCountdown } from "@/lib/hooks/useWallClockCountdown";
 import { useEffect, useRef } from "react";
 import { useSettings } from "@/lib/context/SettingsContext";
-import { audioManager } from "@/lib/utils/audioUtils";
+import { audioManager } from "@/lib/utils/audio-manager";
 
 interface TimerProps {
   timePerQuestion: number;

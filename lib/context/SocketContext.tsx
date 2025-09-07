@@ -12,7 +12,7 @@ import React, {
 import { toast } from "sonner";
 
 import { logger } from "@/lib/utils/logger";
-import { audioManager } from "@/lib/utils/audioUtils";
+import { audioManager } from "@/lib/utils/audio-manager";
 import { useSettings } from "@/lib/context/SettingsContext";
 import {
   WS_MESSAGE_TYPES,

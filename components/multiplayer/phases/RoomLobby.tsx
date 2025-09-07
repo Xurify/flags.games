@@ -29,7 +29,7 @@ import { useGameState } from "@/lib/hooks/useGameState";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
 import { Room, User } from "@/lib/types/socket";
 import { useSettings } from "@/lib/context/SettingsContext";
-import { audioManager } from "@/lib/utils/audioUtils";
+import { audioManager } from "@/lib/utils/audio-manager";
 
 interface RoomLobbyProps {
   room: Room;

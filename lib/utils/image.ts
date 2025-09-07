@@ -1,7 +1,7 @@
 import { Difficulty } from "@/lib/constants";
 import { getDifficultyCountries } from "@/lib/data/difficultyCategories";
 
-export const prefetchAllFlagsForDifficulty = (difficulty: Difficulty) => {
+export const prefetchAllFlags = (difficulty: Difficulty) => {
   const countriesForDifficulty = getDifficultyCountries(difficulty);
   const BATCH_SIZE = 14;
   const BATCH_DELAY = 150;

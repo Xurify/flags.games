@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { AUDIO_URLS, AUDIO_URLS_KEYS, SETTINGS_STORAGE_KEY, TIME_PER_QUESTION_OPTIONS } from "../constants";
-import { audioManager } from "../utils/audioUtils";
+import { audioManager } from "../utils/audio-manager";
 
 export interface GameSettings {
   soundEffectsEnabled: boolean;
