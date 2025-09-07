@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({ leftContent, showDifficultyDialog, setS
 
   return (
     <div className="flex items-center justify-center mb-3 sm:mb-6">
-      <div className="bg-card rounded-2xl px-4 py-2 shadow border">
+      <div className="bg-card rounded-2xl px-4 py-2 border">
         <div className="flex items-center gap-4">
           {leftContent}
           <div className="w-px h-6 bg-border"></div>
