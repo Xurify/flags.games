@@ -17,10 +17,21 @@ export const prefetchAllFlagsForDifficulty = (difficulty: Difficulty) => {
       });
       i += BATCH_SIZE;
       if (i < countriesForDifficulty.length) {
-        setTimeout(prefetchBatch, BATCH_DELAY);
+        const scheduleIdle = (cb: () => void) => {
+          if (typeof requestIdleCallback !== 'undefined') {
+            requestIdleCallback(() => cb(), { timeout: BATCH_DELAY });
+          } else {
+            setTimeout(cb, BATCH_DELAY);
+          }
+        };
+        scheduleIdle(prefetchBatch);
       }
     };
-    prefetchBatch();
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(() => prefetchBatch());
+    } else {
+      setTimeout(prefetchBatch, BATCH_DELAY);
+    }
   } else {
     countriesForDifficulty.forEach(country => {
       const img = new Image();
