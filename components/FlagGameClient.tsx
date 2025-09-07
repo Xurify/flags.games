@@ -90,7 +90,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   }, [gameState.difficulty]);
 
   useEffect(() => {
-    if (gameState.currentQuestion >= gameState.totalQuestions - 2) {
+    if (gameState.currentQuestion >= gameState.totalQuestions - 4) {
       audioManager.preloadAudio(AUDIO_URLS.VICTORY, AUDIO_URLS_KEYS.VICTORY);
     }
   }, [gameState.currentQuestion, gameState.totalQuestions]);

@@ -12,6 +12,8 @@ import Leaderboard from "@/components/multiplayer/Leaderboard";
 import { useSocket } from "@/lib/context/SocketContext";
 import { useGameState } from "@/lib/hooks/useGameState";
 import { Room } from "@/lib/types/socket";
+import { audioManager } from "@/lib/utils/audio-manager";
+import { AUDIO_URLS, AUDIO_URLS_KEYS } from "@/lib/constants";
  
 
 interface GameQuestionProps {
@@ -44,6 +46,14 @@ export default function GameQuestion({ room }: GameQuestionProps) {
       return () => clearInterval(timer);
     }
   }, [currentPhase]);
+
+  useEffect(() => {
+    const totalQuestions = Number(gameState?.totalQuestions);
+    const currentQuestion = Number(gameState?.currentQuestion?.questionNumber);
+    if (totalQuestions > 0 && currentQuestion >= totalQuestions - 4) {
+      audioManager.preloadAudio(AUDIO_URLS.VICTORY, AUDIO_URLS_KEYS.VICTORY);
+    }
+  }, [gameState?.totalQuestions, gameState?.currentQuestion?.questionNumber]);
 
   const handleAnswerSelect = async (answer: string) => {
     if (hasAnswered || !currentQuestion) return;
