@@ -28,7 +28,7 @@ export const prefetchAllFlagsForDifficulty = (difficulty: Difficulty) => {
       }
     };
     if (typeof requestIdleCallback !== 'undefined') {
-      requestIdleCallback(() => prefetchBatch());
+      requestIdleCallback(() => prefetchBatch(), { timeout: 1000 });
     } else {
       setTimeout(prefetchBatch, BATCH_DELAY);
     }
