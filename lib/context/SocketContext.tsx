@@ -771,7 +771,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
         type: WS_MESSAGE_TYPES.SUBMIT_ANSWER,
         data: {
           answer,
-          questionId: activeQuestion.questionNumber.toString(),
+          questionId: activeQuestion.index.toString(),
         },
       });
     },

@@ -18,7 +18,7 @@ export interface RoomMember extends User {
 
 
 export interface GameQuestion {
-  questionNumber: number;
+  index: number;
   country: Country;
   options: Country[];
   correctAnswer: string;

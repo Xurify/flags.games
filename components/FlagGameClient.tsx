@@ -446,7 +446,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             heartsModeEnabled={heartsModeEnabled}
             timedModeEnabled={timedDurationSec !== null}
             timePerQuestionSec={timedDurationSec ?? undefined}
-            questionNumber={gameState.currentQuestion}
             currentPhase={gameState.gameCompleted ? "finished" : (gameState.showResult ? "results" : "question")}
             onTimeUp={handleTimeUp}
           />

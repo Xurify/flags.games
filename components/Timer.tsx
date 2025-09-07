@@ -8,14 +8,14 @@ import { audioManager } from "@/lib/utils/audio-manager";
 
 interface TimerProps {
   timePerQuestion: number;
-  questionNumber: number;
+  questionIndex: number;
   currentPhase: GamePhase;
   onTimeUp?: () => void;
 }
 
 export default function Timer({
   timePerQuestion,
-  questionNumber,
+  questionIndex,
   currentPhase,
   onTimeUp,
 }: TimerProps) {
@@ -23,7 +23,7 @@ export default function Timer({
     durationSec: timePerQuestion,
     isActive: currentPhase === "question",
     onTimeUp,
-    resetKey: `${questionNumber}-${timePerQuestion}`,
+    resetKey: `${questionIndex}-${timePerQuestion}`,
   });
 
   const { settings } = useSettings();
@@ -33,7 +33,7 @@ export default function Timer({
 
   useEffect(() => {
     previousWholeSecondsRef.current = Math.ceil(timeRemainingSec);
-  }, [questionNumber, currentPhase]);
+  }, [questionIndex, currentPhase]);
 
   useEffect(() => {
     if (currentPhase !== "question") return;

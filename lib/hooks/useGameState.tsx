@@ -13,7 +13,7 @@ export const useGameState = () => {
   const { timeRemainingSec } = useWallClockCountdown({
     durationSec,
     isActive: isQuestionPhase,
-    resetKey: currentQuestion?.questionNumber,
+    resetKey: currentQuestion?.index,
     startTimeMs: currentQuestion?.startTime,
     intervalMs: 250,
   });

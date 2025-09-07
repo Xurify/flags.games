@@ -14,7 +14,6 @@ interface QuestionProgressProps {
   heartsModeEnabled?: boolean;
   timedModeEnabled?: boolean;
   timePerQuestionSec?: number;
-  questionNumber?: number;
   currentPhase?: GamePhase;
   onTimeUp?: () => void;
 }
@@ -30,7 +29,6 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
   heartsModeEnabled,
   timedModeEnabled,
   timePerQuestionSec,
-  questionNumber,
   currentPhase,
   onTimeUp,
 }) => (
@@ -67,13 +65,12 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
       )}
       {timedModeEnabled &&
         timePerQuestionSec !== undefined &&
-        questionNumber !== undefined &&
         currentPhase !== undefined && (
           <>
             <div className="w-px h-4 bg-border"></div>
             <Timer
               timePerQuestion={timePerQuestionSec}
-              questionNumber={questionNumber}
+              questionIndex={currentQuestion}
               currentPhase={currentPhase}
               onTimeUp={onTimeUp}
             />

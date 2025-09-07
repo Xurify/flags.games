@@ -35,7 +35,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
       setHasAnswered(false);
       setCountdown(0);
     }
-  }, [currentQuestion?.questionNumber]);
+  }, [currentQuestion?.index]);
 
   useEffect(() => {
     if (currentPhase === "results") {
@@ -49,11 +49,11 @@ export default function GameQuestion({ room }: GameQuestionProps) {
 
   useEffect(() => {
     const totalQuestions = Number(gameState?.totalQuestions);
-    const currentQuestion = Number(gameState?.currentQuestion?.questionNumber);
+    const currentQuestion = Number(gameState?.currentQuestion?.index);
     if (totalQuestions > 0 && currentQuestion >= totalQuestions - 4) {
       audioManager.preloadAudio(AUDIO_URLS.VICTORY, AUDIO_URLS_KEYS.VICTORY);
     }
-  }, [gameState?.totalQuestions, gameState?.currentQuestion?.questionNumber]);
+  }, [gameState?.totalQuestions, gameState?.currentQuestion?.index]);
 
   const handleAnswerSelect = async (answer: string) => {
     if (hasAnswered || !currentQuestion) return;
@@ -90,14 +90,14 @@ export default function GameQuestion({ room }: GameQuestionProps) {
           <CardContent className="p-3 sm:p-4">
             <div className="flex flex-wrap items-center justify-between gap-y-2 mb-3 sm:mb-5">
               <div className="text-sm font-medium text-foreground">
-                Question {currentQuestion.questionNumber} of {gameState?.totalQuestions || 0}
+                Question {currentQuestion.index} of {gameState?.totalQuestions || 0}
               </div>
               <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-2 sm:gap-3">
                 <span className="font-medium text-foreground">Score: {userScore}</span>
                 <span className="text-border dark:text-white">•</span>
                 <Timer
                   timePerQuestion={room.settings.timePerQuestion}
-                  questionNumber={currentQuestion?.questionNumber || 0}
+                  questionIndex={Number(currentQuestion?.index)}
                   currentPhase={currentPhase}
                 />
               </div>
