@@ -3,8 +3,8 @@ import { getDifficultyCountries } from "@/lib/data/difficultyCategories";
 
 export const prefetchAllFlagsForDifficulty = (difficulty: Difficulty) => {
   const countriesForDifficulty = getDifficultyCountries(difficulty);
-  const BATCH_SIZE = 8;
-  const BATCH_DELAY = 300;
+  const BATCH_SIZE = 14;
+  const BATCH_DELAY = 150;
   const LARGE_THRESHOLD = 40;
 
   if (countriesForDifficulty.length > LARGE_THRESHOLD) {
