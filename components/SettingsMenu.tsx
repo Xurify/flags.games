@@ -8,6 +8,8 @@ import {
   MoonIcon,
   UserIcon,
   UsersIcon,
+  ChartNoAxesColumnIncreasingIcon,
+  Gamepad2Icon,
 } from "lucide-react";
 import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -65,9 +67,10 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                         setShowDifficultyDialog(true);
                       }}
                       size="sm"
-                      className="w-full"
+                      className="w-full justify-start"
                       variant="neutral"
                     >
+                      <ChartNoAxesColumnIncreasingIcon className="w-4 h-4 mr-2" />
                       Change Difficulty
                     </Button>
                     <Button
@@ -76,9 +79,10 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                         setShowModesDialog && setShowModesDialog(true);
                       }}
                       size="sm"
-                      className="w-full"
+                      className="w-full justify-start"
                       variant="neutral"
                     >
+                      <Gamepad2Icon className="w-4 h-4 mr-2" />
                       Change Modes
                     </Button>
                   </div>
