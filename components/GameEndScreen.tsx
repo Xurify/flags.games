@@ -50,7 +50,9 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
 
   const summary = useMemo(() => {
     const totalQuestions = orderedResults.length;
-    const correctCount = orderedResults.filter((result) => result.isCorrect).length;
+    const correctCount = orderedResults.filter(
+      (result) => result.isCorrect
+    ).length;
     let currentStreak = 0;
     let longestStreak = 0;
     for (const result of orderedResults) {
@@ -66,7 +68,10 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
 
   const elapsedMs = useMemo(() => {
     if (orderedResults.length === 0) return null;
-    const total = orderedResults.reduce((sum, result) => sum + (result.timeToAnswerMs ?? 0), 0);
+    const total = orderedResults.reduce(
+      (sum, result) => sum + (result.timeToAnswerMs ?? 0),
+      0
+    );
     return total;
   }, [orderedResults]);
 
@@ -128,15 +133,23 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
 
       <div>
         <h3 className="text-base font-semibold mb-2">Questions</h3>
-        <div>
+        <div className="[&_[data-slot='table-container']]:max-h-[480px]">
           <Table>
-            <TableHeader>
+            <TableHeader className="sticky top-0 bg-background z-10">
               <TableRow>
-                <TableHead className="w-12 text-right tabular-nums">#</TableHead>
-                <TableHead className="min-w-[240px] text-left">Country</TableHead>
-                <TableHead className="min-w-[240px] text-left">Your Answer</TableHead>
+                <TableHead className="w-12 text-right tabular-nums">
+                  #
+                </TableHead>
+                <TableHead className="min-w-[240px] text-left">
+                  Country
+                </TableHead>
+                <TableHead className="min-w-[240px] text-left">
+                  Your Answer
+                </TableHead>
                 <TableHead className="w-20 text-center">Result</TableHead>
-                <TableHead className="w-24 text-right tabular-nums">Time</TableHead>
+                <TableHead className="w-24 text-right tabular-nums">
+                  Time
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -148,9 +161,15 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                 return (
                   <TableRow
                     key={result.index}
-                    className={result.isCorrect ? "" : "bg-destructive/5 dark:bg-destructive/15 hover:bg-destructive/10 dark:hover:bg-destructive/20"}
+                    className={
+                      result.isCorrect
+                        ? ""
+                        : "bg-destructive/5 dark:bg-destructive/15 hover:bg-destructive/10 dark:hover:bg-destructive/20"
+                    }
                   >
-                    <TableCell className="text-right tabular-nums text-muted-foreground">{result.index}</TableCell>
+                    <TableCell className="text-right tabular-nums text-muted-foreground">
+                      {result.index}
+                    </TableCell>
                     <TableCell className="min-w-[240px] whitespace-normal align-middle">
                       <div className="flex items-center gap-2">
                         {country && (
@@ -194,7 +213,9 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right tabular-nums align-middle">{formatMs(result.timeToAnswerMs)}</TableCell>
+                    <TableCell className="text-right tabular-nums align-middle">
+                      {formatMs(result.timeToAnswerMs)}
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -204,10 +225,20 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
       </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-        <Button onClick={onPlayAgain} className="w-full sm:w-auto">Play Again</Button>
-        <Button onClick={onChangeDifficulty} variant="outline" className="w-full sm:w-auto">Change Difficulty</Button>
+        <Button onClick={onPlayAgain} className="w-full sm:w-auto">
+          Play Again
+        </Button>
+        <Button
+          onClick={onChangeDifficulty}
+          variant="outline"
+          className="w-full sm:w-auto"
+        >
+          Change Difficulty
+        </Button>
         {limitedLifeModeEnabled && (
-          <span className="text-sm text-muted-foreground">Hearts left: {hearts}</span>
+          <span className="text-sm text-muted-foreground">
+            Hearts left: {hearts}
+          </span>
         )}
       </div>
     </div>
