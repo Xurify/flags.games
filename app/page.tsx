@@ -1,4 +1,4 @@
-import FlagGameClient, { InitialGameData } from "@/components/FlagGameClient";
+import FlagGameClient, { type InitialGameData } from "@/components/FlagGameClient";
 import { generateQuestion, parseDifficultyFromQuery } from "@/lib/utils/gameLogic";
 
 export const dynamic = "force-dynamic";

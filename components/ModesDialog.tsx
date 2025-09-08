@@ -119,7 +119,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
                 }`}
               />
               <div className="min-w-0">
-                <div className="font-medium text-sm">Hearts Mode</div>
+                <div className="font-medium text-sm">Limited Hearts</div>
                 <div className="text-xs text-muted-foreground leading-tight break-words">
                   Lose a heart for each wrong answer
                 </div>
@@ -148,9 +148,9 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <TimerIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0 text-muted-foreground" />
               <div className="min-w-0">
-                <div className="font-medium text-sm">Timed Mode</div>
+                <div className="font-medium text-sm">Speed Round</div>
                 <div className="text-xs text-muted-foreground leading-tight break-words">
-                  Start a timed game with a countdown per question
+                  Answer each question within a limited time frame
                 </div>
               </div>
             </div>
