@@ -49,7 +49,6 @@ class FlagsApiClient {
       try {
         return (await response.json()) as T;
       } catch {
-        // No JSON body; return as empty object to avoid throwing
         return {} as T;
       }
     } finally {

@@ -2,13 +2,13 @@ import React from "react";
 import Timer from "@/components/Timer";
 import { GamePhase } from "@/lib/types/socket";
 import HeartsDisplay from "./HeartsDisplay";
+import { CORRECT_POINT_COST } from "@/lib/constants";
 
 interface QuestionProgressProps {
   currentQuestion: number;
   totalQuestions: number;
   score: number;
   showScorePopup: boolean;
-  CORRECT_POINT_COST: number;
   hearts?: number;
   maxHearts?: number;
   heartsModeEnabled?: boolean;
@@ -23,7 +23,6 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
   totalQuestions,
   score,
   showScorePopup,
-  CORRECT_POINT_COST,
   hearts,
   maxHearts,
   heartsModeEnabled,

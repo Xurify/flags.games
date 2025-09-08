@@ -2,7 +2,11 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { RotateCcwIcon, HelpCircleIcon, ArrowLeftRightIcon } from "lucide-react";
+import {
+  RotateCcwIcon,
+  HelpCircleIcon,
+  ArrowLeftRightIcon,
+} from "lucide-react";
 
 import {
   CORRECT_POINT_COST,
@@ -15,7 +19,11 @@ import {
 import { Country } from "@/lib/data/countries";
 import { useSettings } from "@/lib/context/SettingsContext";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
-import { audioManager, playErrorSound, playSuccessSound } from "@/lib/utils/audio-manager";
+import {
+  audioManager,
+  playErrorSound,
+  playSuccessSound,
+} from "@/lib/utils/audio-manager";
 import { prefetchAllFlags } from "@/lib/utils/image";
 
 import { Button } from "@/components/ui/button";
@@ -55,8 +63,19 @@ export interface GameState {
   hearts: number;
 }
 
+export interface QuestionResult {
+  index: number;
+  countryCode: string;
+  countryName: string;
+  selectedCode: string | null;
+  isCorrect: boolean;
+  startedAtMs: number;
+  answeredAtMs: number | null;
+  timeToAnswerMs: number | null;
+}
+
 const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
-  const { settings, updateSetting } = useSettings();
+  const { settings } = useSettings();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -82,6 +101,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
   const [showModesDialog, setShowModesDialog] = useState(false);
   const [showScorePopup, setShowScorePopup] = useState(false);
+
+  const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
+  const [questionStartMs, setQuestionStartMs] = useState<number>(Date.now());
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -143,12 +165,30 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
         questionData.currentCountry.code,
       ]),
     }));
+    setQuestionStartMs(Date.now());
   };
 
   const handleAnswer = (selectedCountry: Country) => {
     const isCorrect = selectedCountry.code === gameState.currentCountry.code;
 
     playSound(isCorrect);
+
+    const answeredAt = Date.now();
+    const timeToAnswer = Math.max(0, answeredAt - questionStartMs);
+
+    setQuestionResults((prev) => [
+      ...prev,
+      {
+        index: gameState.currentQuestion,
+        countryCode: gameState.currentCountry.code,
+        countryName: gameState.currentCountry.name,
+        selectedCode: selectedCountry.code,
+        isCorrect,
+        startedAtMs: questionStartMs,
+        answeredAtMs: answeredAt,
+        timeToAnswerMs: timeToAnswer,
+      },
+    ]);
 
     setGameState((prev) => {
       const newHearts =
@@ -204,6 +244,23 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
   const handleTimeUp = () => {
     if (gameState.showResult || gameState.gameCompleted) return;
+
+    const answeredAt = Date.now();
+    const timeToAnswer = Math.max(0, answeredAt - questionStartMs);
+
+    setQuestionResults((prev) => [
+      ...prev,
+      {
+        index: gameState.currentQuestion,
+        countryCode: gameState.currentCountry.code,
+        countryName: gameState.currentCountry.name,
+        selectedCode: null,
+        isCorrect: false,
+        startedAtMs: questionStartMs,
+        answeredAtMs: answeredAt,
+        timeToAnswerMs: timeToAnswer,
+      },
+    ]);
 
     setGameState((prev) => {
       const newHearts = heartsModeEnabled ? prev.hearts - 1 : prev.hearts;
@@ -266,6 +323,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     }));
 
     generateQuestionHandler();
+    setQuestionResults([]);
   };
 
   const restartGame = () => {
@@ -285,6 +343,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
     generateQuestionHandler();
     setShowRestartDialog(false);
+    setQuestionResults([]);
   };
 
   const handleChangeDifficulty = (newDifficulty: Difficulty) => {
@@ -344,6 +403,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     setHeartsModeEnabled(newHeartsMode);
     generateQuestionHandler();
     setShowDifficultyDialog(false);
+    setQuestionResults([]);
   };
 
   const getScoreMessage = () => {
@@ -379,6 +439,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
           />
         </React.Suspense>
       )}
+
       <DifficultySelector
         open={showDifficultyDialog}
         onOpenChange={setShowDifficultyDialog}
@@ -424,7 +485,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                 >
                   <ArrowLeftRightIcon className="w-3 h-3" />
                 </Button>
-                <span className="text-sm font-medium text-foreground">LEVEL</span>
+                <span className="text-sm font-medium text-foreground">
+                  LEVEL
+                </span>
                 <LevelBadge difficulty={gameState.difficulty} />
               </div>
             }
@@ -434,41 +497,41 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
           />
         </div>
 
-        <div className="mb-4">
-          <QuestionProgress
-            currentQuestion={gameState.currentQuestion}
-            totalQuestions={gameState.totalQuestions}
+        {gameState.gameCompleted ? (
+          <GameEndScreen
             score={gameState.score}
-            showScorePopup={showScorePopup}
-            CORRECT_POINT_COST={CORRECT_POINT_COST}
-            hearts={gameState.hearts}
-            maxHearts={MAX_HEARTS}
+            totalPossible={gameState.totalQuestions * CORRECT_POINT_COST}
+            onPlayAgain={startGame}
+            onChangeDifficulty={() => setShowDifficultyDialog(true)}
             heartsModeEnabled={heartsModeEnabled}
-            timedModeEnabled={timedDurationSec !== null}
-            timePerQuestionSec={timedDurationSec ?? undefined}
-            currentPhase={gameState.gameCompleted ? "finished" : (gameState.showResult ? "results" : "question")}
-            onTimeUp={handleTimeUp}
+            hearts={gameState.hearts}
+            results={questionResults}
           />
-        </div>
-
-        <Card className="mb-3 sm:mb-6 py-4 sm:py-8 px-4 sm:px-6">
-          <CardContent className="p-3 sm:p-4">
-            {gameState.gameCompleted ? (
-              <GameEndScreen
+        ) : (
+          <>
+            <div className="mb-4">
+              <QuestionProgress
+                currentQuestion={gameState.currentQuestion}
+                totalQuestions={gameState.totalQuestions}
                 score={gameState.score}
-                totalPossible={gameState.totalQuestions * CORRECT_POINT_COST}
-                percentage={Math.round(
-                  (gameState.score /
-                    (gameState.totalQuestions * CORRECT_POINT_COST)) *
-                    100
-                )}
-                onPlayAgain={startGame}
-                onChangeDifficulty={() => setShowDifficultyDialog(true)}
-                heartsModeEnabled={heartsModeEnabled}
+                showScorePopup={showScorePopup}
                 hearts={gameState.hearts}
+                maxHearts={MAX_HEARTS}
+                heartsModeEnabled={heartsModeEnabled}
+                timedModeEnabled={timedDurationSec !== null}
+                timePerQuestionSec={timedDurationSec ?? undefined}
+                currentPhase={
+                  gameState.gameCompleted
+                    ? "finished"
+                    : gameState.showResult
+                    ? "results"
+                    : "question"
+                }
+                onTimeUp={handleTimeUp}
               />
-            ) : (
-              <>
+            </div>
+            <Card className="mb-3 sm:mb-6 py-4 sm:py-8 px-4 sm:px-6">
+              <CardContent className="p-3 sm:p-4">
                 <div className="text-center mb-4 sm:mb-8">
                   <h1 className="text-lg sm:text-xl font-semibold text-foreground mb-1 sm:mb-2">
                     Guess the Country
@@ -501,34 +564,33 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                     </Button>
                   </div>
                 )}
-              </>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+            <div className="flex flex-col items-center space-y-3">
+              <RestartDialog
+                open={showRestartDialog}
+                onOpenChange={setShowRestartDialog}
+                onRestart={restartGame}
+                gameCompleted={gameState.gameCompleted}
+              >
+                <Button variant="destructive" className="w-full" size="lg">
+                  <RotateCcwIcon className="w-4 h-4 mr-2" />
+                  Restart Game
+                </Button>
+              </RestartDialog>
 
-        <div className="flex flex-col items-center space-y-3">
-          <RestartDialog
-            open={showRestartDialog}
-            onOpenChange={setShowRestartDialog}
-            onRestart={restartGame}
-            gameCompleted={gameState.gameCompleted}
-          >
-            <Button variant="destructive" className="w-full" size="lg">
-              <RotateCcwIcon className="w-4 h-4 mr-2" />
-              Restart Game
-            </Button>
-          </RestartDialog>
-
-          <HowToPlayDialog
-            open={showHowToPlayDialog}
-            onOpenChange={setShowHowToPlayDialog}
-          >
-            <Button variant="ghost" className="text-muted-foreground" size="lg">
-              <HelpCircleIcon className="w-4 h-4 mr-2" />
-              How to play?
-            </Button>
-          </HowToPlayDialog>
-        </div>
+              <HowToPlayDialog
+                open={showHowToPlayDialog}
+                onOpenChange={setShowHowToPlayDialog}
+              >
+                <Button variant="ghost" className="text-muted-foreground" size="lg">
+                  <HelpCircleIcon className="w-4 h-4 mr-2" />
+                  How to play?
+                </Button>
+              </HowToPlayDialog>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
