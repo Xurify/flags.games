@@ -99,8 +99,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     hearts: MAX_HEARTS,
   });
 
-  const [heartsModeEnabled, setHeartsModeEnabled] = useState(false);
-  const [timedDurationSec, setTimedDurationSec] = useState<number | null>(null);
+  const [limitedLifeModeEnabled, setLimitedLifeModeEnabled] = useState(false);
+  const [speedRoundModeDurationSec, setSpeedRoundModeDurationSec] = useState<number | null>(null);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
@@ -197,8 +197,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
 
     setGameState((prev) => {
       const newHearts =
-        heartsModeEnabled && !isCorrect ? prev.hearts - 1 : prev.hearts;
-      const gameOver = heartsModeEnabled && newHearts <= 0;
+        limitedLifeModeEnabled && !isCorrect ? prev.hearts - 1 : prev.hearts;
+      const gameOver = limitedLifeModeEnabled && newHearts <= 0;
 
       return {
         ...prev,
@@ -220,10 +220,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     if (settings.autoAdvanceEnabled) {
       setGameTimeout(() => {
         const updatedHearts =
-          heartsModeEnabled && !isCorrect
+          limitedLifeModeEnabled && !isCorrect
             ? gameState.hearts - 1
             : gameState.hearts;
-        if (heartsModeEnabled && updatedHearts <= 0) {
+        if (limitedLifeModeEnabled && updatedHearts <= 0) {
           setGameState((prev) => ({
             ...prev,
             gameCompleted: true,
@@ -268,8 +268,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     ]);
 
     setGameState((prev) => {
-      const newHearts = heartsModeEnabled ? prev.hearts - 1 : prev.hearts;
-      const gameOver = heartsModeEnabled && newHearts <= 0;
+      const newHearts = limitedLifeModeEnabled ? prev.hearts - 1 : prev.hearts;
+      const gameOver = limitedLifeModeEnabled && newHearts <= 0;
       return {
         ...prev,
         selectedAnswer: null,
@@ -381,16 +381,16 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     }
   };
 
-  const handleToggleHeartsMode = (value: boolean) => {
+  const handleToggleLimitedLifeMode = (value: boolean) => {
     if (gameState.currentQuestion === 1) {
       audioManager.playButtonClickSound();
-      setHeartsModeEnabled(value);
+      setLimitedLifeModeEnabled(value);
     } else {
-      restartGameWithHeartsMode(value);
+      restartGameWithLimitedLifeMode(value);
     }
   };
 
-  const restartGameWithHeartsMode = (newHeartsMode: boolean) => {
+  const restartGameWithLimitedLifeMode = (newLimitedLifeMode: boolean) => {
     clearGameTimeout();
 
     setGameState((prev) => ({
@@ -405,7 +405,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       hearts: MAX_HEARTS,
     }));
 
-    setHeartsModeEnabled(newHeartsMode);
+    setLimitedLifeModeEnabled(newLimitedLifeMode);
     generateQuestionHandler();
     setShowDifficultyDialog(false);
     setQuestionResults([]);
@@ -456,22 +456,22 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       <ModesDialog
         open={showModesDialog}
         onOpenChange={setShowModesDialog}
-        heartsModeEnabled={heartsModeEnabled}
-        onToggleHeartsMode={setHeartsModeEnabled}
+        limitedLifeModeEnabled={limitedLifeModeEnabled}
+        onToggleLimitedLifeMode={setLimitedLifeModeEnabled}
         onRequestRestart={restartGame}
         onStartClassic={() => {
-          setTimedDurationSec(null);
-          setHeartsModeEnabled(false);
+          setSpeedRoundModeDurationSec(null);
+          setLimitedLifeModeEnabled(false);
           restartGame();
         }}
-        onStartHearts={() => {
-          setTimedDurationSec(null);
-          setHeartsModeEnabled(true);
+        onStartLimitedLife={() => {
+          setSpeedRoundModeDurationSec(null);
+          setLimitedLifeModeEnabled(true);
           restartGame();
         }}
-        onStartTimedMode={(durationSec) => {
-          setTimedDurationSec(durationSec);
-          setHeartsModeEnabled(false);
+        onStartSpeedRound={(durationSec) => {
+          setSpeedRoundModeDurationSec(durationSec);
+          setLimitedLifeModeEnabled(false);
           restartGame();
         }}
       />
@@ -508,7 +508,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             totalPossible={gameState.totalQuestions * CORRECT_POINT_COST}
             onPlayAgain={startGame}
             onChangeDifficulty={() => setShowDifficultyDialog(true)}
-            heartsModeEnabled={heartsModeEnabled}
+            limitedLifeModeEnabled={limitedLifeModeEnabled}
             hearts={gameState.hearts}
             results={questionResults}
           />
@@ -522,9 +522,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                 showScorePopup={showScorePopup}
                 hearts={gameState.hearts}
                 maxHearts={MAX_HEARTS}
-                heartsModeEnabled={heartsModeEnabled}
-                timedModeEnabled={timedDurationSec !== null}
-                timePerQuestionSec={timedDurationSec ?? undefined}
+                limitedLifeModeEnabled={limitedLifeModeEnabled}
+                speedRoundModeEnabled={speedRoundModeDurationSec !== null}
+                speedRoundTimeSec={speedRoundModeDurationSec ?? undefined}
                 currentPhase={
                   gameState.gameCompleted
                     ? "finished"

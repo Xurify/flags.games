@@ -10,12 +10,13 @@ import {
 } from "@/components/ui/table";
 import { getCountryByCode } from "@/lib/data/countries";
 import { QuestionResult } from "./FlagGameClient";
+
 interface GameEndScreenProps {
   score: number;
   totalPossible: number;
   onPlayAgain: () => void;
   onChangeDifficulty: () => void;
-  heartsModeEnabled: boolean;
+  limitedLifeModeEnabled: boolean;
   hearts: number;
   results: QuestionResult[];
 }
@@ -34,7 +35,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
   totalPossible,
   onPlayAgain,
   onChangeDifficulty,
-  heartsModeEnabled,
+  limitedLifeModeEnabled,
   hearts,
   results,
 }) => {
@@ -84,7 +85,6 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
 
   return (
     <div className="py-4 sm:py-8 px-4 sm:px-6 space-y-6">
-      {/* Metrics grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 text-center">
         <div>
           <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
@@ -202,7 +202,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
         <Button onClick={onPlayAgain} className="w-full sm:w-auto">Play Again</Button>
         <Button onClick={onChangeDifficulty} variant="outline" className="w-full sm:w-auto">Change Difficulty</Button>
-        {heartsModeEnabled && (
+        {limitedLifeModeEnabled && (
           <span className="text-sm text-muted-foreground">Hearts left: {hearts}</span>
         )}
       </div>

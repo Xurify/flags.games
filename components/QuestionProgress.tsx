@@ -11,9 +11,9 @@ interface QuestionProgressProps {
   showScorePopup: boolean;
   hearts?: number;
   maxHearts?: number;
-  heartsModeEnabled?: boolean;
-  timedModeEnabled?: boolean;
-  timePerQuestionSec?: number;
+  limitedLifeModeEnabled?: boolean;
+  speedRoundModeEnabled?: boolean;
+  speedRoundTimeSec?: number;
   currentPhase?: GamePhase;
   onTimeUp?: () => void;
 }
@@ -25,9 +25,9 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
   showScorePopup,
   hearts,
   maxHearts,
-  heartsModeEnabled,
-  timedModeEnabled,
-  timePerQuestionSec,
+  limitedLifeModeEnabled,
+  speedRoundModeEnabled,
+  speedRoundTimeSec,
   currentPhase,
   onTimeUp,
 }) => (
@@ -52,23 +52,23 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
           </div>
         )}
       </div>
-      {heartsModeEnabled && hearts !== undefined && maxHearts !== undefined && (
+      {limitedLifeModeEnabled && hearts !== undefined && maxHearts !== undefined && (
         <>
           <div className="w-px h-4 bg-border"></div>
           <HeartsDisplay
             hearts={hearts}
             maxHearts={maxHearts}
-            enabled={heartsModeEnabled}
+            enabled={limitedLifeModeEnabled}
           />
         </>
       )}
-      {timedModeEnabled &&
-        timePerQuestionSec !== undefined &&
+      {speedRoundModeEnabled &&
+        speedRoundTimeSec !== undefined &&
         currentPhase !== undefined && (
           <>
             <div className="w-px h-4 bg-border"></div>
             <Timer
-              timePerQuestion={timePerQuestionSec}
+              timePerQuestion={speedRoundTimeSec}
               questionIndex={currentQuestion}
               currentPhase={currentPhase}
               onTimeUp={onTimeUp}

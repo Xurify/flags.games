@@ -8,7 +8,6 @@ export interface GameSettings {
   soundEffectsEnabled: boolean;
   autoAdvanceEnabled: boolean;
   darkMode: boolean;
-  timedModeEnabled: boolean;
   timePerQuestion: number;
 }
 
@@ -16,13 +15,12 @@ export const defaultSettings: GameSettings = {
   soundEffectsEnabled: true,
   autoAdvanceEnabled: true,
   darkMode: false,
-  timedModeEnabled: false,
   timePerQuestion: TIME_PER_QUESTION_OPTIONS[0],
 };
 
 interface SettingsContextType {
   settings: GameSettings;
-  updateSetting: (key: keyof GameSettings, value: any) => void;
+  updateSetting: (key: keyof GameSettings, value: boolean) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -41,10 +39,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   }, [settings.darkMode]);
 
   useEffect(() => {
-    const saved = localStorage.getItem(SETTINGS_STORAGE_KEY);
-    if (saved) {
-      const parsedSettings = JSON.parse(saved);
-      // Only hydrate app-level preferences; keep gameplay in-memory per session
+    const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (savedSettings) {
+      const parsedSettings = JSON.parse(savedSettings);
       setSettings({
         ...defaultSettings,
         soundEffectsEnabled: parsedSettings.soundEffectsEnabled ?? defaultSettings.soundEffectsEnabled,
@@ -53,7 +50,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const updateSetting = (key: keyof GameSettings, value: any) => {
+  const updateSetting = (key: keyof GameSettings, value: boolean) => {
     audioManager.playButtonClickSound();
     setSettings((prev) => {
       const next = { ...prev, [key]: value } as GameSettings;

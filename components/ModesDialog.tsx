@@ -24,48 +24,48 @@ import { useSettings } from "@/lib/context/SettingsContext";
 interface ModesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  heartsModeEnabled: boolean;
-  onToggleHeartsMode: (value: boolean) => void;
+  limitedLifeModeEnabled: boolean;
+  onToggleLimitedLifeMode: (value: boolean) => void;
   onRequestRestart: () => void;
-  onStartTimedMode?: (durationSec: number) => void;
+  onStartSpeedRound?: (durationSec: number) => void;
   onStartClassic?: () => void;
-  onStartHearts?: () => void;
+  onStartLimitedLife?: () => void;
 }
 
 const ModesDialog: React.FC<ModesDialogProps> = ({
   open,
   onOpenChange,
-  heartsModeEnabled,
-  onToggleHeartsMode,
+  limitedLifeModeEnabled,
+  onToggleLimitedLifeMode,
   onRequestRestart,
-  onStartTimedMode,
+  onStartSpeedRound,
   onStartClassic,
-  onStartHearts,
+  onStartLimitedLife,
 }) => {
   const { settings } = useSettings();
-  const [showHeartsConfirm, setShowHeartsConfirm] = useState(false);
-  const [pendingHearts, setPendingHearts] =
-    useState<boolean>(heartsModeEnabled);
+  const [showLimitedLifeConfirm, setShowLimitedLifeConfirm] = useState(false);
+  const [pendingLimitedLife, setPendingLimitedLife] =
+    useState<boolean>(limitedLifeModeEnabled);
   const [timePerQuestion, setTimePerQuestion] = useState<number>(
     settings.timePerQuestion
   );
 
   useEffect(() => {
     if (open) {
-      setPendingHearts(heartsModeEnabled);
+      setPendingLimitedLife(limitedLifeModeEnabled);
       setTimePerQuestion(settings.timePerQuestion);
     }
-  }, [open, heartsModeEnabled, settings.timePerQuestion]);
+  }, [open, limitedLifeModeEnabled, settings.timePerQuestion]);
 
-  const confirmHeartsRestart = () => {
-    setShowHeartsConfirm(false);
-    onToggleHeartsMode(pendingHearts);
+  const confirmLimitedLifeRestart = () => {
+    setShowLimitedLifeConfirm(false);
+    onToggleLimitedLifeMode(pendingLimitedLife);
     onRequestRestart();
   };
 
-  const startTimedMode = () => {
+  const startSpeedRound = () => {
     const nextDuration = Number(timePerQuestion);
-    onStartTimedMode?.(nextDuration);
+    onStartSpeedRound?.(nextDuration);
     onOpenChange(false);
   };
 
@@ -99,7 +99,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
                   if (onStartClassic) {
                     onStartClassic();
                   } else {
-                    onToggleHeartsMode(false);
+                    onToggleLimitedLifeMode(false);
                     onRequestRestart();
                   }
                   onOpenChange(false);
@@ -113,7 +113,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <HeartIcon
                 className={`w-6 h-6 sm:w-5 sm:h-5 shrink-0 ${
-                  heartsModeEnabled
+                  limitedLifeModeEnabled
                     ? "text-red-500 fill-red-500"
                     : "text-muted-foreground"
                 }`}
@@ -131,10 +131,10 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
                 variant="default"
                 className="w-full sm:w-auto sm:min-w-[72px]"
                 onClick={() => {
-                  if (onStartHearts) {
-                    onStartHearts();
+                  if (onStartLimitedLife) {
+                    onStartLimitedLife();
                   } else {
-                    onToggleHeartsMode(true);
+                    onToggleLimitedLifeMode(true);
                     onRequestRestart();
                   }
                   onOpenChange(false);
@@ -172,7 +172,12 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
                   </SelectContent>
                 </Select>
               </div>
-              <Button size="sm" variant="default" className="w-full sm:w-auto sm:min-w-[72px]" onClick={startTimedMode}>
+              <Button
+                size="sm"
+                variant="default"
+                className="w-full sm:w-auto sm:min-w-[72px]"
+                onClick={startSpeedRound}
+              >
                 Start
               </Button>
             </div>
@@ -184,7 +189,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
         </AlertDialogFooter>
       </AlertDialogContent>
 
-      <AlertDialog open={showHeartsConfirm} onOpenChange={setShowHeartsConfirm}>
+      <AlertDialog open={showLimitedLifeConfirm} onOpenChange={setShowLimitedLifeConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Restart Game?</AlertDialogTitle>
@@ -194,11 +199,11 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowHeartsConfirm(false)}>
+            <AlertDialogCancel onClick={() => setShowLimitedLifeConfirm(false)}>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmHeartsRestart}
+              onClick={confirmLimitedLifeRestart}
               variant="destructive"
             >
               Restart Game
