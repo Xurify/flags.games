@@ -18,7 +18,7 @@ const SettingsButton = React.forwardRef<
     <button
       ref={ref}
       className={cn(
-        "flex items-center w-full text-left px-4 py-3 rounded-lg bg-muted/40 hover:bg-muted/80 transition-colors",
+        "flex items-center w-full text-left px-4 py-3 rounded-lg hover:bg-muted/80 transition-colors bg-card",
         className
       )}
       {...props}
