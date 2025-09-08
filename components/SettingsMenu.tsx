@@ -158,7 +158,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                   ) : (
                     <MoonIcon className="w-4 h-4 mr-2" />
                   )}
-                  {settings.darkMode ? "On" : "Off"}
+                  {settings.darkMode ? "Dark Mode: On" : "Dark Mode: Off"}
                 </Button>
               </div>
             </div>

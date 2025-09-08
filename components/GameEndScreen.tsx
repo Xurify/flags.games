@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -131,11 +132,11 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12">#</TableHead>
-                <TableHead className="min-w-[220px] whitespace-normal">Country</TableHead>
-                <TableHead className="min-w-[220px] whitespace-normal">Your Answer</TableHead>
-                <TableHead className="w-24">Result</TableHead>
-                <TableHead className="w-24">Time</TableHead>
+                <TableHead className="w-12 text-right tabular-nums">#</TableHead>
+                <TableHead className="min-w-[240px] text-left">Country</TableHead>
+                <TableHead className="min-w-[240px] text-left">Your Answer</TableHead>
+                <TableHead className="w-20 text-center">Result</TableHead>
+                <TableHead className="w-24 text-right tabular-nums">Time</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -147,10 +148,10 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                 return (
                   <TableRow
                     key={result.index}
-                    className={result.isCorrect ? "" : "bg-destructive/5"}
+                    className={result.isCorrect ? "" : "bg-destructive/5 dark:bg-destructive/15 hover:bg-destructive/10 dark:hover:bg-destructive/20"}
                   >
-                    <TableCell>{result.index}</TableCell>
-                    <TableCell className="min-w-[220px] whitespace-normal">
+                    <TableCell className="text-right tabular-nums text-muted-foreground">{result.index}</TableCell>
+                    <TableCell className="min-w-[240px] whitespace-normal align-middle">
                       <div className="flex items-center gap-2">
                         {country && (
                           <img
@@ -163,7 +164,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                         <span>{result.countryName}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="min-w-[220px] whitespace-normal">
+                    <TableCell className="min-w-[240px] whitespace-normal align-middle">
                       {selected ? (
                         <div className="flex items-center gap-2">
                           <img
@@ -178,18 +179,22 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                         <span className="text-muted-foreground">No answer</span>
                       )}
                     </TableCell>
-                    <TableCell>
-                      {result.isCorrect ? (
-                        <span className="text-green-600 dark:text-green-500">
-                          Correct
-                        </span>
-                      ) : (
-                        <span className="text-red-600 dark:text-red-500">
-                          Wrong
-                        </span>
-                      )}
+                    <TableCell className="text-center align-middle">
+                      <div className="flex items-center justify-center">
+                        {result.isCorrect ? (
+                          <Check
+                            className="w-4 h-4 block text-green-600 dark:text-green-500"
+                            aria-label="Correct"
+                          />
+                        ) : (
+                          <X
+                            className="w-4 h-4 block text-red-600 dark:text-red-500"
+                            aria-label="Wrong"
+                          />
+                        )}
+                      </div>
                     </TableCell>
-                    <TableCell>{formatMs(result.timeToAnswerMs)}</TableCell>
+                    <TableCell className="text-right tabular-nums align-middle">{formatMs(result.timeToAnswerMs)}</TableCell>
                   </TableRow>
                 );
               })}
