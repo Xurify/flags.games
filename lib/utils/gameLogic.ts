@@ -25,6 +25,7 @@ interface QuestionData {
   difficulty: Difficulty;
   currentCountry: Country;
   options: Country[];
+  totalQuestions: number;
 }
 
 function shuffleArray<T>(array: T[]): T[] {
@@ -427,6 +428,7 @@ export const generateQuestion = (
     difficulty,
     currentCountry: correctCountry,
     options: shuffledOptions,
+    totalQuestions: getDifficultySettings(difficulty).count,
   };
 };
 

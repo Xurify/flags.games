@@ -31,7 +31,6 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   currentDifficulty,
   gameState,
 }) => {
-  const { settings: gameSettings } = useSettings();
   const [selectedDifficulty, setSelectedDifficulty] = useState(currentDifficulty);
   const [showDifficultyRestartDialog, setShowDifficultyRestartDialog] = useState(false);
   const difficultySettings = getDifficultySettings(selectedDifficulty);

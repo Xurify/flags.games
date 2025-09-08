@@ -1,5 +1,5 @@
-import FlagGameServer from "@/components/FlagGameServer";
-import { parseDifficultyFromQuery } from "@/lib/utils/gameLogic";
+import FlagGameClient, { InitialGameData } from "@/components/FlagGameClient";
+import { generateQuestion, parseDifficultyFromQuery } from "@/lib/utils/gameLogic";
 
 export const dynamic = "force-dynamic";
 
@@ -9,5 +9,6 @@ interface HomeProps {
 
 export default async function Home({ searchParams }: HomeProps) {
   const difficulty = parseDifficultyFromQuery((await searchParams)?.difficulty);
-  return <FlagGameServer difficulty={difficulty} />;
+  const initialGameData = generateQuestion(difficulty) as InitialGameData;
+  return <FlagGameClient initialGameData={initialGameData} />;
 }
