@@ -100,7 +100,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   });
 
   const [limitedLifeModeEnabled, setLimitedLifeModeEnabled] = useState(false);
-  const [speedRoundModeDurationSec, setSpeedRoundModeDurationSec] = useState<number | null>(null);
+  const [speedRoundModeDurationSec, setSpeedRoundModeDurationSec] = useState<
+    number | null
+  >(null);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
@@ -437,10 +439,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       {gameState.gameCompleted && (
         <React.Suspense fallback={null}>
           <Confetti
-            width={window.innerWidth}
+            width={window.innerWidth - 100}
             height={window.innerHeight}
             numberOfPieces={350}
             recycle={false}
+            className="w-full h-full"
           />
         </React.Suspense>
       )}
@@ -588,7 +591,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                 open={showHowToPlayDialog}
                 onOpenChange={setShowHowToPlayDialog}
               >
-                <Button variant="ghost" className="text-muted-foreground" size="lg">
+                <Button
+                  variant="ghost"
+                  className="text-muted-foreground"
+                  size="lg"
+                >
                   <HelpCircleIcon className="w-4 h-4 mr-2" />
                   How to play?
                 </Button>

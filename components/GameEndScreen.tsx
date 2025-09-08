@@ -22,12 +22,11 @@ interface GameEndScreenProps {
 }
 
 const formatMs = (ms: number | null) => {
-  if (ms === null || Number.isNaN(ms)) return "-";
-  const totalSeconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  if (minutes > 0) return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  return `${seconds}s`;
+  if (ms === null || Number.isNaN(ms)) return "--:--";
+  const totalSeconds = Math.max(0, Math.round(ms / 1000));
+  const minutes = Math.floor(totalSeconds / 60).toString();
+  const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${seconds}`;
 };
 
 const GameEndScreen: React.FC<GameEndScreenProps> = ({
@@ -50,11 +49,11 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
 
   const summary = useMemo(() => {
     const totalQuestions = orderedResults.length;
-    const correctCount = orderedResults.filter((r) => r.isCorrect).length;
+    const correctCount = orderedResults.filter((result) => result.isCorrect).length;
     let currentStreak = 0;
     let longestStreak = 0;
-    for (const r of orderedResults) {
-      if (r.isCorrect) {
+    for (const result of orderedResults) {
+      if (result.isCorrect) {
         currentStreak += 1;
         if (currentStreak > longestStreak) longestStreak = currentStreak;
       } else {
@@ -66,15 +65,13 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
 
   const elapsedMs = useMemo(() => {
     if (orderedResults.length === 0) return null;
-    const firstStart = orderedResults[0].startedAtMs;
-    const lastAnswered = orderedResults[orderedResults.length - 1].answeredAtMs;
-    if (firstStart == null || lastAnswered == null) return null;
-    return Math.max(0, lastAnswered - firstStart);
+    const total = orderedResults.reduce((sum, result) => sum + (result.timeToAnswerMs ?? 0), 0);
+    return total;
   }, [orderedResults]);
 
   const formatClock = (ms: number | null) => {
     if (ms === null || Number.isNaN(ms)) return "--:--";
-    const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+    const totalSeconds = Math.max(0, Math.round(ms / 1000));
     const minutes = Math.floor(totalSeconds / 60)
       .toString()
       .padStart(2, "0");
@@ -142,27 +139,28 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {orderedResults.map((r) => {
-                const country = getCountryByCode(r.countryCode);
-                const selected = r.selectedCode
-                  ? getCountryByCode(r.selectedCode)
+              {orderedResults.map((result) => {
+                const country = getCountryByCode(result.countryCode);
+                const selected = result.selectedCode
+                  ? getCountryByCode(result.selectedCode)
                   : null;
                 return (
                   <TableRow
-                    key={r.index}
-                    className={r.isCorrect ? "" : "bg-destructive/5"}
+                    key={result.index}
+                    className={result.isCorrect ? "" : "bg-destructive/5"}
                   >
-                    <TableCell>{r.index}</TableCell>
+                    <TableCell>{result.index}</TableCell>
                     <TableCell className="min-w-[220px] whitespace-normal">
                       <div className="flex items-center gap-2">
                         {country && (
                           <img
                             src={country.flag}
-                            alt={country.name}
+                            alt=""
+                            aria-hidden="true"
                             className="w-5 h-5"
                           />
                         )}
-                        <span>{r.countryName}</span>
+                        <span>{result.countryName}</span>
                       </div>
                     </TableCell>
                     <TableCell className="min-w-[220px] whitespace-normal">
@@ -170,7 +168,8 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                         <div className="flex items-center gap-2">
                           <img
                             src={selected.flag}
-                            alt={selected.name}
+                            alt=""
+                            aria-hidden="true"
                             className="w-5 h-5"
                           />
                           <span>{selected.name}</span>
@@ -180,7 +179,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                       )}
                     </TableCell>
                     <TableCell>
-                      {r.isCorrect ? (
+                      {result.isCorrect ? (
                         <span className="text-green-600 dark:text-green-500">
                           Correct
                         </span>
@@ -190,7 +189,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                         </span>
                       )}
                     </TableCell>
-                    <TableCell>{formatMs(r.timeToAnswerMs)}</TableCell>
+                    <TableCell>{formatMs(result.timeToAnswerMs)}</TableCell>
                   </TableRow>
                 );
               })}
