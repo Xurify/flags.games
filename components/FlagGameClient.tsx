@@ -413,16 +413,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     setQuestionResults([]);
   };
 
-  const getScoreMessage = () => {
-    const percentage =
-      (gameState.score / (gameState.totalQuestions * CORRECT_POINT_COST)) * 100;
-    if (percentage >= 90) return "Excellent! You're a geography expert! 🌟";
-    if (percentage >= 75) return "Great job! You know your flags well! 🎉";
-    if (percentage >= 60) return "Good work! Keep practicing! 👍";
-    if (percentage >= 40) return "Not bad! There's room for improvement! 💪";
-    return "Keep learning! Practice makes perfect! 📚";
-  };
-
   useEffect(() => {
     if (gameState.gameCompleted && settings.soundEffectsEnabled) {
       const percentage =
