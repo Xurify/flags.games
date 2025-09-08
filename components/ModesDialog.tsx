@@ -119,7 +119,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
                 }`}
               />
               <div className="min-w-0">
-                <div className="font-medium text-sm">Limited Hearts</div>
+                <div className="font-medium text-sm">Limited Life</div>
                 <div className="text-xs text-muted-foreground leading-tight break-words">
                   Lose a heart for each wrong answer
                 </div>
