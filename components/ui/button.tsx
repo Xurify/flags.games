@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils/strings"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-semibold transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/30 focus-visible:ring-4 active:scale-98 cursor-pointer disabled:cursor-not-allowed transform-gpu",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/30 focus-visible:ring-4 active:scale-98 cursor-pointer disabled:cursor-not-allowed transform-gpu",
   {
     variants: {
       variant: {
@@ -26,7 +26,7 @@ const buttonVariants = cva(
       size: {
         default: "h-11 px-6 py-3 has-[>svg]:px-5",
         sm: "h-9 gap-1.5 px-4 text-xs font-medium has-[>svg]:px-3",
-        lg: "h-13 rounded px-8 text-base has-[>svg]:px-6",
+        lg: "h-13 rounded-xl px-8 text-base has-[>svg]:px-6",
         icon: "size-11 rounded-lg",
         "icon-sm": "size-9 rounded-md",
         pill: "h-11 px-8 rounded-full"
