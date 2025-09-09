@@ -113,7 +113,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
 
           <div>
             <h3 className="text-base font-semibold mb-2">Leaderboard</h3>
-            <div className="overflow-hidden [&_[data-slot='table-container']]:max-h-[480px] bg-[oklch(0.96_0.02_100.03)] dark:bg-[oklch(0.20_0.01_240)]">
+            <div className="overflow-hidden [&_[data-slot='table-container']]:max-h-[480px]">
               <Table>
                 <TableHeader className="sticky top-0 z-10">
                   <TableRow>
