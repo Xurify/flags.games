@@ -23,8 +23,8 @@ interface GameFinishedProps {
 }
 
 export default function GameFinished({ room }: GameFinishedProps) {
-  const { restartGame, stopGame, leaveRoom, currentUser } = useSocket();
-  const { gameState, leaderboard } = useGameState();
+  const { restartGame, stopGame, currentUser } = useSocket();
+  const { gameState, leaderboard, currentRoom } = useGameState();
 
   const isHost = currentUser?.id === room.host;
 
@@ -194,6 +194,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
               <Button
                 onClick={() => restartGame()}
                 className="w-full sm:w-auto"
+                disabled={Number(currentRoom?.members?.length) < 2}
               >
                 Play Again
               </Button>
