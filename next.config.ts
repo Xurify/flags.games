@@ -46,6 +46,15 @@ const nextConfig: NextConfig = {
         source: '/ingest/decide',
         destination: 'https://eu.i.posthog.com/decide',
       },
+      // Vemetric
+      {
+        source: '/_v_script.js',
+        destination: 'https://cdn.vemetric.com/main.js',
+      },
+      {
+        source: '/_v/:slug',
+        destination: 'https://hub.vemetric.com/:slug',
+      },
     ]
   },
 

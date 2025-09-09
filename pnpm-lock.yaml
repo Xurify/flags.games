@@ -29,6 +29,9 @@ dependencies:
   '@vemetric/react':
     specifier: ^0.5.5
     version: 0.5.5(react@19.1.0)
+  '@vemetric/web':
+    specifier: ^0.5.5
+    version: 0.5.5
   '@vercel/analytics':
     specifier: ^1.5.0
     version: 1.5.0(next@15.3.3)(react@19.1.0)
@@ -1684,6 +1687,10 @@ packages:
         optional: true
     dependencies:
       react: 19.1.0
+    dev: false
+
+  /@vemetric/web@0.5.5:
+    resolution: {integrity: sha512-m4GwAZfF/3YPwggUQjdSvKM00TUSC1DOJ1GDeU0wW7YrmaXt6moYhmFU/LmQFcJwlO5E3lytqXGQaZRGwrPZIQ==}
     dev: false
 
   /@vercel/analytics@1.5.0(next@15.3.3)(react@19.1.0):

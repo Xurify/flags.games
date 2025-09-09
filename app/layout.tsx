@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import { VemetricScript } from '@vemetric/react';
 import { SettingsProvider } from "@/lib/context/SettingsContext";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -77,7 +76,6 @@ export default async function RootLayout({
           <Toaster theme={theme} />
           {children}
         </SettingsProvider>
-        {process.env.NODE_ENV !== "development" && <VemetricScript token={process.env.NEXT_PUBLIC_VEMETRIC_TOKEN!} />}
         {process.env.NODE_ENV !== "development" && <Analytics />}
       </body>
     </html>
