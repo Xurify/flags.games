@@ -10,7 +10,6 @@ if (process.env.NODE_ENV !== "development") {
     //debug: process.env.NODE_ENV === "development",
   });
   initSDK({
-    appID: process.env.NEXT_PUBLIC_EMBRACE_APP_ID!,
+    appID: process.env.NEXT_PUBLIC_EMBRACE_APP_IDD!,
   });
-  console.log("Embrace SDK initialized", process.env.NEXT_PUBLIC_EMBRACE_APP_ID);
 }
