@@ -54,7 +54,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
         <div className="space-y-6">
           <div className="text-center space-y-2">
             <div className="flex items-center justify-center gap-2">
-              <Crown className="w-6 h-6  fill-yellow-500" aria-hidden="true" />
+              <Crown className="w-6 h-6 dark:text-yellow-500 fill-yellow-500" aria-hidden="true" />
               <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
                 Final results
               </h2>
@@ -113,18 +113,22 @@ export default function GameFinished({ room }: GameFinishedProps) {
 
           <div>
             <h3 className="text-base font-semibold mb-2">Leaderboard</h3>
-            <div className="[&_[data-slot='table-container']]:max-h-[480px]">
+            <div className="overflow-hidden [&_[data-slot='table-container']]:max-h-[480px] bg-[oklch(0.96_0.02_100.03)] dark:bg-[oklch(0.20_0.01_240)]">
               <Table>
-                <TableHeader className="sticky top-0 bg-background z-10">
+                <TableHeader className="sticky top-0 z-10">
                   <TableRow>
-                    <TableHead className="w-12 text-right tabular-nums">
+                    <TableHead className="w-12 text-right tabular-nums text-muted-foreground dark:text-white">
                       #
                     </TableHead>
-                    <TableHead className="min-w-[240px] text-left">
+                    <TableHead className="min-w-[240px] text-left text-muted-foreground dark:text-white">
                       Player
                     </TableHead>
-                    <TableHead className="w-32 text-center">Correct</TableHead>
-                    <TableHead className="w-24 text-right">Score</TableHead>
+                    <TableHead className="w-32 text-center text-muted-foreground dark:text-white">
+                      Correct
+                    </TableHead>
+                    <TableHead className="w-24 text-right text-muted-foreground dark:text-white">
+                      Score
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -134,7 +138,9 @@ export default function GameFinished({ room }: GameFinishedProps) {
                       <TableRow
                         key={player.userId}
                         className={cn(
-                          isYou ? "bg-yellow-400/30 hover:bg-yellow-400/40" : ""
+                          "",
+                          isYou &&
+                            "bg-yellow-300/40 dark:bg-primary/10 hover:bg-yellow-300/50 dark:hover:bg-primary/15 relative after:absolute after:left-0 after:top-0 after:h-full after:w-[3px] after:bg-yellow-400 dark:after:bg-primary"
                         )}
                       >
                         <TableCell className="text-right tabular-nums text-muted-foreground">
@@ -161,7 +167,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
                           {player.correctAnswers}/
                           {gameState?.totalQuestions || 0}
                         </TableCell>
-                        <TableCell className="text-right tabular-nums align-middle">
+                        <TableCell className="text-right tabular-nums align-middle font-semibold text-foreground">
                           {player.score}
                         </TableCell>
                       </TableRow>
