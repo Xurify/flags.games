@@ -107,7 +107,7 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setUsername(e.target.value)
               }
-              className="h-11 rounded-xl"
+              className="h-11"
               maxLength={30}
             />
             {formErrors.username && (
