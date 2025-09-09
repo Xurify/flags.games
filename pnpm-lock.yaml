@@ -26,6 +26,9 @@ dependencies:
   '@radix-ui/react-switch':
     specifier: ^1.2.5
     version: 1.2.5(@types/react-dom@19.1.6)(@types/react@19.1.8)(react-dom@19.1.0)(react@19.1.0)
+  '@vemetric/react':
+    specifier: ^0.5.5
+    version: 0.5.5(react@19.1.0)
   '@vercel/analytics':
     specifier: ^1.5.0
     version: 1.5.0(next@15.3.3)(react@19.1.0)
@@ -1671,6 +1674,17 @@ packages:
     resolution: {integrity: sha512-AwAfQ2Wa5bCx9WP8nZL2uMZWod7J7/JSplxbTmBQ5ms6QpqNYm672H0Vu9ZVKVngQ+ii4R/byguVEUZQyeg44g==}
     dependencies:
       csstype: 3.1.3
+
+  /@vemetric/react@0.5.5(react@19.1.0):
+    resolution: {integrity: sha512-AUH6ysISXgLHpmDgbbBL+DUuqf5TTQOdCAVMlfWCpPXWwHhgryrTdLJMNKkLNVh3b36/jCHj7Kug9H5IK5wh8A==}
+    peerDependencies:
+      react: ^18 || ^19
+    peerDependenciesMeta:
+      react:
+        optional: true
+    dependencies:
+      react: 19.1.0
+    dev: false
 
   /@vercel/analytics@1.5.0(next@15.3.3)(react@19.1.0):
     resolution: {integrity: sha512-MYsBzfPki4gthY5HnYN7jgInhAZ7Ac1cYDoRWFomwGHWEX7odTEzbtg9kf/QSo7XEsEAqlQugA6gJ2WS2DEa3g==}
