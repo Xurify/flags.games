@@ -179,11 +179,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     const isCorrect = selectedCountry.code === gameState.currentCountry.code;
 
     playSound(isCorrect);
-    if (!isCorrect) {
-      navigator.vibrate(100);
-      alert("Wrong answer");
-    }
-
+    
     const answeredAt = Date.now();
     const timeToAnswer = Math.max(0, answeredAt - questionStartMs);
 
