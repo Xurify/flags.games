@@ -231,8 +231,3 @@
     }
   }
 }
-
-
-button {
-  @apply cursor-pointer;
-}
