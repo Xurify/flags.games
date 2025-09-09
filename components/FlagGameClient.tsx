@@ -181,6 +181,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     playSound(isCorrect);
     if (!isCorrect) {
       navigator.vibrate(100);
+      alert("Wrong answer");
     }
 
     const answeredAt = Date.now();
