@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@embrace-io/web-sdk": "^2.0.1",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-progress": "^1.1.7",
