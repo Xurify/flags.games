@@ -134,111 +134,105 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
 
       <div>
         <h3 className="text-base font-semibold mb-2">Questions</h3>
-        <div className="[&_[data-slot='table-container']]:max-h-[480px]">
-          <Table>
-            <TableHeader className="sticky top-0 bg-background z-10">
-              <TableRow>
-                <TableHead className="w-12 text-right tabular-nums">
-                  #
-                </TableHead>
-                <TableHead className="min-w-[240px] text-left">
-                  Country
-                </TableHead>
-                <TableHead className="min-w-[240px] text-left">
-                  Your Answer
-                </TableHead>
-                <TableHead className="w-20 text-center">Result</TableHead>
-                <TableHead className="w-24 text-right tabular-nums">
-                  Time
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orderedResults.map((result) => {
-                const country = getCountryByCode(result.countryCode);
-                const selected = result.selectedCode
-                  ? getCountryByCode(result.selectedCode)
-                  : null;
-                return (
-                  <TableRow
-                    key={result.index}
-                    className={
-                      result.isCorrect
-                        ? ""
-                        : "bg-destructive/20 dark:bg-destructive/15 hover:bg-destructive/30 dark:hover:bg-destructive/20"
-                    }
-                  >
-                    <TableCell className="text-right tabular-nums text-muted-foreground">
-                      {result.index}
-                    </TableCell>
-                    <TableCell className="min-w-[240px] whitespace-normal align-middle">
-                      <div className="flex items-center gap-2">
-                        {country && (
-                          <Image
-                            src={country.flag}
-                            alt=""
-                            aria-hidden
-                            className="max-w-full min-h-3 max-h-3 h-3 object-cover"
-                            sizes="100vw"
-                            style={{
-                              width: "auto",
-                              height: "auto",
-                            }}
-                            width={12}
-                            height={12}
-                            loading="lazy"
-                          />
-                        )}
-                        <span>{result.countryName}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="min-w-[240px] whitespace-normal align-middle">
-                      {selected ? (
-                        <div className="flex items-center gap-2">
-                          <Image
-                            src={selected.flag}
-                            alt=""
-                            aria-hidden
-                            className="max-w-full min-h-3 max-h-3 h-3 object-cover"
-                            sizes="100vw"
-                            style={{
-                              width: "auto",
-                              height: "auto",
-                            }}
-                            width={12}
-                            height={12}
-                            loading="lazy"
-                          />
-                          <span>{selected.name}</span>
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground">No answer</span>
+        <Table className="max-h-[480px]">
+          <TableHeader className="sticky top-0 z-10">
+            <TableRow>
+              <TableHead className="w-12 text-right tabular-nums">#</TableHead>
+              <TableHead className="min-w-[240px] text-left">Country</TableHead>
+              <TableHead className="min-w-[240px] text-left">
+                Your Answer
+              </TableHead>
+              <TableHead className="w-20 text-center">Result</TableHead>
+              <TableHead className="w-24 text-right tabular-nums">
+                Time
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {orderedResults.map((result) => {
+              const country = getCountryByCode(result.countryCode);
+              const selected = result.selectedCode
+                ? getCountryByCode(result.selectedCode)
+                : null;
+              return (
+                <TableRow
+                  key={result.index}
+                  className={
+                    result.isCorrect
+                      ? ""
+                      : "bg-destructive/20 dark:bg-destructive/15 hover:bg-destructive/30 dark:hover:bg-destructive/20"
+                  }
+                >
+                  <TableCell className="text-right tabular-nums text-muted-foreground">
+                    {result.index}
+                  </TableCell>
+                  <TableCell className="min-w-[240px] whitespace-normal align-middle">
+                    <div className="flex items-center gap-2">
+                      {country && (
+                        <Image
+                          src={country.flag}
+                          alt=""
+                          aria-hidden
+                          className="max-w-full min-h-3 max-h-3 h-3 object-cover"
+                          sizes="100vw"
+                          style={{
+                            width: "auto",
+                            height: "auto",
+                          }}
+                          width={12}
+                          height={12}
+                          loading="lazy"
+                        />
                       )}
-                    </TableCell>
-                    <TableCell className="text-center align-middle">
-                      <div className="flex items-center justify-center">
-                        {result.isCorrect ? (
-                          <Check
-                            className="w-4 h-4 block text-green-600 dark:text-green-500"
-                            aria-label="Correct"
-                          />
-                        ) : (
-                          <X
-                            className="w-4 h-4 block text-red-600 dark:text-red-500"
-                            aria-label="Wrong"
-                          />
-                        )}
+                      <span>{result.countryName}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="min-w-[240px] whitespace-normal align-middle">
+                    {selected ? (
+                      <div className="flex items-center gap-2">
+                        <Image
+                          src={selected.flag}
+                          alt=""
+                          aria-hidden
+                          className="max-w-full min-h-3 max-h-3 h-3 object-cover"
+                          sizes="100vw"
+                          style={{
+                            width: "auto",
+                            height: "auto",
+                          }}
+                          width={12}
+                          height={12}
+                          loading="lazy"
+                        />
+                        <span>{selected.name}</span>
                       </div>
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums align-middle">
-                      {formatMs(result.timeToAnswerMs)}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
+                    ) : (
+                      <span className="text-muted-foreground">No answer</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-center align-middle">
+                    <div className="flex items-center justify-center">
+                      {result.isCorrect ? (
+                        <Check
+                          className="w-4 h-4 block text-green-600 dark:text-green-500"
+                          aria-label="Correct"
+                        />
+                      ) : (
+                        <X
+                          className="w-4 h-4 block text-red-600 dark:text-red-500"
+                          aria-label="Wrong"
+                        />
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums align-middle">
+                    {formatMs(result.timeToAnswerMs)}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
