@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RoomSettings } from "@/lib/types/socket";
+import { useConnectionStatus } from "@/lib/hooks/useConnectionStatus";
 
 const formSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -44,6 +45,8 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
   formErrors,
   settings,
 }) => {
+  const { isConnected, isConnecting, isReconnecting } = useConnectionStatus();
+
   const handleSubmit = async () => {
     const finalUsername = username.trim() || randomUsername;
     const result = formSchema.safeParse({ username: finalUsername, settings });
@@ -56,6 +59,26 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
     }
     await handleJoinRoom(finalUsername);
   };
+
+  const isSocketBusy = !isConnected || isConnecting || isReconnecting;
+  const isButtonDisabled = isJoining || isSocketBusy;
+
+  let buttonLabel: React.ReactNode = "Connect";
+  if (isJoining) {
+    buttonLabel = (
+      <>
+        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+        Connecting...
+      </>
+    );
+  } else if (isConnecting || isReconnecting || !isConnected) {
+    buttonLabel = (
+      <>
+        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+        Connecting to server...
+      </>
+    );
+  }
 
   return (
     <div className="max-w-lg w-full mx-auto">
@@ -94,18 +117,11 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
           <div className="flex flex-col gap-2">
             <Button
               onClick={handleSubmit}
-              disabled={isJoining}
+              disabled={isButtonDisabled}
               className="w-full"
               size="lg"
             >
-              {isJoining ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                  Connecting...
-                </>
-              ) : (
-                "Connect"
-              )}
+              {buttonLabel}
             </Button>
             <Link
               href="/lobby"

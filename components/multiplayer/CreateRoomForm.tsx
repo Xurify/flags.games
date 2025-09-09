@@ -26,6 +26,7 @@ import {
   TIME_PER_QUESTION_OPTIONS,
 } from "@/lib/constants";
 import { RoomSettings } from "@/lib/types/socket";
+import { useConnectionStatus } from "@/lib/hooks/useConnectionStatus";
 
 const roomSettingsSchema = z.object({
   maxRoomSize: z
@@ -66,6 +67,8 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
   handleCreateRoom,
   formErrors,
 }) => {
+  const { isConnected, isConnecting, isReconnecting } = useConnectionStatus();
+
   const handleSubmit = async () => {
     const finalUsername = username.trim() || randomUsername;
     const result = formSchema.safeParse({ username: finalUsername, settings });
@@ -79,6 +82,26 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
     }
     await handleCreateRoom(finalUsername, settings);
   };
+
+  const isSocketBusy = !isConnected || isConnecting || isReconnecting;
+  const isButtonDisabled = isCreating || isSocketBusy;
+
+  let buttonLabel: React.ReactNode = "Create Room";
+  if (isCreating) {
+    buttonLabel = (
+      <>
+        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+        Creating Room...
+      </>
+    );
+  } else if (isConnecting || isReconnecting || !isConnected) {
+    buttonLabel = (
+      <>
+        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+        Connecting to server...
+      </>
+    );
+  }
 
   return (
     <div className="max-w-lg w-full mx-auto">
@@ -191,18 +214,11 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
           <div className="pt-4">
             <Button
               onClick={handleSubmit}
-              disabled={isCreating}
+              disabled={isButtonDisabled}
               className="w-full"
               size="lg"
             >
-              {isCreating ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                  Creating Room...
-                </>
-              ) : (
-                "Create Room"
-              )}
+              {buttonLabel}
             </Button>
           </div>
         </CardContent>
