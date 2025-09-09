@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   RotateCcwIcon,
@@ -40,7 +40,7 @@ import HowToPlayDialog from "./HowToPlayDialog";
 import RestartDialog from "./RestartDialog";
 import DifficultySelector from "./DifficultySelector";
 
-const Confetti = React.lazy(() => import("react-confetti"));
+const Confetti = lazy(() => import("react-confetti"));
 
 export interface InitialGameData {
   currentCountry: Country;
@@ -427,7 +427,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
   return (
     <div className="min-h-screen h-screen sm:min-h-screen sm:h-auto bg-background overflow-y-auto">
       {gameState.gameCompleted && (
-        <React.Suspense fallback={null}>
+        <Suspense fallback={null}>
           <Confetti
             width={window.innerWidth - 100}
             height={window.innerHeight}
@@ -435,7 +435,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
             recycle={false}
             className="w-full h-full"
           />
-        </React.Suspense>
+        </Suspense>
       )}
 
       <DifficultySelector
