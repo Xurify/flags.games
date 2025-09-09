@@ -1,43 +1,39 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+import type { ComponentProps } from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils/strings"
+import { cn } from "@/lib/utils/strings";
 
 const badgeVariants = cva(
   "inline-flex items-center justify-center rounded-full border-0 px-3 py-1.5 text-xs font-semibold w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1.5 [&>svg]:pointer-events-none focus-visible:ring-ring/30 focus-visible:ring-4 transition-all duration-200 transform-gpu",
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
         secondary:
           "bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
         destructive:
           "bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/30",
         outline:
           "text-foreground border bg-[oklch(1_0_0)] border-[oklch(0.92_0_0)] dark:bg-[oklch(0.17_0.002_240)] dark:border-[oklch(0.7_0.01_240)] [a&]:hover:bg-[oklch(0.97_0.01_240_/_0.4)] [a&]:hover:border-[oklch(0.7_0.01_240)] [a&]:hover:text-accent-foreground",
-        success:
-          "bg-chart-2 text-white [a&]:hover:bg-chart-2/90",
-        warning:
-          "bg-chart-5 text-black [a&]:hover:bg-chart-5/90",
-        info:
-          "bg-chart-3 text-white [a&]:hover:bg-chart-3/90",
+        success: "bg-chart-2 text-white [a&]:hover:bg-chart-2/90",
+        warning: "bg-chart-5 text-black [a&]:hover:bg-chart-5/90",
+        info: "bg-chart-3 text-white [a&]:hover:bg-chart-3/90",
         playful:
-          "bg-gradient-to-r from-chart-4 to-chart-1 text-white shadow [a&]:hover:from-chart-4/90 [a&]:hover:to-chart-1/90 [a&]:hover:scale-105"
+          "bg-gradient-to-r from-chart-4 to-chart-1 text-white shadow [a&]:hover:from-chart-4/90 [a&]:hover:to-chart-1/90 [a&]:hover:scale-105",
       },
       size: {
         sm: "px-2 py-0.5 text-xs rounded-lg",
         default: "px-3 py-1.5 text-xs",
-        lg: "px-4 py-2 text-sm rounded-2xl"
-      }
+        lg: "px-4 py-2 text-sm rounded-2xl",
+      },
     },
     defaultVariants: {
       variant: "default",
-      size: "default"
+      size: "default",
     },
   }
-)
+);
 
 function Badge({
   className,
@@ -45,12 +41,12 @@ function Badge({
   size,
   asChild = false,
   ...props
-}: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { 
-    asChild?: boolean
-    size?: "sm" | "default" | "lg"
+}: ComponentProps<"span"> &
+  VariantProps<typeof badgeVariants> & {
+    asChild?: boolean;
+    size?: "sm" | "default" | "lg";
   }) {
-  const Comp = asChild ? Slot : "span"
+  const Comp = asChild ? Slot : "span";
 
   return (
     <Comp
@@ -58,7 +54,7 @@ function Badge({
       className={cn(badgeVariants({ variant, size }), className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Badge, badgeVariants }
+export { Badge, badgeVariants };

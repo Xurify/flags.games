@@ -1,7 +1,7 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import { ComponentProps } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils/strings"
+import { cn } from "@/lib/utils/strings";
 
 const alertVariants = cva(
   "relative w-full rounded-lg border-0 px-6 py-4 text-sm grid has-[>svg]:grid-cols-[calc(var(--spacing)*5)_1fr] grid-cols-[0_1fr] has-[>svg]:gap-x-4 gap-y-2 items-start [&>svg]:size-5 [&>svg]:translate-y-0.5 [&>svg]:text-current animate-scale-in backdrop-blur-sm",
@@ -15,21 +15,20 @@ const alertVariants = cva(
           "text-chart-2 bg-chart-2/5 border border-chart-2/20 [&>svg]:text-chart-2 *:data-[slot=alert-description]:text-chart-2/90",
         warning:
           "text-chart-5 bg-chart-5/10 border border-chart-5/20 [&>svg]:text-chart-5 *:data-[slot=alert-description]:text-chart-5/90",
-        info:
-          "text-chart-3 bg-chart-3/5 border border-chart-3/20 [&>svg]:text-chart-3 *:data-[slot=alert-description]:text-chart-3/90",
+        info: "text-chart-3 bg-chart-3/5 border border-chart-3/20 [&>svg]:text-chart-3 *:data-[slot=alert-description]:text-chart-3/90",
       },
     },
     defaultVariants: {
       variant: "default",
     },
   }
-)
+);
 
 function Alert({
   className,
   variant,
   ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
+}: ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
   return (
     <div
       data-slot="alert"
@@ -37,10 +36,10 @@ function Alert({
       className={cn(alertVariants({ variant }), className)}
       {...props}
     />
-  )
+  );
 }
 
-function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
+function AlertTitle({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       data-slot="alert-title"
@@ -50,13 +49,10 @@ function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
       )}
       {...props}
     />
-  )
+  );
 }
 
-function AlertDescription({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+function AlertDescription({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       data-slot="alert-description"
@@ -66,7 +62,7 @@ function AlertDescription({
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { Alert, AlertTitle, AlertDescription }
+export { Alert, AlertTitle, AlertDescription };
