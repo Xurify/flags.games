@@ -54,7 +54,10 @@ export default function GameFinished({ room }: GameFinishedProps) {
         <div className="space-y-6">
           <div className="text-center space-y-2">
             <div className="flex items-center justify-center gap-2">
-              <Crown className="w-6 h-6 dark:text-yellow-500 fill-yellow-500" aria-hidden="true" />
+              <Crown
+                className="w-6 h-6 dark:text-yellow-500 fill-yellow-500"
+                aria-hidden="true"
+              />
               <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
                 Final results
               </h2>
@@ -150,10 +153,18 @@ export default function GameFinished({ room }: GameFinishedProps) {
                           <div className="flex items-center gap-1">
                             <span
                               className={cn(
-                                "truncate",
-                                isYou ? "font-semibold" : "font-medium"
+                                "truncate flex items-center gap-1",
+                                isYou
+                                  ? "font-semibold"
+                                  : "font-medium"
                               )}
                             >
+                              {index === 0 && (
+                                <Crown
+                                  className="w-4 h-4 dark:text-yellow-500 fill-yellow-500"
+                                  aria-hidden="true"
+                                />
+                              )}
                               {player.username}
                             </span>
                             {isYou && (
