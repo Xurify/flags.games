@@ -116,77 +116,68 @@ export default function GameFinished({ room }: GameFinishedProps) {
 
           <div>
             <h3 className="text-base font-semibold mb-2">Leaderboard</h3>
-            <div className="overflow-hidden [&_[data-slot='table-container']]:max-h-[480px]">
-              <Table>
-                <TableHeader className="sticky top-0 z-10">
-                  <TableRow>
-                    <TableHead className="w-12 text-right tabular-nums text-muted-foreground dark:text-white">
-                      #
-                    </TableHead>
-                    <TableHead className="min-w-[240px] text-left text-muted-foreground dark:text-white">
-                      Player
-                    </TableHead>
-                    <TableHead className="w-32 text-center text-muted-foreground dark:text-white">
-                      Correct
-                    </TableHead>
-                    <TableHead className="w-24 text-right text-muted-foreground dark:text-white">
-                      Score
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {leaderboard.map((player, index) => {
-                    const isYou = currentUser?.id === player.userId;
-                    return (
-                      <TableRow
-                        key={player.userId}
-                        className={cn(
-                          "",
-                          isYou &&
-                            "bg-yellow-300/40 dark:bg-primary/10 hover:bg-yellow-300/50 dark:hover:bg-primary/15 relative after:absolute after:left-0 after:top-0 after:h-full after:w-[3px] after:bg-yellow-400 dark:after:bg-primary"
-                        )}
-                      >
-                        <TableCell className="text-right tabular-nums text-muted-foreground">
-                          {index + 1}
-                        </TableCell>
-                        <TableCell className="min-w-[240px] whitespace-normal align-middle">
-                          <div className="flex items-center gap-1">
-                            <span
-                              className={cn(
-                                "truncate flex items-center gap-1",
-                                isYou
-                                  ? "font-semibold"
-                                  : "font-medium"
-                              )}
-                            >
-                              {index === 0 && (
-                                <Crown
-                                  className="w-4 h-4 dark:text-yellow-500 fill-yellow-500"
-                                  aria-hidden="true"
-                                />
-                              )}
-                              {player.username}
-                            </span>
-                            {isYou && (
-                              <span className="text-[11px] font-semibold text-primary">
-                                (You)
-                              </span>
+            <Table className="max-h-[480px]">
+              <TableHeader className="sticky top-0 z-10">
+                <TableRow>
+                  <TableHead className="w-12 text-right tabular-nums">
+                    #
+                  </TableHead>
+                  <TableHead className="min-w-[240px] text-left">
+                    Player
+                  </TableHead>
+                  <TableHead className="w-32 text-center">Correct</TableHead>
+                  <TableHead className="w-24 text-right">Score</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {leaderboard.map((player, index) => {
+                  const isYou = currentUser?.id === player.userId;
+                  return (
+                    <TableRow
+                      key={player.userId}
+                      className={cn(
+                        "",
+                        isYou &&
+                          "bg-yellow-300/40 dark:bg-primary/10 hover:bg-yellow-300/50 dark:hover:bg-primary/15 relative after:absolute after:left-0 after:top-0 after:h-full after:w-[3px] after:bg-yellow-400 dark:after:bg-primary"
+                      )}
+                    >
+                      <TableCell className="text-right tabular-nums text-muted-foreground">
+                        {index + 1}
+                      </TableCell>
+                      <TableCell className="min-w-[240px] whitespace-normal align-middle">
+                        <div className="flex items-center gap-1">
+                          <span
+                            className={cn(
+                              "truncate flex items-center gap-1",
+                              isYou ? "font-semibold" : "font-medium"
                             )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center tabular-nums align-middle">
-                          {player.correctAnswers}/
-                          {gameState?.totalQuestions || 0}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums align-middle font-semibold text-foreground">
-                          {player.score}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+                          >
+                            {index === 0 && (
+                              <Crown
+                                className="w-4 h-4 dark:text-yellow-500 fill-yellow-500"
+                                aria-hidden="true"
+                              />
+                            )}
+                            {player.username}
+                          </span>
+                          {isYou && (
+                            <span className="text-[11px] font-semibold text-primary">
+                              (You)
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center tabular-nums align-middle">
+                        {player.correctAnswers}/{gameState?.totalQuestions || 0}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums align-middle font-semibold text-foreground">
+                        {player.score}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
