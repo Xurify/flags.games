@@ -113,8 +113,8 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                 size="sm"
                 onClick={() => {
                   setSettingsOpen(false);
-                  if (pathname === "/lobby") {
-                    router.refresh();
+                  if (pathname.includes("/lobby")) {
+                    window.location.href = "/lobby";
                   } else {
                     router.push("/lobby");
                   }
