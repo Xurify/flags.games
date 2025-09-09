@@ -628,6 +628,18 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       wsRef.current.onclose = (event) => {
         setConnectionState("disconnected");
 
+        // If server closed due to a new session opened elsewhere, show info and do not auto-reconnect
+        if (event.code === 4000) {
+          if (reconnectToastIdRef.current) {
+            toast.dismiss(reconnectToastIdRef.current);
+            reconnectToastIdRef.current = null;
+          }
+          toast.info("This tab was disconnected: Session is open in another tab.", {
+            duration: 8000,
+          });
+          return;
+        }
+
         if (event.code !== 1000) {
           logger.warn(
             "WebSocket closed unexpectedly:",

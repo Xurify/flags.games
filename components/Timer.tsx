@@ -11,6 +11,7 @@ interface TimerProps {
   questionIndex: number;
   currentPhase: GamePhase;
   onTimeUp?: () => void;
+  startTimeMs?: number;
 }
 
 export default function Timer({
@@ -18,12 +19,14 @@ export default function Timer({
   questionIndex,
   currentPhase,
   onTimeUp,
+  startTimeMs,
 }: TimerProps) {
   const { timeRemainingSec } = useWallClockCountdown({
     durationSec: timePerQuestion,
     isActive: currentPhase === "question",
     onTimeUp,
-    resetKey: `${questionIndex}-${timePerQuestion}`,
+    resetKey: `timer-${questionIndex}-${timePerQuestion}`,
+    startTimeMs,
   });
 
   const { settings } = useSettings();

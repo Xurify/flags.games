@@ -91,6 +91,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
                   timePerQuestion={room.settings.timePerQuestion}
                   questionIndex={Number(currentQuestion?.index)}
                   currentPhase={currentPhase}
+                  startTimeMs={currentQuestion.startTime}
                 />
               </div>
             </div>
