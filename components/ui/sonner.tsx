@@ -16,7 +16,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }
       richColors={true}
       position="bottom-center"
-      closeButton
+      //closeButton
       {...props}
     />
   );
