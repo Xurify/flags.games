@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import Image from "next/image";
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -173,11 +174,19 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                     <TableCell className="min-w-[240px] whitespace-normal align-middle">
                       <div className="flex items-center gap-2">
                         {country && (
-                          <img
+                          <Image
                             src={country.flag}
                             alt=""
-                            aria-hidden="true"
-                            className="w-5 h-5"
+                            aria-hidden
+                            className="max-w-full min-h-3 max-h-3 h-3 object-cover"
+                            sizes="100vw"
+                            style={{
+                              width: "auto",
+                              height: "auto",
+                            }}
+                            width={12}
+                            height={12}
+                            loading="lazy"
                           />
                         )}
                         <span>{result.countryName}</span>
@@ -186,11 +195,19 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                     <TableCell className="min-w-[240px] whitespace-normal align-middle">
                       {selected ? (
                         <div className="flex items-center gap-2">
-                          <img
+                          <Image
                             src={selected.flag}
                             alt=""
-                            aria-hidden="true"
-                            className="w-5 h-5"
+                            aria-hidden
+                            className="max-w-full min-h-3 max-h-3 h-3 object-cover"
+                            sizes="100vw"
+                            style={{
+                              width: "auto",
+                              height: "auto",
+                            }}
+                            width={12}
+                            height={12}
+                            loading="lazy"
                           />
                           <span>{selected.name}</span>
                         </div>
