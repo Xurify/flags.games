@@ -11,7 +11,7 @@ const FlagDisplay: React.FC<FlagDisplayProps> = ({ countryName, countryCode }) =
   const flagClass = "max-w-full min-h-36 max-h-36 h-36 object-cover" + (isNepal ? "" : " rounded border");
 
   return (
-    <div className="bg-muted/70 dark:bg-transparent p-6 sm:p-10 flex justify-center items-center h-[192px] sm:h-[200px]">
+    <div className="flex justify-center items-center rounded bg-muted/70 dark:bg-transparent p-6 sm:p-10 h-[192px] sm:h-[200px]">
       <Image
         src={`/images/flags/${countryCode.toLowerCase()}.svg`}
         alt={countryName ? `Flag of ${countryName}` : ""}
