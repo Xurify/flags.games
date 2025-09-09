@@ -72,7 +72,6 @@ export interface RoomSettings {
   maxRoomSize: number;
   difficulty: Difficulty;
   timePerQuestion: number;
-  showLeaderboard?: boolean;
   gameMode: GameMode;
 }
 
