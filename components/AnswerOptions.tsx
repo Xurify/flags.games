@@ -42,7 +42,7 @@ const AnswerOptions: React.FC<AnswerOptionsProps> = ({
           key={`${country.code}-${index}`}
           onClick={() => !showResult && handleAnswer(country)}
           disabled={disabled}
-          className={`h-12 sm:h-14 text-sm sm:text-base rounded-xl font-medium justify-start px-4 sm:px-6 ${getButtonClass(
+          className={`h-12 sm:h-14 text-sm sm:text-base rounded font-medium justify-start px-4 sm:px-6 ${getButtonClass(
             country
           )}`}
           variant="outline"
