@@ -17,7 +17,10 @@ import { RoomSettings } from "@/lib/types/socket";
 import { useConnectionStatus } from "@/lib/hooks/useConnectionStatus";
 
 const formSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .max(30, "Username must be less than 30 characters"),
   settings: z.object({
     maxRoomSize: z.number(),
     difficulty: z.string(),

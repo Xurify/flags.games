@@ -20,7 +20,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SettingsSelect } from "./SettingsSelect";
 import {
-  Difficulty,
   DIFFICULTY_LEVELS,
   ROOM_SIZES,
   TIME_PER_QUESTION_OPTIONS,
@@ -39,7 +38,10 @@ const roomSettingsSchema = z.object({
 });
 
 const formSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .max(30, "Username must be less than 30 characters"),
   settings: roomSettingsSchema,
 });
 
