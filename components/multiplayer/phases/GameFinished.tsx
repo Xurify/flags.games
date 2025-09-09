@@ -8,6 +8,15 @@ import { cn } from "@/lib/utils/strings";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Crown } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface GameFinishedProps {
   room: Room;
@@ -42,89 +51,124 @@ export default function GameFinished({ room }: GameFinishedProps) {
   return (
     <Card className="py-4 sm:py-8 px-4 sm:px-6 bg-transparent border-none">
       <CardContent className="p-3 sm:p-4">
-        <div className="space-y-5">
-          <div className="text-center space-y-1">
-            <h2 className="text-lg font-semibold">Final results</h2>
-            <p className="text-sm text-muted-foreground">
-              {leaderboard[0]
-                ? currentUser?.id && leaderboard[0].userId === currentUser.id
-                  ? "You placed #1."
-                  : `Winner: ${leaderboard[0].username}`
-                : "Thanks for playing."}
-            </p>
+        <div className="space-y-6">
+          <div className="text-center space-y-2">
+            <div className="flex items-center justify-center gap-2">
+              <Crown className="w-6 h-6  fill-yellow-500" aria-hidden="true" />
+              <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
+                Final results
+              </h2>
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 text-center">
             <div>
-              <span className="text-muted-foreground">Your rank </span>
-              <span className="font-semibold">
+              <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
                 {myPlacement?.rank ? `#${myPlacement.rank}` : "-"}
-              </span>
+              </div>
+              <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
+                Final
+                <br />
+                Placement
+              </div>
             </div>
-            <span className="text-border dark:text-white hidden sm:inline">
-              •
-            </span>
             <div>
-              <span className="text-muted-foreground">Score </span>
-              <span className="font-semibold">
-                {myPlacement?.me?.score ?? 0} pts
-              </span>
+              <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
+                {myPlacement?.me?.score ?? 0}
+              </div>
+              <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
+                Your
+                <br />
+                Score (pts)
+              </div>
             </div>
-            <span className="text-border dark:text-white hidden sm:inline">
-              •
-            </span>
             <div>
-              <span className="text-muted-foreground">Correct </span>
-              <span className="font-semibold">
+              <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
                 {myPlacement?.me?.correctAnswers ?? 0}/
                 {gameState?.totalQuestions || 0}
-              </span>
+              </div>
+              <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
+                Correct
+                <br />
+                Answers
+              </div>
+            </div>
+            <div>
+              <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
+                {(() => {
+                  const totalQ = gameState?.totalQuestions || 0;
+                  const correct = myPlacement?.me?.correctAnswers ?? 0;
+                  if (!totalQ) return 0;
+                  return Math.round((correct / totalQ) * 100);
+                })()}
+                %
+              </div>
+              <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
+                Overall
+                <br />
+                Accuracy Rate
+              </div>
             </div>
           </div>
 
           <div>
-            <div className="divide-y divide-border/50 max-h-[45vh] overflow-y-auto sm:max-h-none">
-              {leaderboard.map((player, index) => {
-                const isYou = currentUser?.id === player.userId;
-                return (
-                  <div
-                    key={player.userId}
-                    className={cn(
-                      "grid grid-cols-[2ch_1fr_auto] items-center gap-3 px-3 py-2",
-                      isYou &&
-                        "[&>*:nth-child(2)>span:first-child]:font-semibold"
-                    )}
-                  >
-                    <div className="text-xs tabular-nums text-muted-foreground">
-                      {index + 1}
-                    </div>
-                    <div className="min-w-0 flex items-center gap-1">
-                      <span
+            <h3 className="text-base font-semibold mb-2">Leaderboard</h3>
+            <div className="[&_[data-slot='table-container']]:max-h-[480px]">
+              <Table>
+                <TableHeader className="sticky top-0 bg-background z-10">
+                  <TableRow>
+                    <TableHead className="w-12 text-right tabular-nums">
+                      #
+                    </TableHead>
+                    <TableHead className="min-w-[240px] text-left">
+                      Player
+                    </TableHead>
+                    <TableHead className="w-32 text-center">Correct</TableHead>
+                    <TableHead className="w-24 text-right">Score</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {leaderboard.map((player, index) => {
+                    const isYou = currentUser?.id === player.userId;
+                    return (
+                      <TableRow
+                        key={player.userId}
                         className={cn(
-                          "truncate",
-                          isYou ? "font-semibold" : "font-medium"
+                          isYou ? "bg-yellow-400/30 hover:bg-yellow-400/40" : ""
                         )}
                       >
-                        {player.username}
-                      </span>
-                      {isYou && (
-                        <span className="text-[11px] font-semibold text-primary">
-                          (You)
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-xs tabular-nums text-muted-foreground flex items-center gap-3">
-                      <span>
-                        {player.correctAnswers}/{gameState?.totalQuestions || 0}
-                      </span>
-                      <span className="text-border dark:text-white">•</span>
-                      <span className="font-semibold text-foreground">
-                        {player.score}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+                        <TableCell className="text-right tabular-nums text-muted-foreground">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell className="min-w-[240px] whitespace-normal align-middle">
+                          <div className="flex items-center gap-1">
+                            <span
+                              className={cn(
+                                "truncate",
+                                isYou ? "font-semibold" : "font-medium"
+                              )}
+                            >
+                              {player.username}
+                            </span>
+                            {isYou && (
+                              <span className="text-[11px] font-semibold text-primary">
+                                (You)
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center tabular-nums align-middle">
+                          {player.correctAnswers}/
+                          {gameState?.totalQuestions || 0}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums align-middle">
+                          {player.score}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
             </div>
           </div>
 

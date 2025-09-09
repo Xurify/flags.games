@@ -94,9 +94,9 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
             {summary.correctCount}/{summary.totalQuestions}
           </div>
           <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
-            number of
+            Number of
             <br />
-            guessed countries
+            Guessed Countries
           </div>
         </div>
         <div>
@@ -104,9 +104,9 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
             {elapsedClock}
           </div>
           <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
-            time to
+            Time to
             <br />
-            complete quiz
+            Complete Quiz
           </div>
         </div>
         <div>
@@ -116,7 +116,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
           <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
             overall
             <br />
-            accuracy rate
+            Accuracy Rate
           </div>
         </div>
         <div>
@@ -124,9 +124,9 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
             {summary.longestStreak}
           </div>
           <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
-            longest
+            Longest
             <br />
-            guessing streak
+            Guessing Streak
           </div>
         </div>
       </div>
