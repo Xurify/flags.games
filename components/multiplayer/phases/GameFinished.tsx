@@ -116,7 +116,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
 
           <div>
             <h3 className="text-base font-semibold mb-2">Leaderboard</h3>
-            <Table className="max-h-[480px]">
+            <Table>
               <TableHeader className="sticky top-0 z-10">
                 <TableRow>
                   <TableHead className="w-12 text-right tabular-nums">
