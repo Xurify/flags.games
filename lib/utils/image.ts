@@ -13,7 +13,7 @@ export const prefetchAllFlags = (difficulty: Difficulty) => {
       const batch = countriesForDifficulty.slice(i, i + BATCH_SIZE);
       batch.forEach(country => {
         const img = new Image();
-        img.src = country.flag;
+        img.src = getCountryFlagUrl(country.code);
       });
       i += BATCH_SIZE;
       if (i < countriesForDifficulty.length) {
@@ -35,7 +35,17 @@ export const prefetchAllFlags = (difficulty: Difficulty) => {
   } else {
     countriesForDifficulty.forEach(country => {
       const img = new Image();
-      img.src = country.flag;
+      img.src = getCountryFlagUrl(country.code);
     });
   }
 }; 
+
+export const getCountryFlagUrl = (countryCode: string) => {
+  if (!countryCode) return "";
+  return `/images/flags/${countryCode.toLowerCase()}.svg`;
+};
+
+export const getCountryFlagIconUrl = (countryCode: string) => {
+  if (!countryCode) return "";
+  return `/images/flags/icons/${countryCode.toLowerCase()}.svg`;
+};

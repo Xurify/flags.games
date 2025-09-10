@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { getCountryFlagUrl } from "@/lib/utils/image";
 
 interface FlagDisplayProps {
   countryCode: string;
@@ -13,7 +14,7 @@ const FlagDisplay: React.FC<FlagDisplayProps> = ({ countryName, countryCode }) =
   return (
     <div className="flex justify-center items-center rounded bg-muted/70 dark:bg-transparent p-6 sm:p-10 h-[192px] sm:h-[200px]">
       <Image
-        src={`/images/flags/${countryCode.toLowerCase()}.svg`}
+        src={getCountryFlagUrl(countryCode)}
         alt={countryName ? `Flag of ${countryName}` : ""}
         className={flagClass}
         fetchPriority="high"

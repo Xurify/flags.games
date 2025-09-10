@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getCountryByCode } from "@/lib/data/countries";
+import { getCountryFlagIconUrl } from "@/lib/utils/image";
 import { QuestionResult } from "./FlagGameClient";
 
 interface GameEndScreenProps {
@@ -170,7 +171,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                     <div className="flex items-center gap-2">
                       {country && (
                         <Image
-                          src={country.flag}
+                          src={getCountryFlagIconUrl(country.code)}
                           alt=""
                           aria-hidden
                           className="max-w-full min-h-3 max-h-3 h-3 object-cover"
@@ -191,7 +192,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                     {selected ? (
                       <div className="flex items-center gap-2">
                         <Image
-                          src={selected.flag}
+                          src={getCountryFlagIconUrl(selected.code)}
                           alt=""
                           aria-hidden
                           className="max-w-full min-h-3 max-h-3 h-3 object-cover"
