@@ -8,7 +8,7 @@ function Table({ className, ...props }: ComponentProps<"table">) {
   return (
     <div
       data-slot="table-container"
-      className="relative w-full max-h-[300px] sm:max-h-[560px] overflow-y-auto bg-[oklch(0.96_0.02_100.03)] dark:bg-[oklch(0.20_0.01_240)]"
+      className="relative w-full max-h-[350px] md:max-h-[500px] overflow-y-auto bg-[oklch(0.96_0.02_100.03)] dark:bg-[oklch(0.20_0.01_240)]"
     >
       <table
         data-slot="table"
@@ -24,7 +24,7 @@ function TableHeader({ className, ...props }: ComponentProps<"thead">) {
     <thead
       data-slot="table-header"
       className={cn(
-        "[&_tr]:border-b bg-[oklch(0.95_0.02_100.03)] dark:bg-[oklch(0.26_0.01_240)]",
+        "[&_tr]:border-b bg-[oklch(0.91_0.02_100.03)] dark:bg-[oklch(0.26_0.01_240)]",
         className
       )}
       {...props}
