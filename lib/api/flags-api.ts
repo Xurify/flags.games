@@ -86,7 +86,12 @@ class FlagsApiClient {
 
   async getRoomByInviteCode(inviteCode: string): Promise<Room | { error?: string }> {
     try {
-      return await this.request<Room | { error?: string }>(`/rooms/${inviteCode}`);
+      const response = await this.request<{ data: Room } | { error: string }>(`/rooms/${inviteCode}`);
+
+      if ('data' in response) {
+        return response.data;
+      }
+      return { error: response.error || 'Unable to fetch room' };
     } catch (error) {
       return { error: 'Unable to fetch room' };
     }
