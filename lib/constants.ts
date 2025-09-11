@@ -1,4 +1,4 @@
-export const CORRECT_POINT_COST = 1;
+export const CORRECT_POINT_COST = 10;
 export const MAX_HEARTS = 3;
 
 export const SETTINGS_STORAGE_KEY = 'settings';
