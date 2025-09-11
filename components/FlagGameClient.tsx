@@ -62,7 +62,7 @@ export interface GameState {
   selectedAnswer: string | null;
   showResult: boolean;
   gameCompleted: boolean;
-  usedCountries: Set<string>;
+  usedCountries: string[];
   difficulty: Difficulty;
   gameStarted: boolean;
   hearts: number;
@@ -93,7 +93,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     selectedAnswer: null,
     showResult: false,
     gameCompleted: false,
-    usedCountries: new Set([initialGameData.currentCountry.code]),
+    usedCountries: [initialGameData.currentCountry.code],
     difficulty: initialGameData.difficulty,
     gameStarted: true,
     hearts: MAX_HEARTS,
@@ -167,10 +167,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       options: questionData.options,
       selectedAnswer: null,
       showResult: false,
-      usedCountries: new Set([
+      usedCountries: [
         ...prev.usedCountries,
         questionData.currentCountry.code,
-      ]),
+      ],
     }));
     setQuestionStartMs(Date.now());
   };
@@ -324,7 +324,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       selectedAnswer: null,
       showResult: false,
       gameCompleted: false,
-      usedCountries: new Set(),
+      usedCountries: [],
       gameStarted: true,
       hearts: MAX_HEARTS,
     }));
@@ -344,7 +344,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       selectedAnswer: null,
       showResult: false,
       gameCompleted: false,
-      usedCountries: new Set(),
+      usedCountries: [],
       hearts: MAX_HEARTS,
     }));
 
@@ -367,7 +367,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       selectedAnswer: null,
       showResult: false,
       gameCompleted: false,
-      usedCountries: new Set(),
+      usedCountries: [],
       hearts: MAX_HEARTS,
     }));
 
@@ -403,7 +403,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       selectedAnswer: null,
       showResult: false,
       gameCompleted: false,
-      usedCountries: new Set(),
+      usedCountries: [],
       hearts: MAX_HEARTS,
     }));
 

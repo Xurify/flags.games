@@ -57,7 +57,7 @@ export interface GameState {
   difficulty: Difficulty;
   gameStartTime: number | null;
   gameEndTime: number | null;
-  usedCountries: Set<string>;
+  usedCountries: string[];
   questionTimer: Timer | null;
   resultTimer: Timer | null;
   leaderboard: GameStateLeaderboard[];
