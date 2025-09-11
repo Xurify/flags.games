@@ -51,6 +51,7 @@ export interface GameState {
   phase: GamePhase;
   currentQuestion: GameQuestion | null;
   answers: GameAnswer[];
+  answerHistory: GameAnswer[];
   currentQuestionIndex: number;
   totalQuestions: number;
   difficulty: Difficulty;
@@ -72,6 +73,8 @@ export interface RoomSettings {
   maxRoomSize: number;
   difficulty: Difficulty;
   timePerQuestion: number;
+  questionCount: number;
+  allowSpectators?: boolean;
   gameMode: GameMode;
 }
 
