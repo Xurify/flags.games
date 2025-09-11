@@ -7,6 +7,7 @@ import { HomeIcon } from "lucide-react";
 import { DIFFICULTY_LEVELS, TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
 import { RoomSettings } from "@/lib/types/socket";
+import { getDifficultySettings } from "@/lib/utils/gameLogic";
 
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -41,6 +42,7 @@ export function LobbyPageClient({
     difficulty: DIFFICULTY_LEVELS[0],
     gameMode: "classic",
     timePerQuestion: TIME_PER_QUESTION_OPTIONS[1],
+    questionCount: getDifficultySettings(DIFFICULTY_LEVELS[0]).count,
   });
   const [formErrors, setFormErrors] = useState<{
     username?: string;
