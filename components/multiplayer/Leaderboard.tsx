@@ -28,7 +28,7 @@ export default function Leaderboard({
   const previousOrderRef = React.useRef<string[]>([]);
   const rowRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
   const positionsRef = React.useRef<Record<string, number>>({});
-  const highlightTimeoutsRef = React.useRef<Record<string, number>>({});
+  const highlightTimeoutsRef = React.useRef<Map<string, number>>(new Map());
 
   const scoreByUserId = React.useMemo(() => {
     const map: Record<string, number> = {};
@@ -66,6 +66,10 @@ export default function Leaderboard({
 
   // FLIP: animate vertical movement on re-rank
   React.useLayoutEffect(() => {
+    highlightTimeoutsRef.current.forEach((timeoutId) => {
+      window.clearTimeout(timeoutId);
+    });
+    highlightTimeoutsRef.current.clear();
     const newPositions: Record<string, number> = {};
     sortedMembers.forEach((m) => {
       const element = rowRefs.current[m.id];
@@ -89,9 +93,10 @@ export default function Leaderboard({
           const rootVars = getComputedStyle(document.documentElement);
           const upColor = (rootVars.getPropertyValue('--success') || '').trim() || 'oklch(0.65 0.18 140)';
           const downColor = (rootVars.getPropertyValue('--destructive') || '').trim() || 'oklch(0.62 0.21 25)';
-          const existing = highlightTimeoutsRef.current[m.id];
+          const existing = highlightTimeoutsRef.current.get(m.id);
           if (existing) {
             window.clearTimeout(existing);
+            highlightTimeoutsRef.current.delete(m.id);
           }
           overlay.style.backgroundColor = movedUp ? upColor : downColor;
           overlay.style.transition = 'opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1)';
@@ -99,9 +104,9 @@ export default function Leaderboard({
           overlay.style.borderRadius = '0px';
           const timeoutId = window.setTimeout(() => {
             overlay.style.opacity = '0';
-            delete highlightTimeoutsRef.current[m.id];
+            highlightTimeoutsRef.current.delete(m.id);
           }, 1200);
-          highlightTimeoutsRef.current[m.id] = timeoutId;
+          highlightTimeoutsRef.current.set(m.id, timeoutId);
         }
         // Invert
         element.style.transition = "transform 0s";

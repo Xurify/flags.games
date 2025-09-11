@@ -185,9 +185,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
   const reconnectAttemptsRef = useRef(0);
   const reconnectToastIdRef = useRef<string | number | null>(null);
+  const disconnectedToastIdRef = useRef<string | number | null>(null);
 
   const MAX_RECONNECT_ATTEMPTS = 3;
   const RECONNECT_DELAY = 3000;
@@ -248,7 +251,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const settingsUpdatedHandler: MessageHandler<
       typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED
     > = (data) => {
-      setCurrentRoom((prev) => (prev ? { ...prev, settings: data.settings } : prev));
+      setCurrentRoom((prev) =>
+        prev ? { ...prev, settings: data.settings } : prev
+      );
     };
 
     const userJoinedHandler: MessageHandler<
@@ -282,9 +287,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       }
     };
 
-    const userKickedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_KICKED> = (
-      data
-    ) => {
+    const userKickedHandler: MessageHandler<
+      typeof WS_MESSAGE_TYPES.USER_KICKED
+    > = (data) => {
       setCurrentRoom((prev) =>
         prev && data.room ? { ...prev, members: data.room.members } : null
       );
@@ -542,7 +547,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       userJoinedHandler
     );
     messageHandlers.current.set(WS_MESSAGE_TYPES.USER_LEFT, userLeftHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_KICKED, userKickedHandler);
+    messageHandlers.current.set(
+      WS_MESSAGE_TYPES.USER_KICKED,
+      userKickedHandler
+    );
     messageHandlers.current.set(
       WS_MESSAGE_TYPES.HOST_CHANGED,
       hostChangedHandler
@@ -600,7 +608,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   }, []);
 
   const connect = useCallback(() => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
+    if (
+      wsRef.current?.readyState === WebSocket.OPEN ||
+      wsRef.current?.readyState === WebSocket.CONNECTING
+    ) {
       return;
     }
 
@@ -616,6 +627,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
         if (reconnectToastIdRef.current) {
           toast.dismiss(reconnectToastIdRef.current);
           reconnectToastIdRef.current = null;
+        }
+        if (disconnectedToastIdRef.current) {
+          toast.dismiss(disconnectedToastIdRef.current);
+          disconnectedToastIdRef.current = null;
         }
         if (wasReconnecting) {
           toast.success("Reconnected");
@@ -634,9 +649,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
             toast.dismiss(reconnectToastIdRef.current);
             reconnectToastIdRef.current = null;
           }
-          toast.info("This tab was disconnected: Session is open in another tab.", {
-            duration: 8000,
-          });
+          toast.info(
+            "This tab was disconnected: Session is open in another tab.",
+            {
+              duration: 8000,
+            }
+          );
           return;
         }
 
@@ -695,6 +713,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       toast.dismiss(reconnectToastIdRef.current);
       reconnectToastIdRef.current = null;
     }
+    if (disconnectedToastIdRef.current) {
+      toast.dismiss(disconnectedToastIdRef.current);
+      disconnectedToastIdRef.current = null;
+    }
 
     if (wsRef.current) {
       wsRef.current.close(1000, "User disconnected");
@@ -716,9 +738,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     } else {
       logger.warn("Cannot send message: WebSocket not connected");
-      toast.error("Cannot send message: WebSocket not connected", {
-        duration: 10000,
-      });
+      if (!disconnectedToastIdRef.current) {
+        disconnectedToastIdRef.current = toast.error("Connection lost - messages will be sent when reconnected", {
+          duration: Infinity,
+          dismissible: true,
+        });
+      }
     }
   }, []);
 
