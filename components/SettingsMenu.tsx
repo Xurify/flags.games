@@ -1,5 +1,5 @@
 import React from "react";
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   SettingsIcon,
   Volume2Icon,
@@ -38,8 +38,6 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   showDifficultyOption = true,
   settings,
 }) => {
-  const router = useRouter();
-  const pathname = usePathname();
   return (
     <Select open={settingsOpen} onOpenChange={setSettingsOpen}>
       <SelectTrigger
@@ -96,34 +94,26 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
               <h4 className="text-sm font-medium text-foreground mb-2">
                 Game Modes
               </h4>
-              <Button
-                variant="neutral"
-                size="sm"
-                onClick={() => {
-                  setSettingsOpen(false);
-                  router.push("/");
-                }}
-                className="w-full justify-start mb-2"
-              >
-                <UserIcon className="w-4 h-4 mr-2" />
-                Singleplayer
-              </Button>
-              <Button
-                variant="neutral"
-                size="sm"
-                onClick={() => {
-                  setSettingsOpen(false);
-                  if (pathname.includes("/lobby")) {
-                    window.location.href = "/lobby";
-                  } else {
-                    router.push("/lobby");
-                  }
-                }}
-                className="w-full justify-start"
-              >
-                <UsersIcon className="w-4 h-4 mr-2" />
-                Multiplayer (Beta)
-              </Button>
+              <Link href="/">
+                <Button
+                  variant="neutral"
+                  size="sm"
+                  className="w-full justify-start mb-2"
+                >
+                  <UserIcon className="w-4 h-4 mr-2" />
+                  Singleplayer
+                </Button>
+              </Link>
+              <Link href="/lobby">
+                <Button
+                  variant="neutral"
+                  size="sm"
+                  className="w-full justify-start"
+                >
+                  <UsersIcon className="w-4 h-4 mr-2" />
+                  Multiplayer (Beta)
+                </Button>
+              </Link>
             </div>
 
             <div className="w-full h-px bg-border"></div>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { HomeIcon } from "lucide-react";
 
 import { DIFFICULTY_LEVELS, TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
@@ -77,14 +78,15 @@ export function LobbyPageClient({
           <Header
             leftContent={
               <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => router.push("/")}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <HomeIcon className="w-4 h-4" />
-                </Button>
+                <Link href="/">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <HomeIcon className="w-4 h-4" />
+                  </Button>
+                </Link>
                 <span className="text-sm font-medium text-foreground">
                   MULTIPLAYER
                 </span>
