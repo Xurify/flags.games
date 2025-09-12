@@ -16,7 +16,6 @@ const FlagsPage = () => {
               <FlagDisplay
                 countryCode={country.code}
                 countryName={country.name}
-                colorOffset={false}
               />
               <div className="text-xs text-muted-foreground text-center">
                 Code: {country.code}

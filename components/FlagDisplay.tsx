@@ -6,15 +6,14 @@ import { cn } from "@/lib/utils/strings";
 interface FlagDisplayProps {
   countryCode: string;
   countryName?: string;
-  colorOffset?: boolean;
 }
 
-const FlagDisplay: React.FC<FlagDisplayProps> = ({ countryName, countryCode, colorOffset = true }) => {
+const FlagDisplay: React.FC<FlagDisplayProps> = ({ countryName, countryCode }) => {
   const isNepal = countryCode.trim().toLowerCase() === "np";
   const flagClass = "max-w-full min-h-36 max-h-36 h-36 object-cover" + (isNepal ? "" : " rounded border");
 
   return (
-    <div className={cn("flex justify-center items-center rounded dark:bg-transparent p-2 h-[192px] sm:h-[200px]", colorOffset ? `bg-muted/70 dark:bg-transparent ${colorOffset}` : "")}>
+    <div className="flex justify-center items-center rounded p-2 h-[192px] sm:h-[200px]">
       <Image
         src={getCountryFlagUrl(countryCode)}
         alt={countryName ? `Flag of ${countryName}` : ""}
