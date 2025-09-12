@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SettingsSelect } from "@/components/multiplayer/SettingsSelect";
+import QRCodeShareModal from "@/components/multiplayer/QRCodeShareModal";
 import {
   DIFFICULTY_LEVELS,
   ROOM_SIZES,
@@ -43,6 +44,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   const [copied, setCopied] = React.useState(false);
   const [gameStartingCountdown, setGameStartingCountdown] = useState<number | null>(null);
   const [isStarting, setIsStarting] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
 
   const members = room.members;
   const maxPlayers = room.settings.maxRoomSize;
@@ -87,11 +89,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   }, [currentRoom?.gameState?.phase]);
 
   const handleInvite = () => {
-    const inviteLink = room.inviteCode
-      ? `${window.location.origin}/lobby?c=${room.inviteCode}`
-      : "";
-    if (inviteLink) navigator.clipboard.writeText(inviteLink);
-    toast.success("Copied invite link to clipboard");
+    setShowQRModal(true);
   };
 
   const handleCopyRoomCode = () => {
@@ -114,6 +112,10 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     setGameStartingCountdown(5);
     startGame();
   };
+
+  const inviteLink = room.inviteCode
+    ? `${window.location.origin}/lobby?c=${room.inviteCode}`
+    : "";
 
   return (
     <div className="flex items-center justify-center">
@@ -301,6 +303,12 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
           </div>
         </div>
       </Card>
+
+      <QRCodeShareModal
+        isOpen={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        inviteLink={inviteLink}
+      />
     </div>
   );
 }

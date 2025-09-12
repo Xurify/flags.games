@@ -105,7 +105,7 @@
   --secondary: oklch(0.14 0.002 240); /* Slightly lighter than card */
   --secondary-foreground: oklch(0.98 0.005 240);
   --muted: oklch(0.12 0.002 240); /* Slightly darker than card */
-  --muted-foreground: oklch(0.55 0.015 240);
+  --muted-foreground: oklch(0.65 0.015 240);
   --accent: oklch(0.14 0.002 240); /* Between background and card */
   --accent-foreground: oklch(0.98 0.005 240);
   --destructive: oklch(0.62 0.21 25); /* Modern vibrant red, softened for cream bg */
