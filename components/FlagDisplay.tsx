@@ -14,7 +14,7 @@ const FlagDisplay: React.FC<FlagDisplayProps> = ({ countryName, countryCode, col
   const flagClass = "max-w-full min-h-36 max-h-36 h-36 object-cover" + (isNepal ? "" : " rounded border");
 
   return (
-    <div className={cn("flex justify-center items-center rounded dark:bg-transparent p-6 sm:p-10 h-[192px] sm:h-[200px]", colorOffset ? `bg-muted/70 dark:bg-transparent ${colorOffset}` : "")}>
+    <div className={cn("flex justify-center items-center rounded dark:bg-transparent p-2 h-[192px] sm:h-[200px]", colorOffset ? `bg-muted/70 dark:bg-transparent ${colorOffset}` : "")}>
       <Image
         src={getCountryFlagUrl(countryCode)}
         alt={countryName ? `Flag of ${countryName}` : ""}
