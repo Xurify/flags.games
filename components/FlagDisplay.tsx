@@ -10,7 +10,7 @@ interface FlagDisplayProps {
 
 const FlagDisplay: React.FC<FlagDisplayProps> = ({ countryName, countryCode }) => {
   const isNepal = countryCode.trim().toLowerCase() === "np";
-  const flagClass = "max-w-full min-h-36 max-h-36 h-36 object-cover" + (isNepal ? "" : " rounded border");
+  const flagClass = "max-w-full min-h-36 max-h-36 h-36 md:min-h-40 md:max-h-40 md:h-40  object-cover" + (isNepal ? "" : " rounded border");
 
   return (
     <div className="flex justify-center items-center rounded p-2 h-[160px] sm:h-[200px]">
