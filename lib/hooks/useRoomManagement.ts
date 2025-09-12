@@ -1,5 +1,4 @@
 import { useSocket } from '@/lib/context/SocketContext';
-import { useCallback } from 'react';
 
 export const useRoomManagement = () => {
   const {
@@ -13,16 +12,16 @@ export const useRoomManagement = () => {
     startGame,
   } = useSocket();
 
-  const isHost = useCallback(() => {
+  const isHost = () => {
     return currentUser?.id === currentRoom?.host;
-  }, [currentUser, currentRoom]);
+  };
 
-  const canStartGame = useCallback(() => {
+  const canStartGame = () => {
     if (!currentRoom || !isHost() || currentRoom.members.length < 2) return false;
     return true;
-  }, [currentRoom, isHost]);
+  };
 
-  const getRoomStats = useCallback(() => {
+  const getRoomStats = () => {
     if (!currentRoom) return null;
 
     return {
@@ -30,7 +29,7 @@ export const useRoomManagement = () => {
       maxMembers: currentRoom.settings.maxRoomSize,
       inviteCode: currentRoom.inviteCode
     };
-  }, [currentRoom]);
+  };
 
   return {
     currentRoom,

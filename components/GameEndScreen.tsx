@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import Image from "next/image";
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,41 +41,30 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
   hearts,
   results,
 }) => {
-  const orderedResults = useMemo(() => {
-    return [...results].sort((a, b) => a.index - b.index);
-  }, [results]);
+  const orderedResults = [...results].sort((a, b) => a.index - b.index);
 
-  const percentage = useMemo(() => {
-    if (totalPossible === 0) return 0;
-    return Math.round((score / totalPossible) * 100);
-  }, [score, totalPossible]);
+  const percentage = totalPossible === 0 ? 0 : Math.round((score / totalPossible) * 100);
 
-  const summary = useMemo(() => {
-    const totalQuestions = orderedResults.length;
-    const correctCount = orderedResults.filter(
-      (result) => result.isCorrect
-    ).length;
-    let currentStreak = 0;
-    let longestStreak = 0;
-    for (const result of orderedResults) {
-      if (result.isCorrect) {
-        currentStreak += 1;
-        if (currentStreak > longestStreak) longestStreak = currentStreak;
-      } else {
-        currentStreak = 0;
-      }
+  const totalQuestions = orderedResults.length;
+  const correctCount = orderedResults.filter(
+    (result) => result.isCorrect
+  ).length;
+  let currentStreak = 0;
+  let longestStreak = 0;
+  for (const result of orderedResults) {
+    if (result.isCorrect) {
+      currentStreak += 1;
+      if (currentStreak > longestStreak) longestStreak = currentStreak;
+    } else {
+      currentStreak = 0;
     }
-    return { totalQuestions, correctCount, longestStreak };
-  }, [orderedResults]);
+  }
+  const summary = { totalQuestions, correctCount, longestStreak };
 
-  const elapsedMs = useMemo(() => {
-    if (orderedResults.length === 0) return null;
-    const total = orderedResults.reduce(
-      (sum, result) => sum + (result.timeToAnswerMs ?? 0),
-      0
-    );
-    return total;
-  }, [orderedResults]);
+  const elapsedMs = orderedResults.length === 0 ? null : orderedResults.reduce(
+    (sum, result) => sum + (result.timeToAnswerMs ?? 0),
+    0
+  );
 
   const formatClock = (ms: number | null) => {
     if (ms === null || Number.isNaN(ms)) return "--:--";
@@ -86,7 +75,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
     const seconds = (totalSeconds % 60).toString().padStart(2, "0");
     return `${minutes}:${seconds}`;
   };
-  const elapsedClock = useMemo(() => formatClock(elapsedMs), [elapsedMs]);
+  const elapsedClock = formatClock(elapsedMs);
 
   return (
     <div className="py-4 sm:py-8 px-4 sm:px-6 space-y-6">

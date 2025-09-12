@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { audioManager } from "@/lib/utils/audio-manager";
 
 interface UseSoundEffectOptions {
@@ -32,7 +32,7 @@ export function useSoundEffect({
     }
   }, [audioUrl, preload, cacheKey]);
 
-  const playSound = useCallback(() => {
+  const playSound = () => {
     if (audioRef.current && isLoaded) {
       audioRef.current.currentTime = 0;
       audioRef.current.volume = volume;
@@ -42,7 +42,7 @@ export function useSoundEffect({
       audio.volume = volume;
       audio.play().catch(console.error);
     }
-  }, [audioUrl, volume, isLoaded]);
+  };
 
   return { playSound, isLoaded };
 }

@@ -6,7 +6,6 @@ import React, {
   useEffect,
   useRef,
   useState,
-  useCallback,
   ReactNode,
 } from "react";
 import { toast } from "sonner";
@@ -201,7 +200,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     Map<keyof typeof WS_MESSAGE_TYPES, (data: any) => void>
   >(new Map());
 
-  const setupMessageHandlers = useCallback(() => {
+  const setupMessageHandlers = () => {
     messageHandlers.current.clear();
 
     const heartbeatHandler: MessageHandler<
@@ -592,9 +591,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       WS_MESSAGE_TYPES.ROOM_EXPIRED,
       roomExpiredHandler
     );
-  }, [currentRoom, currentUser, settings.soundEffectsEnabled]);
+  };
 
-  const handleMessage = useCallback((event: MessageEvent) => {
+  const handleMessage = (event: MessageEvent) => {
     try {
       const message: WebSocketMessage = JSON.parse(event.data);
       const handler = messageHandlers.current.get(message.type);
@@ -607,9 +606,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     } catch (error) {
       logger.error("Error parsing WebSocket message:", error);
     }
-  }, []);
+  };
 
-  const connect = useCallback(() => {
+  const connect = () => {
     if (
       wsRef.current?.readyState === WebSocket.OPEN ||
       wsRef.current?.readyState === WebSocket.CONNECTING
@@ -704,9 +703,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       toast.error("Failed to create WebSocket connection", { duration: 10000 });
       logger.error("WebSocket connection error:", error);
     }
-  }, [wsUrl, handleMessage]);
+  };
 
-  const disconnect = useCallback(() => {
+  const disconnect = () => {
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
@@ -728,9 +727,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     setConnectionState("disconnected");
     setCurrentRoom(null);
     setCurrentUser(null);
-  }, []);
+  };
 
-  const sendMessage = useCallback((message: WebSocketMessage) => {
+  const sendMessage = (message: WebSocketMessage) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.send(
         JSON.stringify({
@@ -747,107 +746,89 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
         });
       }
     }
-  }, []);
+  };
 
-  const createRoom = useCallback(
-    async (username: string, settings: Partial<RoomSettings>) => {
-      sendMessage({
-        type: WS_MESSAGE_TYPES.CREATE_ROOM,
-        data: { username, settings },
-      });
-    },
-    [sendMessage]
-  );
+  const createRoom = async (username: string, settings: Partial<RoomSettings>) => {
+    sendMessage({
+      type: WS_MESSAGE_TYPES.CREATE_ROOM,
+      data: { username, settings },
+    });
+  };
 
-  const joinRoom = useCallback(
-    async (inviteCode: string, username: string) => {
-      sendMessage({
-        type: WS_MESSAGE_TYPES.JOIN_ROOM,
-        data: { inviteCode, username },
-      });
-    },
-    [sendMessage]
-  );
+  const joinRoom = async (inviteCode: string, username: string) => {
+    sendMessage({
+      type: WS_MESSAGE_TYPES.JOIN_ROOM,
+      data: { inviteCode, username },
+    });
+  };
 
-  const leaveRoom = useCallback(async () => {
+  const leaveRoom = async () => {
     sendMessage({
       type: WS_MESSAGE_TYPES.LEAVE_ROOM,
       data: {},
     });
     setCurrentRoom(null);
-  }, [sendMessage]);
+  };
 
-  const startGame = useCallback(async () => {
+  const startGame = async () => {
     sendMessage({
       type: WS_MESSAGE_TYPES.START_GAME,
       data: {},
     });
-  }, [sendMessage]);
+  };
 
-  const restartGame = useCallback(async () => {
+  const restartGame = async () => {
     sendMessage({
       type: WS_MESSAGE_TYPES.RESTART_GAME,
       data: {},
     });
-  }, [sendMessage]);
+  };
 
-  const stopGame = useCallback(async () => {
+  const stopGame = async () => {
     sendMessage({
       type: WS_MESSAGE_TYPES.STOP_GAME,
       data: {},
     });
-  }, [sendMessage]);
+  };
 
-  const submitAnswer = useCallback(
-    async (answer: string) => {
-      const activeQuestion = currentRoom?.gameState?.currentQuestion;
-      if (!activeQuestion) {
-        logger.error("No active question");
-        return;
-      }
+  const submitAnswer = async (answer: string) => {
+    const activeQuestion = currentRoom?.gameState?.currentQuestion;
+    if (!activeQuestion) {
+      logger.error("No active question");
+      return;
+    }
 
-      sendMessage({
-        type: WS_MESSAGE_TYPES.SUBMIT_ANSWER,
-        data: {
-          answer,
-          questionId: activeQuestion.index.toString(),
-        },
-      });
-    },
-    [sendMessage, currentRoom]
-  );
+    sendMessage({
+      type: WS_MESSAGE_TYPES.SUBMIT_ANSWER,
+      data: {
+        answer,
+        questionId: activeQuestion.index.toString(),
+      },
+    });
+  };
 
-  const updateRoomSettings = useCallback(
-    async (settings: Partial<Room["settings"]>) => {
-      sendMessage({
-        type: WS_MESSAGE_TYPES.UPDATE_ROOM_SETTINGS,
-        data: { settings },
-      });
-    },
-    [sendMessage]
-  );
+  const updateRoomSettings = async (settings: Partial<Room["settings"]>) => {
+    sendMessage({
+      type: WS_MESSAGE_TYPES.UPDATE_ROOM_SETTINGS,
+      data: { settings },
+    });
+  };
 
-  const kickUser = useCallback(
-    async (userId: string) => {
-      sendMessage({
-        type: WS_MESSAGE_TYPES.KICK_USER,
-        data: { userId },
-      });
-    },
-    [sendMessage]
-  );
+  const kickUser = async (userId: string) => {
+    sendMessage({
+      type: WS_MESSAGE_TYPES.KICK_USER,
+      data: { userId },
+    });
+  };
 
-  const getConnectionStats = useCallback(
-    () => ({
-      connectionState,
-      reconnectAttempts: reconnectAttemptsRef.current,
-    }),
-    [connectionState]
-  );
+  const getConnectionStats = () => ({
+    connectionState,
+    reconnectAttempts: reconnectAttemptsRef.current,
+  });
 
   useEffect(() => {
     setupMessageHandlers();
-  }, [setupMessageHandlers]);
+  }, [currentRoom, currentUser, settings.soundEffectsEnabled]);
 
   useEffect(() => {
     connect();
@@ -855,7 +836,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     return () => {
       disconnect();
     };
-  }, [connect, disconnect]);
+  }, [wsUrl]);
 
   useEffect(() => {
     return () => {
