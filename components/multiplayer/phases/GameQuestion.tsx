@@ -47,6 +47,12 @@ export default function GameQuestion({ room }: GameQuestionProps) {
     }
   }, [currentPhase]);
 
+  useEffect(() => {
+    if (Number(gameState?.currentQuestion?.index) >= Number(gameState?.totalQuestions) - 4) {
+      audioManager.preloadAudio(AUDIO_URLS.VICTORY, AUDIO_URLS_KEYS.VICTORY);
+    }
+  }, [gameState?.currentQuestion?.index, gameState?.totalQuestions]);
+
   const handleAnswerSelect = async (answer: string) => {
     if (hasAnswered || !currentQuestion) return;
 
