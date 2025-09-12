@@ -42,7 +42,9 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     useRoomManagement();
   const { settings } = useSettings();
   const [copied, setCopied] = React.useState(false);
-  const [gameStartingCountdown, setGameStartingCountdown] = useState<number | null>(null);
+  const [gameStartingCountdown, setGameStartingCountdown] = useState<
+    number | null
+  >(null);
   const [isStarting, setIsStarting] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
 
@@ -92,9 +94,13 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     setShowQRModal(true);
   };
 
+  const inviteLink = room.inviteCode
+    ? `${window.location.origin}/lobby?c=${room.inviteCode}`
+    : "";
+
   const handleCopyRoomCode = () => {
     if (room.inviteCode) {
-      navigator.clipboard.writeText(room.inviteCode);
+      navigator.clipboard.writeText(inviteLink);
       toast.success("Room code copied to clipboard");
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -112,10 +118,6 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     setGameStartingCountdown(5);
     startGame();
   };
-
-  const inviteLink = room.inviteCode
-    ? `${window.location.origin}/lobby?c=${room.inviteCode}`
-    : "";
 
   return (
     <div className="flex items-center justify-center">
