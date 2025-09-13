@@ -39,7 +39,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
 
   const isHost = currentUser?.id === room.host;
 
-  const myPlacement = useMemo(() => {
+  const currentUserPlacement = useMemo(() => {
     if (!currentUser) return null;
     const index = leaderboard.findIndex(
       (player) => player.userId === currentUser.id
@@ -90,7 +90,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 text-center">
               <div>
                 <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
-                  {myPlacement?.rank ? `#${myPlacement.rank}` : "-"}
+                  {currentUserPlacement?.rank ? `#${currentUserPlacement.rank}` : "-"}
                 </div>
                 <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
                   Final
@@ -100,7 +100,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
               </div>
               <div>
                 <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
-                  {myPlacement?.me?.score ?? 0}
+                  {currentUserPlacement?.me?.score ?? 0}
                 </div>
                 <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
                   Your
@@ -110,7 +110,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
               </div>
               <div>
                 <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
-                  {myPlacement?.me?.correctAnswers ?? 0}/
+                  {currentUserPlacement?.me?.correctAnswers ?? 0}/
                   {gameState?.totalQuestions || 0}
                 </div>
                 <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
@@ -123,7 +123,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
                 <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
                   {(() => {
                     const totalQ = gameState?.totalQuestions || 0;
-                    const correct = myPlacement?.me?.correctAnswers ?? 0;
+                    const correct = currentUserPlacement?.me?.correctAnswers ?? 0;
                     if (!totalQ) return 0;
                     return Math.round((correct / totalQ) * 100);
                   })()}
@@ -167,21 +167,21 @@ export default function GameFinished({ room }: GameFinishedProps) {
                         <TableCell className="text-right tabular-nums text-muted-foreground">
                           {index + 1}
                         </TableCell>
-                        <TableCell className="max-w-[240px] w-full whitespace-normal align-middle">
+                        <TableCell className="max-w-[200px] w-full whitespace-normal align-middle">
                           <div className="flex items-center gap-1">
                             <div
                               className={cn(
-                                "flex items-center gap-1",
+                                "flex items-center gap-1 min-w-0",
                                 isYou ? "font-semibold" : "font-medium"
                               )}
                             >
                               {index === 0 && (
                                 <Crown
-                                  className="w-4 h-4 dark:text-yellow-500 fill-yellow-500"
+                                  className="w-4 h-4 dark:text-yellow-500 fill-yellow-500 flex-shrink-0"
                                   aria-hidden="true"
                                 />
                               )}
-                              <span className="truncate flex max-w-[160px]">{player.username}</span>
+                              <span className="truncate min-w-0">{player.username}</span>
                             </div>
                             {isYou && (
                               <span className="text-[11px] font-semibold text-primary">
