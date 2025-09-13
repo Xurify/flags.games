@@ -20,7 +20,7 @@ export const AUDIO_URLS = {
   VICTORY:
     "https://qqu03sron6.ufs.sh/f/jU7cOp6GbyJPw2QMei0KClrayjzQ8DWSYEnsNML1tURiPcX0",
   CLOCK_TICK:
-    "https://qqu03sron6.ufs.sh/f/jU7cOp6GbyJPiyGH6OhSgo7pEyWSMGVxaC1eZIhB6HNrbPcl",
+    "https://qqu03sron6.ufs.sh/f/jU7cOp6GbyJP4Pxp3Tg3fXNcpgzmRyaFr18JjEY6qlAdiK4x", // .mp3
 } as const;
 
 export const AUDIO_URLS_KEYS = {
