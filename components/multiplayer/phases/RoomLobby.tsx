@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   CrownIcon,
   UserIcon,
@@ -17,6 +17,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { SettingsSelect } from "@/components/multiplayer/SettingsSelect";
 import QRCodeShareModal from "@/components/multiplayer/QRCodeShareModal";
 import {
@@ -47,6 +48,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   >(null);
   const [isStarting, setIsStarting] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
+  const copiedTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const members = room.members;
   const maxPlayers = room.settings.maxRoomSize;
@@ -99,11 +101,19 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     : "";
 
   const handleCopyRoomCode = () => {
+    clearCopiedTimeout();
     if (room.inviteCode) {
       navigator.clipboard.writeText(inviteLink);
-      toast.success("Room code copied to clipboard");
+      toast.success("Invite link copied to clipboard");
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      copiedTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const clearCopiedTimeout = () => {
+    if (copiedTimeoutRef.current) {
+      clearTimeout(copiedTimeoutRef.current);
+      copiedTimeoutRef.current = null;
     }
   };
 
@@ -136,28 +146,6 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                   Waiting for players to join
                 </p>
               </div>
-            </div>
-            <div
-              className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded bg-primary/5 border border-primary/20 text-xs cursor-pointer hover:bg-primary/10 transition-colors w-fit"
-              onClick={handleCopyRoomCode}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  handleCopyRoomCode();
-                }
-              }}
-            >
-              <LinkIcon className="w-3 h-3 text-primary flex-shrink-0" />
-              <span className="text-muted-foreground">Invite Code:</span>
-              <span className="font-mono font-semibold text-primary tracking-wide">
-                {room.inviteCode}
-              </span>
-              {copied ? (
-                <CopyCheckIcon className="w-3 h-3 text-green-600 flex-shrink-0" />
-              ) : (
-                <CopyIcon className="w-3 h-3 text-primary flex-shrink-0" />
-              )}
             </div>
           </div>
         </div>
@@ -276,6 +264,41 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
               renderValue={(value) => `${value}s`}
               disabled={!isHost() || isStarting}
             />
+          </div>
+
+          <div className="mb-4">
+            <div className="space-y-2">
+              <div
+                className="flex items-center gap-2 px-3 py-2 bg-muted border border-border/50 rounded-lg w-full cursor-pointer"
+                onClick={handleCopyRoomCode}
+              >
+                <LinkIcon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                <Input
+                  className={cn(
+                    "text-sm text-muted-foreground truncate flex-1 w-full cursor-pointer h-8",
+                    copied &&
+                      "bg-green-50 text-green-600 dark:bg-green-600/30 dark:text-green-300"
+                  )}
+                  value={inviteLink}
+                  readOnly
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopyRoomCode();
+                  }}
+                  className="h-8 w-8 p-0"
+                >
+                  {copied ? (
+                    <CopyCheckIcon className="w-4 h-4 text-green-600 dark:text-green-300" />
+                  ) : (
+                    <CopyIcon className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
 
           <div className="flex gap-2">

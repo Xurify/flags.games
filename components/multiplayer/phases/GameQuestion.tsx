@@ -14,7 +14,6 @@ import { useGameState } from "@/lib/hooks/useGameState";
 import { Room } from "@/lib/types/socket";
 import { audioManager } from "@/lib/utils/audio-manager";
 import { AUDIO_URLS, AUDIO_URLS_KEYS } from "@/lib/constants";
- 
 
 interface GameQuestionProps {
   room: Room;
@@ -48,7 +47,10 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   }, [currentPhase]);
 
   useEffect(() => {
-    if (Number(gameState?.currentQuestion?.index) >= Number(gameState?.totalQuestions) - 4) {
+    if (
+      Number(gameState?.currentQuestion?.index) >=
+      Number(gameState?.totalQuestions) - 4
+    ) {
       audioManager.preloadAudio(AUDIO_URLS.VICTORY, AUDIO_URLS_KEYS.VICTORY);
     }
   }, [gameState?.currentQuestion?.index, gameState?.totalQuestions]);
@@ -88,10 +90,13 @@ export default function GameQuestion({ room }: GameQuestionProps) {
           <CardContent className="p-3 sm:p-4">
             <div className="flex flex-wrap items-center justify-between gap-y-2 mb-3 sm:mb-5">
               <div className="text-sm font-medium text-foreground">
-                Question {currentQuestion.index} of {gameState?.totalQuestions || 0}
+                Question {currentQuestion.index} of{" "}
+                {gameState?.totalQuestions || 0}
               </div>
               <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-2 sm:gap-3">
-                <span className="font-medium text-foreground">Score: {userScore}</span>
+                <span className="font-medium text-foreground">
+                  Score: {userScore}
+                </span>
                 <span className="text-border dark:text-white">•</span>
                 <Timer
                   timePerQuestion={room.settings.timePerQuestion}
@@ -118,7 +123,9 @@ export default function GameQuestion({ room }: GameQuestionProps) {
 
           <div
             className={`absolute inset-0 bg-black/40 rounded-[2rem] flex items-center justify-center transition-opacity duration-300 ease-in-out ${
-              currentPhase === "results" && countdown > 0 ? "opacity-100" : "opacity-0 pointer-events-none"
+              currentPhase === "results" && countdown > 0
+                ? "opacity-100"
+                : "opacity-0 pointer-events-none"
             }`}
           >
             <div className="text-center">
@@ -129,13 +136,12 @@ export default function GameQuestion({ room }: GameQuestionProps) {
         </Card>
       </div>
       <Leaderboard
-            members={currentRoom?.members ?? room.members}
-            leaderboard={gameState?.leaderboard ?? []}
-            answers={gameState?.answers ?? []}
+        members={currentRoom?.members ?? room.members}
+        leaderboard={gameState?.leaderboard ?? []}
+        answers={gameState?.answers ?? []}
         currentUser={currentUser}
         hostId={currentRoom?.host ?? room.host}
         isGameActive={isGameActive}
-        variant="inline"
       />
     </div>
   );

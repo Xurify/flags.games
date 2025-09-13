@@ -72,8 +72,8 @@ export default function GameFinished({ room }: GameFinishedProps) {
           />
         </Suspense>
       )}
-      <Card className="py-4 sm:py-8 px-4 sm:px-6 bg-transparent border-none">
-        <CardContent className="p-3 sm:p-4">
+      <Card className="py-4 sm:py-8 px-0 bg-transparent border-none">
+        <CardContent className="sm:p-8">
           <div className="space-y-6">
             <div className="text-center space-y-2">
               <div className="flex items-center justify-center gap-2">
@@ -145,7 +145,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
                     <TableHead className="w-12 text-right tabular-nums">
                       #
                     </TableHead>
-                    <TableHead className="min-w-[240px] text-left">
+                    <TableHead className="max-w-[240px] w-full text-left">
                       Player
                     </TableHead>
                     <TableHead className="w-32 text-center">Correct</TableHead>
@@ -167,11 +167,11 @@ export default function GameFinished({ room }: GameFinishedProps) {
                         <TableCell className="text-right tabular-nums text-muted-foreground">
                           {index + 1}
                         </TableCell>
-                        <TableCell className="min-w-[240px] whitespace-normal align-middle">
+                        <TableCell className="max-w-[240px] w-full whitespace-normal align-middle">
                           <div className="flex items-center gap-1">
-                            <span
+                            <div
                               className={cn(
-                                "truncate flex items-center gap-1",
+                                "flex items-center gap-1",
                                 isYou ? "font-semibold" : "font-medium"
                               )}
                             >
@@ -181,8 +181,8 @@ export default function GameFinished({ room }: GameFinishedProps) {
                                   aria-hidden="true"
                                 />
                               )}
-                              {player.username}
-                            </span>
+                              <span className="truncate flex max-w-[160px]">{player.username}</span>
+                            </div>
                             {isYou && (
                               <span className="text-[11px] font-semibold text-primary">
                                 (You)
