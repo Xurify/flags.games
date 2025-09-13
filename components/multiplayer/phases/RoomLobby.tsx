@@ -12,12 +12,12 @@ import {
   CopyIcon,
   SettingsIcon,
   CopyCheckIcon,
+  QrCodeIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { SettingsSelect } from "@/components/multiplayer/SettingsSelect";
 import QRCodeShareModal from "@/components/multiplayer/QRCodeShareModal";
 import {
@@ -100,7 +100,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     ? `${window.location.origin}/lobby?c=${room.inviteCode}`
     : "";
 
-  const handleCopyRoomCode = () => {
+  const handleCopyRoomInviteLink = () => {
     clearCopiedTimeout();
     if (room.inviteCode) {
       navigator.clipboard.writeText(inviteLink);
@@ -132,14 +132,14 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   return (
     <div className="flex items-center justify-center">
       <Card className="w-full max-w-lg">
-        <div className="p-4 border-b border-border">
+        <div className="p-3 sm:p-4 border-b border-border">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <UsersIcon className="w-4 h-4 text-primary" />
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <UsersIcon className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-foreground">
+                <h2 className="text-base sm:text-lg font-semibold text-foreground">
                   Room Lobby
                 </h2>
                 <p className="text-xs text-muted-foreground">
@@ -150,9 +150,9 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
           </div>
         </div>
 
-        <div className="p-4 border-b border-border">
+        <div className="p-3 sm:p-4 border-b border-border">
           <div className="flex items-center gap-2 mb-3">
-            <h3 className="text-base font-medium text-foreground">
+            <h3 className="text-sm sm:text-base font-medium text-foreground">
               Players ({members.length}/{maxPlayers})
             </h3>
           </div>
@@ -162,22 +162,22 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 <div
                   key={`player-${index}`}
                   className={cn(
-                    "flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 ease-in-out min-h-[60px]",
+                    "flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg sm:rounded-xl border transition-all duration-300 ease-in-out min-h-[50px] sm:min-h-[60px]",
                     player
                       ? "bg-card dark:bg-input border-border/60 dark:border-border/90 hover:bg-accent/30 dark:hover:bg-input/30"
                       : "bg-muted/40 border-dashed border-border/60 opacity-80 animate-pulse"
                   )}
                 >
-                  <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
-                    <UserIcon className="w-4 h-4 text-accent-foreground" />
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+                    <UserIcon className="w-3 h-3 sm:w-4 sm:h-4 text-accent-foreground" />
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-foreground truncate">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <span className="text-xs sm:text-sm font-semibold text-foreground truncate">
                         {player ? player.username : "Waiting..."}
                       </span>
                       {player && room?.host === player.id && (
-                        <CrownIcon className="w-3 h-3 text-chart-5 flex-shrink-0" />
+                        <CrownIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-chart-5 flex-shrink-0" />
                       )}
                     </div>
                     {player && (
@@ -206,14 +206,14 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
           </div>
         </div>
 
-        <div className="p-4">
+        <div className="p-3 sm:p-4">
           <div className="flex items-center gap-2 mb-3">
-            <SettingsIcon className="w-4 h-4 text-muted-foreground" />
-            <h3 className="text-base font-medium text-foreground">
+            <SettingsIcon className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
+            <h3 className="text-sm sm:text-base font-medium text-foreground">
               Game Settings
             </h3>
           </div>
-          <div className="space-y-3 mb-4">
+          <div className="space-y-2 sm:space-y-3 mb-4">
             <SettingsSelect
               icon={<UsersIcon className="w-3 h-3" />}
               label="Max Players"
@@ -266,63 +266,48 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
             />
           </div>
 
-          <div className="mb-4">
-            <div className="space-y-2">
-              <div
-                className="flex items-center gap-2 px-3 py-2 bg-muted border border-border/50 rounded-lg w-full cursor-pointer"
-                onClick={handleCopyRoomCode}
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 flex items-center gap-1 text-sm"
+                onClick={handleInvite}
               >
-                <LinkIcon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                <Input
-                  className={cn(
-                    "text-sm text-muted-foreground truncate flex-1 w-full cursor-pointer h-8",
-                    copied &&
-                      "bg-green-50 text-green-600 dark:bg-green-600/30 dark:text-green-300"
-                  )}
-                  value={inviteLink}
-                  readOnly
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCopyRoomCode();
-                  }}
-                  className="h-8 w-8 p-0"
-                >
-                  {copied ? (
-                    <CopyCheckIcon className="w-4 h-4 text-green-600 dark:text-green-300" />
-                  ) : (
-                    <CopyIcon className="w-4 h-4" />
-                  )}
-                </Button>
-              </div>
+                <QrCodeIcon className="w-3 h-3" />
+                <span>QR Code</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 flex items-center gap-1 text-sm"
+                onClick={handleCopyRoomInviteLink}
+              >
+                {copied ? (
+                  <CopyCheckIcon className="w-3 h-3 text-green-600 dark:text-green-300" />
+                ) : (
+                  <CopyIcon className="w-3 h-3" />
+                )}
+                <span className="sm:hidden">
+                  {copied ? "Copied!" : "Invite Link"}
+                </span>
+                <span className="hidden sm:inline">
+                  {copied ? "Copied!" : "Copy Invite Link"}
+                </span>
+              </Button>
             </div>
-          </div>
-
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 flex items-center gap-1 text-sm"
-              onClick={handleInvite}
-            >
-              <LinkIcon className="w-3 h-3" />
-              Invite
-            </Button>
             {isHost() && (
               <Button
                 variant="default"
                 size="sm"
-                className="flex-1 flex items-center gap-1 text-sm"
+                className="w-full flex items-center justify-center gap-1 text-sm"
                 onClick={handleStart}
                 disabled={!canStartGame() || isStarting}
               >
                 <PlayIcon className="w-3 h-3" />
                 {isStarting && gameStartingCountdown !== null
                   ? `Starting in ${gameStartingCountdown}...`
-                  : "Start"}
+                  : "Start Game"}
               </Button>
             )}
           </div>

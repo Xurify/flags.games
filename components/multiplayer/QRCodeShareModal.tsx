@@ -119,7 +119,15 @@ export default function QRCodeShareModal({
               onClick={handleCopyLink}
             >
               <LinkIcon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-              <Input className={cn("text-sm text-muted-foreground truncate flex-1 w-full cursor-pointer", copiedLink && "bg-green-100 text-green-600 dark:bg-green-600/30 dark:text-green-600")} value={inviteLink.replace("https://", "")} />
+              <Input
+                className={cn(
+                  "text-sm text-muted-foreground truncate flex-1 w-full cursor-pointer",
+                  copiedLink &&
+                    "bg-green-100 text-green-600 dark:bg-green-600/30 dark:text-green-600"
+                )}
+                value={inviteLink.replace("https://", "")}
+                readOnly={true}
+              />
               <Button
                 variant="ghost"
                 size="sm"
