@@ -78,7 +78,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
   const elapsedClock = formatClock(elapsedMs);
 
   return (
-    <div className="py-4 sm:py-8 px-4 sm:px-6 space-y-6">
+    <div className="py-4 sm:py-8 px-0 space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 text-center">
         <div>
           <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
