@@ -12,8 +12,8 @@ interface QuestionProgressProps {
   hearts?: number;
   maxHearts?: number;
   limitedLifeModeEnabled?: boolean;
-  speedRoundModeEnabled?: boolean;
-  speedRoundTimeSec?: number;
+  timeAttackModeEnabled?: boolean;
+  timeAttackTimeSec?: number;
   currentPhase?: GamePhase;
   onTimeUp?: () => void;
   startTimeMs?: number;
@@ -27,8 +27,8 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
   hearts,
   maxHearts,
   limitedLifeModeEnabled,
-  speedRoundModeEnabled,
-  speedRoundTimeSec,
+  timeAttackModeEnabled,
+  timeAttackTimeSec,
   currentPhase,
   onTimeUp,
   startTimeMs,
@@ -64,13 +64,13 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
           />
         </>
       )}
-      {speedRoundModeEnabled &&
-        speedRoundTimeSec !== undefined &&
+      {timeAttackModeEnabled &&
+        timeAttackTimeSec !== undefined &&
         currentPhase !== undefined && (
           <>
             <div className="w-px h-4 bg-border"></div>
             <Timer
-              timePerQuestion={speedRoundTimeSec}
+              timePerQuestion={timeAttackTimeSec}
               questionIndex={currentQuestion}
               currentPhase={currentPhase}
               onTimeUp={onTimeUp}

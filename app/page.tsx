@@ -10,13 +10,13 @@ interface HomeProps {
 export default async function Home({ searchParams: _searchParams }: HomeProps) {
   const searchParams = await _searchParams;
   const difficulty = parseDifficultyFromQuery(searchParams?.difficulty);
-  const { limitedLifeModeEnabled, speedRoundModeDurationSec } = parseModeFromQuery(searchParams?.mode, searchParams?.t);
+  const { limitedLifeModeEnabled, timeAttackModeDurationSec } = parseModeFromQuery(searchParams?.mode, searchParams?.t);
   const initialGameData = generateQuestion(difficulty) as InitialGameData;
   return (
     <FlagGameClient
       initialGameData={initialGameData}
       initialLimitedLifeModeEnabled={limitedLifeModeEnabled}
-      initialSpeedRoundModeDurationSec={speedRoundModeDurationSec}
+      initialTimeAttackModeDurationSec={timeAttackModeDurationSec}
     />
   );
 }

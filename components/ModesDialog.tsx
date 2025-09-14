@@ -27,7 +27,7 @@ interface ModesDialogProps {
   limitedLifeModeEnabled: boolean;
   onToggleLimitedLifeMode: (value: boolean) => void;
   onRequestRestart: () => void;
-  onStartSpeedRound?: (durationSec: number) => void;
+  onStartTimeAttack?: (durationSec: number) => void;
   onStartClassic?: () => void;
   onStartLimitedLife?: () => void;
 }
@@ -38,7 +38,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
   limitedLifeModeEnabled,
   onToggleLimitedLifeMode,
   onRequestRestart,
-  onStartSpeedRound,
+  onStartTimeAttack,
   onStartClassic,
   onStartLimitedLife,
 }) => {
@@ -63,9 +63,9 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
     onRequestRestart();
   };
 
-  const startSpeedRound = () => {
+  const startTimeAttack = () => {
     const nextDuration = Number(timePerQuestion);
-    onStartSpeedRound?.(nextDuration);
+    onStartTimeAttack?.(nextDuration);
     onOpenChange(false);
   };
 
@@ -148,7 +148,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <TimerIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0 text-muted-foreground" />
               <div className="min-w-0">
-                <div className="font-medium text-sm">Speed Round</div>
+                <div className="font-medium text-sm">Time Attack</div>
                 <div className="text-xs text-muted-foreground leading-tight break-words">
                   Answer each question within a limited time frame
                 </div>
@@ -176,7 +176,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
                 size="sm"
                 variant="default"
                 className="w-full sm:w-auto sm:min-w-[72px]"
-                onClick={startSpeedRound}
+                onClick={startTimeAttack}
               >
                 Start
               </Button>

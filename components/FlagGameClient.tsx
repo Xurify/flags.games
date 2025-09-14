@@ -49,7 +49,7 @@ export interface InitialGameData {
 interface FlagGameClientProps {
   initialGameData: InitialGameData;
   initialLimitedLifeModeEnabled?: boolean;
-  initialSpeedRoundModeDurationSec?: number | null;
+  initialTimeAttackModeDurationSec?: number | null;
 }
 
 export interface GameState {
@@ -81,11 +81,11 @@ export interface QuestionResult {
 const FlagGameClient: React.FC<FlagGameClientProps> = ({
   initialGameData,
   initialLimitedLifeModeEnabled = false,
-  initialSpeedRoundModeDurationSec = null,
+  initialTimeAttackModeDurationSec = null,
 }) => {
   const { settings } = useSettings();
   const searchParams = useSearchParams();
-  const { setDifficultyParam, setModeClassic, setModeLimited, setModeSpeed } =
+  const { setDifficultyParam, setModeClassic, setModeLimited, setModeTimeAttack } =
     useGameQueryParams();
 
   const [gameState, setGameState] = useState<GameState>({
@@ -99,16 +99,16 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
     gameCompleted: false,
     usedCountries: [initialGameData.currentCountry.code],
     difficulty: initialGameData.difficulty,
-    gameStarted: initialSpeedRoundModeDurationSec !== null ? false : true,
+    gameStarted: initialTimeAttackModeDurationSec !== null ? false : true,
     hearts: MAX_HEARTS,
   });
 
   const [limitedLifeModeEnabled, setLimitedLifeModeEnabled] = useState(
     initialLimitedLifeModeEnabled
   );
-  const [speedRoundModeDurationSec, setSpeedRoundModeDurationSec] = useState<
+  const [timeAttackModeDurationSec, setTimeAttackModeDurationSec] = useState<
     number | null
-  >(initialSpeedRoundModeDurationSec);
+  >(initialTimeAttackModeDurationSec);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
@@ -387,14 +387,14 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
     if (modeParam === "limited") {
       if (
         limitedLifeModeEnabled === false ||
-        speedRoundModeDurationSec !== null
+        timeAttackModeDurationSec !== null
       ) {
         setLimitedLifeModeEnabled(true);
-        setSpeedRoundModeDurationSec(null);
+        setTimeAttackModeDurationSec(null);
         setGameState((prev) => ({ ...prev, gameStarted: true }));
         restartGame(false);
       }
-    } else if (modeParam === "speed") {
+    } else if (modeParam === "time-attack") {
       const parsed = Number(durationParam);
       const nextDuration =
         Number.isFinite(parsed) && parsed > 0
@@ -402,22 +402,22 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
           : settings.timePerQuestion;
       if (
         limitedLifeModeEnabled === true ||
-        speedRoundModeDurationSec !== nextDuration ||
+        timeAttackModeDurationSec !== nextDuration ||
         gameState.gameStarted === true
       ) {
         setLimitedLifeModeEnabled(false);
-        setSpeedRoundModeDurationSec(nextDuration);
+        setTimeAttackModeDurationSec(nextDuration);
         setGameState((prev) => ({ ...prev, gameStarted: false }));
         restartGame(true);
       }
     } else {
       if (
         limitedLifeModeEnabled === true ||
-        speedRoundModeDurationSec !== null ||
+        timeAttackModeDurationSec !== null ||
         gameState.gameStarted === false
       ) {
         setLimitedLifeModeEnabled(false);
-        setSpeedRoundModeDurationSec(null);
+        setTimeAttackModeDurationSec(null);
         setGameState((prev) => ({ ...prev, gameStarted: true }));
         restartGame(false);
       }
@@ -465,22 +465,22 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
         onToggleLimitedLifeMode={setLimitedLifeModeEnabled}
         onRequestRestart={restartGame}
         onStartClassic={() => {
-          setSpeedRoundModeDurationSec(null);
+          setTimeAttackModeDurationSec(null);
           setLimitedLifeModeEnabled(false);
           restartGame(false);
           setModeClassic();
         }}
         onStartLimitedLife={() => {
-          setSpeedRoundModeDurationSec(null);
+          setTimeAttackModeDurationSec(null);
           setLimitedLifeModeEnabled(true);
           restartGame(false);
           setModeLimited();
         }}
-        onStartSpeedRound={(durationSec) => {
-          setSpeedRoundModeDurationSec(durationSec);
+        onStartTimeAttack={(durationSec) => {
+          setTimeAttackModeDurationSec(durationSec);
           setLimitedLifeModeEnabled(false);
           restartGame(true);
-          setModeSpeed(durationSec);
+          setModeTimeAttack(durationSec);
         }}
       />
 
@@ -531,14 +531,14 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                 hearts={gameState.hearts}
                 maxHearts={MAX_HEARTS}
                 limitedLifeModeEnabled={limitedLifeModeEnabled}
-                speedRoundModeEnabled={speedRoundModeDurationSec !== null}
-                speedRoundTimeSec={speedRoundModeDurationSec ?? undefined}
+                timeAttackModeEnabled={timeAttackModeDurationSec !== null}
+                timeAttackTimeSec={timeAttackModeDurationSec ?? undefined}
                 currentPhase={
                   gameState.gameCompleted
                     ? "finished"
                     : gameState.showResult
                     ? "results"
-                    : speedRoundModeDurationSec !== null &&
+                    : timeAttackModeDurationSec !== null &&
                       !gameState.gameStarted
                     ? "waiting"
                     : "question"
@@ -574,21 +574,21 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                   selectedAnswer={gameState.selectedAnswer}
                   disabled={
                     gameState.showResult ||
-                    (speedRoundModeDurationSec !== null &&
+                    (timeAttackModeDurationSec !== null &&
                       !gameState.gameStarted)
                   }
                   correctAnswer={gameState.currentCountry.code}
                 />
 
-                {speedRoundModeDurationSec !== null &&
+                {timeAttackModeDurationSec !== null &&
                   !gameState.gameStarted && (
                     <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-md">
                       <div className="flex flex-col items-center text-center gap-3 p-4">
                         <div className="text-base font-semibold">
-                          Speed Round
+                          Time Attack
                         </div>
                         <p className="text-muted-foreground text-sm">
-                          Press Start — you'll have {speedRoundModeDurationSec}s
+                          Press Start — you'll have {timeAttackModeDurationSec}s
                           per question.
                         </p>
                         <Button

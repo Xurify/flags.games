@@ -450,16 +450,16 @@ export function parseDifficultyFromQuery(
 export function parseModeFromQuery(
   modeParam: string | undefined,
   tParam: string | undefined
-): { limitedLifeModeEnabled: boolean; speedRoundModeDurationSec: number | null } {
+): { limitedLifeModeEnabled: boolean; timeAttackModeDurationSec: number | null } {
   if (modeParam === "limited") {
-    return { limitedLifeModeEnabled: true, speedRoundModeDurationSec: null };
+    return { limitedLifeModeEnabled: true, timeAttackModeDurationSec: null };
   }
-  if (modeParam === "speed") {
+  if (modeParam === "time-attack") {
     const parsed = Number(tParam);
     const duration = Number.isFinite(parsed) && parsed > 0 ? parsed : TIME_PER_QUESTION_OPTIONS[0];
-    return { limitedLifeModeEnabled: false, speedRoundModeDurationSec: duration };
+    return { limitedLifeModeEnabled: false, timeAttackModeDurationSec: duration };
   }
-  return { limitedLifeModeEnabled: false, speedRoundModeDurationSec: null };
+  return { limitedLifeModeEnabled: false, timeAttackModeDurationSec: null };
 }
 
 // ============================================================================

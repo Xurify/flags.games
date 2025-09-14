@@ -42,9 +42,9 @@ export function useGameQueryParams() {
     });
   };
 
-  const setModeSpeed = (durationSec?: number) => {
+  const setModeTimeAttack = (durationSec?: number) => {
     replaceWithParams((params) => {
-      params.set("mode", "speed");
+      params.set("mode", "time-attack");
       if (durationSec && durationSec > 0) {
         params.set("t", String(durationSec));
       } else {
@@ -57,7 +57,7 @@ export function useGameQueryParams() {
     setDifficultyParam,
     setModeClassic,
     setModeLimited,
-    setModeSpeed,
+    setModeTimeAttack,
   };
 }
 
