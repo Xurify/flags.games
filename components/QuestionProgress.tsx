@@ -16,6 +16,7 @@ interface QuestionProgressProps {
   speedRoundTimeSec?: number;
   currentPhase?: GamePhase;
   onTimeUp?: () => void;
+  startTimeMs?: number;
 }
 
 const QuestionProgress: React.FC<QuestionProgressProps> = ({
@@ -30,6 +31,7 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
   speedRoundTimeSec,
   currentPhase,
   onTimeUp,
+  startTimeMs,
 }) => (
   <div className="flex justify-center items-center">
     <div className="relative flex items-center gap-4">
@@ -72,6 +74,7 @@ const QuestionProgress: React.FC<QuestionProgressProps> = ({
               questionIndex={currentQuestion}
               currentPhase={currentPhase}
               onTimeUp={onTimeUp}
+              startTimeMs={startTimeMs}
             />
           </>
         )}

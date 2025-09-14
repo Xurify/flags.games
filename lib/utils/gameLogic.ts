@@ -19,6 +19,7 @@ import {
   EXPERT_DIFFICULTY,
   HARD_DIFFICULTY,
   MEDIUM_DIFFICULTY,
+  TIME_PER_QUESTION_OPTIONS,
 } from "@/lib/constants";
 
 interface QuestionData {
@@ -432,6 +433,10 @@ export const generateQuestion = (
   };
 };
 
+// ============================================================================
+// QUERY PARSING HELPERS
+// ============================================================================
+
 export function parseDifficultyFromQuery(
   queryValue: string | undefined
 ): Difficulty {
@@ -440,6 +445,21 @@ export function parseDifficultyFromQuery(
     return queryValue as Difficulty;
   }
   return DEFAULT_DIFFICULTY;
+}
+
+export function parseModeFromQuery(
+  modeParam: string | undefined,
+  tParam: string | undefined
+): { limitedLifeModeEnabled: boolean; speedRoundModeDurationSec: number | null } {
+  if (modeParam === "limited") {
+    return { limitedLifeModeEnabled: true, speedRoundModeDurationSec: null };
+  }
+  if (modeParam === "speed") {
+    const parsed = Number(tParam);
+    const duration = Number.isFinite(parsed) && parsed > 0 ? parsed : TIME_PER_QUESTION_OPTIONS[0];
+    return { limitedLifeModeEnabled: false, speedRoundModeDurationSec: duration };
+  }
+  return { limitedLifeModeEnabled: false, speedRoundModeDurationSec: null };
 }
 
 // ============================================================================

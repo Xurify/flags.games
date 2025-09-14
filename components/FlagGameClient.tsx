@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, Suspense, lazy } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   RotateCcwIcon,
   HelpCircleIcon,
@@ -18,6 +18,7 @@ import {
 } from "@/lib/constants";
 import { Country } from "@/lib/data/countries";
 import { useSettings } from "@/lib/context/SettingsContext";
+import { useGameQueryParams } from "@/lib/hooks/useGameQueryParams";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
 import { audioManager } from "@/lib/utils/audio-manager";
 import { prefetchAllFlags } from "@/lib/utils/image";
@@ -47,6 +48,8 @@ export interface InitialGameData {
 
 interface FlagGameClientProps {
   initialGameData: InitialGameData;
+  initialLimitedLifeModeEnabled?: boolean;
+  initialSpeedRoundModeDurationSec?: number | null;
 }
 
 export interface GameState {
@@ -75,10 +78,15 @@ export interface QuestionResult {
   timeToAnswerMs: number | null;
 }
 
-const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
+const FlagGameClient: React.FC<FlagGameClientProps> = ({
+  initialGameData,
+  initialLimitedLifeModeEnabled = false,
+  initialSpeedRoundModeDurationSec = null,
+}) => {
   const { settings } = useSettings();
-  const router = useRouter();
   const searchParams = useSearchParams();
+  const { setDifficultyParam, setModeClassic, setModeLimited, setModeSpeed } =
+    useGameQueryParams();
 
   const [gameState, setGameState] = useState<GameState>({
     currentQuestion: 1,
@@ -91,14 +99,16 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     gameCompleted: false,
     usedCountries: [initialGameData.currentCountry.code],
     difficulty: initialGameData.difficulty,
-    gameStarted: true,
+    gameStarted: initialSpeedRoundModeDurationSec !== null ? false : true,
     hearts: MAX_HEARTS,
   });
 
-  const [limitedLifeModeEnabled, setLimitedLifeModeEnabled] = useState(false);
+  const [limitedLifeModeEnabled, setLimitedLifeModeEnabled] = useState(
+    initialLimitedLifeModeEnabled
+  );
   const [speedRoundModeDurationSec, setSpeedRoundModeDurationSec] = useState<
     number | null
-  >(null);
+  >(initialSpeedRoundModeDurationSec);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
@@ -326,7 +336,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     setQuestionResults([]);
   };
 
-  const restartGame = () => {
+  const restartGame = (requireStartPress?: boolean) => {
     clearGameTimeout();
 
     setGameState((prev) => ({
@@ -338,6 +348,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       showResult: false,
       gameCompleted: false,
       usedCountries: [],
+      gameStarted: requireStartPress ? false : true,
       hearts: MAX_HEARTS,
     }));
 
@@ -367,15 +378,53 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     generateQuestionHandler(newDifficulty);
     setShowDifficultyDialog(false);
 
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("difficulty", newDifficulty);
-    if (newDifficulty === DEFAULT_DIFFICULTY) {
-      router.replace("/");
-    } else {
-      router.replace(`?${params.toString()}`);
-    }
+    setDifficultyParam(newDifficulty);
   };
-  
+
+  useEffect(() => {
+    const modeParam = searchParams.get("mode");
+    const durationParam = searchParams.get("t");
+    if (modeParam === "limited") {
+      if (
+        limitedLifeModeEnabled === false ||
+        speedRoundModeDurationSec !== null
+      ) {
+        setLimitedLifeModeEnabled(true);
+        setSpeedRoundModeDurationSec(null);
+        setGameState((prev) => ({ ...prev, gameStarted: true }));
+        restartGame(false);
+      }
+    } else if (modeParam === "speed") {
+      const parsed = Number(durationParam);
+      const nextDuration =
+        Number.isFinite(parsed) && parsed > 0
+          ? parsed
+          : settings.timePerQuestion;
+      if (
+        limitedLifeModeEnabled === true ||
+        speedRoundModeDurationSec !== nextDuration ||
+        gameState.gameStarted === true
+      ) {
+        setLimitedLifeModeEnabled(false);
+        setSpeedRoundModeDurationSec(nextDuration);
+        setGameState((prev) => ({ ...prev, gameStarted: false }));
+        restartGame(true);
+      }
+    } else {
+      if (
+        limitedLifeModeEnabled === true ||
+        speedRoundModeDurationSec !== null ||
+        gameState.gameStarted === false
+      ) {
+        setLimitedLifeModeEnabled(false);
+        setSpeedRoundModeDurationSec(null);
+        setGameState((prev) => ({ ...prev, gameStarted: true }));
+        restartGame(false);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, settings.timePerQuestion]);
+
   useEffect(() => {
     if (gameState.gameCompleted && settings.soundEffectsEnabled) {
       const percentage =
@@ -418,17 +467,20 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
         onStartClassic={() => {
           setSpeedRoundModeDurationSec(null);
           setLimitedLifeModeEnabled(false);
-          restartGame();
+          restartGame(false);
+          setModeClassic();
         }}
         onStartLimitedLife={() => {
           setSpeedRoundModeDurationSec(null);
           setLimitedLifeModeEnabled(true);
-          restartGame();
+          restartGame(false);
+          setModeLimited();
         }}
         onStartSpeedRound={(durationSec) => {
           setSpeedRoundModeDurationSec(durationSec);
           setLimitedLifeModeEnabled(false);
-          restartGame();
+          restartGame(true);
+          setModeSpeed(durationSec);
         }}
       />
 
@@ -486,13 +538,19 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                     ? "finished"
                     : gameState.showResult
                     ? "results"
+                    : speedRoundModeDurationSec !== null &&
+                      !gameState.gameStarted
+                    ? "waiting"
                     : "question"
                 }
                 onTimeUp={handleTimeUp}
+                startTimeMs={
+                  gameState.gameStarted ? questionStartMs : undefined
+                }
               />
             </div>
             <Card className="mb-3 sm:mb-6 py-4 sm:py-8 px-4 sm:px-6">
-              <CardContent className="p-3 sm:p-4">
+              <CardContent className="relative p-3 sm:p-4">
                 <div className="text-center mb-4 sm:mb-8">
                   <h1 className="text-lg sm:text-xl font-semibold text-foreground mb-1 sm:mb-2">
                     Guess the Country
@@ -514,10 +572,40 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
                   showResult={gameState.showResult}
                   handleAnswer={handleAnswer}
                   selectedAnswer={gameState.selectedAnswer}
-                  disabled={gameState.showResult}
+                  disabled={
+                    gameState.showResult ||
+                    (speedRoundModeDurationSec !== null &&
+                      !gameState.gameStarted)
+                  }
                   correctAnswer={gameState.currentCountry.code}
                 />
 
+                {speedRoundModeDurationSec !== null &&
+                  !gameState.gameStarted && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-md">
+                      <div className="flex flex-col items-center text-center gap-3 p-4">
+                        <div className="text-base font-semibold">
+                          Speed Round
+                        </div>
+                        <p className="text-muted-foreground text-sm">
+                          Press Start — you'll have {speedRoundModeDurationSec}s
+                          per question.
+                        </p>
+                        <Button
+                          onClick={() => {
+                            setGameState((prev) => ({
+                              ...prev,
+                              gameStarted: true,
+                            }));
+                            setQuestionStartMs(Date.now());
+                          }}
+                          size="lg"
+                        >
+                          Start
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 {gameState.showResult && !settings.autoAdvanceEnabled && (
                   <div className="mb-3 sm:mb-6 text-center">
                     <Button onClick={nextQuestion} className="w-full" size="lg">
