@@ -327,7 +327,7 @@ class AudioManager {
 
   async playClockTick(volume: number = 0.25): Promise<void> {
     try {
-      await toneManager.playClockTick();
+      await toneManager.playCountdownTick();
     } catch (error) {
       console.warn("Tone.js clock tick failed, falling back to audio file:", error);
       await this.playAudio(AUDIO_URLS.CLOCK_TICK, { volume, key: AUDIO_URLS_KEYS.CLOCK_TICK });
