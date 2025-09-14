@@ -29,8 +29,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [settings, setSettings] = useState<GameSettings>(defaultSettings);
 
   useEffect(() => {
-    audioManager.preloadAudio(AUDIO_URLS.CLOCK_TICK, AUDIO_URLS_KEYS.CLOCK_TICK);
     audioManager.setupAutoResumeOnUserInteraction();
+    audioManager.preloadAudio(AUDIO_URLS.BUTTON_CLICK, AUDIO_URLS_KEYS.BUTTON_CLICK);
+    audioManager.preloadAudio(AUDIO_URLS.CLOCK_TICK, AUDIO_URLS_KEYS.CLOCK_TICK);
   }, []);
 
   useEffect(() => {

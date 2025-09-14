@@ -385,7 +385,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
         audioManager.playVictorySound();
       }
     }
-  }, [gameState.gameCompleted, settings.soundEffectsEnabled]);
+  }, [gameState.gameCompleted]);
 
   return (
     <div className="min-h-screen h-screen sm:min-h-screen sm:h-auto bg-background overflow-y-auto">
