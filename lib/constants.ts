@@ -15,9 +15,9 @@ export const TIME_PER_QUESTION_OPTIONS = [10, 15, 20, 30];
 export const ROOM_SIZES = [2, 3, 4, 5];
 
 export const AUDIO_URLS = {
-  BUTTON_CLICK: "/private/digital-pop.mp3",
-  VICTORY: "/private/victory.mp3", 
-  CLOCK_TICK: "/private/tick.mp3",
+  BUTTON_CLICK: "/audio/digital-pop.mp3",
+  VICTORY: "/audio/victory.mp3", 
+  CLOCK_TICK: "/audio/tick.mp3",
 } as const;
 
 export const AUDIO_URLS_KEYS = {
