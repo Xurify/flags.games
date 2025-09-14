@@ -158,25 +158,24 @@ class ToneManager {
 
     const synth = new Tone.Synth({
       oscillator: {
-        type: "triangle",
+        type: "sine",
       },
       envelope: {
-        attack: 0.001,
-        decay: 0.02,
+        attack: 0.002,
+        decay: 0.03,
         sustain: 0.0,
-        release: 0.03,
+        release: 0.04,
       },
     }).toDestination();
 
-    synth.volume.value = -18;
+    synth.volume.value = -15;
 
     const now = Tone.now();
-    synth.triggerAttackRelease("F4", "16n", now);
-    synth.triggerAttackRelease("A4", "32n", now + 0.01);
+    synth.triggerAttackRelease("E5", "64n", now);
 
     setTimeout(() => {
       synth.dispose();
-    }, 150);
+    }, 200);
   }
 
   async playAnswerSubmittedSound(): Promise<void> {
