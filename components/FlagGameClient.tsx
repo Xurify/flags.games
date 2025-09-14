@@ -582,7 +582,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 
                 {timeAttackModeDurationSec !== null &&
                   !gameState.gameStarted && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-background rounded-md">
+                    <div className="absolute inset-0 flex items-center justify-center bg-card rounded-md">
                       <div className="flex flex-col items-center text-center gap-3 p-4">
                         <div className="text-base font-semibold">
                           Time Attack
