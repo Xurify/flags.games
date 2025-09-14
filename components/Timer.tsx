@@ -24,7 +24,10 @@ export default function Timer({
   const { timeRemainingSec } = useWallClockCountdown({
     durationSec: timePerQuestion,
     isActive: currentPhase === "question",
-    onTimeUp,
+    onTimeUp: () => {
+      audioManager.stopClockTick();
+      onTimeUp?.();
+    },
     resetKey: `timer-${questionIndex}-${timePerQuestion}`,
     startTimeMs,
   });
@@ -39,14 +42,22 @@ export default function Timer({
   }, [questionIndex, currentPhase]);
 
   useEffect(() => {
-    if (currentPhase !== "question") return;
-    if (!settings.soundEffectsEnabled) return;
+    if (currentPhase !== "question") {
+      audioManager.stopClockTick();
+      return;
+    }
+    if (!settings.soundEffectsEnabled) {
+      audioManager.stopClockTick();
+      return;
+    }
 
     const currentWhole = Math.ceil(timeRemainingSec);
     const previousWhole = previousWholeSecondsRef.current;
     const THRESHOLD_SECONDS = 5;
 
-    if (
+    if (currentWhole <= 0) {
+      audioManager.stopClockTick();
+    } else if (
       previousWhole !== null &&
       currentWhole < previousWhole &&
       currentWhole <= THRESHOLD_SECONDS &&
@@ -58,6 +69,7 @@ export default function Timer({
     }
 
     previousWholeSecondsRef.current = currentWhole;
+
   }, [
     timeRemainingSec,
     currentPhase,

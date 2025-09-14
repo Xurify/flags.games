@@ -9,6 +9,7 @@ class AudioManager {
   private audioCache: AudioCache = {};
   private audioContext: AudioContext | null = null;
   private autoResumeSetup = false;
+  private currentlyPlayingByKey: Set<string> = new Set();
 
   constructor() {
     if (typeof window !== "undefined") {
@@ -149,14 +150,52 @@ class AudioManager {
         });
       }
 
+      const cacheKey = key || url;
+      this.currentlyPlayingByKey.add(cacheKey);
+      const handleEnded = () => {
+        this.currentlyPlayingByKey.delete(cacheKey);
+        audio.removeEventListener("ended", handleEnded);
+      };
+      audio.addEventListener("ended", handleEnded);
+
       const playPromise = audio.play();
 
       if (playPromise !== undefined) {
-        await playPromise;
+        try {
+          await playPromise;
+        } catch (e) {
+          this.currentlyPlayingByKey.delete(cacheKey);
+          audio.removeEventListener("ended", handleEnded);
+          throw e;
+        }
       }
     } catch (error) {
       console.error("Failed to play audio:", url, error);
     }
+  }
+
+  stopByKey(key: string): void {
+    const audio = this.audioCache[key];
+    if (!audio) return;
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+      this.currentlyPlayingByKey.delete(key);
+    } catch {}
+  }
+
+  stopAll(): void {
+    Object.entries(this.audioCache).forEach(([key, audio]) => {
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+      } catch {}
+      this.currentlyPlayingByKey.delete(key);
+    });
+  }
+
+  isPlaying(key: string): boolean {
+    return this.currentlyPlayingByKey.has(key);
   }
 
   /**
@@ -333,6 +372,10 @@ class AudioManager {
       console.warn("Tone.js clock tick failed, falling back to audio file:", error);
       await this.playAudio(AUDIO_URLS.CLOCK_TICK, { volume, key: AUDIO_URLS_KEYS.CLOCK_TICK });
     }
+  }
+
+  stopClockTick(): void {
+    this.stopByKey(AUDIO_URLS_KEYS.CLOCK_TICK);
   }
 
   async playMechanicalClockTick(): Promise<void> {

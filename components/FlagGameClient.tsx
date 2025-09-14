@@ -582,7 +582,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 
                 {timeAttackModeDurationSec !== null &&
                   !gameState.gameStarted && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-md">
+                    <div className="absolute inset-0 flex items-center justify-center bg-background rounded-md">
                       <div className="flex flex-col items-center text-center gap-3 p-4">
                         <div className="text-base font-semibold">
                           Time Attack
@@ -598,6 +598,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                               gameStarted: true,
                             }));
                             setQuestionStartMs(Date.now());
+                            audioManager.playAudio(AUDIO_URLS.BUTTON_CLICK, { volume: 1, key: AUDIO_URLS_KEYS.BUTTON_CLICK });
                           }}
                           size="lg"
                         >
