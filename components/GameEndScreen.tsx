@@ -150,7 +150,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                   className={
                     result.isCorrect
                       ? ""
-                      : "bg-destructive/45 dark:bg-destructive/15 hover:bg-destructive/30 dark:hover:bg-destructive/20"
+                      : "bg-red-500/10 border-b-black/20 dark:border-b-black dark:bg-destructive/15 hover:bg-destructive/30 dark:hover:bg-destructive/20"
                   }
                 >
                   <TableCell className="text-right tabular-nums text-muted-foreground">
