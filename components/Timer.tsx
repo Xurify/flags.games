@@ -52,7 +52,9 @@ export default function Timer({
       currentWhole <= THRESHOLD_SECONDS &&
       currentWhole > 0
     ) {
-      audioManager.playClockTick(0.18);
+      audioManager.playClockTick(0.18).catch((error) => {
+        console.error("Error playing clock tick:", error);
+      });
     }
 
     previousWholeSecondsRef.current = currentWhole;

@@ -64,6 +64,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                         setSettingsOpen(false);
                         setShowDifficultyDialog(true);
                       }}
+                      playClickSound={true}
                       size="sm"
                       className="w-full justify-start"
                       variant="neutral"
@@ -76,6 +77,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                         setSettingsOpen(false);
                         setShowModesDialog && setShowModesDialog(true);
                       }}
+                      playClickSound={true}
                       size="sm"
                       className="w-full justify-start"
                       variant="neutral"
@@ -96,6 +98,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
               </h4>
               <Link href="/">
                 <Button
+                  playClickSound={true}
                   variant="neutral"
                   size="sm"
                   className="w-full justify-start mb-2"
@@ -106,6 +109,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
               </Link>
               <Link href="/lobby">
                 <Button
+                  playClickSound={true}
                   variant="neutral"
                   size="sm"
                   className="w-full justify-start"
@@ -127,6 +131,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                   variant="neutral"
                   size="sm"
                   onClick={toggleSound}
+                  playClickSound={true}
                   className="w-full justify-start"
                 >
                   {settings.soundEffectsEnabled ? (
@@ -140,6 +145,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                   variant="neutral"
                   size="sm"
                   onClick={toggleDarkMode}
+                  playClickSound={true}
                   className="w-full justify-start"
                   aria-pressed={settings.darkMode}
                 >

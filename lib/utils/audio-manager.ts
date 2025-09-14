@@ -24,13 +24,23 @@ class AudioManager {
     }
   }
 
-  private playWithAudioContext(
+  private async playWithAudioContext(
     actionName: string,
     action: (context: AudioContext) => void
-  ): void {
+  ): Promise<void> {
     if (!this.audioContext) {
       console.warn(`AudioContext not available for ${actionName}.`);
       return;
+    }
+
+    // Ensure AudioContext is resumed (needed after user interaction on all platforms)
+    if (this.audioContext.state === "suspended") {
+      try {
+        await this.audioContext.resume();
+      } catch (error) {
+        console.warn(`Failed to resume AudioContext for ${actionName}:`, error);
+        return;
+      }
     }
 
     try {
@@ -40,14 +50,24 @@ class AudioManager {
     }
   }
 
+  public async resumeAudioContext(): Promise<void> {
+    if (this.audioContext && this.audioContext.state === "suspended") {
+      try {
+        await this.audioContext.resume();
+      } catch (error) {
+        console.error("Failed to resume audio context:", error);
+      }
+    }
+  }
+
   /**
    * Idempotent: Only sets up listeners once per app session
    */
   public setupAutoResumeOnUserInteraction() {
     if (this.autoResumeSetup) return;
     this.autoResumeSetup = true;
-    const resume = () => {
-      this.resumeAudioContext();
+    const resume = async () => {
+      await this.resumeAudioContext();
       document.removeEventListener("click", resume);
       document.removeEventListener("keydown", resume);
       document.removeEventListener("touchstart", resume);
@@ -66,6 +86,9 @@ class AudioManager {
 
     return new Promise((resolve, reject) => {
       const audio = new Audio();
+      
+      audio.preload = "auto";
+      audio.crossOrigin = "anonymous";
 
       audio.addEventListener(
         "canplaythrough",
@@ -105,6 +128,16 @@ class AudioManager {
       audio.currentTime = 0;
       audio.volume = volume;
 
+      if (audio.readyState < 3) {
+        await new Promise((resolve) => {
+          const handleCanPlay = () => {
+            audio.removeEventListener("canplay", handleCanPlay);
+            resolve(undefined);
+          };
+          audio.addEventListener("canplay", handleCanPlay);
+        });
+      }
+
       const playPromise = audio.play();
 
       if (playPromise !== undefined) {
@@ -118,12 +151,12 @@ class AudioManager {
   /**
    * Play a simple tone using Web Audio API
    */
-  playTone(
+  async playTone(
     frequency: number,
     duration: number = 0.3,
     type: OscillatorType = "sine"
-  ): void {
-    this.playWithAudioContext("TONE", (ctx) => {
+  ): Promise<void> {
+    await this.playWithAudioContext("TONE", (ctx) => {
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
 
@@ -141,8 +174,8 @@ class AudioManager {
     });
   }
 
-  playSuccessSound(): void {
-    this.playWithAudioContext("SUCCESS", (ctx) => {
+  async playSuccessSound(): Promise<void> {
+    await this.playWithAudioContext("SUCCESS", (ctx) => {
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
 
@@ -163,8 +196,8 @@ class AudioManager {
     });
   }
 
-  playErrorSound(): void {
-    this.playWithAudioContext("ERROR", (ctx) => {
+  async playErrorSound(): Promise<void> {
+    await this.playWithAudioContext("ERROR", (ctx) => {
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
 
@@ -185,11 +218,8 @@ class AudioManager {
     });
   }
 
-  playButtonClickSound(): void {
-    this.playAudio(AUDIO_URLS.BUTTON_CLICK, {
-      volume: 0.3,
-      key: AUDIO_URLS_KEYS.BUTTON_CLICK,
-    });
+  async playButtonClickSound(): Promise<void> {
+    await this.playButtonClickTone();
   }
 
   playVictorySound(): void {
@@ -199,8 +229,8 @@ class AudioManager {
     });
   }
 
-  playAnswerSubmittedSound(): void {
-    this.playWithAudioContext("ANSWER_SUBMITTED", (ctx) => {
+  async playAnswerSubmittedSound(): Promise<void> {
+    await this.playWithAudioContext("ANSWER_SUBMITTED", (ctx) => {
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
 
@@ -236,24 +266,29 @@ class AudioManager {
     });
   }
 
-  playButtonClickTone(): void {
-    this.playWithAudioContext("BUTTON_CLICK", (ctx) => {
+  async playButtonClickTone(): Promise<void> {
+    await this.playWithAudioContext("BUTTON_CLICK", (ctx) => {
+      const now = ctx.currentTime;
+      const duration = 0.06; // 60ms - shorter and snappier
+      
+      // Simple single oscillator - clean and crisp
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
-
+      
+      // Even lower frequency for more neutral feel
+      oscillator.frequency.setValueAtTime(350, now);
+      oscillator.type = "sine"; // Clean sine wave
+      
+      // Very gentle attack and decay for neutral feel
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(0.05, now + 0.01); // Longer, gentler attack
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration); // Smooth decay
+      
       oscillator.connect(gainNode);
       gainNode.connect(ctx.destination);
-
-      // Softer click: lower frequency with gentler ramp
-      oscillator.frequency.setValueAtTime(500, ctx.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(250, ctx.currentTime + 0.08);
-
-      oscillator.type = "sine";
-      gainNode.gain.setValueAtTime(0.08, ctx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-
-      oscillator.start(ctx.currentTime);
-      oscillator.stop(ctx.currentTime + 0.15);
+      
+      oscillator.start(now);
+      oscillator.stop(now + duration);
     });
   }
 
@@ -268,23 +303,8 @@ class AudioManager {
     });
     this.audioCache = {};
   }
-
-  /**
-   * Resume audio context (needed after user interaction)
-   */
-  async resumeAudioContext(): Promise<void> {
-    if (this.audioContext && this.audioContext.state === "suspended") {
-      try {
-        await this.audioContext.resume();
-      } catch (error) {
-        console.error("Failed to resume audio context:", error);
-      }
-    }
-  }
 }
 
 export const audioManager = new AudioManager();
 
-export const playSuccessSound = () => audioManager.playSuccessSound();
-export const playErrorSound = () => audioManager.playErrorSound();
 export const playClockTick = (volume?: number) => audioManager.playClockTick(volume);

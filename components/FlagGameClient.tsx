@@ -19,11 +19,7 @@ import {
 import { Country } from "@/lib/data/countries";
 import { useSettings } from "@/lib/context/SettingsContext";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
-import {
-  audioManager,
-  playErrorSound,
-  playSuccessSound,
-} from "@/lib/utils/audio-manager";
+import { audioManager } from "@/lib/utils/audio-manager";
 import { prefetchAllFlags } from "@/lib/utils/image";
 
 import { Button } from "@/components/ui/button";
@@ -140,9 +136,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     if (!settings.soundEffectsEnabled) return;
 
     if (isCorrect) {
-      playSuccessSound();
+      audioManager.playSuccessSound();
     } else {
-      playErrorSound();
+      audioManager.playErrorSound();
     }
   };
 
@@ -167,10 +163,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       options: questionData.options,
       selectedAnswer: null,
       showResult: false,
-      usedCountries: [
-        ...prev.usedCountries,
-        questionData.currentCountry.code,
-      ],
+      usedCountries: [...prev.usedCountries, questionData.currentCountry.code],
     }));
     setQuestionStartMs(Date.now());
   };
@@ -179,7 +172,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
     const isCorrect = selectedCountry.code === gameState.currentCountry.code;
 
     playSound(isCorrect);
-    
+
     const answeredAt = Date.now();
     const timeToAnswer = Math.max(0, answeredAt - questionStartMs);
 
@@ -382,37 +375,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({ initialGameData }) => {
       router.replace(`?${params.toString()}`);
     }
   };
-
-  const handleToggleLimitedLifeMode = (value: boolean) => {
-    if (gameState.currentQuestion === 1) {
-      audioManager.playButtonClickSound();
-      setLimitedLifeModeEnabled(value);
-    } else {
-      restartGameWithLimitedLifeMode(value);
-    }
-  };
-
-  const restartGameWithLimitedLifeMode = (newLimitedLifeMode: boolean) => {
-    clearGameTimeout();
-
-    setGameState((prev) => ({
-      ...prev,
-      currentQuestion: 1,
-      score: 0,
-      totalQuestions: getDifficultySettings(prev.difficulty).count,
-      selectedAnswer: null,
-      showResult: false,
-      gameCompleted: false,
-      usedCountries: [],
-      hearts: MAX_HEARTS,
-    }));
-
-    setLimitedLifeModeEnabled(newLimitedLifeMode);
-    generateQuestionHandler();
-    setShowDifficultyDialog(false);
-    setQuestionResults([]);
-  };
-
+  
   useEffect(() => {
     if (gameState.gameCompleted && settings.soundEffectsEnabled) {
       const percentage =

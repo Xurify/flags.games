@@ -15,12 +15,9 @@ export const TIME_PER_QUESTION_OPTIONS = [10, 15, 20, 30];
 export const ROOM_SIZES = [2, 3, 4, 5];
 
 export const AUDIO_URLS = {
-  BUTTON_CLICK:
-    "https://qqu03sron6.ufs.sh/f/jU7cOp6GbyJPgMfH3ZgX8X5HeUlLvVymNa4CbMGB6tSrRJ7W",
-  VICTORY:
-    "https://qqu03sron6.ufs.sh/f/jU7cOp6GbyJPw2QMei0KClrayjzQ8DWSYEnsNML1tURiPcX0",
-  CLOCK_TICK:
-    "https://qqu03sron6.ufs.sh/f/jU7cOp6GbyJP4Pxp3Tg3fXNcpgzmRyaFr18JjEY6qlAdiK4x", // .mp3
+  BUTTON_CLICK: "/private/digital-pop.mp3",
+  VICTORY: "/private/victory.mp3", 
+  CLOCK_TICK: "/private/tick.mp3",
 } as const;
 
 export const AUDIO_URLS_KEYS = {
