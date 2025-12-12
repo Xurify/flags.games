@@ -12,7 +12,7 @@ export const config = {
     matcher: ["/((?!_next/static|_next/image|favicon.ico|next-assets).*)"],
 };
 
-const middleware = async (req: NextRequest): Promise<NextResponse> => {
+const proxy = async (req: NextRequest): Promise<NextResponse> => {
     const { device } = userAgent(req);
 
     const res = NextResponse.next();
@@ -44,4 +44,4 @@ const middleware = async (req: NextRequest): Promise<NextResponse> => {
     return res;
 };
 
-export default middleware;
+export default proxy;

@@ -7,7 +7,7 @@
     "dev:secure": "next dev --turbopack --experimental-https",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.14",
@@ -22,13 +22,13 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.516.0",
-    "next": "15.3.8",
+    "next": "16.0.10",
     "posthog-js": "^1.256.1",
     "posthog-node": "^5.1.1",
     "qrcode": "^1.5.4",
-    "react": "^19.0.0",
+    "react": "19.2.3",
     "react-confetti": "^6.4.0",
-    "react-dom": "^19.0.0",
+    "react-dom": "19.2.3",
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.1",
     "tone": "^15.1.22",
@@ -38,11 +38,19 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "16.0.10",
     "tailwindcss": "^4",
     "tsx": "^4.20.3",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.7",
+      "@types/react-dom": "19.2.3"
+    }
   }
 }
