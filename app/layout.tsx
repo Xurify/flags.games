@@ -22,13 +22,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Guess the Country | flags.games",
     description: "Test your knowledge and identify countries by their flags",
-    url: "https://www.flags.games",
+    url: "https://flags.games",
     siteName: "flags.games",
     locale: "en_US",
     type: "website",
     images: [
       {
-        url: "https://www.flags.games/opengraph-image.png",
+        url: "https://flags.games/opengraph-image.png",
         width: 200,
         height: 200,
         alt: "Guess the Country | flags.games",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     description: "Test your knowledge and identify countries by their flags",
     images: [
       {
-        url: "https://www.flags.games/opengraph-image.png",
+        url: "https://flags.games/opengraph-image.png",
         width: 200,
         height: 200,
         alt: "Guess the Country | flags.games",
@@ -49,9 +49,9 @@ export const metadata: Metadata = {
     ],
   },
   applicationName: "flags.games",
-  metadataBase: new URL("https://www.flags.games"),
+  metadataBase: new URL("https://flags.games"),
   alternates: {
-    canonical: "https://www.flags.games/",
+    canonical: "https://flags.games/",
   },
   keywords: ["flag guessing game", "country guessing game"],
   authors: [{ name: "Xurify" }],
