@@ -17,7 +17,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { HeartIcon, TimerIcon, FlagIcon, CompassIcon } from "lucide-react";
+import {
+  HeartIcon,
+  TimerIcon,
+  FlagIcon,
+  CompassIcon,
+  Gamepad2Icon,
+} from "lucide-react";
 import { TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
 import { useSettings } from "@/lib/context/SettingsContext";
 
@@ -46,8 +52,9 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
 }) => {
   const { settings } = useSettings();
   const [showLimitedLifeConfirm, setShowLimitedLifeConfirm] = useState(false);
-  const [pendingLimitedLife, setPendingLimitedLife] =
-    useState<boolean>(limitedLifeModeEnabled);
+  const [pendingLimitedLife, setPendingLimitedLife] = useState<boolean>(
+    limitedLifeModeEnabled
+  );
   const [timePerQuestion, setTimePerQuestion] = useState<number>(
     settings.timePerQuestion
   );
@@ -71,7 +78,8 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
     onOpenChange(false);
   };
 
-  const isClassicActive = !limitedLifeModeEnabled && activeTimeAttackDuration === null;
+  const isClassicActive =
+    !limitedLifeModeEnabled && activeTimeAttackDuration === null;
   const isLimitedLifeActive = limitedLifeModeEnabled;
   const isTimeAttackActive = activeTimeAttackDuration !== null;
 
@@ -79,23 +87,29 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="max-w-[92vw] sm:max-w-2xl p-4 sm:p-8">
         <AlertDialogHeader className="mb-4 sm:mb-6">
-          <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight">Game Modes</AlertDialogTitle>
+          <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight flex items-center gap-2">
+            <Gamepad2Icon className="w-6 h-6 text-primary" />
+            Game Modes
+          </AlertDialogTitle>
           <AlertDialogDescription className="font-mono text-xs uppercase tracking-widest">
-            Select your preferred operational mode.
+            Restart game with a new game mode.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <div className="space-y-3 mt-2">
           <div
-            className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${isClassicActive
-              ? "border-primary bg-primary/5"
-              : "border-foreground bg-card shadow-primary/10"
-              }`}
+            className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${
+              isClassicActive
+                ? "border-primary bg-primary/5"
+                : "border-foreground bg-card shadow-primary/10"
+            }`}
           >
             <div className="flex items-center gap-4 flex-1 min-w-0">
               <CompassIcon className="w-8 h-8 sm:w-6 sm:h-6 shrink-0 text-muted-foreground" />
               <div className="min-w-0">
-                <div className="font-black uppercase tracking-tight text-base sm:text-lg">Classic Mode</div>
+                <div className="font-black uppercase tracking-tight text-base sm:text-lg">
+                  Classic Mode
+                </div>
                 <div className="text-xs font-mono text-muted-foreground leading-normal mt-0.5">
                   Standard procedure — identify all flags in the set.
                 </div>
@@ -123,20 +137,24 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
           </div>
 
           <div
-            className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${isLimitedLifeActive
-              ? "border-primary bg-primary/5"
-              : "border-foreground bg-card shadow-primary/10"
-              }`}
+            className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${
+              isLimitedLifeActive
+                ? "border-primary bg-primary/5"
+                : "border-foreground bg-card shadow-primary/10"
+            }`}
           >
             <div className="flex items-center gap-4 flex-1 min-w-0">
               <HeartIcon
-                className={`w-8 h-8 sm:w-6 sm:h-6 shrink-0 ${isLimitedLifeActive
-                  ? "text-red-500 fill-red-500"
-                  : "text-muted-foreground"
-                  }`}
+                className={`w-8 h-8 sm:w-6 sm:h-6 shrink-0 ${
+                  isLimitedLifeActive
+                    ? "text-red-500 fill-red-500"
+                    : "text-muted-foreground"
+                }`}
               />
               <div className="min-w-0">
-                <div className="font-black uppercase tracking-tight text-base sm:text-lg">Limited Life</div>
+                <div className="font-black uppercase tracking-tight text-base sm:text-lg">
+                  Limited Life
+                </div>
                 <div className="text-xs font-mono text-muted-foreground leading-normal mt-0.5">
                   High stakes — failure reduces terminal heart count.
                 </div>
@@ -164,15 +182,22 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
           </div>
 
           <div
-            className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${isTimeAttackActive
-              ? "border-primary bg-primary/5"
-              : "border-foreground bg-card shadow-primary/10"
-              }`}
+            className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${
+              isTimeAttackActive
+                ? "border-primary bg-primary/5"
+                : "border-foreground bg-card shadow-primary/10"
+            }`}
           >
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              <TimerIcon className={`w-8 h-8 sm:w-6 sm:h-6 shrink-0 ${isTimeAttackActive ? "text-primary" : ""}`} />
+              <TimerIcon
+                className={`w-8 h-8 sm:w-6 sm:h-6 shrink-0 ${
+                  isTimeAttackActive ? "text-primary" : ""
+                }`}
+              />
               <div className="min-w-0">
-                <div className="font-black uppercase tracking-tight text-base sm:text-lg">Time Attack</div>
+                <div className="font-black uppercase tracking-tight text-base sm:text-lg">
+                  Time Attack
+                </div>
                 <div className="text-xs font-mono text-muted-foreground leading-normal mt-0.5">
                   Rapid identification — limited window per guess.
                 </div>
@@ -215,7 +240,10 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
         </AlertDialogFooter>
       </AlertDialogContent>
 
-      <AlertDialog open={showLimitedLifeConfirm} onOpenChange={setShowLimitedLifeConfirm}>
+      <AlertDialog
+        open={showLimitedLifeConfirm}
+        onOpenChange={setShowLimitedLifeConfirm}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Restart Game?</AlertDialogTitle>

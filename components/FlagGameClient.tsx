@@ -484,13 +484,14 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
         <Header
           leftContent={
             <div className="flex flex-wrap items-center justify-between gap-y-3 w-full">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <Button
                   variant="ghost"
                   size="icon-sm"
                   onClick={() => setShowRestartDialog(true)}
                   className="hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground transition-all"
                   title="Restart Game"
+                  playClickSound={true}
                 >
                   <RefreshCwIcon className="w-4 h-4" />
                 </Button>
@@ -501,6 +502,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                   onClick={() => setShowModesDialog(true)}
                   className="hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground transition-all"
                   title="Game Modes"
+                  playClickSound={true}
                 >
                   <Gamepad2Icon className="w-4 h-4" />
                 </Button>

@@ -63,7 +63,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
             Change Difficulty
           </AlertDialogTitle>
           <AlertDialogDescription className="font-mono text-xs uppercase tracking-widest">
-            Select a new difficulty level for your next game.
+            Restart game with a new difficulty level.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="space-y-6 mt-2">

@@ -94,7 +94,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
 
             <div>
               <h4 className="text-sm font-medium text-foreground mb-2">
-                Game Modes
+                Game Type
               </h4>
               <Link href="/">
                 <Button
