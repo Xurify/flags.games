@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { GlobeIcon, UsersIcon, ArrowRightIcon } from "lucide-react";
+import { GlobeIcon, UsersIcon, ArrowRightIcon, UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { countries } from "@/lib/data/countries";
 
 interface LandingPageProps {
     onStartSolo: () => void;
@@ -75,11 +74,11 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
                     >
                         <div className="flex items-center gap-4 md:gap-6">
                             <div className="p-2 md:p-3 bg-destructive border-2 border-foreground text-white group-hover:rotate-3 transition-transform">
-                                <GlobeIcon className="w-5 h-5 md:w-6 md:h-6" />
+                                <UserIcon className="w-5 h-5 md:w-6 md:h-6" />
                             </div>
                             <div className="text-left">
                                 <div className="text-xl md:text-2xl font-black block leading-none">SOLO</div>
-                                <div className="text-[10px] md:text-xs font-mono font-normal opacity-70">Test yourself through 15 flags</div>
+                                <div className="text-[10px] md:text-xs font-mono font-normal opacity-70">Compete against yourself <br /> with many different modes</div>
                             </div>
                         </div>
                         <ArrowRightIcon className="w-5 h-5 md:w-6 md:h-6 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-destructive" />
