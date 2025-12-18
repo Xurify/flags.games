@@ -75,67 +75,69 @@ export default function QRCodeShareModal({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="w-full">
+      <AlertDialogContent className="w-full max-w-md sm:p-8">
         <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-2">
-            <QrCodeIcon className="w-5 h-5" />
+          <AlertDialogTitle className="flex items-center gap-2 text-2xl font-black uppercase tracking-tight">
+            <QrCodeIcon className="w-6 h-6" />
             Share Room Invite
           </AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogDescription className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
             Share this room with others using the QR code or invite link below.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <div className="space-y-4">
-          <div className="flex flex-col items-center space-y-3">
-            <div className="p-4 bg-whit dark:bg-input rounded-lg border-2 border-gray-200">
+        <div className="space-y-6">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="p-4 bg-white border-2 border-foreground shadow-retro">
               {isGenerating ? (
-                <div className="w-64 h-64 flex items-center justify-center">
-                  <div className="w-8 h-8 border-2 border-primary border-t-white rounded-full animate-spin mr-2" />
+                <div className="w-48 h-48 flex items-center justify-center">
+                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                 </div>
               ) : qrCodeDataUrl ? (
                 <img
                   src={qrCodeDataUrl}
                   alt="Room invite QR code"
-                  className="w-64 h-64"
+                  className="w-48 h-48"
+                  style={{ imageRendering: "pixelated" }}
                 />
               ) : (
-                <div className="w-64 h-64 flex items-center justify-center bg-gray-100 rounded">
-                  <span className="text-5xl text-gray-400">?</span>
+                <div className="w-48 h-48 flex items-center justify-center bg-muted">
+                  <span className="text-5xl text-muted-foreground font-black">?</span>
                 </div>
               )}
             </div>
-            <p className="text-sm text-muted-foreground text-center">
-              Scan this QR code to join the room
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground text-center">
+              Scan Code to Join
             </p>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">
+            <label className="text-[10px] font-mono uppercase tracking-widest font-bold text-muted-foreground ml-1">
               Invite Link
             </label>
             <div
-              className="flex items-center gap-2 p-3 bg-muted rounded-lg w-full cursor-pointer"
+              className="flex items-center gap-2 p-1 bg-muted/20 border-2 border-foreground shadow-retro-sm"
               onClick={handleCopyLink}
             >
-              <LinkIcon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-              <Input
+              <div className="pl-3 text-muted-foreground">
+                <LinkIcon className="w-4 h-4" />
+              </div>
+              <input
                 className={cn(
-                  "text-sm text-muted-foreground truncate flex-1 w-full cursor-pointer",
-                  copiedLink &&
-                    "bg-green-100 text-green-600 dark:bg-green-600/30 dark:text-green-600"
+                  "flex-1 border-0 bg-transparent shadow-none text-sm font-bold font-mono h-10 px-2 truncate w-full cursor-pointer outline-none focus:ring-0 focus:outline-none placeholder:text-muted-foreground",
+                  copiedLink && "text-green-600"
                 )}
                 value={inviteLink.replace("https://", "")}
-                readOnly={true}
+                readOnly
               />
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleCopyLink();
                 }}
-                className="h-8 w-8 p-0"
+                className="h-10 w-10 hover:bg-transparent hover:text-primary transition-colors"
               >
                 {copiedLink ? (
                   <CopyCheckIcon className="w-4 h-4 text-green-600" />
@@ -147,16 +149,13 @@ export default function QRCodeShareModal({
           </div>
         </div>
 
-        <AlertDialogFooter>
-          <div className="flex flex-col sm:flex-row gap-2 w-full">
-            <AlertDialogAction
-              onClick={onClose}
-              className="flex-1"
-              variant="outline"
-            >
-              Close
-            </AlertDialogAction>
-          </div>
+        <AlertDialogFooter className="mt-4">
+          <AlertDialogAction
+            onClick={onClose}
+            className="w-full h-12 font-black uppercase text-lg border-2 border-foreground shadow-retro bg-primary text-primary-foreground hover:translate-y-[2px] hover:shadow-none transition-all"
+          >
+            Close
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
