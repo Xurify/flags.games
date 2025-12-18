@@ -30,6 +30,7 @@ export const GlobalNavigation = () => {
                         size="icon-sm"
                         className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground"
                         title="Return to Home"
+                        playClickSound={true}
                     >
                         <HomeIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </Button>
@@ -43,6 +44,7 @@ export const GlobalNavigation = () => {
                     onClick={toggleDarkMode}
                     className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground"
                     title={settings.darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                    playClickSound={true}
                 >
                     {settings.darkMode ? <SunIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <MoonIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                 </Button>
@@ -53,6 +55,7 @@ export const GlobalNavigation = () => {
                     onClick={toggleSound}
                     className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground"
                     title={settings.soundEffectsEnabled ? "Mute Sound" : "Unmute Sound"}
+                    playClickSound={true}
                 >
                     {settings.soundEffectsEnabled ? <Volume2Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <VolumeXIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                 </Button>
