@@ -70,7 +70,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
                 </h1>
 
                 <p className="text-base md:text-xl font-mono text-muted-foreground mb-8 md:mb-12 max-w-md">
-                    How well do you know world flags? Let's find out.
+                    How well do you know your flags? Let's find out. 🧐
                 </p>
 
                 <div className="flex flex-col gap-4 md:gap-6 w-full max-w-sm">
