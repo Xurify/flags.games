@@ -22,10 +22,10 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
     const floatingFlags: FloatingFlag[] = [
         { code: "US", delay: 0, className: "top-[10%] left-[5%] animate-float-1" },
         { code: "JP", delay: 2, className: "top-[20%] right-[10%] animate-float-2", hiddenOnMobile: true },
-        { code: "BR", delay: 4, className: "top-[20%] left-[15%] animate-float-1" },
+        { code: "SK", delay: 3, className: "top-[5%] right-[15%] md:right-[25%] animate-float-2" },
+        { code: "BR", delay: 4, className: "top-[20%] left-[25%] md:left-[15%] animate-float-1" },
         { code: "GB", delay: 5, className: "top-[40%] left-[25%] animate-float-3", hiddenOnMobile: true },
         { code: "EE", delay: 4, className: "bottom-[15%] left-[10%] animate-float-3" },
-        { code: "SK", delay: 3, className: "top-[10%] right-[20%] animate-float-2" },
         { code: "ZA", delay: 1, className: "bottom-[10%] right-[5%] animate-float-1" },
         { code: "NL", delay: 7, className: "bottom-[25%] right-[15%] animate-float-1", hiddenOnMobile: true },
         { code: "CZ", delay: 9, className: "top-[15%] left-[35%] animate-float-2", hiddenOnMobile: true },
@@ -70,7 +70,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
                 </h1>
 
                 <p className="text-base md:text-xl font-mono text-muted-foreground mb-8 md:mb-12 max-w-md">
-                    How well do you know your flags? Let's find out! 🧐
+                    How well do you know your flags? <br /> Let's find out! 🧐
                 </p>
 
                 <div className="flex flex-col gap-4 md:gap-6 w-full max-w-sm">
