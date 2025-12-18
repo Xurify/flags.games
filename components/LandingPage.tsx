@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { GlobeIcon, UsersIcon, ArrowRightIcon, UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +33,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
 
     return (
         <div className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-transparent">
-            {floatingFlags.map((flag, i) => (
+            {floatingFlags.map((flag) => (
                 <div
                     key={flag.code}
                     className={`absolute pointer-events-none opacity-20 filter grayscale hover:grayscale-0 transition-all duration-500 ${flag.className} ${flag.hiddenOnMobile ? 'hidden md:block' : ''}`}
@@ -44,10 +45,15 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
                                 srcSet="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
                             />
                         )}
-                        <img
+                        <Image
                             src={getCountryFlagUrl(flag.code)}
                             alt=""
                             className="w-16 h-auto border-2 border-foreground shadow-retro"
+                            fetchPriority="high"
+                            preload={true}
+                            loading="eager"
+                            width={64}
+                            height={64}
                         />
                     </picture>
                 </div>
