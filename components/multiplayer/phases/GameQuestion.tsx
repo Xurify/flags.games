@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
-
-import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeftIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import FlagDisplay from "@/components/FlagDisplay";
 import AnswerOptions from "@/components/AnswerOptions";
@@ -86,25 +86,37 @@ export default function GameQuestion({ room }: GameQuestionProps) {
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-stretch lg:items-start max-w-6xl mx-auto">
-      <div className="flex-1 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div>
-            <Badge variant="outline" className="mb-2 bg-primary text-primary-foreground border-2 border-foreground shadow-retro">
-              Guess
-            </Badge>
-            <h1 className="text-4xl font-black tracking-tighter text-foreground uppercase">
-              Question {currentQuestion.index} <span className="text-muted-foreground/40 text-2xl font-black">/ {gameState?.totalQuestions || 0}</span>
-            </h1>
+      <div className="flex-1 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-foreground pb-4">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="flex items-center justify-center w-9 h-9 border-2 border-foreground shadow-retro hover:bg-destructive hover:text-white transition-all active:translate-y-0.5 active:shadow-none"
+              title="Leave Match"
+            >
+              <ArrowLeftIcon className="w-4 h-4" />
+            </Link>
+            <div className="flex flex-col">
+              <Badge
+                variant="outline"
+                className="w-fit px-1.5 py-0 text-[8px] font-black uppercase bg-primary text-primary-foreground border-foreground mb-1"
+              >
+                GUESS
+              </Badge>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tighter text-foreground uppercase leading-none">
+                Question {currentQuestion.index} <span className="text-muted-foreground/40 text-xl font-black">/ {gameState?.totalQuestions || 0}</span>
+              </h1>
+            </div>
           </div>
 
-          <div className="flex items-center gap-6 bg-card border-2 border-foreground shadow-retro px-4 py-2">
+          <div className="flex items-center gap-4 bg-card border-2 border-foreground shadow-retro-sm px-3 py-1.5 self-start sm:self-auto">
             <div className="flex flex-col">
-              <span className="font-mono text-[10px] uppercase font-bold text-muted-foreground leading-none mb-1">Your Score</span>
-              <span className="text-2xl font-black tabular-nums leading-none">{userScore}</span>
+              <span className="font-mono text-[8px] uppercase font-bold text-muted-foreground leading-none mb-1">Score</span>
+              <span className="text-xl font-black tabular-nums leading-none">{userScore}</span>
             </div>
-            <div className="w-px h-8 bg-foreground/20" />
+            <div className="w-px h-6 bg-foreground/20" />
             <div className="flex flex-col">
-              <span className="font-mono text-[10px] uppercase font-bold text-muted-foreground leading-none mb-1">Time Left</span>
+              <span className="font-mono text-[8px] uppercase font-bold text-muted-foreground leading-none mb-1">Time</span>
               <Timer
                 timePerQuestion={room.settings.timePerQuestion}
                 questionIndex={Number(currentQuestion?.index)}

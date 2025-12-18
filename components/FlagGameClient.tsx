@@ -5,20 +5,14 @@ import { useSearchParams } from "next/navigation";
 import {
   RefreshCwIcon,
   HelpCircleIcon,
-  ArrowLeftRightIcon,
-  HomeIcon,
-  TrophyIcon,
-  SignalIcon,
-  SlidersHorizontalIcon,
+  Gamepad2Icon,
 } from "lucide-react";
-
 import {
   CORRECT_POINT_COST,
   MAX_HEARTS,
   AUDIO_URLS,
   AUDIO_URLS_KEYS,
   Difficulty,
-  DEFAULT_DIFFICULTY,
 } from "@/lib/constants";
 import { Country } from "@/lib/data/countries";
 import { useSettings } from "@/lib/context/SettingsContext";
@@ -26,10 +20,8 @@ import { useGameQueryParams } from "@/lib/hooks/useGameQueryParams";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
 import { audioManager } from "@/lib/utils/audio-manager";
 import { prefetchAllFlags } from "@/lib/utils/image";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-
 import Header from "./Header";
 import ModesDialog from "./ModesDialog";
 import GameEndScreen from "./GameEndScreen";
@@ -516,7 +508,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                   className="hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground transition-all"
                   title="Game Modes"
                 >
-                  <SlidersHorizontalIcon className="w-4 h-4" />
+                  <Gamepad2Icon className="w-4 h-4" />
                 </Button>
                 <div className="w-px h-6 bg-foreground/10" />
                 <button

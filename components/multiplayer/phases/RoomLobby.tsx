@@ -2,25 +2,20 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import {
-  CrownIcon,
-  UserIcon,
-  LinkIcon,
-  PlayIcon,
   UsersIcon,
   TimerIcon,
   BarChartIcon,
   CopyIcon,
-  SettingsIcon,
   CopyCheckIcon,
   QrCodeIcon,
   LogOutIcon,
+  ArrowLeftIcon
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { Card } from "@/components/ui/card";
 import { SettingsSelect } from "@/components/multiplayer/SettingsSelect";
 import QRCodeShareModal from "@/components/multiplayer/QRCodeShareModal";
 import {
@@ -133,27 +128,48 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   };
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-2xl mx-auto">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase">
-            Lobby
-          </h1>
-          <p className="font-mono text-sm text-muted-foreground uppercase tracking-widest mt-1">
-            Waiting for players to join
-          </p>
-        </div>
+    <div className="flex flex-col gap-10 w-full max-w-2xl mx-auto">
+      <div className="flex flex-col gap-4 border-b-4 border-foreground pb-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <Link
+              href="/"
+              className="group flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 border-2 border-foreground shadow-retro hover:bg-destructive transition-all active:translate-y-0.5 active:shadow-none"
+              title="Leave Match"
+            >
+              <ArrowLeftIcon className="w-4 h-4 sm:w-6 sm:h-6 group-hover:text-white" />
+            </Link>
+            <div className="flex flex-col">
+              <h1 className="text-3xl sm:text-6xl font-black tracking-tighter uppercase leading-none">
+                Lobby
+              </h1>
+              <p className="font-mono text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-widest mt-1">
+                Waiting for players to join
+              </p>
+            </div>
+          </div>
 
-        <div className="flex flex-col items-end gap-1">
-          <span className="font-mono text-[10px] uppercase font-bold text-muted-foreground mr-1">Invite Code</span>
-          <Button
-            variant="outline"
-            onClick={handleCopyRoomInviteLink}
-            className="font-mono font-bold text-xl border-2 border-foreground shadow-retro h-auto py-2 px-4 hover:bg-muted active:translate-x-0.5 active:translate-y-0.5"
-          >
-            {room.inviteCode}
-            {copied ? <CopyCheckIcon className="ml-2 w-4 h-4 text-primary" /> : <CopyIcon className="ml-2 w-4 h-4 opacity-40" />}
-          </Button>
+          <div className="flex flex-col items-end gap-0.5">
+            <span className="font-mono text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground leading-none">
+              Session ID
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-lg sm:text-3xl font-black font-mono tracking-tighter text-primary">
+                {room.inviteCode}
+              </span>
+              <button
+                onClick={handleCopyRoomInviteLink}
+                className="opacity-30 hover:opacity-100 transition-opacity p-1"
+                title="Copy Invite Link"
+              >
+                {copied ? (
+                  <CopyCheckIcon className="w-4 h-4 text-green-600" />
+                ) : (
+                  <CopyIcon className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -306,7 +322,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
               </Button>
             </div>
 
-            <Link href="/" className="block pt-2">
+            <Link href="/" className="md:block pt-2">
               <Button
                 variant="ghost"
                 size="sm"

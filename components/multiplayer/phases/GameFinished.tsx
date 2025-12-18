@@ -11,7 +11,8 @@ import { audioManager } from "@/lib/utils/audio-manager";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Crown } from "lucide-react";
+import { Crown, ArrowLeftIcon } from "lucide-react";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -61,7 +62,25 @@ export default function GameFinished({ room }: GameFinishedProps) {
   };
 
   return (
-    <div className="flex flex-col gap-12 w-full max-w-4xl mx-auto py-12">
+    <div className="flex flex-col gap-8 w-full max-w-4xl mx-auto py-6">
+      <div className="flex items-center gap-3 border-b-2 border-foreground pb-4 mb-4">
+        <Link
+          href="/"
+          className="flex items-center justify-center w-9 h-9 border-2 border-foreground shadow-retro hover:bg-destructive hover:text-white transition-all active:translate-y-0.5 active:shadow-none"
+          title="Return home"
+        >
+          <ArrowLeftIcon className="w-4 h-4" />
+        </Link>
+        <div className="flex flex-col">
+          <h2 className="text-xl sm:text-2xl font-black tracking-tighter text-foreground uppercase leading-none">
+            Game Over
+          </h2>
+          <p className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em] mt-1">
+            Session Terminated
+          </p>
+        </div>
+      </div>
+
       {gameState?.phase === "finished" && (
         <Suspense fallback={null}>
           <Confetti
@@ -74,13 +93,8 @@ export default function GameFinished({ room }: GameFinishedProps) {
         </Suspense>
       )}
 
-      <div className="flex flex-col gap-4 text-center">
-        <div className="flex justify-center">
-          <Badge variant="outline" className="bg-primary text-primary-foreground border-2 border-foreground shadow-retro">
-            Match Over
-          </Badge>
-        </div>
-        <h1 className="text-7xl font-black tracking-tighter text-foreground leading-[0.9] uppercase">
+      <div className="flex flex-col gap-2 text-center">
+        <h1 className="text-5xl sm:text-7xl font-black tracking-tighter text-foreground leading-[0.9] uppercase">
           Final<br />
           <span className="text-destructive whitespace-nowrap">Results</span>
         </h1>

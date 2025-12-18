@@ -1,16 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import { z } from "zod";
-import { ArrowLeft, UsersIcon } from "lucide-react";
-
+import { ArrowLeftIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RoomSettings } from "@/lib/types/socket";
@@ -89,7 +81,7 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
         <section className="space-y-3">
           <div className="flex items-center gap-4 border-b-2 border-foreground pb-2">
             <Link href="/" className="w-8 h-8 bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors flex items-center justify-center font-black cursor-pointer shadow-retro-sm active:translate-y-0.5 active:shadow-none" title="Back to Home">
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeftIcon className="w-5 h-5" />
             </Link>
             <h2 className="text-2xl font-black tracking-tight uppercase">Join Match</h2>
           </div>
