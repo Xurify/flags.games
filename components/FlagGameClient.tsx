@@ -349,6 +349,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   const restartGame = (requireStartPress?: boolean) => {
     clearGameTimeout();
 
+
     setGameState((prev) => ({
       ...prev,
       currentQuestion: 1,
@@ -361,10 +362,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
       gameStarted: requireStartPress ? false : true,
       hearts: MAX_HEARTS,
     }));
-
-    generateQuestionHandler();
     setShowRestartDialog(false);
     setQuestionResults([]);
+    setQuestionStartMs(Date.now());
   };
 
   const handleChangeDifficulty = (newDifficulty: Difficulty) => {
@@ -494,6 +494,15 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
           setModeTimeAttack(durationSec);
         }}
       />
+
+      <RestartDialog
+        open={showRestartDialog}
+        onOpenChange={setShowRestartDialog}
+        onRestart={restartGame}
+        gameCompleted={gameState.gameCompleted}
+      >
+        <span />
+      </RestartDialog>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <Header
@@ -685,21 +694,15 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
               </CardContent>
             </Card>
             <div className="flex flex-col items-center space-y-3">
-              <RestartDialog
-                open={showRestartDialog}
-                onOpenChange={setShowRestartDialog}
-                onRestart={restartGame}
-                gameCompleted={gameState.gameCompleted}
+              <Button
+                variant="outline"
+                onClick={() => setShowRestartDialog(true)}
+                className="w-full border-2 border-foreground shadow-retro bg-destructive text-white transition-all font-black"
+                size="lg"
               >
-                <Button
-                  variant="outline"
-                  className="w-full border-2 border-foreground shadow-retro bg-destructive text-white transition-all font-black"
-                  size="lg"
-                >
-                  <RefreshCwIcon className="w-4 h-4 mr-2" />
-                  RESTART GAME
-                </Button>
-              </RestartDialog>
+                <RefreshCwIcon className="w-4 h-4 mr-2" />
+                RESTART GAME
+              </Button>
 
               <HowToPlayDialog
                 open={showHowToPlayDialog}
