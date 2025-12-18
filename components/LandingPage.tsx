@@ -85,7 +85,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
                             </div>
                             <div className="text-left">
                                 <div className="text-xl md:text-2xl font-black block leading-none">SOLO</div>
-                                <div className="text-[10px] md:text-xs font-mono font-normal opacity-70">Compete against yourself <br /> with many different modes</div>
+                                <div className="text-[10px] md:text-xs font-mono font-normal opacity-70">Compete against yourself <br /> with various modes</div>
                             </div>
                         </div>
                         <ArrowRightIcon className="w-5 h-5 md:w-6 md:h-6 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-destructive" />
