@@ -63,9 +63,9 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0.05 30);
 
-  --primary: oklch(0.45 0.25 260);
-  /* Deep Indigo Blue */
-  --primary-foreground: oklch(0.98 0.02 85);
+  --primary: oklch(0.677 0.165 42.6);
+  /* Persimmon Orange */
+  --primary-foreground: var(--foreground);
 
   --secondary: oklch(0.85 0.15 60);
   /* Mustard Yellow */
@@ -126,7 +126,7 @@
   --popover: oklch(0.26 0.04 285);
   --popover-foreground: oklch(0.95 0.04 285);
 
-  --primary: oklch(0.72 0.22 50);
+  --primary: oklch(0.677 0.165 42.6);
   /* Sunset Orange - Explosive contrast against purple */
   --primary-foreground: oklch(0.14 0.05 285);
 
