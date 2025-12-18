@@ -1,6 +1,14 @@
-import React from "react";
+import type { Metadata } from "next";
 import FlagDisplay from "../../components/FlagDisplay";
 import { countries } from "../../lib/data/countries";
+
+export const metadata: Metadata = {
+  title: "All Flags | flags.games",
+  description: "Browse the complete list of country flags available in the game.",
+  alternates: {
+    canonical: "/flags",
+  },
+};
 
 const FlagsPage = () => {
   return (

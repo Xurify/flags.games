@@ -20,12 +20,14 @@ const spaceMono = Space_Mono({
   subsets: ["latin"],
 });
 
+const description = "How well do you know your flags? Well, it's time to find out!";
+
 export const metadata: Metadata = {
   title: "Guess the Country | flags.games",
-  description: "Test your knowledge and identify countries by their flags",
+  description,
   openGraph: {
     title: "Guess the Country | flags.games",
-    description: "Test your knowledge and identify countries by their flags",
+    description,
     url: "https://flags.games",
     siteName: "flags.games",
     locale: "en_US",
@@ -42,7 +44,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "Guess the Country | flags.games",
-    description: "Test your knowledge and identify countries by their flags",
+    description,
     images: [
       {
         url: "https://flags.games/opengraph-image.png",

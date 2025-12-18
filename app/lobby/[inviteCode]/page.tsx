@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { flagsApi } from "@/lib/api/flags-api";
 import { logger } from "@/lib/utils/logger";
@@ -5,6 +6,16 @@ import RoomPageClient from "./RoomPageClient";
 
 interface RoomPageProps {
   params: Promise<{ inviteCode: string }>;
+}
+
+export async function generateMetadata({ params }: RoomPageProps): Promise<Metadata> {
+  const { inviteCode } = await params;
+  return {
+    title: "Multiplayer Game | flags.games",
+    alternates: {
+      canonical: `/lobby/${inviteCode}`,
+    },
+  };
 }
 
 export default async function RoomPage({ params }: RoomPageProps) {
