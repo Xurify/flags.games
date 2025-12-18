@@ -9,7 +9,7 @@ export default function InviteCodeLayout({
 }) {
 
   return (
-    <div className="min-h-screen w-full bg-transparent max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+    <div className="min-h-screen w-full bg-transparent mx-auto px-4 sm:px-6 py-4 sm:py-6">
       {children}
     </div>
   );

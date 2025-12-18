@@ -99,7 +99,7 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-4xl mx-auto">
       <div className="space-y-4">
         <section className="space-y-3">
           <div className="flex items-center gap-4 border-b-2 border-foreground pb-2">

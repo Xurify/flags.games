@@ -128,7 +128,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   };
 
   return (
-    <div className="flex flex-col gap-10 w-full max-w-2xl mx-auto">
+    <div className="flex flex-col gap-10 w-full max-w-4xl mx-auto">
       <div className="flex flex-col gap-4 border-b-4 border-foreground pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 sm:gap-4">

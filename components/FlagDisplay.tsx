@@ -9,10 +9,10 @@ interface FlagDisplayProps {
 
 const FlagDisplay: React.FC<FlagDisplayProps> = ({ countryName, countryCode }) => {
   const isNepal = countryCode.trim().toLowerCase() === "np";
-  const flagClass = "max-w-full min-h-[110px] max-h-[110px] h-[110px] sm:min-h-36 sm:max-h-36 sm:h-36 md:min-h-40 md:max-h-40 md:h-40 object-cover" + (isNepal ? "" : " rounded border shadow-retro");
+  const flagClass = "max-w-full min-h-[140px] max-h-[140px] h-[140px] sm:min-h-40 sm:max-h-40 sm:h-40 md:min-h-48 md:max-h-48 md:h-48 object-cover" + (isNepal ? "" : " rounded-none border-2 border-foreground shadow-retro");
 
   return (
-    <div className="flex justify-center items-center rounded p-1 sm:p-2 h-[130px] sm:h-[160px] md:h-[200px]">
+    <div className="flex justify-center items-center rounded-none p-1 sm:p-2 h-[160px] sm:h-[180px] md:h-[220px]">
       <Image
         src={getCountryFlagUrl(countryCode)}
         alt={countryName ? `Flag of ${countryName}` : ""}

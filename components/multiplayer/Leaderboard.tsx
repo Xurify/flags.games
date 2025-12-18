@@ -161,7 +161,7 @@ export default function Leaderboard({
               <div
                 key={member.id}
                 className={cn(
-                  "relative group grid grid-cols-[3ch_1fr_auto] items-center gap-4 px-4 py-3 transition-colors",
+                  "relative group grid grid-cols-[3ch_1fr_auto] items-center gap-4 px-4 py-3 transition-colors border-b border-foreground/5 last:border-0",
                   isCurrentUser ? "bg-primary/5" : "bg-transparent",
                   hasAnswered && "bg-success/5"
                 )}
@@ -171,19 +171,19 @@ export default function Leaderboard({
               >
                 <div data-role="highlight" className="absolute inset-0 pointer-events-none z-0" />
 
-                <div className="text-xl font-black italic tracking-tighter text-foreground/20 group-hover:text-foreground/40 transition-colors z-10">
+                <div className="text-xl font-black italic tracking-tighter text-foreground/10 group-hover:text-foreground/20 transition-colors z-10">
                   {index + 1}
                 </div>
 
-                <div className="min-w-0 flex items-center gap-2 z-10">
+                <div className="min-w-0 flex items-center gap-2 z-10 text-base">
                   <span className={cn(
-                    "truncate leading-tight",
+                    "truncate leading-tight uppercase tracking-tight",
                     isCurrentUser ? "font-black text-primary" : "font-bold text-foreground"
                   )}>
                     {member.username}
                   </span>
-                  {isHost && <CrownIcon className="w-3 h-3 text-warning fill-warning" />}
-                  {hasAnswered && <CheckIcon className="w-3 h-3 text-success stroke-[3]" />}
+                  {isHost && <CrownIcon className="w-3.5 h-3.5 text-warning fill-warning" />}
+                  {hasAnswered && <CheckIcon className="w-3.5 h-3.5 text-success stroke-[3]" />}
                 </div>
 
                 <div className="text-lg font-black tabular-nums tracking-tighter text-foreground z-10">

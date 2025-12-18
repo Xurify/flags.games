@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { ArrowLeftIcon } from "lucide-react";
+import { cn } from "@/lib/utils/strings";
 import { Badge } from "@/components/ui/badge";
 import FlagDisplay from "@/components/FlagDisplay";
 import AnswerOptions from "@/components/AnswerOptions";
@@ -33,7 +34,6 @@ export default function GameQuestion({ room }: GameQuestionProps) {
     if (currentQuestion) {
       setSelectedAnswer(null);
       setHasAnswered(false);
-      setCountdown(0);
     }
   }, [currentQuestion?.index]);
 
@@ -85,38 +85,42 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-stretch lg:items-start max-w-6xl mx-auto">
-      <div className="flex-1 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-foreground pb-4">
-          <div className="flex items-center gap-3">
+    <div className="flex flex-col lg:flex-row gap-8 items-stretch lg:items-start mx-auto px-4 lg:px-12 pt-20 lg:pt-28">
+      <div className="flex-1 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-foreground pb-4 mb-2">
+          <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="flex items-center justify-center w-9 h-9 border-2 border-foreground shadow-retro hover:bg-destructive hover:text-white transition-all active:translate-y-0.5 active:shadow-none"
+              className="flex items-center justify-center w-10 h-10 border-2 border-foreground shadow-retro hover:bg-destructive hover:text-white transition-all active:translate-y-0.5 active:shadow-none bg-background shrink-0"
               title="Leave Match"
             >
-              <ArrowLeftIcon className="w-4 h-4" />
+              <ArrowLeftIcon className="w-5 h-5" />
             </Link>
             <div className="flex flex-col">
-              <Badge
-                variant="outline"
-                className="w-fit px-1.5 py-0 text-[8px] font-black uppercase bg-primary text-primary-foreground border-foreground mb-1"
-              >
-                GUESS
-              </Badge>
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tighter text-foreground uppercase leading-none">
-                Question {currentQuestion.index} <span className="text-muted-foreground/40 text-xl font-black">/ {gameState?.totalQuestions || 0}</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground leading-none mb-1">
+                Round {currentQuestion.index} <span className="opacity-40">/ {gameState?.totalQuestions || 0}</span>
+              </span>
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground uppercase leading-tight">
+                Identify the Flag
               </h1>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-card border-2 border-foreground shadow-retro-sm px-3 py-1.5 self-start sm:self-auto">
-            <div className="flex flex-col">
-              <span className="font-mono text-[8px] uppercase font-bold text-muted-foreground leading-none mb-1">Score</span>
-              <span className="text-xl font-black tabular-nums leading-none">{userScore}</span>
+          <div className="flex items-center gap-2 sm:gap-4 bg-card border-2 border-foreground shadow-retro-sm px-4 py-2 self-start sm:self-auto uppercase font-black">
+            <div className="flex flex-col items-center min-w-[64px]">
+              <span className="text-[9px] text-muted-foreground mb-0.5">Score</span>
+              <span className="text-xl sm:text-2xl text-primary tabular-nums leading-none">{userScore}</span>
             </div>
-            <div className="w-px h-6 bg-foreground/20" />
-            <div className="flex flex-col">
-              <span className="font-mono text-[8px] uppercase font-bold text-muted-foreground leading-none mb-1">Time</span>
+            <div className="w-px h-6 bg-foreground/10" />
+            <div className="flex flex-col items-center min-w-[64px]">
+              <span className="text-[9px] text-muted-foreground mb-0.5">Rank</span>
+              <span className="text-xl sm:text-2xl tabular-nums leading-none">
+                {gameState?.leaderboard ? `#${gameState.leaderboard.findIndex(p => p.userId === currentUser?.id) + 1}` : "-"}
+              </span>
+            </div>
+            <div className="w-px h-6 bg-foreground/10" />
+            <div className="flex flex-col items-center min-w-[64px]">
+              <span className="text-[9px] text-muted-foreground mb-0.5">Time</span>
               <Timer
                 timePerQuestion={room.settings.timePerQuestion}
                 questionIndex={Number(currentQuestion?.index)}
@@ -128,8 +132,8 @@ export default function GameQuestion({ room }: GameQuestionProps) {
         </div>
 
         <div className="relative group">
-          <div className="bg-card border-4 border-foreground shadow-retro p-4 sm:p-8">
-            <div className="mb-8">
+          <div className="bg-card border-2 border-foreground shadow-retro p-4 sm:p-8">
+            <div className="mb-6">
               <FlagDisplay countryCode={currentQuestion.country.code} />
             </div>
 
@@ -149,11 +153,14 @@ export default function GameQuestion({ room }: GameQuestionProps) {
               : "opacity-0 scale-95 pointer-events-none"
               }`}
           >
-            <p className="font-black text-2xl tracking-tighter mb-2 uppercase">Continuing In</p>
+            <p className="font-black text-2xl tracking-tighter mb-2 uppercase">Next Question In</p>
             <div className="text-8xl font-black text-foreground tabular-nums tracking-tighter leading-none">{countdown}</div>
-            <div className="w-32 h-2 bg-muted mt-6 overflow-hidden border-2 border-foreground">
+            <div className="w-48 h-2.5 bg-muted mt-8 overflow-hidden border-2 border-foreground shadow-retro-sm">
               <div
-                className="h-full bg-primary transition-all duration-1000 ease-linear"
+                className={cn(
+                  "h-full bg-primary ease-linear",
+                  countdown < 3 && "transition-all duration-1000"
+                )}
                 style={{ width: `${(countdown / 3) * 100}%` }}
               />
             </div>
@@ -169,6 +176,6 @@ export default function GameQuestion({ room }: GameQuestionProps) {
         hostId={currentRoom?.host ?? room.host}
         isGameActive={isGameActive}
       />
-    </div>
+    </div >
   );
 }

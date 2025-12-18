@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Country } from "@/lib/data/countries";
+import { cn } from "@/lib/utils/strings";
 
 interface AnswerOptionsProps {
   options: Country[];
@@ -19,32 +20,33 @@ const AnswerOptions: React.FC<AnswerOptionsProps> = ({
   disabled,
   correctAnswer,
 }) => {
-  const getButtonClass = (country: Country) => {
+  const getButtonStateClass = (country: Country) => {
     if (!showResult) {
-      return "border-border hover:border-primary/50 hover:bg-primary/5 dark:border-white/20 dark:bg-white/5 dark:hover:border-white/40 dark:hover:bg-white/10 transition-all duration-200";
+      return "bg-background hover:bg-primary/5 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:translate-x-[1px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]";
     }
 
     if (country.code === correctAnswer) {
-      return "bg-green-100 border-green-500 text-green-700 dark:bg-green-700/40 dark:border-green-500 dark:text-white dark:shadow-lg hover:text-green-700 focus:text-green-700 dark:hover:text-white dark:focus:text-white disabled:bg-green-100 disabled:text-green-700 disabled:dark:bg-green-700/40 disabled:dark:text-white !opacity-100 !grayscale-0 shadow";
+      return "bg-green-500 text-white border-foreground shadow-none translate-y-[2px] translate-x-[2px] !opacity-100 !grayscale-0";
     }
 
     if (country.code === selectedAnswer && country.code !== correctAnswer) {
-      return "bg-red-50 border-red-400 text-red-700 dark:bg-red-700/40 dark:border-red-500 dark:text-white dark:shadow-lg hover:text-red-700 focus:text-red-700 dark:hover:text-white dark:focus:text-white disabled:bg-red-50 disabled:text-red-700 disabled:dark:bg-red-700/40 disabled:dark:text-white !opacity-100 !grayscale-0 shadow";
+      return "bg-destructive text-white border-foreground shadow-none translate-y-[2px] translate-x-[2px] !opacity-100 !grayscale-0";
     }
 
-    return "!opacity-40 border-border/50 !grayscale-0";
+    return "opacity-20 grayscale border-foreground/20 shadow-none translate-y-[2px] translate-x-[2px]";
   };
 
   return (
-    <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2 sm:gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
       {options.map((country, index) => (
         <Button
           key={`${country.code}-${index}`}
           onClick={() => !showResult && handleAnswer(country)}
           disabled={disabled}
-          className={`h-11 sm:h-14 text-xs sm:text-base rounded font-bold justify-start px-3 sm:px-6 uppercase tracking-tight ${getButtonClass(
-            country
-          )}`}
+          className={cn(
+            "h-12 sm:h-16 text-xs sm:text-base border-2 sm:border-2 font-black justify-start px-4 sm:px-6 uppercase tracking-tight transition-all duration-100 rounded-none",
+            getButtonStateClass(country)
+          )}
           variant="outline"
         >
           <span className="truncate">{country.name}</span>
