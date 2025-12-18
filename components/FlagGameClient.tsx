@@ -2,11 +2,7 @@
 
 import { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { useSearchParams } from "next/navigation";
-import {
-  RefreshCwIcon,
-  HelpCircleIcon,
-  Gamepad2Icon,
-} from "lucide-react";
+import { RefreshCwIcon, HelpCircleIcon, Gamepad2Icon } from "lucide-react";
 import {
   CORRECT_POINT_COST,
   MAX_HEARTS,
@@ -20,6 +16,7 @@ import { useGameQueryParams } from "@/lib/hooks/useGameQueryParams";
 import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
 import { audioManager } from "@/lib/utils/audio-manager";
 import { prefetchAllFlags } from "@/lib/utils/image";
+import { useGameNavigation } from "@/lib/context/GameNavigationContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Header from "./Header";
@@ -80,8 +77,13 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 }) => {
   const { settings } = useSettings();
   const searchParams = useSearchParams();
-  const { setDifficultyParam, setModeClassic, setModeLimited, setModeTimeAttack } =
-    useGameQueryParams();
+  const {
+    setDifficultyParam,
+    setModeClassic,
+    setModeLimited,
+    setModeTimeAttack,
+  } = useGameQueryParams();
+  const { setHomeNavigationConfirmationRequired } = useGameNavigation();
 
   const [gameState, setGameState] = useState<GameState>({
     currentQuestion: 1,
@@ -108,7 +110,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
   const [showModesDialog, setShowModesDialog] = useState(false);
-  const [showPointsAddedAnimation, setShowPointsAddedAnimation] = useState(false);
+  const [showPointsAddedAnimation, setShowPointsAddedAnimation] =
+    useState(false);
 
   const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
   const [questionStartMs, setQuestionStartMs] = useState<number>(Date.now());
@@ -124,6 +127,18 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
       audioManager.preloadAudio(AUDIO_URLS.VICTORY, AUDIO_URLS_KEYS.VICTORY);
     }
   }, [gameState.currentQuestion, gameState.totalQuestions]);
+
+  useEffect(() => {
+    const isProtected =
+      gameState.currentQuestion > 1 && !gameState.gameCompleted;
+    setHomeNavigationConfirmationRequired(isProtected);
+
+    return () => setHomeNavigationConfirmationRequired(false);
+  }, [
+    gameState.currentQuestion,
+    gameState.gameCompleted,
+    setHomeNavigationConfirmationRequired,
+  ]);
 
   const clearGameTimeout = () => {
     if (timeoutRef.current) {
@@ -547,13 +562,16 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                     Progress
                   </span>
                   <span className="text-xs sm:text-sm font-black">
-                    {gameState.currentQuestion}<span className="text-muted-foreground/50 mx-0.5">/</span>{gameState.totalQuestions}
+                    {gameState.currentQuestion}
+                    <span className="text-muted-foreground/50 mx-0.5">/</span>
+                    {gameState.totalQuestions}
                   </span>
                 </div>
 
-                {(limitedLifeModeEnabled || timeAttackModeDurationSec !== null) && (
-                  <div className="w-px h-6 bg-foreground/10" />
-                )}
+                {(limitedLifeModeEnabled ||
+                  timeAttackModeDurationSec !== null) && (
+                    <div className="w-px h-6 bg-foreground/10" />
+                  )}
 
                 <QuestionProgress
                   currentQuestion={gameState.currentQuestion}
@@ -645,7 +663,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                               gameStarted: true,
                             }));
                             setQuestionStartMs(Date.now());
-                            audioManager.playAudio(AUDIO_URLS.BUTTON_CLICK, { volume: 1, key: AUDIO_URLS_KEYS.BUTTON_CLICK });
+                            audioManager.playAudio(AUDIO_URLS.BUTTON_CLICK, {
+                              volume: 1,
+                              key: AUDIO_URLS_KEYS.BUTTON_CLICK,
+                            });
                           }}
                           size="lg"
                         >
@@ -670,7 +691,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                 onRestart={restartGame}
                 gameCompleted={gameState.gameCompleted}
               >
-                <Button variant="outline" className="w-full border-2 border-foreground shadow-retro bg-destructive text-white transition-all font-black" size="lg">
+                <Button
+                  variant="outline"
+                  className="w-full border-2 border-foreground shadow-retro bg-destructive text-white transition-all font-black"
+                  size="lg"
+                >
                   <RefreshCwIcon className="w-4 h-4 mr-2" />
                   RESTART GAME
                 </Button>

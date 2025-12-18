@@ -95,16 +95,31 @@ export default function GameFinished({ room }: GameFinishedProps) {
 
       <div className="flex flex-col gap-2 text-center">
         <h1 className="text-5xl sm:text-7xl font-black tracking-tighter text-foreground leading-[0.9] uppercase">
-          Final<br />
+          Final
+          <br />
           <span className="text-destructive whitespace-nowrap">Results</span>
         </h1>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "RANK", value: currentUserPlacement?.rank ? `#${currentUserPlacement.rank}` : "-", highlight: true },
-          { label: "SCORE", value: (currentUserPlacement?.me?.score ?? 0).toString() },
-          { label: "CORRECT", value: `${currentUserPlacement?.me?.correctAnswers ?? 0}/${gameState?.totalQuestions || 0}` },
+          {
+            label: "RANK",
+            value: currentUserPlacement?.rank
+              ? `#${currentUserPlacement.rank}`
+              : "-",
+            highlight: true,
+          },
+          {
+            label: "SCORE",
+            value: (currentUserPlacement?.me?.score ?? 0).toString(),
+          },
+          {
+            label: "CORRECT",
+            value: `${currentUserPlacement?.me?.correctAnswers ?? 0}/${
+              gameState?.totalQuestions || 0
+            }`,
+          },
           {
             label: "ACCURACY",
             value: `${(() => {
@@ -112,29 +127,48 @@ export default function GameFinished({ room }: GameFinishedProps) {
               const correct = currentUserPlacement?.me?.correctAnswers ?? 0;
               if (!totalQ) return 0;
               return Math.round((correct / totalQ) * 100);
-            })()}%`
-          }
+            })()}%`,
+          },
         ].map((stat, i) => (
-          <div key={i} className={cn(
-            "p-6 border-2 border-foreground shadow-retro flex flex-col items-center justify-center text-center",
-            stat.highlight ? "bg-primary text-primary-foreground" : "bg-card text-foreground"
-          )}>
-            <span className="font-mono text-[10px] uppercase font-bold opacity-70 mb-1">{stat.label}</span>
-            <span className="text-3xl font-black tracking-tighter leading-none">{stat.value}</span>
+          <div
+            key={i}
+            className={cn(
+              "p-6 border-2 border-foreground shadow-retro flex flex-col items-center justify-center text-center",
+              stat.highlight
+                ? "bg-primary text-primary-foreground"
+                : "bg-card text-foreground"
+            )}
+          >
+            <span className="font-mono text-[10px] uppercase font-bold opacity-70 mb-1">
+              {stat.label}
+            </span>
+            <span className="text-3xl font-black tracking-tighter leading-none">
+              {stat.value}
+            </span>
           </div>
         ))}
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-2xl font-black tracking-tight uppercase border-b-2 border-foreground pb-2">Final Standings</h3>
+        <h3 className="text-2xl font-black tracking-tight uppercase border-b-2 border-foreground pb-2">
+          Final Standings
+        </h3>
         <div className="border-2 border-foreground shadow-retro overflow-hidden">
           <Table>
             <TableHeader className="bg-muted">
               <TableRow className="hover:bg-transparent border-b-2 border-foreground">
-                <TableHead className="w-16 font-black text-foreground uppercase tracking-wider text-center">Pos</TableHead>
-                <TableHead className="font-black text-foreground uppercase tracking-wider">Player</TableHead>
-                <TableHead className="w-32 font-black text-foreground uppercase tracking-wider text-center">Score</TableHead>
-                <TableHead className="w-32 font-black text-foreground uppercase tracking-wider text-right">Correct</TableHead>
+                <TableHead className="w-16 font-black text-foreground uppercase tracking-wider text-center">
+                  Pos
+                </TableHead>
+                <TableHead className="font-black text-foreground uppercase tracking-wider">
+                  Player
+                </TableHead>
+                <TableHead className="w-32 font-black text-foreground uppercase tracking-wider text-center">
+                  Score
+                </TableHead>
+                <TableHead className="w-32 font-black text-foreground uppercase tracking-wider text-right">
+                  Correct
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -153,21 +187,38 @@ export default function GameFinished({ room }: GameFinishedProps) {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <span className={cn(
-                          "text-lg",
-                          isYou ? "font-black text-primary" : "font-bold text-foreground"
-                        )}>
+                        <span
+                          className={cn(
+                            "text-lg",
+                            isYou
+                              ? "font-black text-primary"
+                              : "font-bold text-foreground"
+                          )}
+                        >
                           {player.username}
                         </span>
-                        {index === 0 && <Crown className="w-4 h-4 text-warning fill-warning" />}
-                        {isYou && <Badge variant="outline" size="sm" className="font-black text-[9px] h-4">YOU</Badge>}
+                        {index === 0 && (
+                          <Crown className="w-4 h-4 text-warning fill-warning" />
+                        )}
+                        {isYou && (
+                          <Badge
+                            variant="outline"
+                            size="sm"
+                            className="font-black text-[9px] h-4"
+                          >
+                            YOU
+                          </Badge>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="text-center font-black tabular-nums text-lg">
                       {player.score}
                     </TableCell>
                     <TableCell className="text-right font-bold text-muted-foreground tabular-nums">
-                      {player.correctAnswers} <span className="text-xs">/ {gameState?.totalQuestions}</span>
+                      {player.correctAnswers}{" "}
+                      <span className="text-xs">
+                        / {gameState?.totalQuestions}
+                      </span>
                     </TableCell>
                   </TableRow>
                 );

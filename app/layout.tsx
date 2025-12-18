@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { Archivo_Black, Space_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SettingsProvider } from "@/lib/context/SettingsContext";
+import { GameNavigationProvider } from "@/lib/context/GameNavigationContext";
 import { Toaster } from "@/components/ui/sonner";
 import { GlobalNavigation } from "@/components/GlobalNavigation";
 import "./globals.css";
@@ -76,9 +77,11 @@ export default async function RootLayout({
         className={`${archivoBlack.variable} ${spaceMono.variable} antialiased font-mono bg-background text-foreground preload`}
       >
         <SettingsProvider initialDarkMode={isDark}>
-          <Toaster theme={theme} />
-          <GlobalNavigation />
-          {children}
+          <GameNavigationProvider>
+            <Toaster theme={theme} />
+            <GlobalNavigation />
+            {children}
+          </GameNavigationProvider>
         </SettingsProvider>
         {process.env.NODE_ENV !== "development" && <Analytics />}
       </body>
