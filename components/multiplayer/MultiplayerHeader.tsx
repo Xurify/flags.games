@@ -31,19 +31,15 @@ export default function MultiplayerHeader({
             onClick={onLeave}
             className="text-muted-foreground hover:text-foreground"
           >
-            <HomeIcon className="w-3 h-3" />
+            <HomeIcon className="w-4 h-4" />
           </Button>
-          <span className="text-sm font-medium text-foreground">
-            MULTIPLAYER
-          </span>
-          <Badge variant="default" className="flex items-center gap-1">
-            <UsersIcon className="w-3 h-3" />
-            {room?.members?.length || ""}
+          <div className="w-px h-6 bg-foreground/10 mx-1" />
+          <Badge variant="secondary" className="flex items-center gap-1.5 font-black border-2 border-foreground shadow-retro">
+            <UsersIcon className="w-3.5 h-3.5" />
+            {room?.members?.length || "0"}
           </Badge>
         </div>
       }
-      showDifficultyDialog={showDifficultyDialog}
-      setShowDifficultyDialog={setShowDifficultyDialog}
     />
   );
 }

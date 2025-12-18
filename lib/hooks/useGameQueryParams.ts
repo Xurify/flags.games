@@ -14,7 +14,7 @@ export function useGameQueryParams() {
     if (query) {
       router.replace(`?${query}`);
     } else {
-      router.replace("/");
+      router.replace("/play");
     }
   };
 

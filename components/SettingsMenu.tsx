@@ -8,8 +8,8 @@ import {
   MoonIcon,
   UserIcon,
   UsersIcon,
-  ChartNoAxesColumnIncreasingIcon,
-  Gamepad2Icon,
+  SignalIcon,
+  TrophyIcon,
 } from "lucide-react";
 import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -44,9 +44,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
         aria-label="Settings"
         className="w-auto border-none bg-transparent shadow-none p-0 h-auto"
       >
-        <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground dark:text-foreground transition-colors">
-          <SettingsIcon className="w-4 h-4" />
-          <span className="text-sm font-medium">Settings</span>
+        <div className="flex items-center gap-2 hover:text-foreground transition-colors group">
+          <SettingsIcon className="w-4 h-4 group-hover:rotate-45 transition-transform duration-300" />
+          <span className="text-xs font-bold uppercase tracking-wider">Settings</span>
         </div>
       </SelectTrigger>
       <SelectContent className="w-64">
@@ -69,7 +69,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                       className="w-full justify-start"
                       variant="neutral"
                     >
-                      <ChartNoAxesColumnIncreasingIcon className="w-4 h-4 mr-2" />
+                      <SignalIcon className="w-4 h-4 mr-2" />
                       Change Difficulty
                     </Button>
                     <Button
@@ -82,7 +82,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                       className="w-full justify-start"
                       variant="neutral"
                     >
-                      <Gamepad2Icon className="w-4 h-4 mr-2" />
+                      <TrophyIcon className="w-4 h-4 mr-2" />
                       Change Modes
                     </Button>
                   </div>
@@ -164,7 +164,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                 href="https://github.com/Xurify/flags.games"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 text-center w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                className="flex items-center justify-center gap-2 text-center w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-foreground/10 rounded-md transition-colors"
               >
                 <img
                   src="/icon.svg"

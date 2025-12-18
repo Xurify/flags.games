@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { SignalIcon } from "lucide-react";
 import { getDifficultySettings } from "@/lib/utils/gameLogic";
 import { Difficulty, DIFFICULTY_LEVELS } from "@/lib/constants";
 import { GameState } from "./FlagGameClient";
@@ -56,60 +57,70 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Change Difficulty</AlertDialogTitle>
-          <AlertDialogDescription>
+      <AlertDialogContent className="max-w-[92vw] sm:max-w-xl p-4 sm:p-8">
+        <AlertDialogHeader className="mb-4 sm:mb-6">
+          <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight flex items-center gap-2">
+            <SignalIcon className="w-6 h-6 text-primary" />
+            Change Difficulty
+          </AlertDialogTitle>
+          <AlertDialogDescription className="font-mono text-xs uppercase tracking-widest">
             Select a new difficulty level for your next game.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="space-y-4 mt-2">
-          <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty as any}>
-            <SelectTrigger className="w-full">
-              <SelectValue>
-                {`${difficultySettings.label} (${difficultySettings.count} countries)`}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="max-w-[80vw] w-full sm:w-auto">
-              {DIFFICULTY_LEVELS.map((level) => {
-                const settings = getDifficultySettings(level);
-                let description = "";
-                switch (level) {
-                  case "easy":
-                    description = "Only the most recognizable/distinctive flags worldwide.";
-                    break;
-                  case "medium":
-                    description = "Like easy difficulty, includes moderately recognizable flags.";
-                    break;
-                  case "hard":
-                    description = "All countries, more obscure/unknown flags.";
-                    break;
-                  case "expert":
-                    description = "All countries, similar to hard difficulty, but with more challenging options";
-                    break;
-                  default:
-                    description = "";
-                }
-                return (
-                  <SelectItem key={level} value={level}>
-                    <div className="flex flex-col">
-                      <span>
-                        {settings.label} ({settings.count} countries)
-                      </span>
-                      <span className="text-xs text-muted-foreground mt-0.5">{description}</span>
-                    </div>
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
+        <div className="space-y-6 mt-2">
+          <div className="space-y-2">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground ml-1">Select Difficulty</span>
+            <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty as any}>
+              <SelectTrigger className="w-full h-12 sm:h-14 font-black uppercase text-base border-2 border-foreground shadow-retro">
+                <SelectValue>
+                  {`${difficultySettings.label} (${difficultySettings.count} countries)`}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="max-w-[92vw] sm:max-w-md w-full">
+                {DIFFICULTY_LEVELS.map((level) => {
+                  const settings = getDifficultySettings(level);
+                  let description = "";
+                  switch (level) {
+                    case "easy":
+                      description = "Primary identification — high-visibility global entities.";
+                      break;
+                    case "medium":
+                      description = "Standard operational set — includes moderate complexity.";
+                      break;
+                    case "hard":
+                      description = "Deep identification — all global entities included.";
+                      break;
+                    case "expert":
+                      description = "Maximum challenge — obscure entities and similar patterns.";
+                      break;
+                    default:
+                      description = "";
+                  }
+                  return (
+                    <SelectItem key={level} value={level} className="py-3 px-4 focus:bg-primary/5">
+                      <div className="flex flex-col gap-1">
+                        <span className="font-black uppercase tracking-tight text-sm">
+                          {settings.label} ({settings.count} units)
+                        </span>
+                        <span className="text-[10px] font-mono text-muted-foreground uppercase leading-tight tracking-wide">{description}</span>
+                      </div>
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
 
-          <Button onClick={handleDifficultyChange} className="w-full mt-2" disabled={selectedDifficulty === currentDifficulty}>
-            Change Difficulty
+          <Button
+            onClick={handleDifficultyChange}
+            className="w-full h-12 sm:h-14 font-black uppercase text-lg border-2 border-foreground shadow-retro bg-primary text-primary-foreground hover:translate-y-[2px] hover:shadow-none transition-all"
+            disabled={selectedDifficulty === currentDifficulty}
+          >
+            CONFIRM SELECTION
           </Button>
         </div>
-        <AlertDialogFooter>
-          <AlertDialogCancel className="w-full">Cancel</AlertDialogCancel>
+        <AlertDialogFooter className="mt-4">
+          <AlertDialogCancel className="w-full font-mono text-xs uppercase tracking-widest border-2 border-foreground hover:bg-muted">Cancel</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
 

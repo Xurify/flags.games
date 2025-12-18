@@ -36,18 +36,18 @@ const AnswerOptions: React.FC<AnswerOptionsProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
+    <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2 sm:gap-3">
       {options.map((country, index) => (
         <Button
           key={`${country.code}-${index}`}
           onClick={() => !showResult && handleAnswer(country)}
           disabled={disabled}
-          className={`h-12 sm:h-14 text-sm sm:text-base rounded font-medium justify-start px-4 sm:px-6 ${getButtonClass(
+          className={`h-11 sm:h-14 text-xs sm:text-base rounded font-bold justify-start px-3 sm:px-6 uppercase tracking-tight ${getButtonClass(
             country
           )}`}
           variant="outline"
         >
-          {country.name}
+          <span className="truncate">{country.name}</span>
         </Button>
       ))}
     </div>

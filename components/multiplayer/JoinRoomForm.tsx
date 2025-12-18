@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { z } from "zod";
-import { UsersIcon } from "lucide-react";
+import { ArrowLeft, UsersIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -84,60 +84,63 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
   }
 
   return (
-    <div className="max-w-lg w-full mx-auto">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-center flex items-center justify-center gap-2 font-semibold">
-            <UsersIcon className="w-5 h-5 text-primary" />
-            Join Room
-          </CardTitle>
-          <CardDescription className="text-center">
-            Join a new multiplayer game room with you and your friends
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="username" className="text-sm font-medium">
-              Username
-            </Label>
-            <Input
-              id="username"
-              placeholder={randomUsername}
-              value={username}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setUsername(e.target.value)
-              }
-              className="h-11"
-              maxLength={30}
-            />
-            {formErrors.username && (
-              <p className="text-xs text-red-500">{formErrors.username}</p>
-            )}
-            <p className="text-xs text-muted-foreground">
-              {username.length}/30 characters
-            </p>
+    <div className="w-full">
+      <div className="space-y-4">
+        <section className="space-y-3">
+          <div className="flex items-center gap-4 border-b-2 border-foreground pb-2">
+            <Link href="/" className="w-8 h-8 bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors flex items-center justify-center font-black cursor-pointer shadow-retro-sm active:translate-y-0.5 active:shadow-none" title="Back to Home">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <h2 className="text-2xl font-black tracking-tight uppercase">Join Match</h2>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="space-y-4">
+            <div className="p-4 bg-muted/20 border-2 border-foreground shadow-retro">
+              <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-2">
+                Match Info: <span className="text-foreground font-bold">{settings.maxRoomSize} PLAYERS</span> | <span className="text-foreground font-bold">{settings.difficulty.toUpperCase()}</span>
+              </p>
+
+              <div className="space-y-2">
+                <Label htmlFor="username" className="font-mono text-[10px] uppercase font-bold text-muted-foreground ml-1">
+                  Your Username
+                </Label>
+                <Input
+                  id="username"
+                  placeholder={randomUsername}
+                  value={username}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setUsername(e.target.value)
+                  }
+                  className="h-14 text-xl font-bold border-2 border-foreground shadow-retro bg-background focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-all px-4"
+                  maxLength={30}
+                />
+                {formErrors.username && (
+                  <p className="text-xs text-destructive font-bold uppercase mt-1">{formErrors.username}</p>
+                )}
+              </div>
+            </div>
+
             <Button
               onClick={handleSubmit}
               disabled={isButtonDisabled}
-              className="w-full"
+              className="w-full h-20 text-2xl font-black tracking-tighter shadow-retro border-2 border-foreground active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase"
               size="lg"
             >
               {buttonLabel}
             </Button>
-            <Link
-              href="/lobby"
-              className="text-sm text-muted-foreground text-center"
-            >
-              Need to create a room instead?{" "}
-              <span className="underline text-primary">Click here</span>
-            </Link>
+
+            <div className="flex justify-center pt-2">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all font-mono text-xs uppercase tracking-widest">
+                  &larr; Back to Home
+                </Button>
+              </Link>
+            </div>
+
           </div>
-        </CardContent>
-      </Card>
+        </section>
+      </div>
     </div>
   );
-};
+}
 
 export default JoinRoomForm;

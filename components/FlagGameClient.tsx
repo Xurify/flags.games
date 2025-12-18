@@ -3,9 +3,13 @@
 import { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { useSearchParams } from "next/navigation";
 import {
-  RotateCcwIcon,
+  RefreshCwIcon,
   HelpCircleIcon,
   ArrowLeftRightIcon,
+  HomeIcon,
+  TrophyIcon,
+  SignalIcon,
+  SlidersHorizontalIcon,
 } from "lucide-react";
 
 import {
@@ -29,7 +33,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import Header from "./Header";
 import ModesDialog from "./ModesDialog";
 import GameEndScreen from "./GameEndScreen";
-import LevelBadge from "./LevelBadge";
 import QuestionProgress from "./QuestionProgress";
 import FlagDisplay from "./FlagDisplay";
 import AnswerOptions from "./AnswerOptions";
@@ -116,9 +119,15 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   const [showScorePopup, setShowScorePopup] = useState(false);
 
   const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
-  const [questionStartMs, setQuestionStartMs] = useState<number>(Date.now());
+  const [questionStartMs, setQuestionStartMs] = useState<number>(0);
+  const [hasMounted, setHasMounted] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setHasMounted(true);
+    setQuestionStartMs(Date.now());
+  }, []);
 
   useEffect(() => {
     prefetchAllFlags(gameState.difficulty);
@@ -437,7 +446,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   }, [gameState.gameCompleted]);
 
   return (
-    <div className="min-h-screen h-screen sm:min-h-screen sm:h-auto bg-background overflow-y-auto">
+    <div className="min-h-screen w-full bg-transparent overflow-y-auto relative">
       {gameState.gameCompleted && (
         <Suspense fallback={null}>
           <Confetti
@@ -462,6 +471,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
         open={showModesDialog}
         onOpenChange={setShowModesDialog}
         limitedLifeModeEnabled={limitedLifeModeEnabled}
+        activeTimeAttackDuration={timeAttackModeDurationSec}
         onToggleLimitedLifeMode={setLimitedLifeModeEnabled}
         onRequestRestart={restartGame}
         onStartClassic={() => {
@@ -485,30 +495,106 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-        <div className="mb-4">
-          <Header
-            leftContent={
-              <div className="flex items-center gap-2">
+        <Header
+          leftContent={
+            <div className="flex flex-wrap items-center justify-between gap-y-3 w-full">
+              <div className="flex items-center gap-3">
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  onClick={() => setShowDifficultyDialog(true)}
-                  className="text-muted-foreground hover:text-foreground"
-                  title="Change difficulty"
+                  onClick={() => setShowRestartDialog(true)}
+                  className="hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground transition-all"
+                  title="Restart Game"
                 >
-                  <ArrowLeftRightIcon className="w-3 h-3" />
+                  <RefreshCwIcon className="w-4 h-4" />
                 </Button>
-                <span className="text-sm font-medium text-foreground">
-                  LEVEL
-                </span>
-                <LevelBadge difficulty={gameState.difficulty} />
+                <div className="w-px h-6 bg-foreground/10" />
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => setShowModesDialog(true)}
+                  className="hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground transition-all"
+                  title="Game Modes"
+                >
+                  <SlidersHorizontalIcon className="w-4 h-4" />
+                </Button>
+                <div className="w-px h-6 bg-foreground/10" />
+                <button
+                  className="flex flex-col text-left hover:opacity-70 transition-opacity"
+                  onClick={() => setShowDifficultyDialog(true)}
+                >
+                  <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground cursor-pointer mb-1">
+                    Level
+                  </span>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs sm:text-sm font-black uppercase tracking-tight cursor-pointer">
+                      {gameState.difficulty}
+                    </span>
+                  </div>
+                </button>
               </div>
-            }
-            showDifficultyDialog={showDifficultyDialog}
-            setShowDifficultyDialog={setShowDifficultyDialog}
-            setShowModesDialog={setShowModesDialog}
-          />
-        </div>
+
+              <div className="flex items-center gap-4 sm:gap-8">
+                <div className="flex flex-col items-center relative">
+                  {showScorePopup && (
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 animate-score-popup pointer-events-none z-50 whitespace-nowrap">
+                      <span className="text-primary font-black text-xl sm:text-2xl drop-shadow-sm">
+                        +{CORRECT_POINT_COST}
+                      </span>
+                    </div>
+                  )}
+                  <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground leading-none mb-1">
+                    Score
+                  </span>
+                  <span className="text-xs sm:text-sm font-black text-primary">
+                    {gameState.score.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-5 sm:gap-10">
+                <div className="flex flex-col items-center">
+                  <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground leading-none mb-1">
+                    Progress
+                  </span>
+                  <span className="text-xs sm:text-sm font-black">
+                    {gameState.currentQuestion}<span className="text-muted-foreground/50 mx-0.5">/</span>{gameState.totalQuestions}
+                  </span>
+                </div>
+
+                {(limitedLifeModeEnabled || timeAttackModeDurationSec !== null) && (
+                  <div className="w-px h-6 bg-foreground/10" />
+                )}
+
+                <QuestionProgress
+                  currentQuestion={gameState.currentQuestion}
+                  totalQuestions={gameState.totalQuestions}
+                  score={gameState.score}
+                  hearts={gameState.hearts}
+                  maxHearts={MAX_HEARTS}
+                  limitedLifeModeEnabled={limitedLifeModeEnabled}
+                  timeAttackModeEnabled={timeAttackModeDurationSec !== null}
+                  timeAttackTimeSec={timeAttackModeDurationSec ?? undefined}
+                  currentPhase={
+                    gameState.gameCompleted
+                      ? "finished"
+                      : gameState.showResult
+                        ? "results"
+                        : timeAttackModeDurationSec !== null &&
+                          !gameState.gameStarted
+                          ? "waiting"
+                          : "question"
+                  }
+                  onTimeUp={handleTimeUp}
+                  startTimeMs={
+                    gameState.gameStarted ? questionStartMs : undefined
+                  }
+                />
+              </div>
+            </div>
+          }
+        />
 
         {gameState.gameCompleted ? (
           <GameEndScreen
@@ -522,40 +608,13 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
           />
         ) : (
           <>
-            <div className="mb-4">
-              <QuestionProgress
-                currentQuestion={gameState.currentQuestion}
-                totalQuestions={gameState.totalQuestions}
-                score={gameState.score}
-                showScorePopup={showScorePopup}
-                hearts={gameState.hearts}
-                maxHearts={MAX_HEARTS}
-                limitedLifeModeEnabled={limitedLifeModeEnabled}
-                timeAttackModeEnabled={timeAttackModeDurationSec !== null}
-                timeAttackTimeSec={timeAttackModeDurationSec ?? undefined}
-                currentPhase={
-                  gameState.gameCompleted
-                    ? "finished"
-                    : gameState.showResult
-                    ? "results"
-                    : timeAttackModeDurationSec !== null &&
-                      !gameState.gameStarted
-                    ? "waiting"
-                    : "question"
-                }
-                onTimeUp={handleTimeUp}
-                startTimeMs={
-                  gameState.gameStarted ? questionStartMs : undefined
-                }
-              />
-            </div>
-            <Card className="mb-3 sm:mb-6 py-4 sm:py-8 px-4 sm:px-6">
-              <CardContent className="relative p-3 sm:p-4">
-                <div className="text-center mb-4 sm:mb-8">
-                  <h1 className="text-lg sm:text-xl font-semibold text-foreground mb-1 sm:mb-2">
+            <Card className="mb-4 sm:mb-6 py-6 sm:py-8 px-4 sm:px-6 shadow-retro">
+              <CardContent className="relative p-2 sm:p-4">
+                <div className="text-center mb-6 sm:mb-8">
+                  <h1 className="text-base sm:text-xl font-black text-foreground mb-1 sm:mb-2 uppercase tracking-tight">
                     Guess the Country
                   </h1>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground font-mono text-[10px] sm:text-xs uppercase tracking-widest leading-relaxed max-w-xs mx-auto sm:max-w-none">
                     Test your knowledge and identify countries by their flags
                   </p>
                 </div>
@@ -623,9 +682,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                 onRestart={restartGame}
                 gameCompleted={gameState.gameCompleted}
               >
-                <Button variant="destructive" className="w-full" size="lg">
-                  <RotateCcwIcon className="w-4 h-4 mr-2" />
-                  Restart Game
+                <Button variant="outline" className="w-full border-2 border-foreground shadow-retro bg-destructive text-white transition-all font-black" size="lg">
+                  <RefreshCwIcon className="w-4 h-4 mr-2" />
+                  RESTART GAME
                 </Button>
               </RestartDialog>
 
@@ -635,11 +694,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
               >
                 <Button
                   variant="ghost"
-                  className="text-muted-foreground"
-                  size="lg"
+                  className="text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all font-mono text-xs uppercase tracking-widest"
+                  size="sm"
                 >
                   <HelpCircleIcon className="w-4 h-4 mr-2" />
-                  How to play?
+                  How to Play
                 </Button>
               </HowToPlayDialog>
             </div>

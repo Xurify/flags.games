@@ -146,7 +146,7 @@ export function useWallClockCountdown(
       document.removeEventListener("visibilitychange", handleVisibility);
       clear();
     };
-  }, [isActive, durationSec, resetKey]);
+  }, [isActive, durationSec, resetKey, params.startTimeMs]);
 
   const restart = (nextDurationSec?: number) => {
     start(nextDurationSec ?? durationSec);

@@ -25,30 +25,38 @@ interface SettingsContextType {
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
-export const SettingsProvider = ({ children }: { children: ReactNode }) => {
-  const [settings, setSettings] = useState<GameSettings>(defaultSettings);
+export const SettingsProvider = ({
+  children,
+  initialDarkMode = false
+}: {
+  children: ReactNode;
+  initialDarkMode?: boolean;
+}) => {
+  const [settings, setSettings] = useState<GameSettings>({
+    ...defaultSettings,
+    darkMode: initialDarkMode,
+  });
 
   useEffect(() => {
     audioManager.setupAutoResumeOnUserInteraction();
     audioManager.preloadAudio(AUDIO_URLS.BUTTON_CLICK, AUDIO_URLS_KEYS.BUTTON_CLICK);
     audioManager.preloadAudio(AUDIO_URLS.CLOCK_TICK, AUDIO_URLS_KEYS.CLOCK_TICK);
+
+    const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (savedSettings) {
+      const parsedSettings = JSON.parse(savedSettings);
+      setSettings((prev) => ({
+        ...prev,
+        soundEffectsEnabled: parsedSettings.soundEffectsEnabled ?? prev.soundEffectsEnabled,
+        autoAdvanceEnabled: parsedSettings.autoAdvanceEnabled ?? prev.autoAdvanceEnabled,
+        timePerQuestion: parsedSettings.timePerQuestion ?? prev.timePerQuestion,
+      }));
+    }
   }, []);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", settings.darkMode);
   }, [settings.darkMode]);
-
-  useEffect(() => {
-    const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY);
-    if (savedSettings) {
-      const parsedSettings = JSON.parse(savedSettings);
-      setSettings({
-        ...defaultSettings,
-        soundEffectsEnabled: parsedSettings.soundEffectsEnabled ?? defaultSettings.soundEffectsEnabled,
-        darkMode: parsedSettings.darkMode ?? defaultSettings.darkMode,
-      });
-    }
-  }, []);
 
   const updateSetting = (key: keyof GameSettings, value: boolean) => {
     setSettings((prev) => {

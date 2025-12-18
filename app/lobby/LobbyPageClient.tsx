@@ -11,6 +11,7 @@ import { RoomSettings } from "@/lib/types/socket";
 import { getDifficultySettings } from "@/lib/utils/gameLogic";
 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
 import JoinRoomForm from "@/components/multiplayer/JoinRoomForm";
 import CreateRoomForm from "@/components/multiplayer/CreateRoomForm";
@@ -72,28 +73,17 @@ export function LobbyPageClient({
   };
 
   return (
-    <div className="flex justify-center bg-background">
-      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-        <div className="mb-8">
-          <Header
-            leftContent={
-              <div className="flex items-center gap-2">
-                <Link href="/">
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <HomeIcon className="w-4 h-4" />
-                  </Button>
-                </Link>
-                <span className="text-sm font-medium text-foreground">
-                  MULTIPLAYER
-                </span>
-              </div>
-            }
-          />
-        </div>
+    <div className="min-h-screen w-full bg-transparent max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div className="flex flex-col gap-2 text-center">
+        <h1 className="text-5xl sm:text-6xl font-black tracking-tighter text-foreground leading-[0.85] uppercase">
+          Multiplayer
+        </h1>
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground max-w-sm mx-auto">
+          Play with your friends or join a public match.
+        </p>
+      </div>
+
+      <div className="w-full">
         {inviteCode ? (
           <JoinRoomForm
             randomUsername={randomUsername}
@@ -117,6 +107,7 @@ export function LobbyPageClient({
           />
         )}
       </div>
+
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import FlagDisplay from "@/components/FlagDisplay";
 import AnswerOptions from "@/components/AnswerOptions";
 import Timer from "@/components/Timer";
@@ -72,7 +73,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
 
   const userScore = currentUser
     ? gameState?.leaderboard.find((user) => user.userId === currentUser.id)
-        ?.score ?? 0
+      ?.score ?? 0
     : 0;
 
   if (!currentQuestion) {
@@ -84,30 +85,39 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-stretch lg:items-start">
-      <div className="flex-1">
-        <Card className="py-4 sm:py-8 px-4 sm:px-6 relative">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex flex-wrap items-center justify-between gap-y-2 mb-3 sm:mb-5">
-              <div className="text-sm font-medium text-foreground">
-                Question {currentQuestion.index} of{" "}
-                {gameState?.totalQuestions || 0}
-              </div>
-              <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-2 sm:gap-3">
-                <span className="font-medium text-foreground">
-                  Score: {userScore}
-                </span>
-                <span className="text-border dark:text-white">•</span>
-                <Timer
-                  timePerQuestion={room.settings.timePerQuestion}
-                  questionIndex={Number(currentQuestion?.index)}
-                  currentPhase={currentPhase}
-                  startTimeMs={currentQuestion.startTime}
-                />
-              </div>
-            </div>
+    <div className="flex flex-col lg:flex-row gap-8 items-stretch lg:items-start max-w-6xl mx-auto">
+      <div className="flex-1 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <Badge variant="outline" className="mb-2 bg-primary text-primary-foreground border-2 border-foreground shadow-retro">
+              Guess
+            </Badge>
+            <h1 className="text-4xl font-black tracking-tighter text-foreground uppercase">
+              Question {currentQuestion.index} <span className="text-muted-foreground/40 text-2xl font-black">/ {gameState?.totalQuestions || 0}</span>
+            </h1>
+          </div>
 
-            <div className="mb-4 sm:mb-8">
+          <div className="flex items-center gap-6 bg-card border-2 border-foreground shadow-retro px-4 py-2">
+            <div className="flex flex-col">
+              <span className="font-mono text-[10px] uppercase font-bold text-muted-foreground leading-none mb-1">Your Score</span>
+              <span className="text-2xl font-black tabular-nums leading-none">{userScore}</span>
+            </div>
+            <div className="w-px h-8 bg-foreground/20" />
+            <div className="flex flex-col">
+              <span className="font-mono text-[10px] uppercase font-bold text-muted-foreground leading-none mb-1">Time Left</span>
+              <Timer
+                timePerQuestion={room.settings.timePerQuestion}
+                questionIndex={Number(currentQuestion?.index)}
+                currentPhase={currentPhase}
+                startTimeMs={currentQuestion.startTime}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="relative group">
+          <div className="bg-card border-4 border-foreground shadow-retro p-4 sm:p-8">
+            <div className="mb-8">
               <FlagDisplay countryCode={currentQuestion.country.code} />
             </div>
 
@@ -119,22 +129,26 @@ export default function GameQuestion({ room }: GameQuestionProps) {
               disabled={hasAnswered || currentPhase === "results"}
               correctAnswer={currentQuestion.country.code}
             />
-          </CardContent>
+          </div>
 
           <div
-            className={`absolute inset-0 bg-black/40 rounded-[2rem] flex items-center justify-center transition-opacity duration-300 ease-in-out ${
-              currentPhase === "results" && countdown > 0
-                ? "opacity-100"
-                : "opacity-0 pointer-events-none"
-            }`}
+            className={`absolute inset-0 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center transition-all duration-300 ease-in-out z-20 ${currentPhase === "results" && countdown > 0
+              ? "opacity-100 scale-100"
+              : "opacity-0 scale-95 pointer-events-none"
+              }`}
           >
-            <div className="text-center">
-              <p className="text-white/90 mb-1 text-sm">Next question in</p>
-              <div className="text-4xl font-bold text-white">{countdown}</div>
+            <p className="font-black text-2xl tracking-tighter mb-2 uppercase">Continuing In</p>
+            <div className="text-8xl font-black text-foreground tabular-nums tracking-tighter leading-none">{countdown}</div>
+            <div className="w-32 h-2 bg-muted mt-6 overflow-hidden border-2 border-foreground">
+              <div
+                className="h-full bg-primary transition-all duration-1000 ease-linear"
+                style={{ width: `${(countdown / 3) * 100}%` }}
+              />
             </div>
           </div>
-        </Card>
+        </div>
       </div>
+
       <Leaderboard
         members={currentRoom?.members ?? room.members}
         leaderboard={gameState?.leaderboard ?? []}

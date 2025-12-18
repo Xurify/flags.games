@@ -131,58 +131,81 @@ export default function Leaderboard({
       positionsRef.current = newPositions;
     }
   }, [sortedMembers.map((member) => `${member.id}:${scoreByUserId[member.id] ?? 0}`).join("|")]);
-    
+
   return (
     <div
       className={cn(
-        variant === "sidebar" && "hidden lg:block w-64",
-        variant === "inline" && "w-full lg:w-64 lg:border-l lg:border-border/50 lg:pl-4"
+        "border-2 border-foreground shadow-retro bg-card overflow-hidden",
+        variant === "sidebar" && "hidden lg:block w-72",
+        variant === "inline" && "w-full lg:w-72"
       )}
     >
-      <div className={cn("px-3 py-2 flex items-center justify-between", variant === "inline" && "px-0 pb-2")}> 
-        <div className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">Leaderboard</div>
-        <Badge size="sm" variant={isGameActive ? "success" : "outline"}>
-          {isGameActive ? "Live" : "Waiting"}
-        </Badge>
+      <div className="bg-foreground text-background px-4 py-3 flex items-center justify-between">
+        <div className="text-xs font-black tracking-widest uppercase">Rankings</div>
+        <div className="flex items-center gap-2">
+          {isGameActive && <div className="w-2 h-2 bg-chart-2 rounded-full animate-pulse" />}
+          <span className="text-[10px] font-black uppercase tracking-tighter">
+            {isGameActive ? "LIVE" : "READY"}
+          </span>
+        </div>
       </div>
 
-      <div className={cn("max-h-[500px] overflow-y-auto divide-y divide-border/50", variant === "inline" && "max-h-none")}> 
-        {sortedMembers.map((member, index) => {
-          const isCurrentUser = currentUser?.id === member.id;
-          const isHost = member.id === hostId;
-          const hasAnswered = isGameActive && member.hasAnswered === true;
+      <div className={cn("max-h-[500px] overflow-y-auto", variant === "inline" && "max-h-none")}>
+        <div className="divide-y-2 divide-foreground/10">
+          {sortedMembers.map((member, index) => {
+            const isCurrentUser = currentUser?.id === member.id;
+            const isHost = member.id === hostId;
+            const hasAnswered = isGameActive && member.hasAnswered === true;
 
-          return (
-            <div
-              key={member.id}
-              className={cn(
-                "relative overflow-hidden rounded-none grid grid-cols-[2ch_1fr_auto] items-center gap-3 px-3 py-2 h-[41px] max-h-[41px]",
-                isCurrentUser && "[&>*:nth-child(2)>span:first-child]:font-semibold",
-                variant === "inline" && "px-0"
-              )}
-              ref={(element) => {
-                rowRefs.current[member.id] = element;
-              }}
-            >
-              <div data-role="highlight" className={cn("absolute inset-0 pointer-events-none z-0 rounded-none")} />
-              <div className={cn("text-xs tabular-nums text-muted-foreground z-10")}>
-                {index + 1}
-              </div>
-              <div className={cn("min-w-0 flex items-center gap-1 z-10")}>
-                <span className={cn("truncate", isCurrentUser ? "font-semibold" : "font-medium")}>{member.username}</span>
-                {isHost && <CrownIcon className="w-3.5 h-3.5 text-chart-5" />}
-                {hasAnswered && <CheckIcon className="w-3.5 h-3.5 text-chart-2" />}
+            return (
+              <div
+                key={member.id}
+                className={cn(
+                  "relative group grid grid-cols-[3ch_1fr_auto] items-center gap-4 px-4 py-3 transition-colors",
+                  isCurrentUser ? "bg-primary/5" : "bg-transparent",
+                  hasAnswered && "bg-success/5"
+                )}
+                ref={(element) => {
+                  rowRefs.current[member.id] = element;
+                }}
+              >
+                <div data-role="highlight" className="absolute inset-0 pointer-events-none z-0" />
+
+                <div className="text-xl font-black italic tracking-tighter text-foreground/20 group-hover:text-foreground/40 transition-colors z-10">
+                  {index + 1}
+                </div>
+
+                <div className="min-w-0 flex items-center gap-2 z-10">
+                  <span className={cn(
+                    "truncate leading-tight",
+                    isCurrentUser ? "font-black text-primary" : "font-bold text-foreground"
+                  )}>
+                    {member.username}
+                  </span>
+                  {isHost && <CrownIcon className="w-3 h-3 text-warning fill-warning" />}
+                  {hasAnswered && <CheckIcon className="w-3 h-3 text-success stroke-[3]" />}
+                </div>
+
+                <div className="text-lg font-black tabular-nums tracking-tighter text-foreground z-10">
+                  {scoreByUserId[member.id] ?? 0}
+                </div>
+
                 {isCurrentUser && (
-                  <span className="text-[11px] font-semibold text-primary">(You)</span>
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
                 )}
               </div>
-              <div className={cn("text-xs font-semibold tabular-nums text-foreground z-10")}>
-                {scoreByUserId[member.id] ?? 0}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
+
+      {!isGameActive && members.length < 2 && (
+        <div className="p-4 bg-muted/20 border-t-2 border-foreground/10 text-center">
+          <p className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground">
+            Waiting for more players...
+          </p>
+        </div>
+      )}
     </div>
   );
 }

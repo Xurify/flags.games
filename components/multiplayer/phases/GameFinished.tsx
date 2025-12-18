@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils/strings";
 import { audioManager } from "@/lib/utils/audio-manager";
 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Crown } from "lucide-react";
 import {
@@ -60,7 +61,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-12 w-full max-w-4xl mx-auto py-12">
       {gameState?.phase === "finished" && (
         <Suspense fallback={null}>
           <Confetti
@@ -72,159 +73,114 @@ export default function GameFinished({ room }: GameFinishedProps) {
           />
         </Suspense>
       )}
-      <Card className="py-4 sm:py-8 px-0 bg-transparent border-none">
-        <CardContent className="sm:p-8">
-          <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <div className="flex items-center justify-center gap-2">
-                <Crown
-                  className="w-6 h-6 dark:text-yellow-500 fill-yellow-500"
-                  aria-hidden="true"
-                />
-                <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
-                  Final results
-                </h2>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 text-center">
-              <div>
-                <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
-                  {currentUserPlacement?.rank ? `#${currentUserPlacement.rank}` : "-"}
-                </div>
-                <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
-                  Final
-                  <br />
-                  Placement
-                </div>
-              </div>
-              <div>
-                <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
-                  {currentUserPlacement?.me?.score ?? 0}
-                </div>
-                <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
-                  Your
-                  <br />
-                  Score (pts)
-                </div>
-              </div>
-              <div>
-                <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
-                  {currentUserPlacement?.me?.correctAnswers ?? 0}/
-                  {gameState?.totalQuestions || 0}
-                </div>
-                <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
-                  Correct
-                  <br />
-                  Answers
-                </div>
-              </div>
-              <div>
-                <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums font-mono">
-                  {(() => {
-                    const totalQ = gameState?.totalQuestions || 0;
-                    const correct = currentUserPlacement?.me?.correctAnswers ?? 0;
-                    if (!totalQ) return 0;
-                    return Math.round((correct / totalQ) * 100);
-                  })()}
-                  %
-                </div>
-                <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">
-                  Overall
-                  <br />
-                  Accuracy Rate
-                </div>
-              </div>
-            </div>
+      <div className="flex flex-col gap-4 text-center">
+        <div className="flex justify-center">
+          <Badge variant="outline" className="bg-primary text-primary-foreground border-2 border-foreground shadow-retro">
+            Match Over
+          </Badge>
+        </div>
+        <h1 className="text-7xl font-black tracking-tighter text-foreground leading-[0.9] uppercase">
+          Final<br />
+          <span className="text-destructive whitespace-nowrap">Results</span>
+        </h1>
+      </div>
 
-            <div>
-              <h3 className="text-base font-semibold mb-2">Leaderboard</h3>
-              <Table>
-                <TableHeader className="sticky top-0 z-10">
-                  <TableRow>
-                    <TableHead className="w-12 text-right tabular-nums">
-                      #
-                    </TableHead>
-                    <TableHead className="max-w-[240px] w-full text-left">
-                      Player
-                    </TableHead>
-                    <TableHead className="w-32 text-center">Correct</TableHead>
-                    <TableHead className="w-24 text-right">Score</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {leaderboard.map((player, index) => {
-                    const isYou = currentUser?.id === player.userId;
-                    return (
-                      <TableRow
-                        key={player.userId}
-                        className={cn(
-                          "",
-                          isYou &&
-                            "bg-yellow-300/40 dark:bg-primary/10 hover:bg-yellow-300/50 dark:hover:bg-primary/15 relative after:absolute after:left-0 after:top-0 after:h-full after:w-[3px] after:bg-yellow-400 dark:after:bg-primary"
-                        )}
-                      >
-                        <TableCell className="text-right tabular-nums text-muted-foreground">
-                          {index + 1}
-                        </TableCell>
-                        <TableCell className="max-w-[200px] w-full whitespace-normal align-middle">
-                          <div className="flex items-center gap-1">
-                            <div
-                              className={cn(
-                                "flex items-center gap-1 min-w-0",
-                                isYou ? "font-semibold" : "font-medium"
-                              )}
-                            >
-                              {index === 0 && (
-                                <Crown
-                                  className="w-4 h-4 dark:text-yellow-500 fill-yellow-500 flex-shrink-0"
-                                  aria-hidden="true"
-                                />
-                              )}
-                              <span className="truncate min-w-0">{player.username}</span>
-                            </div>
-                            {isYou && (
-                              <span className="text-[11px] font-semibold text-primary">
-                                (You)
-                              </span>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center tabular-nums align-middle">
-                          {player.correctAnswers}/
-                          {gameState?.totalQuestions || 0}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums align-middle font-semibold text-foreground">
-                          {player.score}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              {isHost && (
-                <Button
-                  onClick={() => restartGame()}
-                  className="w-full sm:w-auto"
-                  disabled={Number(currentRoom?.members?.length) < 2}
-                >
-                  Play Again
-                </Button>
-              )}
-              <Button
-                onClick={handleBackToLobby}
-                variant="outline"
-                className="w-full sm:w-auto"
-              >
-                {isHost ? "Back to Lobby" : "Leave Room"}
-              </Button>
-            </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: "RANK", value: currentUserPlacement?.rank ? `#${currentUserPlacement.rank}` : "-", highlight: true },
+          { label: "SCORE", value: (currentUserPlacement?.me?.score ?? 0).toString() },
+          { label: "CORRECT", value: `${currentUserPlacement?.me?.correctAnswers ?? 0}/${gameState?.totalQuestions || 0}` },
+          {
+            label: "ACCURACY",
+            value: `${(() => {
+              const totalQ = gameState?.totalQuestions || 0;
+              const correct = currentUserPlacement?.me?.correctAnswers ?? 0;
+              if (!totalQ) return 0;
+              return Math.round((correct / totalQ) * 100);
+            })()}%`
+          }
+        ].map((stat, i) => (
+          <div key={i} className={cn(
+            "p-6 border-2 border-foreground shadow-retro flex flex-col items-center justify-center text-center",
+            stat.highlight ? "bg-primary text-primary-foreground" : "bg-card text-foreground"
+          )}>
+            <span className="font-mono text-[10px] uppercase font-bold opacity-70 mb-1">{stat.label}</span>
+            <span className="text-3xl font-black tracking-tighter leading-none">{stat.value}</span>
           </div>
-        </CardContent>
-      </Card>
-    </>
+        ))}
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-2xl font-black tracking-tight uppercase border-b-2 border-foreground pb-2">Final Standings</h3>
+        <div className="border-2 border-foreground shadow-retro overflow-hidden">
+          <Table>
+            <TableHeader className="bg-muted">
+              <TableRow className="hover:bg-transparent border-b-2 border-foreground">
+                <TableHead className="w-16 font-black text-foreground uppercase tracking-wider text-center">Pos</TableHead>
+                <TableHead className="font-black text-foreground uppercase tracking-wider">Player</TableHead>
+                <TableHead className="w-32 font-black text-foreground uppercase tracking-wider text-center">Score</TableHead>
+                <TableHead className="w-32 font-black text-foreground uppercase tracking-wider text-right">Correct</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {leaderboard.map((player, index) => {
+                const isYou = currentUser?.id === player.userId;
+                return (
+                  <TableRow
+                    key={player.userId}
+                    className={cn(
+                      "group border-b-2 border-foreground last:border-0",
+                      isYou ? "bg-primary/5" : "bg-card"
+                    )}
+                  >
+                    <TableCell className="text-2xl font-black tracking-tighter text-foreground/20 group-hover:text-foreground/40 text-center transition-colors italic">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <span className={cn(
+                          "text-lg",
+                          isYou ? "font-black text-primary" : "font-bold text-foreground"
+                        )}>
+                          {player.username}
+                        </span>
+                        {index === 0 && <Crown className="w-4 h-4 text-warning fill-warning" />}
+                        {isYou && <Badge variant="outline" size="sm" className="font-black text-[9px] h-4">YOU</Badge>}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center font-black tabular-nums text-lg">
+                      {player.score}
+                    </TableCell>
+                    <TableCell className="text-right font-bold text-muted-foreground tabular-nums">
+                      {player.correctAnswers} <span className="text-xs">/ {gameState?.totalQuestions}</span>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+        {isHost && (
+          <Button
+            onClick={() => restartGame()}
+            className="w-full sm:w-auto h-16 px-12 text-xl font-black tracking-tighter bg-destructive hover:bg-destructive/90 text-white shadow-retro border-2 border-foreground active:translate-x-1 active:translate-y-1 active:shadow-none"
+            disabled={Number(currentRoom?.members?.length) < 1}
+          >
+            PLAY AGAIN
+          </Button>
+        )}
+        <Button
+          onClick={handleBackToLobby}
+          variant="outline"
+          className="w-full sm:w-auto h-16 px-12 text-xl font-black tracking-tighter shadow-retro border-2 border-foreground active:translate-x-1 active:translate-y-1 active:shadow-none"
+        >
+          {isHost ? "RETURN TO LOBBY" : "LEAVE MATCH"}
+        </Button>
+      </div>
+    </div>
   );
 }

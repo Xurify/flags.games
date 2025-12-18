@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo_Black, Space_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SettingsProvider } from "@/lib/context/SettingsContext";
 import { Toaster } from "@/components/ui/sonner";
+import { GlobalNavigation } from "@/components/GlobalNavigation";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const archivoBlack = Archivo_Black({
+  weight: "400",
+  variable: "--font-archivo",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const spaceMono = Space_Mono({
+  weight: ["400", "700"],
+  variable: "--font-mono",
   subsets: ["latin"],
 });
 
@@ -70,10 +73,11 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="//qqu03sron6.ufs.sh" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${archivoBlack.variable} ${spaceMono.variable} antialiased font-mono bg-background text-foreground preload`}
       >
-        <SettingsProvider>
+        <SettingsProvider initialDarkMode={isDark}>
           <Toaster theme={theme} />
+          <GlobalNavigation />
           {children}
         </SettingsProvider>
         {process.env.NODE_ENV !== "development" && <Analytics />}

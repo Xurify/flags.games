@@ -7,30 +7,30 @@ import { audioManager } from "@/lib/utils/audio-manager";
 import { useSettings } from "@/lib/context/SettingsContext";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/30 focus-visible:ring-4 active:scale-98 cursor-pointer disabled:cursor-not-allowed transform-gpu",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm text-sm font-bold uppercase tracking-wide transition-retro disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/30 focus-visible:ring-4 cursor-pointer disabled:cursor-not-allowed",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-sm hover:shadow-md hover:bg-primary/90 hover:-translate-y-0.5",
+          "bg-primary text-primary-foreground border-2 border-foreground shadow-retro hover:shadow-retro-hover active:shadow-retro-pressed active:translate-x-[2px] active:translate-y-[2px] hover:-translate-y-[2px] hover:-translate-x-[2px]",
         destructive:
-          "bg-destructive text-white shadow-sm hover:shadow-md hover:bg-destructive/90 hover:-translate-y-0.5 focus-visible:ring-destructive/30",
+          "bg-destructive text-white border-2 border-foreground shadow-retro hover:shadow-retro-hover active:shadow-retro-pressed active:translate-x-[2px] active:translate-y-[2px] hover:-translate-y-[2px] hover:-translate-x-[2px]",
         outline:
-          "border-2 bg-[oklch(1_0_0)] hover:bg-[oklch(0.97_0.01_240_/_0.4)] hover:border-[oklch(0.7_0.01_240)] hover:-translate-y-1 border-[oklch(0.92_0_0)] dark:bg-[oklch(0.17_0.002_240)] dark:border-[oklch(0.7_0.01_240)]",
+          "bg-background text-foreground border-2 border-foreground shadow-retro hover:shadow-retro-hover active:shadow-retro-pressed active:translate-x-[2px] active:translate-y-[2px] hover:-translate-y-[2px] hover:-translate-x-[2px]",
         neutral:
-          "border-2 bg-[oklch(0.95_0.01_100)]/40 hover:bg-[oklch(0.93_0.012_100)]/50 hover:-translate-y-1 border-[oklch(0.92_0.008_100)] text-foreground dark:bg-[#2e2e2e] dark:border-[#1d1d1d]",
+          "bg-muted text-foreground border-2 border-foreground shadow-retro hover:shadow-retro-hover active:shadow-retro-pressed active:translate-x-[2px] active:translate-y-[2px] hover:-translate-y-[2px] hover:-translate-x-[2px]",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:shadow-md hover:bg-secondary/80 hover:-translate-y-0.5",
+          "bg-secondary text-secondary-foreground border-2 border-foreground shadow-retro hover:shadow-retro-hover active:shadow-retro-pressed active:translate-x-[2px] active:translate-y-[2px] hover:-translate-y-[2px] hover:-translate-x-[2px]",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline rounded-lg",
+          "hover:bg-primary hover:text-primary-foreground border-2 border-transparent hover:border-foreground hover:shadow-retro",
+        link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-11 px-6 py-3 has-[>svg]:px-5",
-        sm: "h-9 gap-1.5 px-4 text-xs font-medium has-[>svg]:px-3",
-        lg: "h-13 rounded-xl px-8 text-base has-[>svg]:px-6",
-        icon: "size-11 rounded-lg",
-        "icon-sm": "size-9 rounded-md",
+        sm: "h-9 gap-1.5 px-4 text-xs font-bold has-[>svg]:px-3",
+        lg: "h-14 px-8 text-base has-[>svg]:px-6",
+        icon: "size-11",
+        "icon-sm": "size-9",
         pill: "h-11 px-8 rounded-full",
       },
     },

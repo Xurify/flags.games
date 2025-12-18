@@ -1,22 +1,14 @@
-import FlagGameClient, { type InitialGameData } from "@/components/FlagGameClient";
-import { generateQuestion, parseDifficultyFromQuery, parseModeFromQuery } from "@/lib/utils/gameLogic";
+"use client";
 
-export const dynamic = "force-dynamic";
+import LandingPage from "@/components/LandingPage";
+import { useRouter } from "next/navigation";
 
-interface HomeProps {
-  searchParams: Promise<{ difficulty?: string; mode?: string; t?: string }>;
-}
+export default function Home() {
+  const router = useRouter();
 
-export default async function Home({ searchParams: _searchParams }: HomeProps) {
-  const searchParams = await _searchParams;
-  const difficulty = parseDifficultyFromQuery(searchParams?.difficulty);
-  const { limitedLifeModeEnabled, timeAttackModeDurationSec } = parseModeFromQuery(searchParams?.mode, searchParams?.t);
-  const initialGameData = generateQuestion(difficulty) as InitialGameData;
   return (
-    <FlagGameClient
-      initialGameData={initialGameData}
-      initialLimitedLifeModeEnabled={limitedLifeModeEnabled}
-      initialTimeAttackModeDurationSec={timeAttackModeDurationSec}
+    <LandingPage
+      onStartSolo={() => router.push("/play")}
     />
   );
 }

@@ -13,10 +13,13 @@ import {
   SettingsIcon,
   CopyCheckIcon,
   QrCodeIcon,
+  LogOutIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { SettingsSelect } from "@/components/multiplayer/SettingsSelect";
 import QRCodeShareModal from "@/components/multiplayer/QRCodeShareModal";
@@ -130,189 +133,192 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   };
 
   return (
-    <div className="flex items-center justify-center">
-      <Card className="w-full max-w-lg">
-        <div className="p-3 sm:p-4 border-b border-border">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <UsersIcon className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-base sm:text-lg font-semibold text-foreground">
-                  Room Lobby
-                </h2>
-                <p className="text-xs text-muted-foreground">
-                  Waiting for players to join
-                </p>
-              </div>
-            </div>
-          </div>
+    <div className="flex flex-col gap-8 w-full max-w-2xl mx-auto">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase">
+            Lobby
+          </h1>
+          <p className="font-mono text-sm text-muted-foreground uppercase tracking-widest mt-1">
+            Waiting for players to join
+          </p>
         </div>
 
-        <div className="p-3 sm:p-4 border-b border-border">
-          <div className="flex items-center gap-2 mb-3">
-            <h3 className="text-sm sm:text-base font-medium text-foreground">
-              Players ({members.length}/{maxPlayers})
-            </h3>
+        <div className="flex flex-col items-end gap-1">
+          <span className="font-mono text-[10px] uppercase font-bold text-muted-foreground mr-1">Invite Code</span>
+          <Button
+            variant="outline"
+            onClick={handleCopyRoomInviteLink}
+            className="font-mono font-bold text-xl border-2 border-foreground shadow-retro h-auto py-2 px-4 hover:bg-muted active:translate-x-0.5 active:translate-y-0.5"
+          >
+            {room.inviteCode}
+            {copied ? <CopyCheckIcon className="ml-2 w-4 h-4 text-primary" /> : <CopyIcon className="ml-2 w-4 h-4 opacity-40" />}
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border-b-2 border-foreground pb-2">
+            <h2 className="text-xl font-black tracking-tight">PLAYERS</h2>
+            <Badge variant="outline" className="font-bold border-foreground">
+              {members.length}/{maxPlayers}
+            </Badge>
           </div>
-          <div className="space-y-2">
+
+          <div className="grid gap-3">
             {[...members, ...Array(maxPlayers - members.length).fill(null)].map(
               (player: User | null, index) => (
                 <div
                   key={`player-${index}`}
                   className={cn(
-                    "flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg sm:rounded-xl border transition-all duration-300 ease-in-out min-h-[50px] sm:min-h-[60px]",
+                    "flex items-center gap-4 p-4 border-2 transition-all rounded-sm",
                     player
-                      ? "bg-card dark:bg-input border-border/60 dark:border-border/90 hover:bg-accent/30 dark:hover:bg-input/30"
-                      : "bg-muted/40 border-dashed border-border/60 opacity-80 animate-pulse"
+                      ? "bg-background border-foreground shadow-retro"
+                      : "bg-muted/10 border-foreground/10 border-dashed opacity-50"
                   )}
                 >
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
-                    <UserIcon className="w-3 h-3 sm:w-4 sm:h-4 text-accent-foreground" />
+                  <div className={cn(
+                    "w-10 h-10 border-2 flex items-center justify-center font-black",
+                    player ? "bg-secondary text-secondary-foreground border-foreground" : "bg-muted/20 border-foreground/10"
+                  )}>
+                    {player ? player.username.charAt(0).toUpperCase() : "?"}
                   </div>
-                  <div className="flex-1 min-w-0 flex flex-col justify-center">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <span className="text-xs sm:text-sm font-semibold text-foreground truncate">
-                        {player ? player.username : "Waiting..."}
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-foreground truncate">
+                        {player ? player.username : "EMPTY SLOT"}
                       </span>
                       {player && room?.host === player.id && (
-                        <CrownIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-chart-5 flex-shrink-0" />
+                        <div className="bg-foreground text-background text-[9px] px-1.5 py-0.5 font-black uppercase tracking-tighter leading-none">
+                          HOST
+                        </div>
                       )}
                     </div>
-                    {player && (
-                      <span className="text-xs text-muted-foreground">
-                        {room?.host === player.id ? "Host" : "Player"}
-                      </span>
-                    )}
                   </div>
+
+                  {player && room?.host !== player.id && isHost() && (
+                    <Button
+                      variant="ghost"
+                      onClick={() => useRoomManagement().kickUser(player.id)}
+                      className="text-[10px] h-6 px-2 hover:bg-destructive hover:text-white border-transparent hover:border-foreground"
+                    >
+                      KICK
+                    </Button>
+                  )}
                 </div>
               )
             )}
           </div>
-          <div className="mt-3 text-xs text-muted-foreground text-center">
-            {isStarting && gameStartingCountdown !== null ? (
-              <div className="flex items-center justify-center gap-2">
-                <PlayIcon className="w-3 h-3 animate-pulse" />
-                <span>Game starting in {gameStartingCountdown}...</span>
-              </div>
-            ) : members.length < maxPlayers ? (
-              `Waiting for ${maxPlayers - members.length} more player${
-                maxPlayers - members.length > 1 ? "s" : ""
-              }...`
-            ) : (
-              "Room is full!"
-            )}
-          </div>
         </div>
 
-        <div className="p-3 sm:p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <SettingsIcon className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
-            <h3 className="text-sm sm:text-base font-medium text-foreground">
-              Game Settings
-            </h3>
+        <div className="space-y-4">
+          <div className="flex items-center border-b-2 border-foreground pb-2">
+            <h2 className="text-xl font-black tracking-tight uppercase">Match Settings</h2>
           </div>
-          <div className="space-y-2 sm:space-y-3 mb-4">
+
+          <div className="bg-muted/20 border-2 border-foreground p-4 space-y-4 shadow-retro">
             <SettingsSelect
-              icon={<UsersIcon className="w-3 h-3" />}
-              label="Max Players"
+              icon={<UsersIcon className="w-4 h-4" />}
+              label="Players"
               value={room.settings.maxRoomSize}
               options={ROOM_SIZES.map((size) => ({
                 value: size,
-                label: `${size} players`,
+                label: `${size} Players`,
               }))}
               onValueChange={(value) => {
                 if (members.length > value) {
-                  toast.error(
-                    "Cannot reduce max players below current number of players"
-                  );
+                  toast.error("Can't reduce below current count");
                   return;
                 }
                 return handleSettingChange("maxRoomSize", value);
               }}
-              renderValue={(value) => `${value} players`}
+              renderValue={(value) => `${value} Players`}
               disabled={!isHost() || isStarting}
             />
+
             <SettingsSelect
-              icon={<BarChartIcon className="w-3 h-3" />}
+              icon={<BarChartIcon className="w-4 h-4" />}
               label="Difficulty"
               value={room.settings.difficulty}
               options={DIFFICULTY_LEVELS.map((level) => ({
                 value: level,
                 label: level.charAt(0).toUpperCase() + level.slice(1),
               }))}
-              onValueChange={(value) =>
-                handleSettingChange("difficulty", value)
-              }
-              renderValue={(value) =>
-                value.charAt(0).toUpperCase() + value.slice(1)
-              }
+              onValueChange={(value) => handleSettingChange("difficulty", value)}
+              renderValue={(value) => value.toUpperCase()}
               disabled={!isHost() || isStarting}
             />
+
             <SettingsSelect
-              icon={<TimerIcon className="w-3 h-3" />}
-              label="Time per Question"
+              icon={<TimerIcon className="w-4 h-4" />}
+              label="Speed"
               value={room.settings.timePerQuestion}
               options={TIME_PER_QUESTION_OPTIONS.map((time) => ({
                 value: time,
                 label: `${time} seconds`,
               }))}
-              onValueChange={(value) =>
-                handleSettingChange("timePerQuestion", value)
-              }
+              onValueChange={(value) => handleSettingChange("timePerQuestion", value)}
               renderValue={(value) => `${value}s`}
               disabled={!isHost() || isStarting}
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="pt-4 space-y-3">
+            {isHost() ? (
+              <Button
+                variant="default"
+                size="lg"
+                className="w-full h-16 text-xl tracking-tighter bg-primary hover:bg-primary/90 text-white border-2 border-foreground shadow-retro active:translate-x-0.5 active:translate-y-0.5"
+                onClick={handleStart}
+                disabled={!canStartGame() || isStarting}
+              >
+                {isStarting ? `STARTING IN ${gameStartingCountdown}...` : "START MATCH"}
+              </Button>
+            ) : (
+              <div className="p-4 bg-muted/10 border-2 border-foreground border-dashed text-center font-mono text-sm opacity-60">
+                {isStarting ? "PREPARING MATCH..." : "WAITING FOR HOST TO START"}
+              </div>
+            )}
+
             <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 flex items-center gap-1 text-sm"
+                className="flex-1 font-bold tracking-tight h-10"
                 onClick={handleInvite}
               >
-                <QrCodeIcon className="w-3 h-3" />
-                <span>QR Code</span>
+                <QrCodeIcon className="w-4 h-4 mr-2" />
+                SHOW QR
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 flex items-center gap-1 text-sm"
-                onClick={handleCopyRoomInviteLink}
+                className="flex-1 font-bold tracking-tight h-10"
+                onClick={() => {
+                  navigator.clipboard.writeText(inviteLink);
+                  toast.success("Invite link copied to clipboard!");
+                }}
               >
-                {copied ? (
-                  <CopyCheckIcon className="w-3 h-3 text-green-600 dark:text-green-300" />
-                ) : (
-                  <CopyIcon className="w-3 h-3" />
-                )}
-                <span className="sm:hidden">
-                  {copied ? "Copied!" : "Invite Link"}
-                </span>
-                <span className="hidden sm:inline">
-                  {copied ? "Copied!" : "Copy Invite Link"}
-                </span>
+                <CopyIcon className="w-4 h-4 mr-2" />
+                COPY LINK
               </Button>
             </div>
-            {isHost() && (
+
+            <Link href="/" className="block pt-2">
               <Button
-                variant="default"
+                variant="ghost"
                 size="sm"
-                className="w-full flex items-center justify-center gap-1 text-sm"
-                onClick={handleStart}
-                disabled={!canStartGame() || isStarting}
+                className="w-full text-destructive hover:text-destructive hover:bg-destructive/10 font-bold tracking-tight h-10 uppercase"
               >
-                <PlayIcon className="w-3 h-3" />
-                {isStarting && gameStartingCountdown !== null
-                  ? `Starting in ${gameStartingCountdown}...`
-                  : "Start Game"}
+                <LogOutIcon className="w-4 h-4 mr-2" />
+                Leave Match
               </Button>
-            )}
+            </Link>
           </div>
         </div>
-      </Card>
+      </div>
 
       <QRCodeShareModal
         isOpen={showQRModal}
