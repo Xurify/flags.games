@@ -119,23 +119,24 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
               </div>
             </div>
 
-            <Button
-              onClick={handleSubmit}
-              disabled={isButtonDisabled}
-              className="w-full h-20 text-2xl font-black tracking-tighter shadow-retro border-2 border-foreground active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase"
-              size="lg"
-            >
-              {buttonLabel}
-            </Button>
+            <div className="pt-4">
+              <Button
+                onClick={handleSubmit}
+                disabled={isButtonDisabled}
+                className="w-full h-20 text-2xl font-black tracking-tighter shadow-retro border-2 border-foreground active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase"
+                size="lg"
+              >
+                {buttonLabel}
+              </Button>
 
-            <div className="flex justify-center pt-2">
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all font-mono text-xs uppercase tracking-widest">
-                  &larr; Back to Home
-                </Button>
-              </Link>
+              <div className="flex justify-center pt-2">
+                <Link href="/">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all font-mono text-xs uppercase tracking-widest">
+                    &larr; Back to Home
+                  </Button>
+                </Link>
+              </div>
             </div>
-
           </div>
         </section>
       </div>

@@ -1,7 +1,7 @@
 import React from "react";
+import Link from "next/link";
 import { z } from "zod";
 import {
-  SettingsIcon,
   UsersIcon,
   TimerIcon,
   BarChartIcon,
@@ -9,13 +9,6 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SettingsSelect } from "./SettingsSelect";
@@ -216,6 +209,14 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
           >
             {buttonLabel}
           </Button>
+
+          <div className="flex justify-center pt-2">
+            <Link href="/">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all font-mono text-xs uppercase tracking-widest">
+                &larr; Back to Home
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

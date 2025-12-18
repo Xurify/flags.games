@@ -112,7 +112,7 @@ export default function QRCodeShareModal({
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-mono uppercase tracking-widest font-bold text-muted-foreground ml-1">
+            <label htmlFor="invite-link" className="text-[10px] font-mono uppercase tracking-widest font-bold text-muted-foreground">
               Invite Link
             </label>
             <div
@@ -129,6 +129,7 @@ export default function QRCodeShareModal({
                 )}
                 value={inviteLink.replace("https://", "")}
                 readOnly
+                name="invite-link"
               />
               <Button
                 variant="ghost"
