@@ -62,7 +62,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
             <main className="relative z-10 flex flex-col items-center text-center px-4 max-w-2xl">
                 <Badge variant="default" className="mb-6 px-4 py-1.5 bg-primary text-primary-foreground border-2 border-foreground shadow-retro lowercase">
                     <GlobeIcon className="w-3 h-3 mr-2" />
-                    ~197 Countries
+                    197 Countries
                 </Badge>
 
                 <h1 className="text-6xl sm:text-7xl md:text-9xl font-black mb-4 tracking-tighter text-foreground decoration-primary underline underline-offset-8 decoration-4">
@@ -84,7 +84,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
                                 <UserIcon className="w-5 h-5 md:w-6 md:h-6" />
                             </div>
                             <div className="text-left">
-                                <div className="text-xl md:text-2xl font-black block leading-none">SOLO</div>
+                                <div className="text-xl md:text-xl font-black block leading-none">SOLO</div>
                                 <div className="text-[10px] md:text-xs font-mono font-normal opacity-70">Compete against yourself <br /> with various modes</div>
                             </div>
                         </div>
@@ -102,7 +102,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
                                     <UsersIcon className="w-5 h-5 md:w-6 md:h-6" />
                                 </div>
                                 <div className="text-left">
-                                    <div className="text-xl md:text-2xl font-black block leading-none">MULTIPLAYER</div>
+                                    <div className="text-xl md:text-xl font-black block leading-none">MULTIPLAYER (BETA)</div>
                                     <div className="text-[10px] md:text-xs font-mono font-normal opacity-70">Challenge your friends</div>
                                 </div>
                             </div>
