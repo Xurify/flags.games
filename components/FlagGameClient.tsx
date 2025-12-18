@@ -108,18 +108,12 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
   const [showModesDialog, setShowModesDialog] = useState(false);
-  const [showScorePopup, setShowScorePopup] = useState(false);
+  const [showPointsAddedAnimation, setShowPointsAddedAnimation] = useState(false);
 
   const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
-  const [questionStartMs, setQuestionStartMs] = useState<number>(0);
-  const [hasMounted, setHasMounted] = useState(false);
+  const [questionStartMs, setQuestionStartMs] = useState<number>(Date.now());
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    setHasMounted(true);
-    setQuestionStartMs(Date.now());
-  }, []);
 
   useEffect(() => {
     prefetchAllFlags(gameState.difficulty);
@@ -217,8 +211,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
     });
 
     if (isCorrect) {
-      setShowScorePopup(true);
-      setTimeout(() => setShowScorePopup(false), 1500);
+      setShowPointsAddedAnimation(true);
+      setTimeout(() => setShowPointsAddedAnimation(false), 1500);
     }
 
     const delay = settings.autoAdvanceEnabled ? 2000 : 0;
@@ -529,9 +523,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 
               <div className="flex items-center gap-4 sm:gap-8">
                 <div className="flex flex-col items-center relative">
-                  {showScorePopup && (
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 animate-score-popup pointer-events-none z-50 whitespace-nowrap">
-                      <span className="text-primary font-black text-xl sm:text-2xl drop-shadow-sm">
+                  {showPointsAddedAnimation && (
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 animate-score-popup pointer-events-none z-10 whitespace-nowrap">
+                      <span className="text-green-500 font-black text-xl sm:text-2xl drop-shadow-sm">
                         +{CORRECT_POINT_COST}
                       </span>
                     </div>
