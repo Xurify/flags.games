@@ -32,7 +32,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
     ];
 
     return (
-        <div className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-transparent">
+        <div className="relative min-h-screen w-full flex flex-col items-center sm:justify-center overflow-hidden bg-transparent">
             {floatingFlags.map((flag) => (
                 <div
                     key={flag.code}
@@ -59,7 +59,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
                 </div>
             ))}
 
-            <main className="relative z-10 flex flex-col items-center text-center px-4 max-w-2xl">
+            <main className="relative z-10 flex flex-col items-center text-center px-4 max-w-2xl mt-16 sm:mt-0">
                 <Badge variant="default" className="mb-6 px-4 py-1.5 bg-primary text-primary-foreground border-2 border-foreground shadow-retro lowercase">
                     <GlobeIcon className="w-3 h-3 mr-2" />
                     197 Countries
