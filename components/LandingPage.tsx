@@ -26,7 +26,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
         { code: "BR", delay: 4, className: "top-[65%] md:top-[20%] left-[40%] md:left-[15%] animate-float-1" },
         { code: "GB", delay: 5, className: "top-[40%] left-[25%] animate-float-3", hiddenOnMobile: true },
         { code: "EE", delay: 4, className: "bottom-[20%] md:bottom-[15%] left-[10%] animate-float-3" },
-        { code: "ZA", delay: 1, className: "bottom-[10%] right-[5%] animate-float-1" },
+        { code: "ZA", delay: 1, className: "bottom-[15%] md:bottom-[10%] right-[15%] md:right-[5%] animate-float-1" },
         { code: "NL", delay: 7, className: "bottom-[25%] right-[15%] animate-float-1", hiddenOnMobile: true },
         { code: "CZ", delay: 9, className: "top-[15%] left-[35%] animate-float-2", hiddenOnMobile: true },
     ];
