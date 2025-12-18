@@ -116,9 +116,8 @@ export default function GameFinished({ room }: GameFinishedProps) {
           },
           {
             label: "CORRECT",
-            value: `${currentUserPlacement?.me?.correctAnswers ?? 0}/${
-              gameState?.totalQuestions || 0
-            }`,
+            value: `${currentUserPlacement?.me?.correctAnswers ?? 0}/${gameState?.totalQuestions || 0
+              }`,
           },
           {
             label: "ACCURACY",
@@ -155,7 +154,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
         </h3>
         <div className="border-2 border-foreground shadow-retro overflow-hidden">
           <Table>
-            <TableHeader className="bg-muted">
+            <TableHeader className="bg-muted dark:bg-muted/20">
               <TableRow className="hover:bg-transparent border-b-2 border-foreground">
                 <TableHead className="w-16 font-black text-foreground uppercase tracking-wider text-center">
                   Pos
