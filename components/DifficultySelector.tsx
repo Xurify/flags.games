@@ -56,7 +56,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-[92vw] sm:max-w-xl p-4 sm:p-8">
+      <AlertDialogContent className="max-w-[92vw] sm:max-w-xl p-4 sm:p-8 max-h-[85vh] overflow-y-auto">
         <AlertDialogHeader className="mb-4 sm:mb-6">
           <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight flex items-center gap-2">
             <SignalIcon className="w-6 h-6 text-primary" />

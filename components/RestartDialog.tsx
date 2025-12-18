@@ -30,7 +30,7 @@ const RestartDialog: React.FC<RestartDialogProps> = ({
     {!gameCompleted && (
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
     )}
-    <AlertDialogContent>
+    <AlertDialogContent className="max-w-[92vw] sm:max-w-md p-4 sm:p-8 max-h-[85vh] overflow-y-auto">
       <AlertDialogHeader>
         <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight text-destructive">Restart Game</AlertDialogTitle>
         <div className="text-sm font-medium pt-2">

@@ -85,7 +85,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-[92vw] sm:max-w-2xl p-4 sm:p-8">
+      <AlertDialogContent className="max-w-[92vw] sm:max-w-2xl p-4 sm:p-8 max-h-[85vh] overflow-y-auto">
         <AlertDialogHeader className="mb-4 sm:mb-6">
           <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight flex items-center gap-2">
             <Gamepad2Icon className="w-6 h-6 text-primary" />
@@ -98,11 +98,10 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
 
         <div className="space-y-3 mt-2">
           <div
-            className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${
-              isClassicActive
-                ? "border-primary bg-primary/5"
-                : "border-foreground bg-card shadow-primary/10"
-            }`}
+            className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${isClassicActive
+              ? "border-primary bg-primary/5"
+              : "border-foreground bg-card shadow-primary/10"
+              }`}
           >
             <div className="flex items-center gap-4 flex-1 min-w-0">
               <CompassIcon className="w-8 h-8 sm:w-6 sm:h-6 shrink-0 text-muted-foreground" />
@@ -137,19 +136,17 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
           </div>
 
           <div
-            className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${
-              isLimitedLifeActive
-                ? "border-primary bg-primary/5"
-                : "border-foreground bg-card shadow-primary/10"
-            }`}
+            className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${isLimitedLifeActive
+              ? "border-primary bg-primary/5"
+              : "border-foreground bg-card shadow-primary/10"
+              }`}
           >
             <div className="flex items-center gap-4 flex-1 min-w-0">
               <HeartIcon
-                className={`w-8 h-8 sm:w-6 sm:h-6 shrink-0 ${
-                  isLimitedLifeActive
-                    ? "text-red-500 fill-red-500"
-                    : "text-muted-foreground"
-                }`}
+                className={`w-8 h-8 sm:w-6 sm:h-6 shrink-0 ${isLimitedLifeActive
+                  ? "text-red-500 fill-red-500"
+                  : "text-muted-foreground"
+                  }`}
               />
               <div className="min-w-0">
                 <div className="font-black uppercase tracking-tight text-base sm:text-lg">
@@ -182,17 +179,15 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
           </div>
 
           <div
-            className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${
-              isTimeAttackActive
-                ? "border-primary bg-primary/5"
-                : "border-foreground bg-card shadow-primary/10"
-            }`}
+            className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${isTimeAttackActive
+              ? "border-primary bg-primary/5"
+              : "border-foreground bg-card shadow-primary/10"
+              }`}
           >
             <div className="flex items-center gap-4 flex-1 min-w-0">
               <TimerIcon
-                className={`w-8 h-8 sm:w-6 sm:h-6 shrink-0 ${
-                  isTimeAttackActive ? "text-primary" : ""
-                }`}
+                className={`w-8 h-8 sm:w-6 sm:h-6 shrink-0 ${isTimeAttackActive ? "text-primary" : ""
+                  }`}
               />
               <div className="min-w-0">
                 <div className="font-black uppercase tracking-tight text-base sm:text-lg">

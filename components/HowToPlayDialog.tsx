@@ -23,7 +23,7 @@ const HowToPlayDialog: React.FC<HowToPlayDialogProps> = ({
 }) => (
   <AlertDialog open={open} onOpenChange={onOpenChange}>
     <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-    <AlertDialogContent>
+    <AlertDialogContent className="max-w-[92vw] sm:max-w-xl p-4 sm:p-8 max-h-[85vh] overflow-y-auto">
       <AlertDialogHeader>
         <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight flex items-center gap-2">
           <span>How to Play</span>
@@ -32,7 +32,7 @@ const HowToPlayDialog: React.FC<HowToPlayDialogProps> = ({
           <div className="space-y-6 pt-2">
             <div>
               <p className="text-muted-foreground font-mono leading-relaxed">
-                <span className="font-bold text-foreground">MISSION:</span> Identify the country that each flag belongs to by selecting the
+                <span className="font-bold text-foreground">Objective:</span> Identify the country that each flag belongs to by selecting the
                 correct answer from the multiple choice options.
               </p>
             </div>
@@ -79,7 +79,7 @@ const HowToPlayDialog: React.FC<HowToPlayDialogProps> = ({
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogAction className="font-black uppercase tracking-wide">Acknowledge</AlertDialogAction>
+        <AlertDialogAction className="font-black uppercase tracking-wide">Okay</AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
