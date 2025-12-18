@@ -144,7 +144,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
             CONFIRM SELECTION
           </Button>
         </div>
-        <AlertDialogFooter className="mt-4">
+        <AlertDialogFooter>
           <AlertDialogCancel className="w-full font-mono text-xs uppercase tracking-widest border-2 border-foreground hover:bg-muted">
             Cancel
           </AlertDialogCancel>
