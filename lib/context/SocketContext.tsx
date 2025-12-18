@@ -501,7 +501,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const errorHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ERROR> = (
       data
     ) => {
-      toast.error(data.message);
+      data.message && toast.error(data.message);
     };
 
     const ttlWarningHandler: MessageHandler<
