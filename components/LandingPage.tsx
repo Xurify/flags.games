@@ -4,6 +4,7 @@ import Link from "next/link";
 import { GlobeIcon, UsersIcon, ArrowRightIcon, UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getCountryFlagUrl } from "@/lib/utils/image";
 
 interface LandingPageProps {
     onStartSolo: () => void;
@@ -44,7 +45,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
                             />
                         )}
                         <img
-                            src={`https://flagcdn.com/w160/${flag.code.toLowerCase()}.png`}
+                            src={getCountryFlagUrl(flag.code)}
                             alt=""
                             className="w-16 h-auto border-2 border-foreground shadow-retro"
                         />

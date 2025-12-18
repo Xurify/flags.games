@@ -15,7 +15,6 @@ import { SignalIcon } from "lucide-react";
 import { getDifficultySettings } from "@/lib/utils/gameLogic";
 import { Difficulty, DIFFICULTY_LEVELS } from "@/lib/constants";
 import { GameState } from "./FlagGameClient";
-import { useSettings } from "@/lib/context/SettingsContext";
 
 interface DifficultySelectorProps {
   open: boolean;
@@ -97,12 +96,12 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
                       description = "";
                   }
                   return (
-                    <SelectItem key={level} value={level} className="py-3 px-4 focus:bg-primary/5">
+                    <SelectItem key={level} value={level} className="py-3 px-4 group">
                       <div className="flex flex-col gap-1">
                         <span className="font-black uppercase tracking-tight text-sm">
                           {settings.label} ({settings.count} units)
                         </span>
-                        <span className="text-[10px] font-mono text-muted-foreground uppercase leading-tight tracking-wide">{description}</span>
+                        <span className="text-[10px] font-mono text-muted-foreground group-focus:text-primary-foreground/80 uppercase leading-tight tracking-wide">{description}</span>
                       </div>
                     </SelectItem>
                   );
