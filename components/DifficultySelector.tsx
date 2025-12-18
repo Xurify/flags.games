@@ -91,7 +91,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
                   {`${difficultySettings.label} (${difficultySettings.count} countries)`}
                 </SelectValue>
               </SelectTrigger>
-              <SelectContent className="max-w-[92vw] sm:max-w-md w-full">
+              <SelectContent>
                 {DIFFICULTY_LEVELS.map((level) => {
                   const settings = getDifficultySettings(level);
                   let description = "";
