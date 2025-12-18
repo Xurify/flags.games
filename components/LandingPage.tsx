@@ -22,8 +22,8 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
     const floatingFlags: FloatingFlag[] = [
         { code: "US", delay: 0, className: "top-[10%] left-[5%] animate-float-1" },
         { code: "JP", delay: 2, className: "top-[20%] right-[10%] animate-float-2", hiddenOnMobile: true },
-        { code: "SK", delay: 3, className: "top-[5%] right-[15%] md:right-[25%] animate-float-2" },
-        { code: "BR", delay: 4, className: "top-[20%] left-[25%] md:left-[15%] animate-float-1" },
+        { code: "SK", delay: 3, className: "top-[5%] right-[8%] md:right-[25%] animate-float-2" },
+        { code: "BR", delay: 4, className: "top-[75%] md:top-[20%] left-[40%] md:left-[15%] animate-float-1" },
         { code: "GB", delay: 5, className: "top-[40%] left-[25%] animate-float-3", hiddenOnMobile: true },
         { code: "EE", delay: 4, className: "bottom-[15%] left-[10%] animate-float-3" },
         { code: "ZA", delay: 1, className: "bottom-[10%] right-[5%] animate-float-1" },
