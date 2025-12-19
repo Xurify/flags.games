@@ -127,7 +127,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
             value: `${percentage}%`,
           },
           {
-            label: "BEST STREAK",
+            label: "BEST STREAK (SESSION)",
             value: summary.longestStreak,
           },
         ].map((stat) => (
