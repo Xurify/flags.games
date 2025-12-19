@@ -98,7 +98,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
               <h4 className="text-sm font-medium text-foreground mb-2">
                 Game Type
               </h4>
-              <Link href="/">
+              <Link href="/play">
                 <Button
                   playClickSound={true}
                   variant="neutral"
