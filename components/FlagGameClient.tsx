@@ -613,7 +613,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
         {gameState.gameCompleted ? (
           <GameEndScreen
             score={gameState.score}
-            totalPossible={gameState.totalQuestions * CORRECT_POINT_COST}
+            totalQuestions={gameState.totalQuestions}
             onPlayAgain={startGame}
             onChangeDifficulty={() => setShowDifficultyDialog(true)}
             limitedLifeModeEnabled={limitedLifeModeEnabled}

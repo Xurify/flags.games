@@ -16,12 +16,13 @@ import { getCountryByCode } from "@/lib/data/countries";
 import { getCountryFlagIconUrl } from "@/lib/utils/image";
 import { QuestionResult } from "./FlagGameClient";
 import { cn } from "@/lib/utils/strings";
+import { CORRECT_POINT_COST } from "@/lib/constants";
 
 const Confetti = lazy(() => import("react-confetti"));
 
 interface GameEndScreenProps {
   score: number;
-  totalPossible: number;
+  totalQuestions: number;
   onPlayAgain: () => void;
   onChangeDifficulty: () => void;
   limitedLifeModeEnabled: boolean;
@@ -31,7 +32,7 @@ interface GameEndScreenProps {
 
 const GameEndScreen: React.FC<GameEndScreenProps> = ({
   score,
-  totalPossible,
+  totalQuestions,
   onPlayAgain,
   onChangeDifficulty,
   limitedLifeModeEnabled,
@@ -40,10 +41,10 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
 }) => {
   const orderedResults = [...results].sort((a, b) => a.index - b.index);
 
+  const totalPossible = totalQuestions * CORRECT_POINT_COST;
   const percentage =
     totalPossible === 0 ? 0 : Math.round((score / totalPossible) * 100);
 
-  const totalQuestions = orderedResults.length;
   const correctCount = orderedResults.filter(
     (result) => result.isCorrect,
   ).length;
@@ -129,9 +130,9 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
             label: "BEST STREAK",
             value: summary.longestStreak,
           },
-        ].map((stat, i) => (
+        ].map((stat) => (
           <div
-            key={i}
+            key={`game-end-stats-${stat.label}`}
             className={cn(
               "p-6 border-2 border-foreground shadow-retro flex flex-col items-center justify-center text-center",
               stat.highlight
@@ -182,7 +183,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                   : null;
                 return (
                   <TableRow
-                    key={result.index}
+                    key={`game-end-details-table-row-${result.countryCode}`}
                     className={cn(
                       "group border-b-2 border-foreground last:border-0",
                       result.isCorrect ? "bg-card" : "bg-red-500/10",

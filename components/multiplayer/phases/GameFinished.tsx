@@ -128,9 +128,9 @@ export default function GameFinished({ room }: GameFinishedProps) {
               return Math.round((correct / totalQ) * 100);
             })()}%`,
           },
-        ].map((stat, i) => (
+        ].map((stat) => (
           <div
-            key={i}
+            key={`game-finished-stats-${stat.label}`}
             className={cn(
               "p-6 border-2 border-foreground shadow-retro flex flex-col items-center justify-center text-center",
               stat.highlight
