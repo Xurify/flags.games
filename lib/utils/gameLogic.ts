@@ -47,7 +47,6 @@ function sampleOne<T>(array: T[]): T | undefined {
 // DIFFICULTY AND SETTINGS
 // ============================================================================
 
-
 export const getDifficultySettings = (difficulty: Difficulty) => {
   const countries = getDifficultyCountries(difficulty);
   const settings = {
@@ -81,7 +80,7 @@ const isDistinctiveFlag = (countryCode: string): boolean => {
   return DISTINCTIVE_FLAGS.includes(countryCode);
 };
 
-const weightedRandomSelect = (items: any[], weights: number[]) => {
+const weightedRandomSelect = (items: Country[], weights: number[]) => {
   const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
   let random = Math.random() * totalWeight;
 
@@ -97,12 +96,12 @@ const weightedRandomSelect = (items: any[], weights: number[]) => {
 const calculateOptionSimilarityScore = (
   correctCountry: Country,
   candidateCountry: Country,
-  difficulty: Difficulty
+  difficulty: Difficulty,
 ): number => {
   if (difficulty === EXPERT_DIFFICULTY) {
     return calculateExpertOptionSimilarityScore(
       correctCountry,
-      candidateCountry
+      candidateCountry,
     );
   }
 
@@ -117,8 +116,8 @@ const calculateOptionSimilarityScore = (
       difficulty === HARD_DIFFICULTY
         ? 40
         : difficulty === MEDIUM_DIFFICULTY
-        ? 30
-        : 20;
+          ? 30
+          : 20;
   }
 
   if (similarFlags.includes(candidateCountry.code)) {
@@ -138,7 +137,7 @@ const calculateOptionSimilarityScore = (
 
     // Similar name length bonus
     const lengthDiff = Math.abs(
-      correctCountry.name.length - candidateCountry.name.length
+      correctCountry.name.length - candidateCountry.name.length,
     );
     if (lengthDiff <= 2) {
       similarityScore += 20;
@@ -155,11 +154,11 @@ const calculateOptionSimilarityScore = (
     // Similar syllable count bonus
     const correctSyllables = correctCountry.name.replace(
       /[^aeiou]/gi,
-      ""
+      "",
     ).length;
     const candidateSyllables = candidateCountry.name.replace(
       /[^aeiou]/gi,
-      ""
+      "",
     ).length;
     const syllableDiff = Math.abs(correctSyllables - candidateSyllables);
     if (syllableDiff <= 1) {
@@ -171,7 +170,7 @@ const calculateOptionSimilarityScore = (
     const correctWords = correctCountry.name.toLowerCase().split(" ");
     const candidateWords = candidateCountry.name.toLowerCase().split(" ");
     const sharedWords = correctWords.filter((word) =>
-      candidateWords.includes(word)
+      candidateWords.includes(word),
     );
     if (sharedWords.length > 0) {
       similarityScore += sharedWords.length * 20;
@@ -254,13 +253,13 @@ const calculateOptionSimilarityScore = (
 
 const selectCorrectCountry = (
   difficulty: Difficulty,
-  remainingCountries: Country[]
+  remainingCountries: Country[],
 ): Country => {
   if (difficulty === EXPERT_DIFFICULTY) {
     const pools = EXPERT_COUNTRY_POOLS;
     if (Math.random() < 0.7) {
       const challengingCountries = remainingCountries.filter((country) =>
-        Object.values(pools).some((pool) => pool.includes(country.code))
+        Object.values(pools).some((pool) => pool.includes(country.code)),
       );
       if (challengingCountries.length > 0) {
         return challengingCountries[
@@ -281,23 +280,23 @@ const selectCorrectCountry = (
 const generateDistractors = (
   correctCountry: Country,
   availableCountries: Country[],
-  difficulty: Difficulty
+  difficulty: Difficulty,
 ): Country[] => {
   const incorrectOptions: Country[] = [];
   const candidateCountries = availableCountries.filter(
-    (c) => c.code !== correctCountry.code
+    (c) => c.code !== correctCountry.code,
   );
   const candidatesWithScores = candidateCountries.map((candidate) => ({
     country: candidate,
     similarityScore: calculateOptionSimilarityScore(
       correctCountry,
       candidate,
-      difficulty
+      difficulty,
     ),
   }));
   const minScoreThreshold = difficulty === EXPERT_DIFFICULTY ? 60 : 1;
   const viableCandidates = candidatesWithScores.filter(
-    (c) => c.similarityScore >= minScoreThreshold
+    (c) => c.similarityScore >= minScoreThreshold,
   );
   const finalCandidates =
     difficulty === EXPERT_DIFFICULTY
@@ -305,13 +304,13 @@ const generateDistractors = (
         ? viableCandidates
         : candidatesWithScores.filter((c) => c.similarityScore >= 40)
       : viableCandidates.length >= 3
-      ? viableCandidates
-      : candidatesWithScores;
+        ? viableCandidates
+        : candidatesWithScores;
 
   if (difficulty === EXPERT_DIFFICULTY && finalCandidates.length > 0) {
     // Sort candidates by descending similarity score
     const sortedCandidates = [...finalCandidates].sort(
-      (a, b) => b.similarityScore - a.similarityScore
+      (a, b) => b.similarityScore - a.similarityScore,
     );
     // Always include the top 2 most similar countries
     for (let i = 0; i < 2 && i < sortedCandidates.length; i++) {
@@ -323,7 +322,8 @@ const generateDistractors = (
     const pool = sortedCandidates
       .slice(poolStart, poolEnd)
       .filter(
-        (c) => !incorrectOptions.find((option) => option.code === c.country.code)
+        (c) =>
+          !incorrectOptions.find((option) => option.code === c.country.code),
       );
     if (pool.length > 0) {
       const sampled = sampleOne(pool);
@@ -345,7 +345,7 @@ const generateDistractors = (
     // Original logic for other difficulties
     // Ensure at least one very similar option (high similarity)
     const highSimilarityCandidates = finalCandidates.filter(
-      (c) => c.similarityScore >= 60
+      (c) => c.similarityScore >= 60,
     );
     if (highSimilarityCandidates.length > 0) {
       const highSimilarityCountry =
@@ -360,7 +360,7 @@ const generateDistractors = (
         (c) =>
           c.similarityScore >= 30 &&
           c.similarityScore < 60 &&
-          !incorrectOptions.find((option) => option.code === c.country.code)
+          !incorrectOptions.find((option) => option.code === c.country.code),
       );
       if (mediumSimilarityCandidates.length > 0) {
         const mediumSimilarityCountry =
@@ -373,14 +373,14 @@ const generateDistractors = (
   }
   while (incorrectOptions.length < 3 && finalCandidates.length > 0) {
     const availableCandidates = finalCandidates.filter(
-      (c) => !incorrectOptions.find((option) => option.code === c.country.code)
+      (c) => !incorrectOptions.find((option) => option.code === c.country.code),
     );
     if (availableCandidates.length === 0) break;
     const countries = availableCandidates.map((c) => c.country);
     const weights = availableCandidates.map((c) =>
       difficulty === EXPERT_DIFFICULTY
         ? Math.pow(c.similarityScore, 2)
-        : c.similarityScore
+        : c.similarityScore,
     );
     const selectedCountry = weightedRandomSelect(countries, weights);
     incorrectOptions.push(selectedCountry);
@@ -390,7 +390,7 @@ const generateDistractors = (
     candidateCountries.length > incorrectOptions.length
   ) {
     const remainingCandidates = candidateCountries.filter(
-      (c) => !incorrectOptions.find((option) => option.code === c.code)
+      (c) => !incorrectOptions.find((option) => option.code === c.code),
     );
     if (remainingCandidates.length === 0) break;
     const nextCandidate =
@@ -408,11 +408,11 @@ const generateDistractors = (
 
 export const generateQuestion = (
   difficulty: Difficulty,
-  usedCountries: string[] = []
+  usedCountries: string[] = [],
 ): QuestionData | null => {
   const availableCountries = getDifficultyCountries(difficulty);
   const remainingCountries = availableCountries.filter(
-    (country) => !usedCountries.includes(country.code)
+    (country) => !usedCountries.includes(country.code),
   );
   if (remainingCountries.length === 0) {
     return null;
@@ -421,7 +421,7 @@ export const generateQuestion = (
   const incorrectOptions = generateDistractors(
     correctCountry,
     availableCountries,
-    difficulty
+    difficulty,
   );
   const allOptions = [correctCountry, ...incorrectOptions];
   const shuffledOptions = shuffleArray(allOptions);
@@ -438,7 +438,7 @@ export const generateQuestion = (
 // ============================================================================
 
 export function parseDifficultyFromQuery(
-  queryValue: string | undefined
+  queryValue: string | undefined,
 ): Difficulty {
   const allowed = DIFFICULTY_LEVELS;
   if (queryValue && allowed.includes(queryValue as Difficulty)) {
@@ -449,15 +449,24 @@ export function parseDifficultyFromQuery(
 
 export function parseModeFromQuery(
   modeParam: string | undefined,
-  tParam: string | undefined
-): { limitedLifeModeEnabled: boolean; timeAttackModeDurationSec: number | null } {
+  tParam: string | undefined,
+): {
+  limitedLifeModeEnabled: boolean;
+  timeAttackModeDurationSec: number | null;
+} {
   if (modeParam === "limited") {
     return { limitedLifeModeEnabled: true, timeAttackModeDurationSec: null };
   }
   if (modeParam === "time-attack") {
     const parsed = Number(tParam);
-    const duration = Number.isFinite(parsed) && parsed > 0 ? parsed : TIME_PER_QUESTION_OPTIONS[0];
-    return { limitedLifeModeEnabled: false, timeAttackModeDurationSec: duration };
+    const duration =
+      Number.isFinite(parsed) && parsed > 0
+        ? parsed
+        : TIME_PER_QUESTION_OPTIONS[0];
+    return {
+      limitedLifeModeEnabled: false,
+      timeAttackModeDurationSec: duration,
+    };
   }
   return { limitedLifeModeEnabled: false, timeAttackModeDurationSec: null };
 }
@@ -469,7 +478,7 @@ export function parseModeFromQuery(
 const getPoolSimilarityBonus = (
   correctCode: string,
   candidateCode: string,
-  pools: { [key: string]: string[] }
+  pools: { [key: string]: string[] },
 ): number => {
   let bonus = 0;
 
@@ -507,7 +516,7 @@ const getPoolSimilarityBonus = (
 // New function for historical confusion patterns
 const getHistoricalConfusionBonus = (
   correctCode: string,
-  candidateCode: string
+  candidateCode: string,
 ): number => {
   const confusedWith = HISTORICAL_CONFUSION_PAIRS[correctCode];
   if (confusedWith && confusedWith.includes(candidateCode)) {
@@ -518,7 +527,7 @@ const getHistoricalConfusionBonus = (
 
 const calculateExpertOptionSimilarityScore = (
   correctCountry: Country,
-  candidateCountry: Country
+  candidateCountry: Country,
 ): number => {
   let score = 0;
   const pools = EXPERT_COUNTRY_POOLS;
@@ -550,7 +559,7 @@ const calculateExpertOptionSimilarityScore = (
 
   // Enhanced name length similarity
   const lengthDiff = Math.abs(
-    correctCountry.name.length - candidateCountry.name.length
+    correctCountry.name.length - candidateCountry.name.length,
   );
   if (lengthDiff === 0) score += 45;
   else if (lengthDiff === 1) score += 35;
@@ -565,7 +574,7 @@ const calculateExpertOptionSimilarityScore = (
 
   // Common suffix patterns (enhanced)
   const correctSuffix = COMMON_SUFFIXES.find((suffix) =>
-    correctCountry.name.toLowerCase().endsWith(suffix)
+    correctCountry.name.toLowerCase().endsWith(suffix),
   );
   if (
     correctSuffix &&
@@ -596,13 +605,13 @@ const calculateExpertOptionSimilarityScore = (
   score += getPoolSimilarityBonus(
     correctCountry.code,
     candidateCountry.code,
-    pools
+    pools,
   );
 
   // Bonus for countries that are historically confused
   score += getHistoricalConfusionBonus(
     correctCountry.code,
-    candidateCountry.code
+    candidateCountry.code,
   );
 
   // Balanced random element (reduced for more consistent difficulty)

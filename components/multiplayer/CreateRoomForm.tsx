@@ -1,12 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { z } from "zod";
-import {
-  UsersIcon,
-  TimerIcon,
-  BarChartIcon,
-  SwordsIcon,
-} from "lucide-react";
+import { UsersIcon, TimerIcon, BarChartIcon, SwordsIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,7 +42,7 @@ interface CreateRoomFormProps {
   isCreating: boolean;
   handleCreateRoom: (
     finalUsername: string,
-    settings: RoomSettings
+    settings: RoomSettings,
   ) => Promise<void>;
   formErrors: { username?: string; settings?: string };
 }
@@ -103,11 +98,18 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
       <div className="space-y-4">
         <section className="space-y-3">
           <div className="flex items-center gap-4 border-b-2 border-foreground pb-2">
-            <div className="w-8 h-8 bg-foreground text-background flex items-center justify-center font-black">1</div>
-            <h2 className="text-2xl font-black tracking-tight uppercase">Player Info</h2>
+            <div className="w-8 h-8 bg-foreground text-background flex items-center justify-center font-black">
+              1
+            </div>
+            <h2 className="text-2xl font-black tracking-tight uppercase">
+              Player Info
+            </h2>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="username" className="font-mono text-[10px] uppercase font-bold text-muted-foreground ml-1">
+            <Label
+              htmlFor="username"
+              className="font-mono text-[10px] uppercase font-bold text-muted-foreground ml-1"
+            >
               Your Username
             </Label>
             <Input
@@ -121,7 +123,9 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
               maxLength={30}
             />
             {formErrors.username && (
-              <p className="text-xs text-destructive font-bold uppercase mt-1">{formErrors.username}</p>
+              <p className="text-xs text-destructive font-bold uppercase mt-1">
+                {formErrors.username}
+              </p>
             )}
             <p className="font-mono text-[10px] text-muted-foreground text-right uppercase mt-1">
               Length: {username.length}/30
@@ -131,8 +135,12 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
 
         <section className="space-y-3">
           <div className="flex items-center gap-4 border-b-2 border-foreground pb-2">
-            <div className="w-8 h-8 bg-foreground text-background flex items-center justify-center font-black">2</div>
-            <h2 className="text-2xl font-black tracking-tight uppercase">Match Settings</h2>
+            <div className="w-8 h-8 bg-foreground text-background flex items-center justify-center font-black">
+              2
+            </div>
+            <h2 className="text-2xl font-black tracking-tight uppercase">
+              Match Settings
+            </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-muted/20 border-2 border-foreground p-6 shadow-retro">
@@ -212,7 +220,11 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
 
           <div className="flex justify-center pt-2">
             <Link href="/">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all font-mono text-xs uppercase tracking-widest">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all font-mono text-xs uppercase tracking-widest"
+              >
                 &larr; Back to Home
               </Button>
             </Link>
@@ -221,6 +233,6 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
       </div>
     </div>
   );
-}
+};
 
 export default CreateRoomForm;

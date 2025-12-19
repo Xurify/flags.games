@@ -3,7 +3,12 @@
 import React from "react";
 import { CrownIcon, CheckIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { GameStateLeaderboard, RoomMember, User, GameAnswer } from "@/lib/types/socket";
+import {
+  GameStateLeaderboard,
+  RoomMember,
+  User,
+  GameAnswer,
+} from "@/lib/types/socket";
 import { cn } from "@/lib/utils/strings";
 
 interface LeaderboardProps {
@@ -86,24 +91,31 @@ export default function Leaderboard({
         const deltaY = prevTop - newTop;
         if (Math.abs(deltaY) < 1) return;
         // Deterministic highlight on the overlay
-        const overlay = element.querySelector<HTMLDivElement>('div[data-role="highlight"]');
+        const overlay = element.querySelector<HTMLDivElement>(
+          'div[data-role="highlight"]',
+        );
         if (overlay) {
           const movedUp = deltaY < 0 ? false : true; // prevTop - newTop; positive means moved up
           // Pull colors from app theme variables for consistency
           const rootVars = getComputedStyle(document.documentElement);
-          const upColor = (rootVars.getPropertyValue('--success') || '').trim() || 'oklch(0.65 0.18 140)';
-          const downColor = (rootVars.getPropertyValue('--destructive') || '').trim() || 'oklch(0.62 0.21 25)';
+          const upColor =
+            (rootVars.getPropertyValue("--success") || "").trim() ||
+            "oklch(0.65 0.18 140)";
+          const downColor =
+            (rootVars.getPropertyValue("--destructive") || "").trim() ||
+            "oklch(0.62 0.21 25)";
           const existing = highlightTimeoutsRef.current.get(m.id);
           if (existing) {
             window.clearTimeout(existing);
             highlightTimeoutsRef.current.delete(m.id);
           }
           overlay.style.backgroundColor = movedUp ? upColor : downColor;
-          overlay.style.transition = 'opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1)';
-          overlay.style.opacity = movedUp ? '0.08' : '0.06';
-          overlay.style.borderRadius = '0px';
+          overlay.style.transition =
+            "opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1)";
+          overlay.style.opacity = movedUp ? "0.08" : "0.06";
+          overlay.style.borderRadius = "0px";
           const timeoutId = window.setTimeout(() => {
-            overlay.style.opacity = '0';
+            overlay.style.opacity = "0";
             highlightTimeoutsRef.current.delete(m.id);
           }, 1200);
           highlightTimeoutsRef.current.set(m.id, timeoutId);
@@ -114,7 +126,8 @@ export default function Leaderboard({
         // Force reflow so the browser picks up the starting transform
         void element.offsetHeight;
         // Play
-        element.style.transition = "transform 600ms cubic-bezier(0.22, 1, 0.36, 1)";
+        element.style.transition =
+          "transform 600ms cubic-bezier(0.22, 1, 0.36, 1)";
         element.style.transform = "translateY(0)";
         element.style.willChange = "transform";
         const handleEnd = () => {
@@ -130,27 +143,40 @@ export default function Leaderboard({
     if (Object.keys(positionsRef.current).length === 0) {
       positionsRef.current = newPositions;
     }
-  }, [sortedMembers.map((member) => `${member.id}:${scoreByUserId[member.id] ?? 0}`).join("|")]);
+  }, [
+    sortedMembers
+      .map((member) => `${member.id}:${scoreByUserId[member.id] ?? 0}`)
+      .join("|"),
+  ]);
 
   return (
     <div
       className={cn(
         "border-2 border-foreground shadow-retro bg-card overflow-hidden",
         variant === "sidebar" && "hidden lg:block w-72",
-        variant === "inline" && "w-full lg:w-72"
+        variant === "inline" && "w-full lg:w-72",
       )}
     >
       <div className="bg-foreground text-background px-4 py-3 flex items-center justify-between">
-        <div className="text-xs font-black tracking-widest uppercase">Rankings</div>
+        <div className="text-xs font-black tracking-widest uppercase">
+          Rankings
+        </div>
         <div className="flex items-center gap-2">
-          {isGameActive && <div className="w-2 h-2 bg-chart-2 rounded-full animate-pulse" />}
+          {isGameActive && (
+            <div className="w-2 h-2 bg-chart-2 rounded-full animate-pulse" />
+          )}
           <span className="text-[10px] font-black uppercase tracking-tighter">
             {isGameActive ? "LIVE" : "READY"}
           </span>
         </div>
       </div>
 
-      <div className={cn("max-h-[500px] overflow-y-auto", variant === "inline" && "max-h-none")}>
+      <div
+        className={cn(
+          "max-h-[500px] overflow-y-auto",
+          variant === "inline" && "max-h-none",
+        )}
+      >
         <div className="divide-y-2 divide-foreground/10">
           {sortedMembers.map((member, index) => {
             const isCurrentUser = currentUser?.id === member.id;
@@ -163,27 +189,38 @@ export default function Leaderboard({
                 className={cn(
                   "relative group grid grid-cols-[3ch_1fr_auto] items-center gap-4 px-4 py-3 transition-colors border-b border-foreground/5 last:border-0",
                   isCurrentUser ? "bg-primary/5" : "bg-transparent",
-                  hasAnswered && "bg-success/5"
+                  hasAnswered && "bg-success/5",
                 )}
                 ref={(element) => {
                   rowRefs.current[member.id] = element;
                 }}
               >
-                <div data-role="highlight" className="absolute inset-0 pointer-events-none z-0" />
+                <div
+                  data-role="highlight"
+                  className="absolute inset-0 pointer-events-none z-0"
+                />
 
                 <div className="text-xl font-black italic tracking-tighter text-foreground/10 group-hover:text-foreground/20 transition-colors z-10">
                   {index + 1}
                 </div>
 
                 <div className="min-w-0 flex items-center gap-2 z-10 text-base">
-                  <span className={cn(
-                    "truncate leading-tight uppercase tracking-tight",
-                    isCurrentUser ? "font-black text-primary" : "font-bold text-foreground"
-                  )}>
+                  <span
+                    className={cn(
+                      "truncate leading-tight uppercase tracking-tight",
+                      isCurrentUser
+                        ? "font-black text-primary"
+                        : "font-bold text-foreground",
+                    )}
+                  >
                     {member.username}
                   </span>
-                  {isHost && <CrownIcon className="w-3.5 h-3.5 text-warning fill-warning" />}
-                  {hasAnswered && <CheckIcon className="w-3.5 h-3.5 text-success stroke-[3]" />}
+                  {isHost && (
+                    <CrownIcon className="w-3.5 h-3.5 text-warning fill-warning" />
+                  )}
+                  {hasAnswered && (
+                    <CheckIcon className="w-3.5 h-3.5 text-success stroke-[3]" />
+                  )}
                 </div>
 
                 <div className="text-lg font-black tabular-nums tracking-tighter text-foreground z-10">

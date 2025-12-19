@@ -46,7 +46,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
       >
         <div className="flex items-center gap-2 hover:text-foreground transition-colors group">
           <SettingsIcon className="w-4 h-4 group-hover:rotate-45 transition-transform duration-300" />
-          <span className="text-xs font-bold uppercase tracking-wider">Settings</span>
+          <span className="text-xs font-bold uppercase tracking-wider">
+            Settings
+          </span>
         </div>
       </SelectTrigger>
       <SelectContent className="w-64">
@@ -169,7 +171,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                 <img
                   src="/icon.svg"
                   alt="Guess the Country Icon"
-                  className="w-6 h-6 rounded"
+                  className="w-6 h-6 rounded-sm"
                 />
                 Made with ❤️ by Xurify
               </a>

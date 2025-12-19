@@ -45,7 +45,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
 
   const totalQuestions = orderedResults.length;
   const correctCount = orderedResults.filter(
-    (result) => result.isCorrect
+    (result) => result.isCorrect,
   ).length;
   let currentStreak = 0;
   let longestStreak = 0;
@@ -62,7 +62,10 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
   const elapsedMs =
     orderedResults.length === 0
       ? null
-      : orderedResults.reduce((sum, result) => sum + (result.timeToAnswerMs ?? 0), 0);
+      : orderedResults.reduce(
+          (sum, result) => sum + (result.timeToAnswerMs ?? 0),
+          0,
+        );
 
   const formatClock = (ms: number | null) => {
     if (ms === null || Number.isNaN(ms)) return "--:--";
@@ -133,7 +136,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
               "p-6 border-2 border-foreground shadow-retro flex flex-col items-center justify-center text-center",
               stat.highlight
                 ? "bg-primary text-primary-foreground"
-                : "bg-card text-foreground"
+                : "bg-card text-foreground",
             )}
           >
             <span className="font-mono text-[10px] uppercase font-bold opacity-70 mb-1">
@@ -182,7 +185,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                     key={result.index}
                     className={cn(
                       "group border-b-2 border-foreground last:border-0",
-                      result.isCorrect ? "bg-card" : "bg-red-500/10"
+                      result.isCorrect ? "bg-card" : "bg-red-500/10",
                     )}
                   >
                     <TableCell className="text-xl font-black tracking-tighter text-foreground/20 group-hover:text-foreground/40 text-center transition-colors italic tabular-nums">
@@ -191,7 +194,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                     <TableCell>
                       <div className="flex items-center gap-3">
                         {country && (
-                          <div className="relative w-8 h-6 shadow-sm border border-foreground/10 overflow-hidden rounded-[2px]">
+                          <div className="relative w-8 h-6 shadow-sm border border-foreground/10 overflow-hidden rounded-sm">
                             <Image
                               src={getCountryFlagIconUrl(country.code)}
                               alt=""
@@ -209,7 +212,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                     <TableCell>
                       {selected ? (
                         <div className="flex items-center gap-3">
-                          <div className="relative w-8 h-6 shadow-sm border border-foreground/10 overflow-hidden rounded-[2px]">
+                          <div className="relative w-8 h-6 shadow-sm border border-foreground/10 overflow-hidden rounded-sm">
                             <Image
                               src={getCountryFlagIconUrl(selected.code)}
                               alt=""
@@ -269,7 +272,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
           CHANGE DIFFICULTY
         </Button>
         {limitedLifeModeEnabled && (
-          <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground bg-muted/50 px-4 py-2 rounded-full">
+          <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground bg-muted/50 px-4 py-2 rounded-sm">
             <span>Hearts Left:</span>
             <span className="text-red-500 font-bold text-sm">{hearts}</span>
           </div>

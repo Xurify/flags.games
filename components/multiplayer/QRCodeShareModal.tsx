@@ -102,7 +102,9 @@ export default function QRCodeShareModal({
                 />
               ) : (
                 <div className="w-48 h-48 flex items-center justify-center bg-muted">
-                  <span className="text-5xl text-muted-foreground font-black">?</span>
+                  <span className="text-5xl text-muted-foreground font-black">
+                    ?
+                  </span>
                 </div>
               )}
             </div>
@@ -112,7 +114,10 @@ export default function QRCodeShareModal({
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="invite-link" className="text-[10px] font-mono uppercase tracking-widest font-bold text-muted-foreground">
+            <label
+              htmlFor="invite-link"
+              className="text-[10px] font-mono uppercase tracking-widest font-bold text-muted-foreground"
+            >
               Invite Link
             </label>
             <div
@@ -125,7 +130,7 @@ export default function QRCodeShareModal({
               <input
                 className={cn(
                   "flex-1 border-0 bg-transparent shadow-none text-sm font-bold font-mono h-10 px-2 truncate w-full cursor-pointer outline-none focus:ring-0 focus:outline-none placeholder:text-muted-foreground",
-                  copiedLink && "text-green-600"
+                  copiedLink && "text-green-600",
                 )}
                 value={inviteLink.replace("https://", "")}
                 readOnly

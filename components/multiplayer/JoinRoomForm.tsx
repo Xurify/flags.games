@@ -80,19 +80,35 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
       <div className="space-y-4">
         <section className="space-y-3">
           <div className="flex items-center gap-4 border-b-2 border-foreground pb-2">
-            <Link href="/" className="w-8 h-8 bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors flex items-center justify-center font-black cursor-pointer shadow-retro-sm active:translate-y-0.5 active:shadow-none" title="Back to Home">
+            <Link
+              href="/"
+              className="w-8 h-8 bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors flex items-center justify-center font-black cursor-pointer shadow-retro-sm active:translate-y-0.5 active:shadow-none"
+              title="Back to Home"
+            >
               <ArrowLeftIcon className="w-5 h-5" />
             </Link>
-            <h2 className="text-2xl font-black tracking-tight uppercase">Join Match</h2>
+            <h2 className="text-2xl font-black tracking-tight uppercase">
+              Join Match
+            </h2>
           </div>
           <div className="space-y-4">
             <div className="p-4 bg-muted/20 border-2 border-foreground shadow-retro">
               <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-2">
-                Match Info: <span className="text-foreground font-bold">{settings.maxRoomSize} PLAYERS</span> | <span className="text-foreground font-bold">{settings.difficulty.toUpperCase()}</span>
+                Match Info:{" "}
+                <span className="text-foreground font-bold">
+                  {settings.maxRoomSize} PLAYERS
+                </span>{" "}
+                |{" "}
+                <span className="text-foreground font-bold">
+                  {settings.difficulty.toUpperCase()}
+                </span>
               </p>
 
               <div className="space-y-2">
-                <Label htmlFor="username" className="font-mono text-[10px] uppercase font-bold text-muted-foreground ml-1">
+                <Label
+                  htmlFor="username"
+                  className="font-mono text-[10px] uppercase font-bold text-muted-foreground ml-1"
+                >
                   Your Username
                 </Label>
                 <Input
@@ -106,7 +122,9 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
                   maxLength={30}
                 />
                 {formErrors.username && (
-                  <p className="text-xs text-destructive font-bold uppercase mt-1">{formErrors.username}</p>
+                  <p className="text-xs text-destructive font-bold uppercase mt-1">
+                    {formErrors.username}
+                  </p>
                 )}
               </div>
             </div>
@@ -123,7 +141,11 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
 
               <div className="flex justify-center pt-2">
                 <Link href="/">
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all font-mono text-xs uppercase tracking-widest">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all font-mono text-xs uppercase tracking-widest"
+                  >
                     &larr; Back to Home
                   </Button>
                 </Link>
@@ -134,6 +156,6 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
       </div>
     </div>
   );
-}
+};
 
 export default JoinRoomForm;

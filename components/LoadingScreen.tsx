@@ -19,8 +19,8 @@ export default function LoadingScreen({
     fullscreen
       ? "min-h-[70vh] sm:min-h-[80vh]"
       : size === "compact"
-      ? ""
-      : "min-h-[40vh]"
+        ? ""
+        : "min-h-[40vh]"
   } flex items-center justify-center ${size === "compact" ? "py-3" : "p-6"}`;
 
   return (

@@ -101,7 +101,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   });
 
   const [limitedLifeModeEnabled, setLimitedLifeModeEnabled] = useState(
-    initialLimitedLifeModeEnabled
+    initialLimitedLifeModeEnabled,
   );
   const [timeAttackModeDurationSec, setTimeAttackModeDurationSec] = useState<
     number | null
@@ -166,7 +166,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
     const difficultyToUse = difficulty || gameState.difficulty;
     const questionData = generateQuestion(
       difficultyToUse,
-      gameState.usedCountries
+      gameState.usedCountries,
     );
 
     if (!questionData) {
@@ -348,7 +348,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 
   const restartGame = (requireStartPress?: boolean) => {
     clearGameTimeout();
-
 
     setGameState((prev) => ({
       ...prev,
@@ -579,8 +578,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 
                 {(limitedLifeModeEnabled ||
                   timeAttackModeDurationSec !== null) && (
-                    <div className="w-px h-6 bg-foreground/10" />
-                  )}
+                  <div className="w-px h-6 bg-foreground/10" />
+                )}
 
                 <QuestionProgress
                   currentQuestion={gameState.currentQuestion}
@@ -597,7 +596,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                       : gameState.showResult
                         ? "results"
                         : timeAttackModeDurationSec !== null &&
-                          !gameState.gameStarted
+                            !gameState.gameStarted
                           ? "waiting"
                           : "question"
                   }

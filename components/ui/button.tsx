@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { ComponentProps } from "react";
 import { Slot } from "@radix-ui/react-slot";
@@ -40,7 +40,7 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 function Button({

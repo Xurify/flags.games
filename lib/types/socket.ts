@@ -16,7 +16,6 @@ export interface RoomMember extends User {
   score: number;
 }
 
-
 export interface GameQuestion {
   index: number;
   country: Country;
@@ -44,7 +43,12 @@ export interface GameStateLeaderboard {
   averageTime: number;
 }
 
-export type GamePhase = "waiting" | "starting" | "question" | "results" | "finished";
+export type GamePhase =
+  | "waiting"
+  | "starting"
+  | "question"
+  | "results"
+  | "finished";
 
 export interface GameState {
   isActive: boolean;
@@ -124,7 +128,8 @@ export const WS_MESSAGE_TYPES = {
   ROOM_EXPIRED: "ROOM_EXPIRED",
 } as const;
 
-export type WSMessageType = typeof WS_MESSAGE_TYPES[keyof typeof WS_MESSAGE_TYPES];
+export type WSMessageType =
+  (typeof WS_MESSAGE_TYPES)[keyof typeof WS_MESSAGE_TYPES];
 
 export interface WebSocketMessage<T = any> {
   type: string;
@@ -248,9 +253,6 @@ export interface ProfileUpdatedData {
   user: User;
 }
 
-
-
-
 export interface ErrorData {
   message: string;
   code?: string;
@@ -268,11 +270,14 @@ export interface RoomExpiredData {
   expiredAt: number;
 }
 
-export type ClientToServerMessage = 
+export type ClientToServerMessage =
   | { type: typeof WS_MESSAGE_TYPES.CREATE_ROOM; data: CreateRoomData }
   | { type: typeof WS_MESSAGE_TYPES.JOIN_ROOM; data: JoinRoomData }
   | { type: typeof WS_MESSAGE_TYPES.SUBMIT_ANSWER; data: SubmitAnswerData }
-  | { type: typeof WS_MESSAGE_TYPES.UPDATE_ROOM_SETTINGS; data: UpdateSettingsData }
+  | {
+      type: typeof WS_MESSAGE_TYPES.UPDATE_ROOM_SETTINGS;
+      data: UpdateSettingsData;
+    }
   | { type: typeof WS_MESSAGE_TYPES.KICK_USER; data: KickUserData }
   | { type: typeof WS_MESSAGE_TYPES.LEAVE_ROOM; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.START_GAME; data: {} }
@@ -291,14 +296,22 @@ export type ServerToClientMessage =
   | { type: typeof WS_MESSAGE_TYPES.KICKED; data: KickedData }
   | { type: typeof WS_MESSAGE_TYPES.GAME_STARTING; data: GameStartingData }
   | { type: typeof WS_MESSAGE_TYPES.NEW_QUESTION; data: NewQuestionData }
-  | { type: typeof WS_MESSAGE_TYPES.ANSWER_SUBMITTED; data: AnswerSubmittedData }
-  | { type: typeof WS_MESSAGE_TYPES.QUESTION_RESULTS; data: QuestionResultsData }
+  | {
+      type: typeof WS_MESSAGE_TYPES.ANSWER_SUBMITTED;
+      data: AnswerSubmittedData;
+    }
+  | {
+      type: typeof WS_MESSAGE_TYPES.QUESTION_RESULTS;
+      data: QuestionResultsData;
+    }
   | { type: typeof WS_MESSAGE_TYPES.GAME_ENDED; data: GameEndedData }
   | { type: typeof WS_MESSAGE_TYPES.GAME_STOPPED; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.GAME_RESTARTED; data: GameRestartedData }
-  | { type: typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED; data: SettingsUpdatedData }
+  | {
+      type: typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED;
+      data: SettingsUpdatedData;
+    }
   | { type: typeof WS_MESSAGE_TYPES.ERROR; data: ErrorData }
   | { type: typeof WS_MESSAGE_TYPES.HEARTBEAT; data: {} }
   | { type: typeof WS_MESSAGE_TYPES.ROOM_TTL_WARNING; data: RoomTtlWarningData }
   | { type: typeof WS_MESSAGE_TYPES.ROOM_EXPIRED; data: RoomExpiredData };
-
