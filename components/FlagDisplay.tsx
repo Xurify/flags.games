@@ -7,9 +7,16 @@ interface FlagDisplayProps {
   countryName?: string;
 }
 
-const FlagDisplay: React.FC<FlagDisplayProps> = ({ countryName, countryCode }) => {
+const FlagDisplay: React.FC<FlagDisplayProps> = ({
+  countryName,
+  countryCode,
+}) => {
   const isNepal = countryCode.trim().toLowerCase() === "np";
-  const flagClass = "max-w-full min-h-[140px] max-h-[140px] h-[140px] sm:min-h-40 sm:max-h-40 sm:h-40 md:min-h-48 md:max-h-48 md:h-48 object-cover" + (isNepal ? "" : " rounded-none border-2 border-foreground shadow-retro");
+  const flagClass =
+    "max-w-full min-h-[140px] max-h-[140px] h-[140px] sm:min-h-40 sm:max-h-40 sm:h-40 md:min-h-48 md:max-h-48 md:h-48 object-cover" +
+    (isNepal
+      ? " drop-shadow-[4px_4px_0_var(--foreground)]"
+      : " rounded-none border-2 border-foreground shadow-retro");
 
   return (
     <div className="flex justify-center items-center rounded-none p-1 sm:p-2 h-[160px] sm:h-[180px] md:h-[220px]">
@@ -21,8 +28,8 @@ const FlagDisplay: React.FC<FlagDisplayProps> = ({ countryName, countryCode }) =
         preload={true}
         sizes="(max-width: 768px) 100vw, 400px"
         style={{
-          width: 'auto',
-          height: 'auto',
+          width: "auto",
+          height: "auto",
         }}
         width={300}
         height={200}
