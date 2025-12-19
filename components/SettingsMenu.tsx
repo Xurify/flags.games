@@ -18,7 +18,7 @@ interface SettingsMenuProps {
   settingsOpen: boolean;
   setSettingsOpen: (open: boolean) => void;
   setShowDifficultyDialog: (open: boolean) => void;
-  setShowModesDialog?: (open: boolean) => void;
+  setShowGameModesDialog?: (open: boolean) => void;
   toggleSound: () => void;
   toggleDarkMode: () => void;
   showDifficultyOption?: boolean;
@@ -32,7 +32,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   settingsOpen,
   setSettingsOpen,
   setShowDifficultyDialog,
-  setShowModesDialog,
+  setShowGameModesDialog,
   toggleSound,
   toggleDarkMode,
   showDifficultyOption = true,
@@ -77,7 +77,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                     <Button
                       onClick={() => {
                         setSettingsOpen(false);
-                        setShowModesDialog && setShowModesDialog(true);
+                        setShowGameModesDialog && setShowGameModesDialog(true);
                       }}
                       playClickSound={true}
                       size="sm"

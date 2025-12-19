@@ -26,7 +26,7 @@ import {
 import { TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
 import { useSettings } from "@/lib/context/SettingsContext";
 
-interface ModesDialogProps {
+interface GameModesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   limitedLifeModeEnabled: boolean;
@@ -38,7 +38,7 @@ interface ModesDialogProps {
   onStartLimitedLife?: () => void;
 }
 
-const ModesDialog: React.FC<ModesDialogProps> = ({
+const GameModesDialog: React.FC<GameModesDialogProps> = ({
   open,
   onOpenChange,
   limitedLifeModeEnabled,
@@ -84,7 +84,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-[92vw] sm:max-w-2xl p-4 sm:p-8 max-h-[85vh] overflow-y-auto">
+      <AlertDialogContent className="max-w-[92vw] sm:max-w-2xl p-4 sm:p-8 max-h-[80vh] overflow-y-auto">
         <AlertDialogHeader className="mb-4 sm:mb-6">
           <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight flex items-center gap-2">
             <SwordsIcon className="w-6 h-6 text-primary" />
@@ -268,4 +268,4 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
   );
 };
 
-export default ModesDialog;
+export default GameModesDialog;

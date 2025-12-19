@@ -20,7 +20,7 @@ import { useGameNavigation } from "@/lib/context/GameNavigationContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Header from "./Header";
-import ModesDialog from "./ModesDialog";
+import GameModesDialog from "./GameModesDialog";
 import GameEndScreen from "./GameEndScreen";
 import QuestionProgress from "./QuestionProgress";
 import FlagDisplay from "./FlagDisplay";
@@ -109,7 +109,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
-  const [showModesDialog, setShowModesDialog] = useState(false);
+  const [showGameModesDialog, setShowGameModesDialog] = useState(false);
   const [showPointsAddedAnimation, setShowPointsAddedAnimation] =
     useState(false);
 
@@ -467,9 +467,9 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
         gameState={gameState}
       />
 
-      <ModesDialog
-        open={showModesDialog}
-        onOpenChange={setShowModesDialog}
+      <GameModesDialog
+        open={showGameModesDialog}
+        onOpenChange={setShowGameModesDialog}
         limitedLifeModeEnabled={limitedLifeModeEnabled}
         activeTimeAttackDuration={timeAttackModeDurationSec}
         onToggleLimitedLifeMode={setLimitedLifeModeEnabled}
@@ -522,7 +522,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  onClick={() => setShowModesDialog(true)}
+                  onClick={() => setShowGameModesDialog(true)}
                   className="hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground transition-all"
                   title="Game Modes"
                   playClickSound={true}
