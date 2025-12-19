@@ -92,7 +92,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
             Game Modes
           </AlertDialogTitle>
           <AlertDialogDescription className="font-mono text-xs uppercase tracking-widest">
-            Restart game with a new game mode.
+            Restart with a new game mode.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
