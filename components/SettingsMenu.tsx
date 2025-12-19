@@ -46,7 +46,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
       >
         <div className="flex items-center gap-2 hover:text-foreground transition-colors group">
           <SettingsIcon className="w-4 h-4 group-hover:rotate-45 transition-transform duration-300" />
-          <span className="text-xs font-bold uppercase tracking-wider">
+          <span className="text-xs font-bold uppercase tracking-wider text-foreground">
             Settings
           </span>
         </div>
