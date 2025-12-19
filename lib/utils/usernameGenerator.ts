@@ -1,4 +1,4 @@
-import { wordLists } from './wordLists';
+import { WORD_LISTS } from './wordLists';
 
 export interface WordLists {
     adjectives: string[];
@@ -15,7 +15,7 @@ export class UsernameGenerator {
     private wordLists: WordLists;
 
     constructor(customWordLists?: Partial<WordLists>) {
-        this.wordLists = { ...wordLists, ...customWordLists };
+        this.wordLists = { ...WORD_LISTS, ...customWordLists };
     }
 
     generateUsername(includeNumber: boolean = false): string {

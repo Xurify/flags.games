@@ -1,6 +1,6 @@
 import { WordLists } from "./usernameGenerator";
 
-export const wordLists: WordLists = {
+export const WORD_LISTS: WordLists = {
     adjectives: [
         // Positive adjectives
         'amazing', 'brilliant', 'clever', 'dazzling', 'elegant', 'fantastic',
@@ -278,6 +278,6 @@ export const wordLists: WordLists = {
 
 
 export const getAllWords = (): string[] => {
-    return Object.values(wordLists).flat();
+    return Object.values(WORD_LISTS).flat();
 };
 

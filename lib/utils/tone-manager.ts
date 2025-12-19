@@ -1,4 +1,4 @@
-import * as Tone from "tone";
+import { start, getContext, Oscillator, AmplitudeEnvelope, Synth, now as nowTone, Filter, Reverb, PingPongDelay } from "tone";
 
 class ToneManager {
   private isInitialized = false;
@@ -14,11 +14,11 @@ class ToneManager {
     if (this.isInitialized) return;
 
     try {
-      await Tone.start();
+      await start();
       this.isInitialized = true;
-      console.log("Tone.js initialized successfully");
+      console.log("js initialized successfully");
     } catch (error) {
-      console.warn("Failed to initialize Tone.js:", error);
+      console.warn("Failed to initialize js:", error);
     }
   }
 
@@ -27,12 +27,12 @@ class ToneManager {
       await this.initializeTone();
     }
 
-    if (!this.isStarted && Tone.context.state !== "running") {
+    if (!this.isStarted && getContext().state !== "running") {
       try {
-        await Tone.start();
+        await start();
         this.isStarted = true;
       } catch (error) {
-        console.warn("Failed to start Tone.js context:", error);
+        console.warn("Failed to start js context:", error);
       }
     }
   }
@@ -45,8 +45,8 @@ class ToneManager {
   ): Promise<void> {
     await this.ensureStarted();
 
-    const oscillator = new Tone.Oscillator(frequency, type);
-    const envelope = new Tone.AmplitudeEnvelope({
+    const oscillator = new Oscillator(frequency, type);
+    const envelope = new AmplitudeEnvelope({
       attack: 0.01,
       decay: 0.1,
       sustain: 0.3,
@@ -74,8 +74,8 @@ class ToneManager {
   ): Promise<void> {
     await this.ensureStarted();
 
-    const oscillators: Tone.Oscillator[] = [];
-    const envelope = new Tone.AmplitudeEnvelope({
+    const oscillators: Oscillator[] = [];
+    const envelope = new AmplitudeEnvelope({
       attack: 0.01,
       decay: 0.1,
       sustain: 0.3,
@@ -83,7 +83,7 @@ class ToneManager {
     });
 
     frequencies.forEach((frequency) => {
-      const oscillator = new Tone.Oscillator(frequency, type);
+      const oscillator = new Oscillator(frequency, type);
       oscillator.connect(envelope);
       oscillators.push(oscillator);
     });
@@ -102,7 +102,7 @@ class ToneManager {
   async playSuccessSound(): Promise<void> {
     await this.ensureStarted();
 
-    const synth = new Tone.Synth({
+    const synth = new Synth({
       oscillator: {
         type: "sine",
       },
@@ -116,7 +116,7 @@ class ToneManager {
 
     synth.volume.value = -12;
 
-    const now = Tone.now();
+    const now = nowTone();
     synth.triggerAttackRelease("C5", "8n", now);
     synth.triggerAttackRelease("E5", "8n", now + 0.1);
     synth.triggerAttackRelease("G5", "8n", now + 0.2);
@@ -129,7 +129,7 @@ class ToneManager {
   async playErrorSound(): Promise<void> {
     await this.ensureStarted();
 
-    const synth = new Tone.Synth({
+    const synth = new Synth({
       oscillator: {
         type: "sawtooth",
       },
@@ -143,7 +143,7 @@ class ToneManager {
 
     synth.volume.value = -30;
 
-    const now = Tone.now();
+    const now = nowTone();
     synth.triggerAttackRelease("B4", "8n", now);
     synth.triggerAttackRelease("G#4", "8n", now + 0.1);
     synth.triggerAttackRelease("F#4", "8n", now + 0.2);
@@ -156,7 +156,7 @@ class ToneManager {
   async playButtonClickSound(): Promise<void> {
     await this.ensureStarted();
 
-    const synth = new Tone.Synth({
+    const synth = new Synth({
       oscillator: {
         type: "sine",
       },
@@ -170,7 +170,7 @@ class ToneManager {
 
     synth.volume.value = -15;
 
-    const now = Tone.now();
+    const now = nowTone();
     synth.triggerAttackRelease("E5", "64n", now);
 
     setTimeout(() => {
@@ -181,7 +181,7 @@ class ToneManager {
   async playAnswerSubmittedSound(): Promise<void> {
     await this.ensureStarted();
 
-    const synth = new Tone.Synth({
+    const synth = new Synth({
       oscillator: {
         type: "triangle",
       },
@@ -195,7 +195,7 @@ class ToneManager {
 
     synth.volume.value = -15;
 
-    const now = Tone.now();
+    const now = nowTone();
     synth.triggerAttackRelease("G#5", "16n", now);
     synth.triggerAttackRelease("C6", "16n", now + 0.1);
 
@@ -207,7 +207,7 @@ class ToneManager {
   async playVictoryFanfare(): Promise<void> {
     await this.ensureStarted();
 
-    const synth = new Tone.Synth({
+    const synth = new Synth({
       oscillator: {
         type: "sine",
       },
@@ -221,7 +221,7 @@ class ToneManager {
 
     synth.volume.value = -10;
 
-    const now = Tone.now();
+    const now = nowTone();
     const notes = ["C5", "E5", "G5", "C6", "E6", "G6"];
     notes.forEach((note, index) => {
       synth.triggerAttackRelease(note, "4n", now + index * 0.2);
@@ -235,7 +235,7 @@ class ToneManager {
   async playCountdownTick(): Promise<void> {
     await this.ensureStarted();
 
-    const synth = new Tone.Synth({
+    const synth = new Synth({
       oscillator: {
         type: "sine",
       },
@@ -259,7 +259,7 @@ class ToneManager {
   async playClockTick(): Promise<void> {
     await this.ensureStarted();
 
-    const highSynth = new Tone.Synth({
+    const highSynth = new Synth({
       oscillator: {
         type: "sine",
       },
@@ -271,7 +271,7 @@ class ToneManager {
       },
     }).toDestination();
 
-    const lowSynth = new Tone.Synth({
+    const lowSynth = new Synth({
       oscillator: {
         type: "triangle",
       },
@@ -287,7 +287,7 @@ class ToneManager {
     lowSynth.volume.value = -15;
 
     // Play two frequencies simultaneously for a more realistic "tick" sound
-    const now = Tone.now();
+    const now = nowTone();
     highSynth.triggerAttackRelease("C6", "64n", now);
     lowSynth.triggerAttackRelease("C4", "64n", now);
 
@@ -300,7 +300,7 @@ class ToneManager {
   async playMechanicalClockTick(): Promise<void> {
     await this.ensureStarted();
 
-    const synth = new Tone.Synth({
+    const synth = new Synth({
       oscillator: {
         type: "triangle",
       },
@@ -313,14 +313,14 @@ class ToneManager {
     }).toDestination();
 
     // Add a subtle filter for resonance
-    const filter = new Tone.Filter(800, "lowpass");
+    const filter = new Filter(800, "lowpass");
     synth.connect(filter);
     filter.toDestination();
 
     synth.volume.value = -28;
 
     // Play a quick tick with slight frequency variation
-    const now = Tone.now();
+    const now = nowTone();
     synth.triggerAttackRelease("E4", "32n", now);
     synth.triggerAttackRelease("F4", "64n", now + 0.02);
 
@@ -333,7 +333,7 @@ class ToneManager {
   async playNotificationSound(): Promise<void> {
     await this.ensureStarted();
 
-    const synth = new Tone.Synth({
+    const synth = new Synth({
       oscillator: {
         type: "sine",
       },
@@ -347,7 +347,7 @@ class ToneManager {
 
     synth.volume.value = -18;
 
-    const now = Tone.now();
+    const now = nowTone();
     synth.triggerAttackRelease("F5", "4n", now);
     synth.triggerAttackRelease("A5", "4n", now + 0.2);
 
@@ -373,7 +373,7 @@ class ToneManager {
 
     const { type = "sine", volume = -12, effects = {} } = options;
 
-    const synth = new Tone.Synth({
+    const synth = new Synth({
       oscillator: { type },
       envelope: {
         attack: 0.01,
@@ -386,17 +386,17 @@ class ToneManager {
     let chain = synth;
 
     if (effects.reverb) {
-      const reverb = new Tone.Reverb(0.5);
+      const reverb = new Reverb(0.5);
       chain = chain.connect(reverb);
     }
 
     if (effects.delay) {
-      const delay = new Tone.PingPongDelay("8n", 0.3);
+      const delay = new PingPongDelay("8n", 0.3);
       chain = chain.connect(delay);
     }
 
     if (effects.filter) {
-      const filter = new Tone.Filter(1000, "lowpass");
+      const filter = new Filter(1000, "lowpass");
       chain = chain.connect(filter);
     }
 
@@ -410,13 +410,9 @@ class ToneManager {
     }, duration * 1000 + 100);
   }
 
-  getContextState(): AudioContextState {
-    return Tone.context.state;
-  }
-
   async resumeContext(): Promise<void> {
-    if (Tone.context.state === "suspended") {
-      await Tone.start();
+    if (getContext().state === "suspended") {
+      await start();
     }
   }
 }
