@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { useSearchParams } from "next/navigation";
-import { RefreshCwIcon, HelpCircleIcon, Gamepad2Icon } from "lucide-react";
+import { RefreshCwIcon, HelpCircleIcon, SwordsIcon } from "lucide-react";
 import {
   CORRECT_POINT_COST,
   MAX_HEARTS,
@@ -527,7 +527,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                   title="Game Modes"
                   playClickSound={true}
                 >
-                  <Gamepad2Icon className="w-4 h-4" />
+                  <SwordsIcon className="w-4 h-4" />
                 </Button>
                 <div className="w-px h-6 bg-foreground/10" />
                 <button

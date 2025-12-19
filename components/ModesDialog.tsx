@@ -20,9 +20,8 @@ import {
 import {
   HeartIcon,
   TimerIcon,
-  FlagIcon,
   CompassIcon,
-  Gamepad2Icon,
+  SwordsIcon,
 } from "lucide-react";
 import { TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
 import { useSettings } from "@/lib/context/SettingsContext";
@@ -88,7 +87,7 @@ const ModesDialog: React.FC<ModesDialogProps> = ({
       <AlertDialogContent className="max-w-[92vw] sm:max-w-2xl p-4 sm:p-8 max-h-[85vh] overflow-y-auto">
         <AlertDialogHeader className="mb-4 sm:mb-6">
           <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight flex items-center gap-2">
-            <Gamepad2Icon className="w-6 h-6 text-primary" />
+            <SwordsIcon className="w-6 h-6 text-primary" />
             Game Modes
           </AlertDialogTitle>
           <AlertDialogDescription className="font-mono text-xs uppercase tracking-widest">
