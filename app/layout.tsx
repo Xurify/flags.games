@@ -10,7 +10,7 @@ import "./globals.css";
 
 const archivoBlack = Archivo_Black({
   weight: "400",
-  variable: "--font-archivo",
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
