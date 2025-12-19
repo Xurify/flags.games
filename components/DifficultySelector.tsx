@@ -123,7 +123,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
                     >
                       <div className="flex flex-col gap-1">
                         <span className="font-black uppercase tracking-tight text-sm">
-                          {settings.label} ({settings.count} units)
+                          {settings.label} ({settings.count} countries)
                         </span>
                         <span className="text-[10px] font-mono text-muted-foreground group-focus:text-primary-foreground/80 uppercase leading-tight tracking-wide">
                           {description}
