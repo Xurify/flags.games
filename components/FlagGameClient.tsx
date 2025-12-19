@@ -101,7 +101,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   });
 
   const [limitedLifeModeEnabled, setLimitedLifeModeEnabled] = useState(
-    initialLimitedLifeModeEnabled,
+    initialLimitedLifeModeEnabled
   );
   const [timeAttackModeDurationSec, setTimeAttackModeDurationSec] = useState<
     number | null
@@ -166,7 +166,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
     const difficultyToUse = difficulty || gameState.difficulty;
     const questionData = generateQuestion(
       difficultyToUse,
-      gameState.usedCountries,
+      gameState.usedCountries
     );
 
     if (!questionData) {
@@ -594,11 +594,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                     gameState.gameCompleted
                       ? "finished"
                       : gameState.showResult
-                        ? "results"
-                        : timeAttackModeDurationSec !== null &&
-                            !gameState.gameStarted
-                          ? "waiting"
-                          : "question"
+                      ? "results"
+                      : timeAttackModeDurationSec !== null &&
+                        !gameState.gameStarted
+                      ? "waiting"
+                      : "question"
                   }
                   onTimeUp={handleTimeUp}
                   startTimeMs={
@@ -709,7 +709,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
               >
                 <Button
                   variant="ghost"
-                  className="text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all font-mono text-xs uppercase tracking-widest"
+                  className="text-muted-foreground hover:bg-transparent hover:shadow-none font-mono text-xs uppercase tracking-widest"
                   size="sm"
                 >
                   <HelpCircleIcon className="w-4 h-4 mr-2" />
