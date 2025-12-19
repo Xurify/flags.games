@@ -20,7 +20,8 @@ const spaceMono = Space_Mono({
   subsets: ["latin"],
 });
 
-const description = "How well do you know your flags? Well, it's time to find out!";
+const description =
+  "How well do you know your flags? Well, it's time to find out!";
 
 export const metadata: Metadata = {
   title: "Guess the Country | flags.games",
@@ -34,22 +35,22 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://flags.games/opengraph-image.png",
-        width: 200,
-        height: 200,
+        url: "/images/flagsdotgames.png",
+        width: 1920,
+        height: 913,
         alt: "Guess the Country | flags.games",
       },
     ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Guess the Country | flags.games",
     description,
     images: [
       {
-        url: "https://flags.games/opengraph-image.png",
-        width: 200,
-        height: 200,
+        url: "/images/flagsdotgames.png",
+        width: 1920,
+        height: 913,
         alt: "Guess the Country | flags.games",
       },
     ],
@@ -59,7 +60,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://flags.games/",
   },
-  keywords: ["flag guessing game", "country guessing game"],
   authors: [{ name: "Xurify" }],
 };
 
@@ -68,7 +68,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const theme = (await cookies()).get("theme")?.value as "light" | "dark" | undefined;
+  const theme = (await cookies()).get("theme")?.value as
+    | "light"
+    | "dark"
+    | undefined;
   const isDark = theme === "dark";
   return (
     <html lang="en" className={isDark ? `dark` : undefined}>
