@@ -598,13 +598,13 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
           />
         ) : (
           <>
-            <Card className="mb-0 sm:mb-6 py-4 sm:py-8 px-3 sm:px-6 shadow-retro">
+            <Card className="mb-0 sm:mb-6 py-4 sm:py-8 px-2 sm:px-6 shadow-retro">
               <CardContent className="relative p-1 sm:p-4">
                 <div className="text-center mb-4 sm:mb-8">
-                  <h1 className="text-sm sm:text-xl font-black text-foreground mb-1 sm:mb-2 uppercase tracking-tight">
+                  <h1 className="text-lg sm:text-xl font-black text-foreground mb-1 sm:mb-2 uppercase tracking-tight">
                     Guess the Country
                   </h1>
-                  <p className="text-muted-foreground font-mono text-[9px] sm:text-xs uppercase tracking-widest leading-relaxed max-w-[240px] mx-auto sm:max-w-none">
+                  <p className="text-muted-foreground font-mono text-[12px] sm:text-xs uppercase tracking-widest leading-relaxed max-w-[280px] mx-auto sm:max-w-none">
                     Test your knowledge and identify countries by their flags
                   </p>
                 </div>
