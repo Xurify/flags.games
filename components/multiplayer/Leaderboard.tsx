@@ -92,7 +92,7 @@ export default function Leaderboard({
         if (Math.abs(deltaY) < 1) return;
         // Deterministic highlight on the overlay
         const overlay = element.querySelector<HTMLDivElement>(
-          'div[data-role="highlight"]',
+          'div[data-role="highlight"]'
         );
         if (overlay) {
           const movedUp = deltaY < 0 ? false : true; // prevTop - newTop; positive means moved up
@@ -153,28 +153,20 @@ export default function Leaderboard({
     <div
       className={cn(
         "border-2 border-foreground shadow-retro bg-card overflow-hidden",
-        variant === "sidebar" && "hidden lg:block w-72",
-        variant === "inline" && "w-full lg:w-72",
+        variant === "sidebar" && "hidden lg:block w-80",
+        variant === "inline" && "w-full lg:w-80"
       )}
     >
       <div className="bg-foreground text-background px-4 py-3 flex items-center justify-between">
         <div className="text-xs font-black tracking-widest uppercase">
           Rankings
         </div>
-        <div className="flex items-center gap-2">
-          {isGameActive && (
-            <div className="w-2 h-2 bg-chart-2 rounded-full animate-pulse" />
-          )}
-          <span className="text-[10px] font-black uppercase tracking-tighter">
-            {isGameActive ? "LIVE" : "READY"}
-          </span>
-        </div>
       </div>
 
       <div
         className={cn(
           "max-h-[500px] overflow-y-auto",
-          variant === "inline" && "max-h-none",
+          variant === "inline" && "max-h-none"
         )}
       >
         <div className="divide-y-2 divide-foreground/10">
@@ -189,7 +181,7 @@ export default function Leaderboard({
                 className={cn(
                   "relative group grid grid-cols-[3ch_1fr_auto] items-center gap-4 px-4 py-3 transition-colors border-b border-foreground/5 last:border-0",
                   isCurrentUser ? "bg-primary/5" : "bg-transparent",
-                  hasAnswered && "bg-success/5",
+                  hasAnswered && "bg-success/5"
                 )}
                 ref={(element) => {
                   rowRefs.current[member.id] = element;
@@ -204,23 +196,25 @@ export default function Leaderboard({
                   {index + 1}
                 </div>
 
-                <div className="min-w-0 flex items-center gap-2 z-10 text-base">
+                <div className="min-w-0 relative pr-12 z-10 text-base">
                   <span
                     className={cn(
-                      "truncate leading-tight uppercase tracking-tight",
+                      "block truncate leading-tight uppercase tracking-tight",
                       isCurrentUser
                         ? "font-black text-primary"
-                        : "font-bold text-foreground",
+                        : "font-bold text-foreground"
                     )}
                   >
                     {member.username}
                   </span>
-                  {isHost && (
-                    <CrownIcon className="w-3.5 h-3.5 text-warning fill-warning" />
-                  )}
-                  {hasAnswered && (
-                    <CheckIcon className="w-3.5 h-3.5 text-success stroke-[3]" />
-                  )}
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                    {isHost && (
+                      <CrownIcon className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+                    )}
+                    {hasAnswered && (
+                      <CheckIcon className="w-3.5 h-3.5 text-success stroke-[3]" />
+                    )}
+                  </div>
                 </div>
 
                 <div className="text-lg font-black tabular-nums tracking-tighter text-foreground z-10">

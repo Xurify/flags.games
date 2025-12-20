@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   UsersIcon,
   TimerIcon,
   BarChartIcon,
   CopyIcon,
-  CopyCheckIcon,
   QrCodeIcon,
   LogOutIcon,
   ArrowLeftIcon,
@@ -18,11 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SettingsSelect } from "@/components/multiplayer/SettingsSelect";
 import QRCodeShareModal from "@/components/multiplayer/QRCodeShareModal";
-import {
-  DIFFICULTY_LEVELS,
-  ROOM_SIZES,
-  TIME_PER_QUESTION_OPTIONS,
-} from "@/lib/constants";
+import { DIFFICULTY_LEVELS, ROOM_SIZES, TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
 import { cn } from "@/lib/utils/strings";
 import { useSocket } from "@/lib/context/SocketContext";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
@@ -33,105 +28,6 @@ import { prefetchAllFlags } from "@/lib/utils/image";
 
 interface RoomLobbyProps {
   room: Room;
-}
-
-function useRoomLobbyLogic(room: Room) {
-  const { currentRoom } = useSocket();
-  const { isHost, canStartGame, startGame, updateRoomSettings, kickUser } =
-    useRoomManagement();
-  const { settings } = useSettings();
-
-  const [gameStartingCountdown, setGameStartingCountdown] = useState<
-    number | null
-  >(null);
-  const [isStarting, setIsStarting] = useState(false);
-  const [showQRModal, setShowQRModal] = useState(false);
-
-  const [copied, setCopied] = React.useState(false);
-  const copiedTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const inviteLink = room.inviteCode
-    ? `${window.location.origin}/lobby?c=${room.inviteCode}`
-    : "";
-
-  const handleCopyRoomInviteLink = () => {
-    if (copiedTimeoutRef.current) {
-      clearTimeout(copiedTimeoutRef.current);
-      copiedTimeoutRef.current = null;
-    }
-    if (room.inviteCode) {
-      navigator.clipboard.writeText(inviteLink);
-      toast.success("Invite link copied to clipboard");
-      setCopied(true);
-      copiedTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  useEffect(() => {
-    prefetchAllFlags(room.settings.difficulty);
-  }, [room.settings.difficulty]);
-
-  useEffect(() => {
-    if (isStarting && gameStartingCountdown !== null) {
-      const timer = setInterval(() => {
-        setGameStartingCountdown((prev) => {
-          if (prev === null || prev <= 1) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(timer);
-    }
-  }, [isStarting, gameStartingCountdown]);
-
-  useEffect(() => {
-    if (!isStarting || gameStartingCountdown === null) return;
-    if (!settings.soundEffectsEnabled) return;
-    if (gameStartingCountdown > 0) {
-      const frequency = gameStartingCountdown <= 1 ? 800 : 600;
-      audioManager.playTone(frequency, 0.18, "sine");
-    }
-  }, [isStarting, gameStartingCountdown, settings.soundEffectsEnabled]);
-
-  useEffect(() => {
-    if (currentRoom?.gameState?.phase === "starting") {
-      setIsStarting(true);
-      setGameStartingCountdown(5);
-    } else if (currentRoom?.gameState?.phase === "question") {
-      setIsStarting(false);
-      setGameStartingCountdown(null);
-    }
-  }, [currentRoom?.gameState?.phase]);
-
-  const handleStart = () => {
-    setIsStarting(true);
-    setGameStartingCountdown(5);
-    startGame();
-  };
-
-  const handleSettingChange = (key: keyof typeof room.settings, value: any) => {
-    if (isHost()) {
-      updateRoomSettings({ ...room.settings, [key]: value });
-    }
-  };
-
-  return {
-    isHost: isHost(),
-    isStarting,
-    gameStartingCountdown,
-    canStartGame: canStartGame(),
-    handleStart,
-    handleSettingChange,
-    handleCopyRoomInviteLink,
-    copied,
-    inviteLink,
-    showQRModal,
-    setShowQRModal,
-    kickUser,
-  };
 }
 
 const PlayerList = ({
@@ -224,9 +120,7 @@ const MatchSettings = ({
 }) => (
   <div className="space-y-4">
     <div className="flex items-center border-b-2 border-foreground pb-2">
-      <h2 className="text-xl font-black tracking-tight uppercase">
-        Match Settings
-      </h2>
+      <h2 className="text-xl font-black tracking-tight uppercase">Match Settings</h2>
     </div>
 
     <div className="bg-muted/20 border-2 border-foreground p-4 space-y-4 shadow-retro">
@@ -279,8 +173,73 @@ const MatchSettings = ({
 );
 
 export default function RoomLobby({ room }: RoomLobbyProps) {
-  const logic = useRoomLobbyLogic(room);
-  const { currentUser } = useSocket();
+  const { currentRoom, currentUser } = useSocket();
+  const { isHost, canStartGame, startGame, updateRoomSettings, kickUser } = useRoomManagement();
+  const { settings } = useSettings();
+
+  const [gameStartingCountdown, setGameStartingCountdown] = useState<number | null>(null);
+  const [isStarting, setIsStarting] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
+
+  const inviteLink = room.inviteCode ? `${window.location.origin}/lobby?c=${room.inviteCode}` : "";
+
+  const handleCopyRoomInviteLink = () => {
+    if (room.inviteCode) {
+      navigator.clipboard.writeText(inviteLink);
+      toast.success("Invite link copied to clipboard");
+    }
+  };
+
+  useEffect(() => {
+    prefetchAllFlags(room.settings.difficulty);
+  }, [room.settings.difficulty]);
+
+  useEffect(() => {
+    if (isStarting && gameStartingCountdown !== null) {
+      const timer = setInterval(() => {
+        setGameStartingCountdown((prev) => {
+          if (prev === null || prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [isStarting, gameStartingCountdown]);
+
+  useEffect(() => {
+    if (!isStarting || gameStartingCountdown === null) return;
+    if (!settings.soundEffectsEnabled) return;
+    if (gameStartingCountdown > 0) {
+      const frequency = gameStartingCountdown <= 1 ? 800 : 600;
+      audioManager.playTone(frequency, 0.18, "sine");
+    }
+  }, [isStarting, gameStartingCountdown, settings.soundEffectsEnabled]);
+
+  useEffect(() => {
+    if (currentRoom?.gameState?.phase === "starting") {
+      setIsStarting(true);
+      setGameStartingCountdown(5);
+    } else if (currentRoom?.gameState?.phase === "question") {
+      setIsStarting(false);
+      setGameStartingCountdown(null);
+    }
+  }, [currentRoom?.gameState?.phase]);
+
+  const handleStart = () => {
+    setIsStarting(true);
+    setGameStartingCountdown(5);
+    startGame();
+  };
+
+  const handleSettingChange = (key: keyof typeof room.settings, value: any) => {
+    if (isHost) {
+      updateRoomSettings({ ...room.settings, [key]: value });
+    }
+  };
 
   return (
     <div className="flex flex-col gap-10 w-full max-w-4xl mx-auto">
@@ -303,28 +262,6 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
               </p>
             </div>
           </div>
-
-          <div className="flex flex-col items-end gap-0.5">
-            <span className="font-mono text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground leading-none">
-              Session ID
-            </span>
-            <div className="flex items-center gap-2">
-              <span className="text-lg sm:text-3xl font-black font-mono tracking-tighter text-primary">
-                {room.inviteCode}
-              </span>
-              <button
-                onClick={logic.handleCopyRoomInviteLink}
-                className="opacity-30 hover:opacity-100 transition-opacity p-1"
-                title="Copy Invite Link"
-              >
-                {logic.copied ? (
-                  <CopyCheckIcon className="w-4 h-4 text-green-600" />
-                ) : (
-                  <CopyIcon className="w-4 h-4" />
-                )}
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -334,36 +271,34 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
           maxPlayers={room.settings.maxRoomSize}
           hostId={room.host}
           currentUserId={currentUser?.id}
-          isHost={logic.isHost}
-          onKick={logic.kickUser}
+          isHost={isHost}
+          onKick={kickUser}
         />
 
         <div className="space-y-4">
           <MatchSettings
             settings={room.settings}
             membersCount={room.members.length}
-            isHost={logic.isHost}
-            isStarting={logic.isStarting}
-            onSettingChange={logic.handleSettingChange}
+            isHost={isHost}
+            isStarting={isStarting}
+            onSettingChange={handleSettingChange}
           />
 
           <div className="pt-4 space-y-3">
-            {logic.isHost ? (
+            {isHost ? (
               <Button
                 variant="default"
                 size="lg"
                 className="w-full h-16 text-xl tracking-tighter bg-primary hover:bg-primary/90 text-white border-2 border-foreground shadow-retro active:translate-x-0.5 active:translate-y-0.5"
-                onClick={logic.handleStart}
-                disabled={!logic.canStartGame || logic.isStarting}
+                onClick={handleStart}
+                disabled={!canStartGame || isStarting}
               >
-                {logic.isStarting
-                  ? `STARTING IN ${logic.gameStartingCountdown}...`
-                  : "START MATCH"}
+                {isStarting ? `STARTING IN ${gameStartingCountdown}...` : "START MATCH"}
               </Button>
             ) : (
               <div className="p-4 bg-muted/10 border-2 border-foreground border-dashed text-center font-mono text-sm opacity-60">
-                {logic.isStarting
-                  ? "PREPARING MATCH..."
+                {isStarting
+                  ? `STARTING IN ${gameStartingCountdown}...`
                   : "WAITING FOR HOST TO START"}
               </div>
             )}
@@ -373,7 +308,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 variant="outline"
                 size="sm"
                 className="flex-1 font-bold tracking-tight h-10"
-                onClick={() => logic.setShowQRModal(true)}
+                onClick={() => setShowQRModal(true)}
               >
                 <QrCodeIcon className="w-4 h-4 mr-2" />
                 SHOW QR
@@ -382,10 +317,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 variant="outline"
                 size="sm"
                 className="flex-1 font-bold tracking-tight h-10"
-                onClick={() => {
-                  navigator.clipboard.writeText(logic.inviteLink);
-                  toast.success("Invite link copied to clipboard!");
-                }}
+                onClick={handleCopyRoomInviteLink}
               >
                 <CopyIcon className="w-4 h-4 mr-2" />
                 COPY LINK
@@ -407,9 +339,9 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
       </div>
 
       <QRCodeShareModal
-        isOpen={logic.showQRModal}
-        onClose={() => logic.setShowQRModal(false)}
-        inviteLink={logic.inviteLink}
+        isOpen={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        inviteLink={inviteLink}
       />
     </div>
   );

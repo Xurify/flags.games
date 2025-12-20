@@ -12,12 +12,14 @@ export const useRoomManagement = () => {
     startGame,
   } = useSocket();
 
-  const isHost = () => {
+  const getIsHost = () => {
     return currentUser?.id === currentRoom?.host;
   };
 
+  const isHost = getIsHost();
+
   const canStartGame = () => {
-    if (!currentRoom || !isHost() || currentRoom.members.length < 2) return false;
+    if (!currentRoom || !isHost || currentRoom.members.length < 2) return false;
     return true;
   };
 

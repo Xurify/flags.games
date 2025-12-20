@@ -10,7 +10,7 @@ import { audioManager } from "@/lib/utils/audio-manager";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Crown, ArrowLeftIcon } from "lucide-react";
+import { CrownIcon, ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import {
   Table,
@@ -197,7 +197,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
                           {player.username}
                         </span>
                         {index === 0 && (
-                          <Crown className="w-4 h-4 text-warning fill-warning" />
+                          <CrownIcon className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                         )}
                         {isYou && (
                           <Badge
