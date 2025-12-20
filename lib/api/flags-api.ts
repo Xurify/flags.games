@@ -1,3 +1,5 @@
+import { withRetry, type RetryOptions } from '@/lib/utils/retry';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_FLAGS_API_URL;
 
 export interface RoomInfo {
@@ -17,29 +19,39 @@ export interface ApiResponse<T> {
 class FlagsApi {
   private async fetchApi<T>(
     endpoint: string,
-    options?: RequestInit
+    options?: RequestInit,
+    retryOptions: Partial<RetryOptions> = {}
   ): Promise<ApiResponse<T>> {
-    try {
-      const url = `${API_BASE_URL}${endpoint}`;
-      const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options?.headers,
-        },
-        ...options,
-      });
+    return withRetry<ApiResponse<T>>(
+      async () => {
+        const url = `${API_BASE_URL}${endpoint}`;
+        const response = await fetch(url, {
+          headers: {
+            'Content-Type': 'application/json',
+            ...options?.headers,
+          },
+          ...options,
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        return { error: `HTTP ${response.status}: ${errorText}` };
-      }
+        if (!response.ok) {
+          const errorText = await response.text();
+          return { error: `HTTP ${response.status}: ${errorText}`, _status: response.status } as ApiResponse<T> & { _status: number };
+        }
 
-      const data = await response.json();
-      return { data };
-    } catch (error) {
-      console.error('API request failed:', error);
-      return { error: error instanceof Error ? error.message : 'Unknown error' };
-    }
+        const data = await response.json();
+        return { data };
+      },
+      (result, error) => {
+        if (error) return true; // Retry on network errors
+        if (result && 'error' in result) {
+          const status = (result as any)._status;
+          // Only retry on server errors (5xx) or rate limits (429)
+          return status >= 500 || status === 429;
+        }
+        return false;
+      },
+      retryOptions
+    );
   }
 
   async getRoomByInviteCode(inviteCode: string): Promise<ApiResponse<RoomInfo>> {
