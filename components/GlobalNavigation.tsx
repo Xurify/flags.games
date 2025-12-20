@@ -1,18 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSettings } from "@/lib/context/SettingsContext";
 import { useGameNavigation } from "@/lib/context/GameNavigationContext";
 import { useRouter } from "next/navigation";
 import SettingsMenu from "@/components/SettingsMenu";
 import { Button } from "@/components/ui/button";
-import {
-  SunIcon,
-  MoonIcon,
-  Volume2Icon,
-  VolumeXIcon,
-  HomeIcon,
-} from "lucide-react";
+import { SunIcon, MoonIcon, Volume2Icon, VolumeXIcon, HomeIcon } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,7 +17,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import Image from "next/image";
 
 export const GlobalNavigation = () => {
   const { settings, updateSetting } = useSettings();
@@ -35,9 +28,7 @@ export const GlobalNavigation = () => {
   const toggleDarkMode = () => {
     const nextDark = !settings.darkMode;
     updateSetting("darkMode", nextDark);
-    document.cookie = `theme=${
-      nextDark ? "dark" : "light"
-    }; path=/; max-age=31536000`;
+    document.cookie = `theme=${nextDark ? "dark" : "light"}; path=/; max-age=31536000`;
   };
 
   const toggleSound = () => {
@@ -78,16 +69,14 @@ export const GlobalNavigation = () => {
             variant="ghost"
             size="icon-sm"
             onClick={toggleDarkMode}
-            className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground"
-            title={
-              settings.darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
-            }
+            className="group h-8 w-8 sm:h-9 sm:w-9 hover:bg-primary border-transparent hover:border-foreground"
+            title={settings.darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
             playClickSound={true}
           >
             {settings.darkMode ? (
-              <SunIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <SunIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 group-hover:text-black fill-current" />
             ) : (
-              <MoonIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <MoonIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:text-black" />
             )}
           </Button>
 
@@ -129,8 +118,7 @@ export const GlobalNavigation = () => {
               Return to Home?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-sm font-medium pt-2">
-              Are you sure you want to leave? Your current game progress will be
-              lost.
+              Are you sure you want to leave? Your current game progress will be lost.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
