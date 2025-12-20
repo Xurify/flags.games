@@ -10,7 +10,6 @@ import { audioManager } from "@/lib/utils/audio-manager";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { Crown, ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import {
@@ -37,7 +36,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
     if (settings.soundEffectsEnabled && gameState?.phase === "finished") {
       audioManager.playVictorySound();
     }
-  }, [gameState?.phase, settings.soundEffectsEnabled]);
+  }, [gameState?.phase]);
 
   const isHost = currentUser?.id === room.host;
 
@@ -116,8 +115,9 @@ export default function GameFinished({ room }: GameFinishedProps) {
           },
           {
             label: "CORRECT",
-            value: `${currentUserPlacement?.me?.correctAnswers ?? 0}/${gameState?.totalQuestions || 0
-              }`,
+            value: `${currentUserPlacement?.me?.correctAnswers ?? 0}/${
+              gameState?.totalQuestions || 0
+            }`,
           },
           {
             label: "ACCURACY",
@@ -203,7 +203,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
                           <Badge
                             variant="outline"
                             size="sm"
-                            className="font-black text-[9px] h-4"
+                            className="font-black text-[9px] h-4 bg-primary text-white leading-none"
                           >
                             YOU
                           </Badge>

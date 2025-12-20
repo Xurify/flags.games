@@ -9,13 +9,13 @@ import {
   CopyCheckIcon,
   QrCodeIcon,
   LogOutIcon,
-  ArrowLeftIcon
+  ArrowLeftIcon,
 } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
 import { SettingsSelect } from "@/components/multiplayer/SettingsSelect";
 import QRCodeShareModal from "@/components/multiplayer/QRCodeShareModal";
 import {
@@ -35,21 +35,37 @@ interface RoomLobbyProps {
   room: Room;
 }
 
-export default function RoomLobby({ room }: RoomLobbyProps) {
+function useRoomLobbyLogic(room: Room) {
   const { currentRoom } = useSocket();
-  const { isHost, canStartGame, startGame, updateRoomSettings } =
+  const { isHost, canStartGame, startGame, updateRoomSettings, kickUser } =
     useRoomManagement();
   const { settings } = useSettings();
-  const [copied, setCopied] = React.useState(false);
+
   const [gameStartingCountdown, setGameStartingCountdown] = useState<
     number | null
   >(null);
   const [isStarting, setIsStarting] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
+
+  const [copied, setCopied] = React.useState(false);
   const copiedTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const members = room.members;
-  const maxPlayers = room.settings.maxRoomSize;
+  const inviteLink = room.inviteCode
+    ? `${window.location.origin}/lobby?c=${room.inviteCode}`
+    : "";
+
+  const handleCopyRoomInviteLink = () => {
+    if (copiedTimeoutRef.current) {
+      clearTimeout(copiedTimeoutRef.current);
+      copiedTimeoutRef.current = null;
+    }
+    if (room.inviteCode) {
+      navigator.clipboard.writeText(inviteLink);
+      toast.success("Invite link copied to clipboard");
+      setCopied(true);
+      copiedTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   useEffect(() => {
     prefetchAllFlags(room.settings.difficulty);
@@ -90,29 +106,10 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     }
   }, [currentRoom?.gameState?.phase]);
 
-  const handleInvite = () => {
-    setShowQRModal(true);
-  };
-
-  const inviteLink = room.inviteCode
-    ? `${window.location.origin}/lobby?c=${room.inviteCode}`
-    : "";
-
-  const handleCopyRoomInviteLink = () => {
-    clearCopiedTimeout();
-    if (room.inviteCode) {
-      navigator.clipboard.writeText(inviteLink);
-      toast.success("Invite link copied to clipboard");
-      setCopied(true);
-      copiedTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const clearCopiedTimeout = () => {
-    if (copiedTimeoutRef.current) {
-      clearTimeout(copiedTimeoutRef.current);
-      copiedTimeoutRef.current = null;
-    }
+  const handleStart = () => {
+    setIsStarting(true);
+    setGameStartingCountdown(5);
+    startGame();
   };
 
   const handleSettingChange = (key: keyof typeof room.settings, value: any) => {
@@ -121,11 +118,169 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     }
   };
 
-  const handleStart = () => {
-    setIsStarting(true);
-    setGameStartingCountdown(5);
-    startGame();
+  return {
+    isHost: isHost(),
+    isStarting,
+    gameStartingCountdown,
+    canStartGame: canStartGame(),
+    handleStart,
+    handleSettingChange,
+    handleCopyRoomInviteLink,
+    copied,
+    inviteLink,
+    showQRModal,
+    setShowQRModal,
+    kickUser,
   };
+}
+
+const PlayerList = ({
+  members,
+  maxPlayers,
+  hostId,
+  currentUserId,
+  isHost,
+  onKick,
+}: {
+  members: User[];
+  maxPlayers: number;
+  hostId: string;
+  currentUserId?: string;
+  isHost: boolean;
+  onKick: (id: string) => void;
+}) => (
+  <div className="space-y-4">
+    <div className="flex items-center justify-between border-b-2 border-foreground pb-2">
+      <h2 className="text-xl font-black tracking-tight">PLAYERS</h2>
+      <Badge variant="outline" className="font-bold border-foreground">
+        {members.length}/{maxPlayers}
+      </Badge>
+    </div>
+
+    <div className="grid gap-3">
+      {[...members, ...Array(maxPlayers - members.length).fill(null)].map(
+        (player: User | null, index) => (
+          <div
+            key={`player-${index}`}
+            className={cn(
+              "flex items-center gap-4 p-4 border-2 transition-all rounded-sm",
+              player
+                ? "bg-background border-foreground shadow-retro"
+                : "bg-muted/10 border-foreground/10 border-dashed opacity-50"
+            )}
+          >
+            <div
+              className={cn(
+                "w-10 h-10 border-2 flex items-center justify-center font-black",
+                player
+                  ? "bg-secondary text-secondary-foreground border-foreground"
+                  : "bg-muted/20 border-foreground/10"
+              )}
+            >
+              {player ? player.username.charAt(0).toUpperCase() : "?"}
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-foreground truncate">
+                  {player ? player.username : "EMPTY SLOT"}
+                </span>
+                {player && hostId === player.id && (
+                  <div className="bg-foreground text-background text-[9px] px-1.5 py-0.5 font-black uppercase tracking-tighter leading-none">
+                    HOST
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {player && hostId !== player.id && isHost && (
+              <Button
+                variant="ghost"
+                onClick={() => onKick(player.id)}
+                className="text-[10px] h-6 px-2 hover:bg-destructive hover:text-white border-transparent hover:border-foreground"
+              >
+                KICK
+              </Button>
+            )}
+          </div>
+        )
+      )}
+    </div>
+  </div>
+);
+
+const MatchSettings = ({
+  settings,
+  membersCount,
+  isHost,
+  isStarting,
+  onSettingChange,
+}: {
+  settings: Room["settings"];
+  membersCount: number;
+  isHost: boolean;
+  isStarting: boolean;
+  onSettingChange: (key: any, value: any) => void;
+}) => (
+  <div className="space-y-4">
+    <div className="flex items-center border-b-2 border-foreground pb-2">
+      <h2 className="text-xl font-black tracking-tight uppercase">
+        Match Settings
+      </h2>
+    </div>
+
+    <div className="bg-muted/20 border-2 border-foreground p-4 space-y-4 shadow-retro">
+      <SettingsSelect
+        icon={<UsersIcon className="w-4 h-4" />}
+        label="Players"
+        value={settings.maxRoomSize}
+        options={ROOM_SIZES.map((size) => ({
+          value: size,
+          label: `${size} Players`,
+        }))}
+        onValueChange={(value) => {
+          if (membersCount > value) {
+            toast.error("Can't reduce below current count");
+            return;
+          }
+          return onSettingChange("maxRoomSize", value);
+        }}
+        renderValue={(value) => `${value} Players`}
+        disabled={!isHost || isStarting}
+      />
+
+      <SettingsSelect
+        icon={<BarChartIcon className="w-4 h-4" />}
+        label="Difficulty"
+        value={settings.difficulty}
+        options={DIFFICULTY_LEVELS.map((level) => ({
+          value: level,
+          label: level.charAt(0).toUpperCase() + level.slice(1),
+        }))}
+        onValueChange={(value) => onSettingChange("difficulty", value)}
+        renderValue={(value) => value.toUpperCase()}
+        disabled={!isHost || isStarting}
+      />
+
+      <SettingsSelect
+        icon={<TimerIcon className="w-4 h-4" />}
+        label="Speed"
+        value={settings.timePerQuestion}
+        options={TIME_PER_QUESTION_OPTIONS.map((time) => ({
+          value: time,
+          label: `${time} seconds`,
+        }))}
+        onValueChange={(value) => onSettingChange("timePerQuestion", value)}
+        renderValue={(value) => `${value}s`}
+        disabled={!isHost || isStarting}
+      />
+    </div>
+  </div>
+);
+
+export default function RoomLobby({ room }: RoomLobbyProps) {
+  const logic = useRoomLobbyLogic(room);
+  const { currentUser } = useSocket();
 
   return (
     <div className="flex flex-col gap-10 w-full max-w-4xl mx-auto">
@@ -158,11 +313,11 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 {room.inviteCode}
               </span>
               <button
-                onClick={handleCopyRoomInviteLink}
+                onClick={logic.handleCopyRoomInviteLink}
                 className="opacity-30 hover:opacity-100 transition-opacity p-1"
                 title="Copy Invite Link"
               >
-                {copied ? (
+                {logic.copied ? (
                   <CopyCheckIcon className="w-4 h-4 text-green-600" />
                 ) : (
                   <CopyIcon className="w-4 h-4" />
@@ -174,127 +329,42 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between border-b-2 border-foreground pb-2">
-            <h2 className="text-xl font-black tracking-tight">PLAYERS</h2>
-            <Badge variant="outline" className="font-bold border-foreground">
-              {members.length}/{maxPlayers}
-            </Badge>
-          </div>
-
-          <div className="grid gap-3">
-            {[...members, ...Array(maxPlayers - members.length).fill(null)].map(
-              (player: User | null, index) => (
-                <div
-                  key={`player-${index}`}
-                  className={cn(
-                    "flex items-center gap-4 p-4 border-2 transition-all rounded-sm",
-                    player
-                      ? "bg-background border-foreground shadow-retro"
-                      : "bg-muted/10 border-foreground/10 border-dashed opacity-50"
-                  )}
-                >
-                  <div className={cn(
-                    "w-10 h-10 border-2 flex items-center justify-center font-black",
-                    player ? "bg-secondary text-secondary-foreground border-foreground" : "bg-muted/20 border-foreground/10"
-                  )}>
-                    {player ? player.username.charAt(0).toUpperCase() : "?"}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-foreground truncate">
-                        {player ? player.username : "EMPTY SLOT"}
-                      </span>
-                      {player && room?.host === player.id && (
-                        <div className="bg-foreground text-background text-[9px] px-1.5 py-0.5 font-black uppercase tracking-tighter leading-none">
-                          HOST
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {player && room?.host !== player.id && isHost() && (
-                    <Button
-                      variant="ghost"
-                      onClick={() => useRoomManagement().kickUser(player.id)}
-                      className="text-[10px] h-6 px-2 hover:bg-destructive hover:text-white border-transparent hover:border-foreground"
-                    >
-                      KICK
-                    </Button>
-                  )}
-                </div>
-              )
-            )}
-          </div>
-        </div>
+        <PlayerList
+          members={room.members}
+          maxPlayers={room.settings.maxRoomSize}
+          hostId={room.host}
+          currentUserId={currentUser?.id}
+          isHost={logic.isHost}
+          onKick={logic.kickUser}
+        />
 
         <div className="space-y-4">
-          <div className="flex items-center border-b-2 border-foreground pb-2">
-            <h2 className="text-xl font-black tracking-tight uppercase">Match Settings</h2>
-          </div>
-
-          <div className="bg-muted/20 border-2 border-foreground p-4 space-y-4 shadow-retro">
-            <SettingsSelect
-              icon={<UsersIcon className="w-4 h-4" />}
-              label="Players"
-              value={room.settings.maxRoomSize}
-              options={ROOM_SIZES.map((size) => ({
-                value: size,
-                label: `${size} Players`,
-              }))}
-              onValueChange={(value) => {
-                if (members.length > value) {
-                  toast.error("Can't reduce below current count");
-                  return;
-                }
-                return handleSettingChange("maxRoomSize", value);
-              }}
-              renderValue={(value) => `${value} Players`}
-              disabled={!isHost() || isStarting}
-            />
-
-            <SettingsSelect
-              icon={<BarChartIcon className="w-4 h-4" />}
-              label="Difficulty"
-              value={room.settings.difficulty}
-              options={DIFFICULTY_LEVELS.map((level) => ({
-                value: level,
-                label: level.charAt(0).toUpperCase() + level.slice(1),
-              }))}
-              onValueChange={(value) => handleSettingChange("difficulty", value)}
-              renderValue={(value) => value.toUpperCase()}
-              disabled={!isHost() || isStarting}
-            />
-
-            <SettingsSelect
-              icon={<TimerIcon className="w-4 h-4" />}
-              label="Speed"
-              value={room.settings.timePerQuestion}
-              options={TIME_PER_QUESTION_OPTIONS.map((time) => ({
-                value: time,
-                label: `${time} seconds`,
-              }))}
-              onValueChange={(value) => handleSettingChange("timePerQuestion", value)}
-              renderValue={(value) => `${value}s`}
-              disabled={!isHost() || isStarting}
-            />
-          </div>
+          <MatchSettings
+            settings={room.settings}
+            membersCount={room.members.length}
+            isHost={logic.isHost}
+            isStarting={logic.isStarting}
+            onSettingChange={logic.handleSettingChange}
+          />
 
           <div className="pt-4 space-y-3">
-            {isHost() ? (
+            {logic.isHost ? (
               <Button
                 variant="default"
                 size="lg"
                 className="w-full h-16 text-xl tracking-tighter bg-primary hover:bg-primary/90 text-white border-2 border-foreground shadow-retro active:translate-x-0.5 active:translate-y-0.5"
-                onClick={handleStart}
-                disabled={!canStartGame() || isStarting}
+                onClick={logic.handleStart}
+                disabled={!logic.canStartGame || logic.isStarting}
               >
-                {isStarting ? `STARTING IN ${gameStartingCountdown}...` : "START MATCH"}
+                {logic.isStarting
+                  ? `STARTING IN ${logic.gameStartingCountdown}...`
+                  : "START MATCH"}
               </Button>
             ) : (
               <div className="p-4 bg-muted/10 border-2 border-foreground border-dashed text-center font-mono text-sm opacity-60">
-                {isStarting ? "PREPARING MATCH..." : "WAITING FOR HOST TO START"}
+                {logic.isStarting
+                  ? "PREPARING MATCH..."
+                  : "WAITING FOR HOST TO START"}
               </div>
             )}
 
@@ -303,7 +373,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 variant="outline"
                 size="sm"
                 className="flex-1 font-bold tracking-tight h-10"
-                onClick={handleInvite}
+                onClick={() => logic.setShowQRModal(true)}
               >
                 <QrCodeIcon className="w-4 h-4 mr-2" />
                 SHOW QR
@@ -313,7 +383,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 size="sm"
                 className="flex-1 font-bold tracking-tight h-10"
                 onClick={() => {
-                  navigator.clipboard.writeText(inviteLink);
+                  navigator.clipboard.writeText(logic.inviteLink);
                   toast.success("Invite link copied to clipboard!");
                 }}
               >
@@ -337,9 +407,9 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
       </div>
 
       <QRCodeShareModal
-        isOpen={showQRModal}
-        onClose={() => setShowQRModal(false)}
-        inviteLink={inviteLink}
+        isOpen={logic.showQRModal}
+        onClose={() => logic.setShowQRModal(false)}
+        inviteLink={logic.inviteLink}
       />
     </div>
   );

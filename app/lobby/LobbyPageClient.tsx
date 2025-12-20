@@ -1,42 +1,43 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { HomeIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { DIFFICULTY_LEVELS, TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
 import { RoomSettings } from "@/lib/types/socket";
 import { getDifficultySettings } from "@/lib/utils/gameLogic";
 
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import Header from "@/components/Header";
 import JoinRoomForm from "@/components/multiplayer/JoinRoomForm";
 import CreateRoomForm from "@/components/multiplayer/CreateRoomForm";
+import { useGameState } from "@/lib/hooks/useGameState";
+import RoomLobby from "@/components/multiplayer/phases/RoomLobby";
+import GameQuestion from "@/components/multiplayer/phases/GameQuestion";
+import GameFinished from "@/components/multiplayer/phases/GameFinished";
+import { usePageReloadProtection } from "@/lib/hooks/usePageReloadProtection";
 
 interface LobbyPageClientProps {
   randomUsername: string;
 }
 
-export function LobbyPageClient({
-  randomUsername,
-}: LobbyPageClientProps) {
-  const router = useRouter();
+export function LobbyPageClient({ randomUsername }: LobbyPageClientProps) {
   const searchParams = useSearchParams();
   const inviteCode = searchParams.get("c");
 
+  const { currentRoom, currentPhase } = useGameState();
+  const { createRoom, joinRoom } = useRoomManagement();
+
+  const shouldProtectReload =
+    currentRoom && ["starting", "question", "results"].includes(currentPhase);
+
+  usePageReloadProtection({
+    enabled: !!shouldProtectReload,
+    message:
+      "You're in an active multiplayer game! Are you sure you want to leave? You'll lose your progress and disconnect from the game.",
+  });
+
   const [isCreating, setIsCreating] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
-
-  const { currentRoom: room, createRoom, joinRoom } = useRoomManagement();
-
-  useEffect(() => {
-    if (room?.inviteCode) {
-      router.push(`/lobby/${room.inviteCode}`);
-    }
-  }, [room?.inviteCode, router]);
 
   const [username, setUsername] = useState("");
   const [settings, setSettings] = useState<RoomSettings>({
@@ -51,6 +52,14 @@ export function LobbyPageClient({
     settings?: string;
   }>({});
 
+  useEffect(() => {
+    if (!currentRoom) return;
+
+    if (["question", "results", "finished"].includes(currentPhase)) {
+      window.history.replaceState(null, "", "/battle");
+    }
+  }, [currentPhase, currentRoom]);
+
   const handleCreateRoom = async (
     username: string,
     roomSettings: RoomSettings
@@ -58,9 +67,8 @@ export function LobbyPageClient({
     setFormErrors({});
     setIsCreating(true);
     await createRoom(username, roomSettings);
-    if (room) {
-      setIsCreating(false);
-    }
+
+    setIsCreating(false);
   };
 
   const handleJoinRoom = async (username: string) => {
@@ -71,6 +79,24 @@ export function LobbyPageClient({
     }
     setIsJoining(false);
   };
+
+  if (currentRoom) {
+    if (["waiting", "starting"].includes(currentPhase)) {
+      return (
+        <div className="min-h-screen w-full bg-transparent mx-auto px-4 sm:px-6 py-4 sm:py-6">
+          <RoomLobby room={currentRoom} />
+        </div>
+      );
+    }
+
+    if (["question", "results"].includes(currentPhase)) {
+      return <GameQuestion room={currentRoom} />;
+    }
+
+    if (currentPhase === "finished") {
+      return <GameFinished room={currentRoom} />;
+    }
+  }
 
   return (
     <div className="min-h-screen w-full bg-transparent mx-auto px-4 sm:px-6 py-4 sm:py-6">
@@ -107,7 +133,6 @@ export function LobbyPageClient({
           />
         )}
       </div>
-
     </div>
   );
 }

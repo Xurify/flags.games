@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { LobbyPageClient } from "./LobbyPageClient";
+import { SocketProvider } from "@/lib/context/SocketContext";
 import { UsernameGenerator } from "@/lib/utils/usernameGenerator";
+import { LobbyPageClient } from "./LobbyPageClient";
 
 export const metadata: Metadata = {
   title: "Multiplayer Lobby | flags.games",
@@ -12,5 +13,9 @@ export const metadata: Metadata = {
 
 export default async function LobbyPage() {
   const randomUsername = new UsernameGenerator().generateUsername();
-  return <LobbyPageClient randomUsername={randomUsername} />;
-} 
+  return (
+    <SocketProvider>
+      <LobbyPageClient randomUsername={randomUsername} />
+    </SocketProvider>
+  );
+}
