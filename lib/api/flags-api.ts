@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_FLAGS_API_URL;
 
 export interface RoomInfo {
   id: string;
@@ -43,7 +43,7 @@ class FlagsApi {
   }
 
   async getRoomByInviteCode(inviteCode: string): Promise<ApiResponse<RoomInfo>> {
-    return this.fetchApi<RoomInfo>(`/api/rooms/${inviteCode}`);
+    return this.fetchApi<RoomInfo>(`/rooms/${inviteCode}`);
   }
 }
 

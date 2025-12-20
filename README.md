@@ -37,20 +37,6 @@ bun run dev
 
 The server will run on `http://localhost:3001` by default.
 
-## How to Play
-
-### Single Player
-1. Select your difficulty level
-2. Guess the country name for each flag
-3. Try to get the highest score!
-
-### Multiplayer
-1. Click "Multiplayer" on the home page
-2. Create a room or join with an invite code
-3. Wait for the host to start the game
-4. Answer questions in real-time with other players
-5. Compete for the highest score on the leaderboard
-
 ## Game Modes
 
 - **Classic**: Standard flag guessing with multiple choice
@@ -62,30 +48,6 @@ The server will run on `http://localhost:3001` by default.
 - **Frontend**: Next.js 15, React 19, TypeScript
 - **Styling**: Tailwind CSS
 - **UI Components**: Radix UI
-- **Real-time**: WebSocket
-- **State Management**: React Context
-- **Package Manager**: pnpm
-
-## Project Structure
-
-```
-flags.games/
-├── app/                    # Next.js app directory
-│   ├── flags/             # Single player game
-│   ├── lobby/             # Multiplayer lobby
-│   └── page.tsx           # Home page
-├── components/            # React components
-│   ├── multiplayer/       # Multiplayer-specific components
-│   └── ui/               # Reusable UI components
-├── lib/                  # Utilities and configurations
-│   ├── context/          # React contexts
-│   ├── hooks/            # Custom hooks
-│   ├── types/            # TypeScript type definitions
-│   └── utils/            # Utility functions
-└── public/               # Static assets
-    └── images/
-        └── flags/        # Flag SVG files
-```
 
 ## Learn More
 
