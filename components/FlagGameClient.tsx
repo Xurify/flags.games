@@ -480,109 +480,111 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
         <span />
       </RestartDialog>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-        <Header
-          leftContent={
-            <div className="flex flex-wrap items-center justify-between gap-y-3 w-full">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => setShowRestartDialog(true)}
-                  className="hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground transition-all"
-                  title="Restart Game"
-                  playClickSound={true}
-                >
-                  <RefreshCwIcon className="w-4 h-4" />
-                </Button>
-                <div className="w-px h-6 bg-foreground/10" />
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => setShowGameModesDialog(true)}
-                  className="hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground transition-all"
-                  title="Game Modes"
-                  playClickSound={true}
-                >
-                  <SwordsIcon className="w-4 h-4" />
-                </Button>
-                <div className="w-px h-6 bg-foreground/10" />
-                <button
-                  className="flex flex-col text-left hover:bg-foreground/5 px-2 py-1 -mx-2 -my-1 rounded-md transition-all cursor-pointer group"
-                  onClick={() => setShowDifficultyDialog(true)}
-                >
-                  <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground mb-0.5 group-hover:text-primary transition-colors">
-                    Level
-                  </span>
-
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs sm:text-sm font-black uppercase tracking-tight">
-                      {gameState.difficulty}
-                    </span>
-                    <ChevronDownIcon className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors" />
-                  </div>
-                </button>
-              </div>
-
-              <div className="flex items-center gap-4 sm:gap-8">
-                <div className="flex flex-col items-center relative">
-                  {showPointsAddedAnimation && (
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 animate-score-popup pointer-events-none z-10 whitespace-nowrap">
-                      <span className="text-green-500 font-black text-xl sm:text-2xl drop-shadow-sm">
-                        +{CORRECT_POINT_COST}
-                      </span>
-                    </div>
-                  )}
-                  <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground leading-none mb-1">
-                    Score
-                  </span>
-                  <span className="text-xs sm:text-sm font-black text-primary">
-                    {gameState.score.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-5 sm:gap-10">
-                <div className="flex flex-col items-center">
-                  <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground leading-none mb-1">
-                    Progress
-                  </span>
-                  <span className="text-xs sm:text-sm font-black">
-                    {gameState.currentQuestion}
-                    <span className="text-muted-foreground/50 mx-0.5">/</span>
-                    {gameState.totalQuestions}
-                  </span>
-                </div>
-
-                {(limitedLifeModeEnabled || timeAttackModeDurationSec !== null) && (
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-7 sm:py-6 pb-24 sm:pb-6">
+        <div className="mb-4 sm:mb-0">
+          <Header
+            leftContent={
+              <div className="flex flex-wrap items-center justify-between gap-y-3 w-full">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => setShowRestartDialog(true)}
+                    className="hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground transition-all"
+                    title="Restart Game"
+                    playClickSound={true}
+                  >
+                    <RefreshCwIcon className="w-4 h-4" />
+                  </Button>
                   <div className="w-px h-6 bg-foreground/10" />
-                )}
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => setShowGameModesDialog(true)}
+                    className="hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground transition-all"
+                    title="Game Modes"
+                    playClickSound={true}
+                  >
+                    <SwordsIcon className="w-4 h-4" />
+                  </Button>
+                  <div className="w-px h-6 bg-foreground/10" />
+                  <button
+                    className="flex flex-col text-left hover:bg-foreground/5 px-2 py-1 -mx-2 -my-1 rounded-md transition-all cursor-pointer group"
+                    onClick={() => setShowDifficultyDialog(true)}
+                  >
+                    <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground mb-0.5 group-hover:text-primary transition-colors">
+                      Level
+                    </span>
 
-                <QuestionProgress
-                  currentQuestion={gameState.currentQuestion}
-                  totalQuestions={gameState.totalQuestions}
-                  score={gameState.score}
-                  hearts={gameState.hearts}
-                  maxHearts={MAX_HEARTS}
-                  limitedLifeModeEnabled={limitedLifeModeEnabled}
-                  timeAttackModeEnabled={timeAttackModeDurationSec !== null}
-                  timeAttackTimeSec={timeAttackModeDurationSec ?? undefined}
-                  currentPhase={
-                    gameState.gameCompleted
-                      ? "finished"
-                      : gameState.showResult
-                      ? "results"
-                      : timeAttackModeDurationSec !== null && !gameState.gameStarted
-                      ? "waiting"
-                      : "question"
-                  }
-                  onTimeUp={handleTimeUp}
-                  startTimeMs={gameState.gameStarted ? questionStartMs : undefined}
-                />
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs sm:text-sm font-black uppercase tracking-tight">
+                        {gameState.difficulty}
+                      </span>
+                      <ChevronDownIcon className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </div>
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-4 sm:gap-8">
+                  <div className="flex flex-col items-center relative">
+                    {showPointsAddedAnimation && (
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 animate-score-popup pointer-events-none z-10 whitespace-nowrap">
+                        <span className="text-green-500 font-black text-xl sm:text-2xl drop-shadow-sm">
+                          +{CORRECT_POINT_COST}
+                        </span>
+                      </div>
+                    )}
+                    <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground leading-none mb-1">
+                      Score
+                    </span>
+                    <span className="text-xs sm:text-sm font-black text-primary">
+                      {gameState.score.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-5 sm:gap-10">
+                  <div className="flex flex-col items-center">
+                    <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground leading-none mb-1">
+                      Progress
+                    </span>
+                    <span className="text-xs sm:text-sm font-black">
+                      {gameState.currentQuestion}
+                      <span className="text-muted-foreground/50 mx-0.5">/</span>
+                      {gameState.totalQuestions}
+                    </span>
+                  </div>
+
+                  {(limitedLifeModeEnabled || timeAttackModeDurationSec !== null) && (
+                    <div className="w-px h-6 bg-foreground/10" />
+                  )}
+
+                  <QuestionProgress
+                    currentQuestion={gameState.currentQuestion}
+                    totalQuestions={gameState.totalQuestions}
+                    score={gameState.score}
+                    hearts={gameState.hearts}
+                    maxHearts={MAX_HEARTS}
+                    limitedLifeModeEnabled={limitedLifeModeEnabled}
+                    timeAttackModeEnabled={timeAttackModeDurationSec !== null}
+                    timeAttackTimeSec={timeAttackModeDurationSec ?? undefined}
+                    currentPhase={
+                      gameState.gameCompleted
+                        ? "finished"
+                        : gameState.showResult
+                        ? "results"
+                        : timeAttackModeDurationSec !== null && !gameState.gameStarted
+                        ? "waiting"
+                        : "question"
+                    }
+                    onTimeUp={handleTimeUp}
+                    startTimeMs={gameState.gameStarted ? questionStartMs : undefined}
+                  />
+                </div>
               </div>
-            </div>
-          }
-        />
+            }
+          />
+        </div>
 
         {gameState.gameCompleted ? (
           <GameEndScreen
@@ -596,13 +598,13 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
           />
         ) : (
           <>
-            <Card className="mb-4 sm:mb-6 py-6 sm:py-8 px-4 sm:px-6 shadow-retro">
-              <CardContent className="relative p-2 sm:p-4">
-                <div className="text-center mb-6 sm:mb-8">
-                  <h1 className="text-base sm:text-xl font-black text-foreground mb-1 sm:mb-2 uppercase tracking-tight">
+            <Card className="mb-0 sm:mb-6 py-4 sm:py-8 px-3 sm:px-6 shadow-retro">
+              <CardContent className="relative p-1 sm:p-4">
+                <div className="text-center mb-4 sm:mb-8">
+                  <h1 className="text-sm sm:text-xl font-black text-foreground mb-1 sm:mb-2 uppercase tracking-tight">
                     Guess the Country
                   </h1>
-                  <p className="text-muted-foreground font-mono text-[10px] sm:text-xs uppercase tracking-widest leading-relaxed max-w-xs mx-auto sm:max-w-none">
+                  <p className="text-muted-foreground font-mono text-[9px] sm:text-xs uppercase tracking-widest leading-relaxed max-w-[240px] mx-auto sm:max-w-none">
                     Test your knowledge and identify countries by their flags
                   </p>
                 </div>
@@ -661,7 +663,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                 )}
               </CardContent>
             </Card>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-3 mt-6">
               <Button
                 variant="outline"
                 onClick={() => setShowRestartDialog(true)}

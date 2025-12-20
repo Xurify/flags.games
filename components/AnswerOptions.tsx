@@ -44,7 +44,7 @@ const AnswerOptions: React.FC<AnswerOptionsProps> = ({
           onClick={() => !showResult && handleAnswer(country)}
           disabled={disabled}
           className={cn(
-            "h-12 sm:h-16 text-xs sm:text-base border-2 sm:border-2 font-black justify-start px-4 sm:px-6 uppercase tracking-tight transition-all duration-100 rounded-none",
+            "h-11 sm:h-16 text-[10px] sm:text-base border-2 sm:border-2 font-black justify-start px-3 sm:px-6 uppercase tracking-tight transition-all duration-100 rounded-none",
             getButtonStateClass(country)
           )}
           variant="outline"

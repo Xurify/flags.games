@@ -59,17 +59,21 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
   const isButtonDisabled = isJoining || isSocketBusy;
 
   let buttonLabel: React.ReactNode = "Connect";
+  const spinner = (
+    <div className="w-4 h-4 min-w-4 min-h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+  );
+
   if (isJoining) {
     buttonLabel = (
       <>
-        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+        {spinner}
         Connecting...
       </>
     );
   } else if (isConnecting || isReconnecting || !isConnected) {
     buttonLabel = (
       <>
-        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+        {spinner}
         Connecting to server...
       </>
     );
@@ -77,9 +81,9 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="space-y-4">
-        <section className="space-y-3">
-          <div className="flex items-center gap-4 border-b-2 border-foreground pb-2">
+      <div className="space-y-6 sm:space-y-4">
+        <section className="space-y-4 sm:space-y-3">
+          <div className="flex items-center gap-4 border-b-2 border-foreground pb-2 mb-2">
             <Link
               href="/"
               className="w-8 h-8 bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-colors flex items-center justify-center font-black cursor-pointer shadow-retro-sm active:translate-y-0.5 active:shadow-none"
@@ -87,18 +91,13 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
             >
               <ArrowLeftIcon className="w-5 h-5" />
             </Link>
-            <h2 className="text-2xl font-black tracking-tight uppercase">
-              Join Match
-            </h2>
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight uppercase">Join Match</h2>
           </div>
           <div className="space-y-4">
             <div className="p-4 bg-muted/20 border-2 border-foreground shadow-retro">
               <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-2">
                 Match Info:{" "}
-                <span className="text-foreground font-bold">
-                  {settings.maxRoomSize} PLAYERS
-                </span>{" "}
-                |{" "}
+                <span className="text-foreground font-bold">{settings.maxRoomSize} PLAYERS</span> |{" "}
                 <span className="text-foreground font-bold">
                   {settings.difficulty.toUpperCase()}
                 </span>
@@ -115,10 +114,8 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
                   id="username"
                   placeholder={randomUsername}
                   value={username}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setUsername(e.target.value)
-                  }
-                  className="h-14 text-xl font-bold border-2 border-foreground shadow-retro bg-background focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-all px-4"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+                  className="h-12 sm:h-14 text-lg sm:text-xl font-bold border-2 border-foreground shadow-retro bg-background focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-all px-4"
                   maxLength={30}
                 />
                 {formErrors.username && (
@@ -128,31 +125,31 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
                 )}
               </div>
             </div>
-
-            <div className="pt-4">
-              <Button
-                onClick={handleSubmit}
-                disabled={isButtonDisabled}
-                className="w-full h-20 text-2xl font-black tracking-tighter shadow-retro border-2 border-foreground active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase"
-                size="lg"
-              >
-                {buttonLabel}
-              </Button>
-
-              <div className="flex justify-center pt-2">
-                <Link href="/">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all font-mono text-xs uppercase tracking-widest"
-                  >
-                    &larr; Back to Home
-                  </Button>
-                </Link>
-              </div>
-            </div>
           </div>
         </section>
+
+        <div>
+          <Button
+            onClick={handleSubmit}
+            disabled={isButtonDisabled}
+            className="w-full h-16 sm:h-20 text-xl sm:text-2xl font-black tracking-tighter shadow-retro border-2 border-foreground active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase"
+            size="lg"
+          >
+            {buttonLabel}
+          </Button>
+
+          <div className="flex justify-center pt-2">
+            <Link href="/">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all font-mono text-xs uppercase tracking-widest"
+              >
+                &larr; Back to Home
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

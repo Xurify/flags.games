@@ -80,7 +80,7 @@ export function LobbyPageClient({ randomUsername }: LobbyPageClientProps) {
   if (currentRoom) {
     if (["waiting", "starting"].includes(currentPhase)) {
       return (
-        <div className="min-h-screen w-full bg-transparent mx-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="min-h-screen w-full bg-transparent mx-auto px-4 sm:px-6 py-4 sm:py-6 pb-24 sm:pb-6">
           <RoomLobby room={currentRoom} />
         </div>
       );
@@ -96,9 +96,9 @@ export function LobbyPageClient({ randomUsername }: LobbyPageClientProps) {
   }
 
   return (
-    <div className="min-h-screen w-full bg-transparent mx-auto px-4 sm:px-6 py-4 sm:py-6">
-      <div className="flex flex-col gap-2 text-center">
-        <h1 className="text-5xl sm:text-6xl font-black tracking-tighter text-foreground leading-[0.85] uppercase">
+    <div className="min-h-screen w-full bg-transparent mx-auto px-4 sm:px-6 py-7 sm:py-6 pb-24 sm:pb-6">
+      <div className="flex flex-col gap-2 sm:gap-2 text-center mb-4 sm:mb-4">
+        <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-foreground leading-[0.85] uppercase">
           Multiplayer
         </h1>
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground max-w-sm mx-auto">

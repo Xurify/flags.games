@@ -7,11 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SettingsSelect } from "./SettingsSelect";
-import {
-  DIFFICULTY_LEVELS,
-  ROOM_SIZES,
-  TIME_PER_QUESTION_OPTIONS,
-} from "@/lib/constants";
+import { DIFFICULTY_LEVELS, ROOM_SIZES, TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
 import { RoomSettings } from "@/lib/types/socket";
 import { useConnectionStatus } from "@/lib/hooks/useConnectionStatus";
 
@@ -40,10 +36,7 @@ interface CreateRoomFormProps {
   settings: RoomSettings;
   setSettings: React.Dispatch<React.SetStateAction<RoomSettings>>;
   isCreating: boolean;
-  handleCreateRoom: (
-    finalUsername: string,
-    settings: RoomSettings,
-  ) => Promise<void>;
+  handleCreateRoom: (finalUsername: string, settings: RoomSettings) => Promise<void>;
   formErrors: { username?: string; settings?: string };
 }
 
@@ -77,17 +70,21 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
   const isButtonDisabled = isCreating || isSocketBusy;
 
   let buttonLabel: React.ReactNode = "Create Room";
+  const spinner = (
+    <div className="w-4 h-4 min-w-4 min-h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+  );
+
   if (isCreating) {
     buttonLabel = (
       <>
-        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+        {spinner}
         Creating Room...
       </>
     );
   } else if (isConnecting || isReconnecting || !isConnected) {
     buttonLabel = (
       <>
-        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+        {spinner}
         Connecting to server...
       </>
     );
@@ -95,15 +92,13 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="space-y-4">
-        <section className="space-y-3">
-          <div className="flex items-center gap-4 border-b-2 border-foreground pb-2">
+      <div className="space-y-6 sm:space-y-4">
+        <section className="space-y-4 sm:space-y-3">
+          <div className="flex items-center gap-4 border-b-2 border-foreground pb-2 mb-2">
             <div className="w-8 h-8 bg-foreground text-background flex items-center justify-center font-black">
               1
             </div>
-            <h2 className="text-2xl font-black tracking-tight uppercase">
-              Player Info
-            </h2>
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight uppercase">Player Info</h2>
           </div>
           <div className="space-y-2">
             <Label
@@ -116,10 +111,8 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
               id="username"
               placeholder={randomUsername}
               value={username}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setUsername(e.target.value)
-              }
-              className="h-14 text-xl font-bold border-2 border-foreground shadow-retro bg-background focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-all px-4"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+              className="h-12 sm:h-14 text-lg sm:text-xl font-bold border-2 border-foreground shadow-retro bg-background focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-all px-4"
               maxLength={30}
             />
             {formErrors.username && (
@@ -138,12 +131,12 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
             <div className="w-8 h-8 bg-foreground text-background flex items-center justify-center font-black">
               2
             </div>
-            <h2 className="text-2xl font-black tracking-tight uppercase">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight uppercase">
               Match Settings
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-muted/20 border-2 border-foreground p-6 shadow-retro">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 bg-muted/20 border-2 border-foreground p-4 sm:p-6 shadow-retro">
             <SettingsSelect
               icon={<UsersIcon className="w-4 h-4" />}
               label="Players"
@@ -152,9 +145,7 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
                 value: size,
                 label: `${size} Players`,
               }))}
-              onValueChange={(value) =>
-                setSettings((prev) => ({ ...prev, maxRoomSize: value }))
-              }
+              onValueChange={(value) => setSettings((prev) => ({ ...prev, maxRoomSize: value }))}
               renderValue={(value) => `${value} Players`}
             />
             <SettingsSelect
@@ -165,9 +156,7 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
                 value: level,
                 label: level.charAt(0).toUpperCase() + level.slice(1),
               }))}
-              onValueChange={(value) =>
-                setSettings((prev) => ({ ...prev, difficulty: value }))
-              }
+              onValueChange={(value) => setSettings((prev) => ({ ...prev, difficulty: value }))}
               renderValue={(value) => value.toUpperCase()}
             />
             <SettingsSelect
@@ -200,19 +189,17 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
                   disabled: true,
                 },
               ]}
-              onValueChange={(value) =>
-                setSettings((prev) => ({ ...prev, gameMode: value }))
-              }
+              onValueChange={(value) => setSettings((prev) => ({ ...prev, gameMode: value }))}
               renderValue={(value) => value.toUpperCase()}
             />
           </div>
         </section>
 
-        <div className="pt-4">
+        <div>
           <Button
             onClick={handleSubmit}
             disabled={isButtonDisabled}
-            className="w-full h-20 text-2xl font-black tracking-tighter shadow-retro border-2 border-foreground active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase"
+            className="w-full h-16 sm:h-20 text-xl sm:text-2xl font-black tracking-tighter shadow-retro border-2 border-foreground active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase"
             size="lg"
           >
             {buttonLabel}

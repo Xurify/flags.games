@@ -7,11 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getCountryFlagUrl } from "@/lib/utils/image";
 
-interface LandingPageProps {
-  onStartSolo: () => void;
-}
-
-export default function LandingPage({ onStartSolo }: LandingPageProps) {
+export default function LandingPage() {
   interface FloatingFlag {
     code: string;
     delay: number;
@@ -35,8 +31,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
     {
       code: "BR",
       delay: 4,
-      className:
-        "top-[65%] md:top-[20%] left-[40%] md:left-[15%] animate-float-1",
+      className: "top-[65%] md:top-[20%] left-[40%] md:left-[15%] animate-float-1",
     },
     {
       code: "GB",
@@ -58,8 +53,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
     {
       code: "ZA",
       delay: 1,
-      className:
-        "bottom-[15%] md:bottom-[10%] right-[15%] md:right-[5%] animate-float-1",
+      className: "bottom-[15%] md:bottom-[10%] right-[15%] md:right-[5%] animate-float-1",
     },
     {
       code: "NL",
@@ -114,48 +108,47 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
           197 Countries
         </Badge>
 
-        <h1 className="text-6xl sm:text-7xl md:text-9xl font-black mb-4 tracking-tighter text-foreground decoration-primary underline underline-offset-8 decoration-4">
+        <h1 className="text-6xl sm:text-7xl md:text-9xl font-black mb-2 sm:mb-4 tracking-tighter text-foreground decoration-primary underline underline-offset-8 decoration-4">
           FLAGS
         </h1>
 
-        <p className="text-base md:text-xl font-mono text-muted-foreground mb-8 md:mb-12 max-w-md">
+        <p className="text-sm sm:text-base md:text-xl font-mono text-muted-foreground mb-6 md:mb-12 max-w-md">
           How well do you know your flags? <br /> Let's find out! 🧐
         </p>
 
         <div className="flex flex-col gap-4 md:gap-6 w-full max-w-sm">
-          <Button
-            size="lg"
-            className="h-20 md:h-24 justify-between px-6 md:px-8 bg-background hover:bg-muted text-foreground group border-2 border-foreground shadow-retro"
-            onClick={onStartSolo}
-          >
-            <div className="flex items-center gap-4 md:gap-6">
-              <div className="p-2 md:p-3 bg-destructive border-2 border-foreground text-white group-hover:rotate-3 transition-transform">
-                <UserIcon className="w-5 h-5 md:w-6 md:h-6" />
-              </div>
-              <div className="text-left">
-                <div className="text-xl md:text-xl font-black block leading-none">
-                  SOLO
+          <Link href="/play" className="w-full">
+            <Button
+              size="lg"
+              className="h-20 md:h-24 w-full justify-between px-5 sm:px-6 md:px-8 bg-background hover:bg-muted group border-2 border-foreground shadow-retro"
+            >
+              <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
+                <div className="p-1.5 sm:p-2 md:p-3 bg-destructive border-2 border-foreground text-white group-hover:rotate-3 transition-transform">
+                  <UserIcon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                 </div>
-                <div className="text-[10px] md:text-xs font-mono font-normal opacity-70">
-                  Compete against yourself <br /> in various modes
+                <div className="text-left">
+                  <div className="text-lg sm:text-xl font-black block leading-none">SOLO</div>
+                  <div className="text-[10px] md:text-xs font-mono font-normal opacity-70">
+                    Compete against yourself <br /> in various modes
+                  </div>
                 </div>
               </div>
-            </div>
-            <ArrowRightIcon className="w-5 h-5 md:w-6 md:h-6 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-destructive" />
-          </Button>
+              <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-destructive" />
+            </Button>
+          </Link>
 
           <Link href="/lobby" className="w-full">
             <Button
               size="lg"
               variant="outline"
-              className="h-20 md:h-24 w-full justify-between px-6 md:px-8 bg-background hover:bg-muted group border-2 border-foreground shadow-retro"
+              className="h-20 md:h-24 w-full justify-between px-5 sm:px-6 md:px-8 bg-background hover:bg-muted group border-2 border-foreground shadow-retro"
             >
-              <div className="flex items-center gap-4 md:gap-6">
-                <div className="p-2 md:p-3 bg-blue-600 border-2 border-foreground text-white group-hover:rotate-3 transition-transform">
-                  <UsersIcon className="w-5 h-5 md:w-6 md:h-6" />
+              <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
+                <div className="p-1.5 sm:p-2 md:p-3 bg-blue-600 border-2 border-foreground text-white group-hover:rotate-3 transition-transform">
+                  <UsersIcon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                 </div>
                 <div className="text-left">
-                  <div className="text-xl md:text-xl font-black block leading-none">
+                  <div className="text-lg sm:text-xl font-black block leading-none">
                     MULTIPLAYER (BETA)
                   </div>
                   <div className="text-[10px] md:text-xs font-mono font-normal opacity-70">
@@ -163,7 +156,7 @@ export default function LandingPage({ onStartSolo }: LandingPageProps) {
                   </div>
                 </div>
               </div>
-              <ArrowRightIcon className="w-5 h-5 md:w-6 md:h-6 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-blue-600" />
+              <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-blue-600" />
             </Button>
           </Link>
         </div>
