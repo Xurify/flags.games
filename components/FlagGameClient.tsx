@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { useSearchParams } from "next/navigation";
-import { RefreshCwIcon, HelpCircleIcon, SwordsIcon } from "lucide-react";
+import { RefreshCwIcon, HelpCircleIcon, SwordsIcon, ChevronDownIcon } from "lucide-react";
 import {
   CORRECT_POINT_COST,
   MAX_HEARTS,
@@ -77,12 +77,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 }) => {
   const { settings } = useSettings();
   const searchParams = useSearchParams();
-  const {
-    setDifficultyParam,
-    setModeClassic,
-    setModeLimited,
-    setModeTimeAttack,
-  } = useGameQueryParams();
+  const { setDifficultyParam, setModeClassic, setModeLimited, setModeTimeAttack } =
+    useGameQueryParams();
   const { setHomeNavigationConfirmationRequired } = useGameNavigation();
 
   const [gameState, setGameState] = useState<GameState>({
@@ -103,15 +99,14 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   const [limitedLifeModeEnabled, setLimitedLifeModeEnabled] = useState(
     initialLimitedLifeModeEnabled
   );
-  const [timeAttackModeDurationSec, setTimeAttackModeDurationSec] = useState<
-    number | null
-  >(initialTimeAttackModeDurationSec);
+  const [timeAttackModeDurationSec, setTimeAttackModeDurationSec] = useState<number | null>(
+    initialTimeAttackModeDurationSec
+  );
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
   const [showGameModesDialog, setShowGameModesDialog] = useState(false);
-  const [showPointsAddedAnimation, setShowPointsAddedAnimation] =
-    useState(false);
+  const [showPointsAddedAnimation, setShowPointsAddedAnimation] = useState(false);
 
   const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
   const [questionStartMs, setQuestionStartMs] = useState<number>(Date.now());
@@ -129,16 +124,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   }, [gameState.currentQuestion, gameState.totalQuestions]);
 
   useEffect(() => {
-    const isProtected =
-      gameState.currentQuestion > 1 && !gameState.gameCompleted;
+    const isProtected = gameState.currentQuestion > 1 && !gameState.gameCompleted;
     setHomeNavigationConfirmationRequired(isProtected);
 
     return () => setHomeNavigationConfirmationRequired(false);
-  }, [
-    gameState.currentQuestion,
-    gameState.gameCompleted,
-    setHomeNavigationConfirmationRequired,
-  ]);
+  }, [gameState.currentQuestion, gameState.gameCompleted, setHomeNavigationConfirmationRequired]);
 
   const clearGameTimeout = () => {
     if (timeoutRef.current) {
@@ -164,10 +154,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 
   const generateQuestionHandler = (difficulty?: Difficulty) => {
     const difficultyToUse = difficulty || gameState.difficulty;
-    const questionData = generateQuestion(
-      difficultyToUse,
-      gameState.usedCountries
-    );
+    const questionData = generateQuestion(difficultyToUse, gameState.usedCountries);
 
     if (!questionData) {
       setGameState((prev) => ({
@@ -211,8 +198,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
     ]);
 
     setGameState((prev) => {
-      const newHearts =
-        limitedLifeModeEnabled && !isCorrect ? prev.hearts - 1 : prev.hearts;
+      const newHearts = limitedLifeModeEnabled && !isCorrect ? prev.hearts - 1 : prev.hearts;
       const gameOver = limitedLifeModeEnabled && newHearts <= 0;
 
       return {
@@ -235,9 +221,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
     if (settings.autoAdvanceEnabled) {
       setGameTimeout(() => {
         const updatedHearts =
-          limitedLifeModeEnabled && !isCorrect
-            ? gameState.hearts - 1
-            : gameState.hearts;
+          limitedLifeModeEnabled && !isCorrect ? gameState.hearts - 1 : gameState.hearts;
         if (limitedLifeModeEnabled && updatedHearts <= 0) {
           setGameState((prev) => ({
             ...prev,
@@ -394,10 +378,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
     const modeParam = searchParams.get("mode");
     const durationParam = searchParams.get("t");
     if (modeParam === "limited") {
-      if (
-        limitedLifeModeEnabled === false ||
-        timeAttackModeDurationSec !== null
-      ) {
+      if (limitedLifeModeEnabled === false || timeAttackModeDurationSec !== null) {
         setLimitedLifeModeEnabled(true);
         setTimeAttackModeDurationSec(null);
         setGameState((prev) => ({ ...prev, gameStarted: true }));
@@ -406,9 +387,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
     } else if (modeParam === "time-attack") {
       const parsed = Number(durationParam);
       const nextDuration =
-        Number.isFinite(parsed) && parsed > 0
-          ? parsed
-          : settings.timePerQuestion;
+        Number.isFinite(parsed) && parsed > 0 ? parsed : settings.timePerQuestion;
       if (
         limitedLifeModeEnabled === true ||
         timeAttackModeDurationSec !== nextDuration ||
@@ -436,9 +415,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 
   useEffect(() => {
     if (gameState.gameCompleted && settings.soundEffectsEnabled) {
-      const percentage =
-        (gameState.score / (gameState.totalQuestions * CORRECT_POINT_COST)) *
-        100;
+      const percentage = (gameState.score / (gameState.totalQuestions * CORRECT_POINT_COST)) * 100;
       if (percentage >= 60) {
         audioManager.playVictorySound();
       }
@@ -531,17 +508,18 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                 </Button>
                 <div className="w-px h-6 bg-foreground/10" />
                 <button
-                  className="flex flex-col text-left hover:opacity-70 transition-opacity"
+                  className="flex flex-col text-left hover:bg-foreground/5 px-2 py-1 -mx-2 -my-1 rounded-md transition-all cursor-pointer group"
                   onClick={() => setShowDifficultyDialog(true)}
                 >
-                  <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground cursor-pointer mb-1">
+                  <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground mb-0.5 group-hover:text-primary transition-colors">
                     Level
                   </span>
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs sm:text-sm font-black uppercase tracking-tight cursor-pointer">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs sm:text-sm font-black uppercase tracking-tight">
                       {gameState.difficulty}
                     </span>
+                    <ChevronDownIcon className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors" />
                   </div>
                 </button>
               </div>
@@ -576,8 +554,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                   </span>
                 </div>
 
-                {(limitedLifeModeEnabled ||
-                  timeAttackModeDurationSec !== null) && (
+                {(limitedLifeModeEnabled || timeAttackModeDurationSec !== null) && (
                   <div className="w-px h-6 bg-foreground/10" />
                 )}
 
@@ -595,15 +572,12 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                       ? "finished"
                       : gameState.showResult
                       ? "results"
-                      : timeAttackModeDurationSec !== null &&
-                        !gameState.gameStarted
+                      : timeAttackModeDurationSec !== null && !gameState.gameStarted
                       ? "waiting"
                       : "question"
                   }
                   onTimeUp={handleTimeUp}
-                  startTimeMs={
-                    gameState.gameStarted ? questionStartMs : undefined
-                  }
+                  startTimeMs={gameState.gameStarted ? questionStartMs : undefined}
                 />
               </div>
             </div>
@@ -647,42 +621,37 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                   selectedAnswer={gameState.selectedAnswer}
                   disabled={
                     gameState.showResult ||
-                    (timeAttackModeDurationSec !== null &&
-                      !gameState.gameStarted)
+                    (timeAttackModeDurationSec !== null && !gameState.gameStarted)
                   }
                   correctAnswer={gameState.currentCountry.code}
                 />
 
-                {timeAttackModeDurationSec !== null &&
-                  !gameState.gameStarted && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-card rounded-md">
-                      <div className="flex flex-col items-center text-center gap-3 p-4">
-                        <div className="text-base font-semibold">
-                          Time Attack
-                        </div>
-                        <p className="text-muted-foreground text-sm">
-                          Press Start — you'll have {timeAttackModeDurationSec}s
-                          per question.
-                        </p>
-                        <Button
-                          onClick={() => {
-                            setGameState((prev) => ({
-                              ...prev,
-                              gameStarted: true,
-                            }));
-                            setQuestionStartMs(Date.now());
-                            audioManager.playAudio(AUDIO_URLS.BUTTON_CLICK, {
-                              volume: 1,
-                              key: AUDIO_URLS_KEYS.BUTTON_CLICK,
-                            });
-                          }}
-                          size="lg"
-                        >
-                          Start
-                        </Button>
-                      </div>
+                {timeAttackModeDurationSec !== null && !gameState.gameStarted && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-card rounded-md">
+                    <div className="flex flex-col items-center text-center gap-3 p-4">
+                      <div className="text-base font-semibold">Time Attack</div>
+                      <p className="text-muted-foreground text-sm">
+                        Press Start — you'll have {timeAttackModeDurationSec}s per question.
+                      </p>
+                      <Button
+                        onClick={() => {
+                          setGameState((prev) => ({
+                            ...prev,
+                            gameStarted: true,
+                          }));
+                          setQuestionStartMs(Date.now());
+                          audioManager.playAudio(AUDIO_URLS.BUTTON_CLICK, {
+                            volume: 1,
+                            key: AUDIO_URLS_KEYS.BUTTON_CLICK,
+                          });
+                        }}
+                        size="lg"
+                      >
+                        Start
+                      </Button>
                     </div>
-                  )}
+                  </div>
+                )}
                 {gameState.showResult && !settings.autoAdvanceEnabled && (
                   <div className="mb-3 sm:mb-6 text-center">
                     <Button onClick={nextQuestion} className="w-full" size="lg">
@@ -703,10 +672,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                 RESTART GAME
               </Button>
 
-              <HowToPlayDialog
-                open={showHowToPlayDialog}
-                onOpenChange={setShowHowToPlayDialog}
-              >
+              <HowToPlayDialog open={showHowToPlayDialog} onOpenChange={setShowHowToPlayDialog}>
                 <Button
                   variant="ghost"
                   className="text-muted-foreground hover:bg-transparent hover:shadow-none font-mono text-xs uppercase tracking-widest"
