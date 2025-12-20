@@ -51,7 +51,7 @@ export const GlobalNavigation = () => {
   return (
     <>
       <div className="fixed bottom-3 right-3 sm:bottom-auto sm:top-6 sm:right-6 z-50">
-        <div className="bg-background/95 backdrop-blur-sm border-2 border-foreground p-1 flex items-center gap-1 rounded-sm shadow-retro md:shadow-none">
+        <div className="bg-background/95 backdrop-blur-sm border-2 border-foreground p-1 flex items-center gap-1 rounded-sm shadow-retro">
           <Button
             variant="ghost"
             size="icon-sm"
