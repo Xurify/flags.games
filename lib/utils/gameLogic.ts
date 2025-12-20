@@ -183,7 +183,7 @@ const calculateOptionSimilarityScore = (
     }
 
     // Flag color pattern analysis
-    for (const [pattern, codes] of Object.entries(FLAG_COLOR_PATTERNS)) {
+    for (const [_pattern, codes] of Object.entries(FLAG_COLOR_PATTERNS)) {
       if (
         codes.includes(correctCountry.code) &&
         codes.includes(candidateCountry.code)
@@ -194,7 +194,7 @@ const calculateOptionSimilarityScore = (
     }
 
     // Flag element similarities (stars, crosses, stripes, etc.)
-    for (const [element, codes] of Object.entries(FLAG_ELEMENTS)) {
+    for (const [_element, codes] of Object.entries(FLAG_ELEMENTS)) {
       if (
         codes.includes(correctCountry.code) &&
         codes.includes(candidateCountry.code)
@@ -212,7 +212,7 @@ const calculateOptionSimilarityScore = (
     }
 
     // Sub-regional similarity bonus
-    for (const [subRegion, codes] of Object.entries(SUB_REGIONS)) {
+    for (const [_subRegion, codes] of Object.entries(SUB_REGIONS)) {
       if (
         codes.includes(correctCountry.code) &&
         codes.includes(candidateCountry.code)

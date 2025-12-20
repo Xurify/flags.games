@@ -14,13 +14,7 @@ interface TimerProps {
   startTimeMs?: number;
 }
 
-export default function Timer({
-  timePerQuestion,
-  questionIndex,
-  currentPhase,
-  onTimeUp,
-  startTimeMs,
-}: TimerProps) {
+export default function Timer({ timePerQuestion, questionIndex, currentPhase, onTimeUp, startTimeMs }: TimerProps) {
   const { timeRemainingSec } = useWallClockCountdown({
     durationSec: timePerQuestion,
     isActive: currentPhase === "question",
@@ -34,11 +28,11 @@ export default function Timer({
 
   const { settings } = useSettings();
   const previousWholeSecondsRef = useRef<number | null>(null);
-  const shouldAnimate =
-    currentPhase === "question" && timeRemainingSec < timePerQuestion;
+  const shouldAnimate = currentPhase === "question" && timeRemainingSec < timePerQuestion;
 
   useEffect(() => {
     previousWholeSecondsRef.current = Math.ceil(timeRemainingSec);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questionIndex, currentPhase]);
 
   useEffect(() => {
@@ -57,38 +51,19 @@ export default function Timer({
 
     if (currentWhole <= 0) {
       audioManager.stopClockTick();
-    } else if (
-      previousWhole !== null &&
-      currentWhole < previousWhole &&
-      currentWhole <= THRESHOLD_SECONDS &&
-      currentWhole > 0
-    ) {
+    } else if (previousWhole !== null && currentWhole < previousWhole && currentWhole <= THRESHOLD_SECONDS && currentWhole > 0) {
       audioManager.playClockTick(0.4).catch((error) => {
         console.error("Error playing clock tick:", error);
       });
     }
 
     previousWholeSecondsRef.current = currentWhole;
-
-  }, [
-    timeRemainingSec,
-    currentPhase,
-    settings.soundEffectsEnabled,
-    timePerQuestion,
-  ]);
+  }, [timeRemainingSec, currentPhase, settings.soundEffectsEnabled, timePerQuestion]);
 
   return (
     <div className="relative w-8 h-8">
       <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 32 32">
-        <circle
-          cx="16"
-          cy="16"
-          r="14"
-          stroke="currentColor"
-          strokeWidth="2"
-          fill="none"
-          className="text-muted-foreground/20"
-        />
+        <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2" fill="none" className="text-muted-foreground/20" />
         <circle
           cx="16"
           cy="16"
@@ -100,16 +75,13 @@ export default function Timer({
           className={"text-primary"}
           style={{
             strokeDasharray: `${2 * Math.PI * 14}`,
-            strokeDashoffset:
-              2 * Math.PI * 14 * (1 - timeRemainingSec / timePerQuestion),
+            strokeDashoffset: 2 * Math.PI * 14 * (1 - timeRemainingSec / timePerQuestion),
             willChange: shouldAnimate ? "stroke-dashoffset" : undefined,
           }}
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-xs font-bold text-primary">
-          {Math.ceil(timeRemainingSec)}
-        </span>
+        <span className="text-xs font-bold text-primary">{Math.ceil(timeRemainingSec)}</span>
       </div>
     </div>
   );

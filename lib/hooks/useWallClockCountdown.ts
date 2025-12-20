@@ -146,7 +146,8 @@ export function useWallClockCountdown(
       document.removeEventListener("visibilitychange", handleVisibility);
       clear();
     };
-  }, [isActive, durationSec, resetKey, params.startTimeMs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive, durationSec, resetKey, params.startTimeMs, params.intervalMs, onTimeUp]);
 
   const restart = (nextDurationSec?: number) => {
     start(nextDurationSec ?? durationSec);
