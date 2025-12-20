@@ -21,7 +21,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
           toast:
             "group toast !rounded-none !border-2 !border-foreground !bg-background !shadow-retro !p-6 flex items-start gap-4 transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none",
           title: "!font-black !uppercase !tracking-tight !text-sm !text-foreground !font-sans",
-          description: "!font-mono !text-[10px] !uppercase !tracking-widest !text-muted-foreground !mt-1.5 !leading-relaxed",
+          description:
+            "!font-mono !text-[10px] !uppercase !tracking-widest !text-muted-foreground !mt-1.5 !leading-relaxed",
           icon: "!mt-0.5",
           success: "!border-green-600",
           error: "!border-red-600",

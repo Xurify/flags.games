@@ -1,13 +1,6 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  ReactNode,
-} from "react";
+import React, { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
 import { toast } from "sonner";
 
 import { logger } from "@/lib/utils/logger";
@@ -23,6 +16,7 @@ import {
   GameStateLeaderboard,
   AnswerSubmittedData,
 } from "@/lib/types/socket";
+import { ErrorCode } from "../types/errorCodes";
 
 export interface WebSocketMessage<T = any> {
   type: keyof typeof WS_MESSAGE_TYPES;
@@ -30,11 +24,7 @@ export interface WebSocketMessage<T = any> {
   timestamp?: number;
 }
 
-export type ConnectionState =
-  | "disconnected"
-  | "connecting"
-  | "connected"
-  | "reconnecting";
+export type ConnectionState = "disconnected" | "connecting" | "connected" | "reconnecting";
 
 export interface MessageDataTypes {
   [WS_MESSAGE_TYPES.HEARTBEAT]: {};
@@ -124,9 +114,7 @@ export interface MessageDataTypes {
   };
 }
 
-type MessageHandler<T extends keyof MessageDataTypes> = (
-  data: MessageDataTypes[T]
-) => void;
+type MessageHandler<T extends keyof MessageDataTypes> = (data: MessageDataTypes[T]) => void;
 
 export interface SocketContextType {
   connectionState: ConnectionState;
@@ -137,10 +125,7 @@ export interface SocketContextType {
   connect: () => void;
   disconnect: () => void;
 
-  createRoom: (
-    username: string,
-    settings: Partial<RoomSettings>
-  ) => Promise<void>;
+  createRoom: (username: string, settings: Partial<RoomSettings>) => Promise<void>;
   joinRoom: (inviteCode: string, username: string) => Promise<void>;
   leaveRoom: () => Promise<void>;
 
@@ -178,15 +163,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   children,
   wsUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "ws://localhost:3001/ws",
 }) => {
-  const [connectionState, setConnectionState] =
-    useState<ConnectionState>("disconnected");
+  const [connectionState, setConnectionState] = useState<ConnectionState>("disconnected");
   const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconnectAttemptsRef = useRef(0);
   const reconnectToastIdRef = useRef<string | number | null>(null);
   const disconnectedToastIdRef = useRef<string | number | null>(null);
@@ -196,16 +178,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
 
   const { settings } = useSettings();
 
-  const messageHandlers = useRef<
-    Map<keyof typeof WS_MESSAGE_TYPES, (data: any) => void>
-  >(new Map());
+  const messageHandlers = useRef<Map<keyof typeof WS_MESSAGE_TYPES, (data: any) => void>>(
+    new Map()
+  );
 
   const setupMessageHandlers = () => {
     messageHandlers.current.clear();
 
-    const heartbeatHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.HEARTBEAT
-    > = () => {
+    const heartbeatHandler: MessageHandler<typeof WS_MESSAGE_TYPES.HEARTBEAT> = () => {
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(
           JSON.stringify({
@@ -216,48 +196,40 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       }
     };
 
-    const authSuccessHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.AUTH_SUCCESS
-    > = (data) => {
+    const authSuccessHandler: MessageHandler<typeof WS_MESSAGE_TYPES.AUTH_SUCCESS> = (data) => {
       data.user && setCurrentUser(data.user);
       data.room && setCurrentRoom(data.room);
     };
 
-    const createRoomSuccessHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS
-    > = (data) => {
+    const createRoomSuccessHandler: MessageHandler<typeof WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS> = (
+      data
+    ) => {
       setCurrentRoom(data.room);
       setCurrentUser(data.user);
       logger.info("Created room successfully (CREATE_ROOM_SUCCESS)");
     };
 
-    const joinRoomSuccessHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS
-    > = (data) => {
+    const joinRoomSuccessHandler: MessageHandler<typeof WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS> = (
+      data
+    ) => {
       setCurrentRoom(data.room);
       setCurrentUser(data.user);
       logger.info("Joined room successfully (JOIN_ROOM_SUCCESS)");
     };
 
-    const leaveRoomHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.LEAVE_ROOM
-    > = () => {
+    const leaveRoomHandler: MessageHandler<typeof WS_MESSAGE_TYPES.LEAVE_ROOM> = () => {
       setCurrentRoom(null);
       setCurrentUser(null);
       logger.info("Left room");
     };
 
-    const settingsUpdatedHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED
-    > = (data) => {
-      setCurrentRoom((prev) =>
-        prev ? { ...prev, settings: data.settings } : prev
-      );
+    const settingsUpdatedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED> = (
+      data
+    ) => {
+      setCurrentRoom((prev) => (prev ? { ...prev, settings: data.settings } : prev));
     };
 
-    const userJoinedHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.USER_JOINED
-    > = (data) => {
+    const userJoinedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_JOINED> = (data) => {
       setCurrentRoom((prev) =>
         prev && data.room ? { ...prev, members: data.room.members } : null
       );
@@ -271,9 +243,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       }
     };
 
-    const userLeftHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_LEFT> = (
-      data
-    ) => {
+    const userLeftHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_LEFT> = (data) => {
       setCurrentRoom((prev) =>
         prev && data.room ? { ...prev, members: data.room.members } : null
       );
@@ -286,9 +256,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       }
     };
 
-    const userKickedHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.USER_KICKED
-    > = (data) => {
+    const userKickedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_KICKED> = (data) => {
       setCurrentRoom((prev) =>
         prev && data.room ? { ...prev, members: data.room.members } : null
       );
@@ -301,25 +269,17 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       }
     };
 
-    const hostChangedHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.HOST_CHANGED
-    > = (data) => {
-      setCurrentRoom((prev) =>
-        prev ? { ...prev, host: data.newHost.id } : null
-      );
+    const hostChangedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.HOST_CHANGED> = (data) => {
+      setCurrentRoom((prev) => (prev ? { ...prev, host: data.newHost.id } : null));
     };
 
-    const kickedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.KICKED> = (
-      data
-    ) => {
+    const kickedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.KICKED> = (data) => {
       setCurrentRoom(null);
       setCurrentUser(null);
       logger.info("Kicked from room:", data.reason);
     };
 
-    const gameStartingHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.GAME_STARTING
-    > = (data) => {
+    const gameStartingHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_STARTING> = (data) => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -351,9 +311,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const gameRestartedHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.GAME_RESTARTED
-    > = (data) => {
+    const gameRestartedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_RESTARTED> = (data) => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -384,9 +342,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const newQuestionHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.NEW_QUESTION
-    > = (data) => {
+    const newQuestionHandler: MessageHandler<typeof WS_MESSAGE_TYPES.NEW_QUESTION> = (data) => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -406,9 +362,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const answerSubmittedHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.ANSWER_SUBMITTED
-    > = (data) => {
+    const answerSubmittedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ANSWER_SUBMITTED> = (
+      data
+    ) => {
       logger.info(
         `${data.username} submitted an answer (${data.totalAnswers}/${data.totalPlayers})`
       );
@@ -417,9 +373,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
           ? {
               ...prev,
               members: prev.members.map((member) =>
-                member.id === data.userId
-                  ? { ...member, hasAnswered: true }
-                  : member
+                member.id === data.userId ? { ...member, hasAnswered: true } : member
               ),
             }
           : null
@@ -429,9 +383,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       }
     };
 
-    const questionResultsHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.QUESTION_RESULTS
-    > = (data) => {
+    const questionResultsHandler: MessageHandler<typeof WS_MESSAGE_TYPES.QUESTION_RESULTS> = (
+      data
+    ) => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -449,9 +403,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const gameEndedHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.GAME_ENDED
-    > = (data) => {
+    const gameEndedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_ENDED> = (data) => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -469,9 +421,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const gameStoppedHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.GAME_STOPPED
-    > = () => {
+    const gameStoppedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_STOPPED> = () => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -498,15 +448,19 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const errorHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ERROR> = (
-      data
-    ) => {
-      data.message && toast.error(data.message);
+    const errorHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ERROR> = (data) => {
+      if (data.message) {
+        let description = null;
+        if (data.code === ErrorCode.ROOM_NOT_FOUND) {
+          description = "This room likely does not exist or was deleted.";
+        }
+        toast.error(data.message, {
+          description,
+        });
+      }
     };
 
-    const ttlWarningHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.ROOM_TTL_WARNING
-    > = (data) => {
+    const ttlWarningHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ROOM_TTL_WARNING> = (data) => {
       const seconds = Math.max(0, Math.floor(data.remainingMs / 1000));
       toast.warning("Room will expire soon", {
         description: `This room will be deleted in ${seconds}s. Finish up or create a new room.`,
@@ -514,9 +468,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       });
     };
 
-    const roomExpiredHandler: MessageHandler<
-      typeof WS_MESSAGE_TYPES.ROOM_EXPIRED
-    > = () => {
+    const roomExpiredHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ROOM_EXPIRED> = () => {
       setCurrentRoom(null);
       toast.warning("Room expired", {
         description: "This room reached its maximum lifetime and was deleted.",
@@ -526,71 +478,26 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     };
 
     messageHandlers.current.set(WS_MESSAGE_TYPES.HEARTBEAT, heartbeatHandler);
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.AUTH_SUCCESS,
-      authSuccessHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS,
-      createRoomSuccessHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS,
-      joinRoomSuccessHandler
-    );
+    messageHandlers.current.set(WS_MESSAGE_TYPES.AUTH_SUCCESS, authSuccessHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS, createRoomSuccessHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS, joinRoomSuccessHandler);
     messageHandlers.current.set(WS_MESSAGE_TYPES.LEAVE_ROOM, leaveRoomHandler);
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.SETTINGS_UPDATED,
-      settingsUpdatedHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.USER_JOINED,
-      userJoinedHandler
-    );
+    messageHandlers.current.set(WS_MESSAGE_TYPES.SETTINGS_UPDATED, settingsUpdatedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_JOINED, userJoinedHandler);
     messageHandlers.current.set(WS_MESSAGE_TYPES.USER_LEFT, userLeftHandler);
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.USER_KICKED,
-      userKickedHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.HOST_CHANGED,
-      hostChangedHandler
-    );
+    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_KICKED, userKickedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.HOST_CHANGED, hostChangedHandler);
     messageHandlers.current.set(WS_MESSAGE_TYPES.KICKED, kickedHandler);
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.GAME_STARTING,
-      gameStartingHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.GAME_RESTARTED,
-      gameRestartedHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.NEW_QUESTION,
-      newQuestionHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.ANSWER_SUBMITTED,
-      answerSubmittedHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.QUESTION_RESULTS,
-      questionResultsHandler
-    );
+    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_STARTING, gameStartingHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_RESTARTED, gameRestartedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.NEW_QUESTION, newQuestionHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.ANSWER_SUBMITTED, answerSubmittedHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.QUESTION_RESULTS, questionResultsHandler);
     messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_ENDED, gameEndedHandler);
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.GAME_STOPPED,
-      gameStoppedHandler
-    );
+    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_STOPPED, gameStoppedHandler);
     messageHandlers.current.set(WS_MESSAGE_TYPES.ERROR, errorHandler);
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.ROOM_TTL_WARNING,
-      ttlWarningHandler
-    );
-    messageHandlers.current.set(
-      WS_MESSAGE_TYPES.ROOM_EXPIRED,
-      roomExpiredHandler
-    );
+    messageHandlers.current.set(WS_MESSAGE_TYPES.ROOM_TTL_WARNING, ttlWarningHandler);
+    messageHandlers.current.set(WS_MESSAGE_TYPES.ROOM_EXPIRED, roomExpiredHandler);
   };
 
   const handleMessage = (event: MessageEvent) => {
@@ -646,21 +553,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
             toast.dismiss(reconnectToastIdRef.current);
             reconnectToastIdRef.current = null;
           }
-          toast.info(
-            "This tab was disconnected: Session is open in another tab.",
-            {
-              duration: 8000,
-            }
-          );
+          toast.info("This tab was disconnected: Session is open in another tab.", {
+            duration: 8000,
+          });
           return;
         }
 
         if (event.code !== 1000) {
-          logger.warn(
-            "WebSocket closed unexpectedly:",
-            event.code,
-            event.reason
-          );
+          logger.warn("WebSocket closed unexpectedly:", event.code, event.reason);
 
           if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
             setConnectionState("reconnecting");
@@ -686,6 +586,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
             toast.error("Failed to reconnect after multiple attempts", {
               description: "Please refresh the page or try again later.",
               duration: 10000,
+              className: "sm:!min-w-[480px]",
             });
           }
         }
@@ -736,10 +637,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     } else {
       logger.warn("Cannot send message: WebSocket not connected");
       if (!disconnectedToastIdRef.current) {
-        disconnectedToastIdRef.current = toast.error("Connection lost - messages will be sent when reconnected", {
-          duration: Infinity,
-          dismissible: true,
-        });
+        disconnectedToastIdRef.current = toast.error(
+          "Connection lost - messages will be sent when reconnected",
+          {
+            duration: Infinity,
+            dismissible: true,
+          }
+        );
       }
     }
   };
@@ -866,11 +770,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     getConnectionStats,
   };
 
-  return (
-    <SocketContext.Provider value={contextValue}>
-      {children}
-    </SocketContext.Provider>
-  );
+  return <SocketContext.Provider value={contextValue}>{children}</SocketContext.Provider>;
 };
 
 export default SocketContext;
