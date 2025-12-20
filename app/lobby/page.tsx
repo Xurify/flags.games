@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function LobbyPage() {
+export default function LobbyPage() {
   const randomUsername = new UsernameGenerator().generateUsername();
   return (
     <SocketProvider>

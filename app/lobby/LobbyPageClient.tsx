@@ -60,10 +60,7 @@ export function LobbyPageClient({ randomUsername }: LobbyPageClientProps) {
     }
   }, [currentPhase, currentRoom]);
 
-  const handleCreateRoom = async (
-    username: string,
-    roomSettings: RoomSettings
-  ) => {
+  const handleCreateRoom = async (username: string, roomSettings: RoomSettings) => {
     setFormErrors({});
     setIsCreating(true);
     await createRoom(username, roomSettings);

@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 
-export default function RoomPage({
+export default async function LobbyInvitePage({
   params,
 }: {
-  params: { inviteCode: string };
+  params: Promise<{ inviteCode: string }>;
 }) {
-  redirect(`/lobby?c=${params.inviteCode}`);
+  const inviteCode = (await params).inviteCode;
+  redirect(`/lobby?c=${inviteCode}`);
 }
