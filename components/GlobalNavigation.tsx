@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useSettings } from "@/lib/context/SettingsContext";
 import { useGameNavigation } from "@/lib/context/GameNavigationContext";
 import { useRouter } from "next/navigation";
@@ -35,14 +36,6 @@ export const GlobalNavigation = () => {
     updateSetting("soundEffectsEnabled", !settings.soundEffectsEnabled);
   };
 
-  const handleHomeClick = () => {
-    if (isHomeNavigationConfirmationRequired) {
-      setShowHomeConfirm(true);
-    } else {
-      router.push("/");
-    }
-  };
-
   const confirmHomeNavigation = () => {
     setShowHomeConfirm(false);
     router.push("/");
@@ -52,19 +45,26 @@ export const GlobalNavigation = () => {
     <>
       <div className="fixed bottom-3 right-3 sm:bottom-auto sm:top-6 sm:right-6 z-50">
         <div className="bg-background/95 backdrop-blur-sm border-2 border-foreground p-1 flex items-center gap-1 rounded-sm shadow-retro">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={handleHomeClick}
-            className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground"
-            title="Return to Home"
-            playClickSound={true}
+          <Link
+            href="/"
+            onClick={(e) => {
+              if (isHomeNavigationConfirmationRequired) {
+                e.preventDefault();
+                setShowHomeConfirm(true);
+              }
+            }}
           >
-            <HomeIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </Button>
-
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-primary hover:text-primary-foreground border-transparent hover:border-foreground"
+              title="Return to Home"
+              playClickSound={true}
+            >
+              <HomeIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            </Button>
+          </Link>
           <div className="h-4 w-px bg-foreground/10 mx-0.5" />
-
           <Button
             variant="ghost"
             size="icon-sm"
@@ -79,7 +79,6 @@ export const GlobalNavigation = () => {
               <MoonIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:text-black" />
             )}
           </Button>
-
           <Button
             variant="ghost"
             size="icon-sm"
@@ -94,9 +93,7 @@ export const GlobalNavigation = () => {
               <VolumeXIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             )}
           </Button>
-
           <div className="h-4 w-px bg-foreground/10 mx-0.5" />
-
           <div className="px-1 sm:px-2">
             <SettingsMenu
               settingsOpen={settingsOpen}
@@ -110,7 +107,6 @@ export const GlobalNavigation = () => {
           </div>
         </div>
       </div>
-
       <AlertDialog open={showHomeConfirm} onOpenChange={setShowHomeConfirm}>
         <AlertDialogContent className="max-w-[92vw] sm:max-w-md p-4 sm:p-8 max-h-[85vh] overflow-y-auto">
           <AlertDialogHeader>
@@ -122,9 +118,7 @@ export const GlobalNavigation = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="font-bold uppercase tracking-wide">
-              Cancel
-            </AlertDialogCancel>
+            <AlertDialogCancel className="font-bold uppercase tracking-wide">Cancel</AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"
               onClick={confirmHomeNavigation}

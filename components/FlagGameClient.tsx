@@ -3,13 +3,7 @@
 import { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { useSearchParams } from "next/navigation";
 import { RefreshCwIcon, HelpCircleIcon, SwordsIcon, ChevronDownIcon } from "lucide-react";
-import {
-  CORRECT_POINT_COST,
-  MAX_HEARTS,
-  AUDIO_URLS,
-  AUDIO_URLS_KEYS,
-  Difficulty,
-} from "@/lib/constants";
+import { CORRECT_POINT_COST, MAX_HEARTS, AUDIO_URLS, AUDIO_URLS_KEYS, Difficulty } from "@/lib/constants";
 import { Country } from "@/lib/data/countries";
 import { useSettings } from "@/lib/context/SettingsContext";
 import { useGameQueryParams } from "@/lib/hooks/useGameQueryParams";
@@ -17,6 +11,7 @@ import { generateQuestion, getDifficultySettings } from "@/lib/utils/gameLogic";
 import { audioManager } from "@/lib/utils/audio-manager";
 import { prefetchAllFlags } from "@/lib/utils/image";
 import { useGameNavigation } from "@/lib/context/GameNavigationContext";
+import { usePageReloadProtection } from "@/lib/hooks/usePageReloadProtection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Header from "./Header";
@@ -77,8 +72,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 }) => {
   const { settings } = useSettings();
   const searchParams = useSearchParams();
-  const { setDifficultyParam, setModeClassic, setModeLimited, setModeTimeAttack } =
-    useGameQueryParams();
+  const { setDifficultyParam, setModeClassic, setModeLimited, setModeTimeAttack } = useGameQueryParams();
   const { setHomeNavigationConfirmationRequired } = useGameNavigation();
 
   const [gameState, setGameState] = useState<GameState>({
@@ -96,12 +90,12 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
     hearts: MAX_HEARTS,
   });
 
-  const [limitedLifeModeEnabled, setLimitedLifeModeEnabled] = useState(
-    initialLimitedLifeModeEnabled
-  );
-  const [timeAttackModeDurationSec, setTimeAttackModeDurationSec] = useState<number | null>(
-    initialTimeAttackModeDurationSec
-  );
+  usePageReloadProtection({
+    enabled: gameState.currentQuestion > 1 && !gameState.gameCompleted,
+  });
+
+  const [limitedLifeModeEnabled, setLimitedLifeModeEnabled] = useState(initialLimitedLifeModeEnabled);
+  const [timeAttackModeDurationSec, setTimeAttackModeDurationSec] = useState<number | null>(initialTimeAttackModeDurationSec);
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showDifficultyDialog, setShowDifficultyDialog] = useState(false);
   const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
@@ -220,8 +214,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 
     if (settings.autoAdvanceEnabled) {
       setGameTimeout(() => {
-        const updatedHearts =
-          limitedLifeModeEnabled && !isCorrect ? gameState.hearts - 1 : gameState.hearts;
+        const updatedHearts = limitedLifeModeEnabled && !isCorrect ? gameState.hearts - 1 : gameState.hearts;
         if (limitedLifeModeEnabled && updatedHearts <= 0) {
           setGameState((prev) => ({
             ...prev,
@@ -386,31 +379,21 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
       }
     } else if (modeParam === "time-attack") {
       const parsed = Number(durationParam);
-      const nextDuration =
-        Number.isFinite(parsed) && parsed > 0 ? parsed : settings.timePerQuestion;
-      if (
-        limitedLifeModeEnabled === true ||
-        timeAttackModeDurationSec !== nextDuration ||
-        gameState.gameStarted === true
-      ) {
+      const nextDuration = Number.isFinite(parsed) && parsed > 0 ? parsed : settings.timePerQuestion;
+      if (limitedLifeModeEnabled === true || timeAttackModeDurationSec !== nextDuration || gameState.gameStarted === true) {
         setLimitedLifeModeEnabled(false);
         setTimeAttackModeDurationSec(nextDuration);
         setGameState((prev) => ({ ...prev, gameStarted: false }));
         restartGame(true);
       }
     } else {
-      if (
-        limitedLifeModeEnabled === true ||
-        timeAttackModeDurationSec !== null ||
-        gameState.gameStarted === false
-      ) {
+      if (limitedLifeModeEnabled === true || timeAttackModeDurationSec !== null || gameState.gameStarted === false) {
         setLimitedLifeModeEnabled(false);
         setTimeAttackModeDurationSec(null);
         setGameState((prev) => ({ ...prev, gameStarted: true }));
         restartGame(false);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, settings.timePerQuestion]);
 
   useEffect(() => {
@@ -517,9 +500,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                     </span>
 
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs sm:text-sm font-black uppercase tracking-tight">
-                        {gameState.difficulty}
-                      </span>
+                      <span className="text-xs sm:text-sm font-black uppercase tracking-tight">{gameState.difficulty}</span>
                       <ChevronDownIcon className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
                   </button>
@@ -537,9 +518,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                     <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground leading-none mb-1">
                       Score
                     </span>
-                    <span className="text-xs sm:text-sm font-black text-primary">
-                      {gameState.score.toLocaleString()}
-                    </span>
+                    <span className="text-xs sm:text-sm font-black text-primary">{gameState.score.toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -610,10 +589,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                 </div>
 
                 <div className="mb-4 sm:mb-8">
-                  <FlagDisplay
-                    countryName={gameState.currentCountry.name}
-                    countryCode={gameState.currentCountry.code}
-                  />
+                  <FlagDisplay countryName={gameState.currentCountry.name} countryCode={gameState.currentCountry.code} />
                 </div>
 
                 <AnswerOptions
@@ -621,10 +597,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                   showResult={gameState.showResult}
                   handleAnswer={handleAnswer}
                   selectedAnswer={gameState.selectedAnswer}
-                  disabled={
-                    gameState.showResult ||
-                    (timeAttackModeDurationSec !== null && !gameState.gameStarted)
-                  }
+                  disabled={gameState.showResult || (timeAttackModeDurationSec !== null && !gameState.gameStarted)}
                   correctAnswer={gameState.currentCountry.code}
                 />
 
