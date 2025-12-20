@@ -3,12 +3,7 @@
 import React from "react";
 import { CrownIcon, CheckIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import {
-  GameStateLeaderboard,
-  RoomMember,
-  User,
-  GameAnswer,
-} from "@/lib/types/socket";
+import { GameStateLeaderboard, RoomMember, User, GameAnswer } from "@/lib/types/socket";
 import { cn } from "@/lib/utils/strings";
 
 interface LeaderboardProps {
@@ -91,27 +86,22 @@ export default function Leaderboard({
         const deltaY = prevTop - newTop;
         if (Math.abs(deltaY) < 1) return;
         // Deterministic highlight on the overlay
-        const overlay = element.querySelector<HTMLDivElement>(
-          'div[data-role="highlight"]'
-        );
+        const overlay = element.querySelector<HTMLDivElement>('div[data-role="highlight"]');
         if (overlay) {
           const movedUp = deltaY < 0 ? false : true; // prevTop - newTop; positive means moved up
           // Pull colors from app theme variables for consistency
           const rootVars = getComputedStyle(document.documentElement);
           const upColor =
-            (rootVars.getPropertyValue("--success") || "").trim() ||
-            "oklch(0.65 0.18 140)";
+            (rootVars.getPropertyValue("--success") || "").trim() || "oklch(0.65 0.18 140)";
           const downColor =
-            (rootVars.getPropertyValue("--destructive") || "").trim() ||
-            "oklch(0.62 0.21 25)";
+            (rootVars.getPropertyValue("--destructive") || "").trim() || "oklch(0.62 0.21 25)";
           const existing = highlightTimeoutsRef.current.get(m.id);
           if (existing) {
             window.clearTimeout(existing);
             highlightTimeoutsRef.current.delete(m.id);
           }
           overlay.style.backgroundColor = movedUp ? upColor : downColor;
-          overlay.style.transition =
-            "opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1)";
+          overlay.style.transition = "opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1)";
           overlay.style.opacity = movedUp ? "0.08" : "0.06";
           overlay.style.borderRadius = "0px";
           const timeoutId = window.setTimeout(() => {
@@ -126,8 +116,7 @@ export default function Leaderboard({
         // Force reflow so the browser picks up the starting transform
         void element.offsetHeight;
         // Play
-        element.style.transition =
-          "transform 600ms cubic-bezier(0.22, 1, 0.36, 1)";
+        element.style.transition = "transform 600ms cubic-bezier(0.22, 1, 0.36, 1)";
         element.style.transform = "translateY(0)";
         element.style.willChange = "transform";
         const handleEnd = () => {
@@ -143,32 +132,21 @@ export default function Leaderboard({
     if (Object.keys(positionsRef.current).length === 0) {
       positionsRef.current = newPositions;
     }
-  }, [
-    sortedMembers
-      .map((member) => `${member.id}:${scoreByUserId[member.id] ?? 0}`)
-      .join("|"),
-  ]);
+  }, [sortedMembers.map((member) => `${member.id}:${scoreByUserId[member.id] ?? 0}`).join("|")]);
 
   return (
     <div
       className={cn(
         "border-2 border-foreground shadow-retro bg-card overflow-hidden",
-        variant === "sidebar" && "hidden lg:block w-80",
+        variant === "sidebar" && "hidden lg:block max-w-96 w-full",
         variant === "inline" && "w-full lg:w-80"
       )}
     >
       <div className="bg-foreground text-background px-4 py-3 flex items-center justify-between">
-        <div className="text-xs font-black tracking-widest uppercase">
-          Rankings
-        </div>
+        <div className="text-xs font-black tracking-widest uppercase">Rankings</div>
       </div>
 
-      <div
-        className={cn(
-          "max-h-[500px] overflow-y-auto",
-          variant === "inline" && "max-h-none"
-        )}
-      >
+      <div className={cn("max-h-[500px] overflow-y-auto", variant === "inline" && "max-h-none")}>
         <div className="divide-y-2 divide-foreground/10">
           {sortedMembers.map((member, index) => {
             const isCurrentUser = currentUser?.id === member.id;
@@ -187,10 +165,7 @@ export default function Leaderboard({
                   rowRefs.current[member.id] = element;
                 }}
               >
-                <div
-                  data-role="highlight"
-                  className="absolute inset-0 pointer-events-none z-0"
-                />
+                <div data-role="highlight" className="absolute inset-0 pointer-events-none z-0" />
 
                 <div className="text-xl font-black italic tracking-tighter text-foreground/10 group-hover:text-foreground/20 transition-colors z-10">
                   {index + 1}
@@ -200,9 +175,7 @@ export default function Leaderboard({
                   <span
                     className={cn(
                       "block truncate leading-tight uppercase tracking-tight",
-                      isCurrentUser
-                        ? "font-black text-primary"
-                        : "font-bold text-foreground"
+                      isCurrentUser ? "font-black text-primary" : "font-bold text-foreground"
                     )}
                   >
                     {member.username}
@@ -211,9 +184,7 @@ export default function Leaderboard({
                     {isHost && (
                       <CrownIcon className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
                     )}
-                    {hasAnswered && (
-                      <CheckIcon className="w-3.5 h-3.5 text-success stroke-[3]" />
-                    )}
+                    {hasAnswered && <CheckIcon className="w-3.5 h-3.5 text-success stroke-[3]" />}
                   </div>
                 </div>
 
@@ -221,9 +192,7 @@ export default function Leaderboard({
                   {scoreByUserId[member.id] ?? 0}
                 </div>
 
-                {isCurrentUser && (
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
-                )}
+                {isCurrentUser && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />}
               </div>
             );
           })}

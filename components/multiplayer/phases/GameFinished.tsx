@@ -42,9 +42,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
 
   const currentUserPlacement = useMemo(() => {
     if (!currentUser) return null;
-    const index = leaderboard.findIndex(
-      (player) => player.userId === currentUser.id
-    );
+    const index = leaderboard.findIndex((player) => player.userId === currentUser.id);
     if (index === -1) return null;
     return {
       rank: index + 1,
@@ -61,7 +59,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
   };
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-4xl mx-auto py-6">
+    <div className="flex flex-col gap-8 w-full max-w-4xl mx-auto pt-6 pb-32 px-4 sm:px-6">
       <div className="flex items-center gap-3 border-b-2 border-foreground pb-4 mb-4">
         <Link
           href="/"
@@ -104,9 +102,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
         {[
           {
             label: "RANK",
-            value: currentUserPlacement?.rank
-              ? `#${currentUserPlacement.rank}`
-              : "-",
+            value: currentUserPlacement?.rank ? `#${currentUserPlacement.rank}` : "-",
             highlight: true,
           },
           {
@@ -133,17 +129,13 @@ export default function GameFinished({ room }: GameFinishedProps) {
             key={`game-finished-stats-${stat.label}`}
             className={cn(
               "p-6 border-2 border-foreground shadow-retro flex flex-col items-center justify-center text-center",
-              stat.highlight
-                ? "bg-primary text-primary-foreground"
-                : "bg-card text-foreground"
+              stat.highlight ? "bg-primary text-primary-foreground" : "bg-card text-foreground"
             )}
           >
             <span className="font-mono text-[10px] uppercase font-bold opacity-70 mb-1">
               {stat.label}
             </span>
-            <span className="text-3xl font-black tracking-tighter leading-none">
-              {stat.value}
-            </span>
+            <span className="text-3xl font-black tracking-tighter leading-none">{stat.value}</span>
           </div>
         ))}
       </div>
@@ -189,9 +181,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
                         <span
                           className={cn(
                             "text-lg",
-                            isYou
-                              ? "font-black text-primary"
-                              : "font-bold text-foreground"
+                            isYou ? "font-black text-primary" : "font-bold text-foreground"
                           )}
                         >
                           {player.username}
@@ -215,9 +205,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
                     </TableCell>
                     <TableCell className="text-right font-bold text-muted-foreground tabular-nums">
                       {player.correctAnswers}{" "}
-                      <span className="text-xs">
-                        / {gameState?.totalQuestions}
-                      </span>
+                      <span className="text-xs">/ {gameState?.totalQuestions}</span>
                     </TableCell>
                   </TableRow>
                 );
