@@ -17,12 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  HeartIcon,
-  TimerIcon,
-  CompassIcon,
-  SwordsIcon,
-} from "lucide-react";
+import { HeartIcon, TimerIcon, CompassIcon, SwordsIcon } from "lucide-react";
 import { TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
 import { useSettings } from "@/lib/context/SettingsContext";
 
@@ -207,7 +202,6 @@ const GameModesDialog: React.FC<GameModesDialogProps> = ({
                 <Select
                   value={String(timePerQuestion)}
                   onValueChange={(value) => setTimePerQuestion(Number(value))}
-                  disabled={isTimeAttackActive}
                 >
                   <SelectTrigger className="w-full sm:w-24 h-11 sm:h-10 text-sm font-bold border-2 border-foreground/20">
                     <SelectValue />
@@ -223,12 +217,25 @@ const GameModesDialog: React.FC<GameModesDialogProps> = ({
               </div>
               <Button
                 size="lg"
-                variant={isTimeAttackActive ? "outline" : "default"}
-                disabled={isTimeAttackActive}
+                variant={
+                  isTimeAttackActive &&
+                  timePerQuestion === activeTimeAttackDuration
+                    ? "outline"
+                    : "default"
+                }
+                disabled={
+                  isTimeAttackActive &&
+                  timePerQuestion === activeTimeAttackDuration
+                }
                 className="w-full sm:w-auto sm:min-w-[120px] font-black"
                 onClick={startTimeAttack}
               >
-                {isTimeAttackActive ? "SELECTED" : "SELECT"}
+                {isTimeAttackActive &&
+                timePerQuestion === activeTimeAttackDuration
+                  ? "SELECTED"
+                  : isTimeAttackActive
+                  ? "RESTART"
+                  : "SELECT"}
               </Button>
             </div>
           </div>
