@@ -173,10 +173,10 @@ export default function GameFinished({ room }: GameFinishedProps) {
                       isYou ? "bg-primary/5" : "bg-card"
                     )}
                   >
-                    <TableCell className="text-2xl font-black tracking-tighter text-foreground/20 group-hover:text-foreground/40 text-center transition-colors italic">
+                    <TableCell className="text-2xl font-black tracking-tighter text-foreground/20 group-hover:text-foreground/40 text-center transition-colors italic p-2">
                       {index + 1}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="p-2">
                       <div className="flex items-center gap-3">
                         <span
                           className={cn(
@@ -200,10 +200,10 @@ export default function GameFinished({ room }: GameFinishedProps) {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-center font-black tabular-nums text-lg">
+                    <TableCell className="text-center font-black tabular-nums text-lg p-2">
                       {player.score}
                     </TableCell>
-                    <TableCell className="text-right font-bold text-muted-foreground tabular-nums">
+                    <TableCell className="text-right font-bold text-muted-foreground tabular-nums p-2 pr-4">
                       {player.correctAnswers}{" "}
                       <span className="text-xs">/ {gameState?.totalQuestions}</span>
                     </TableCell>
