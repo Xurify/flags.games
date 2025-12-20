@@ -3,20 +3,20 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
 interface GameNavigationContextType {
-  isHomeNavigationConfirmationRequired: boolean;
-  setHomeNavigationConfirmationRequired: (required: boolean) => void;
+  isUnsafeToNavigate: boolean;
+  setUnsafeToNavigate: (unsafe: boolean) => void;
 }
 
 const GameNavigationContext = createContext<GameNavigationContextType | undefined>(undefined);
 
 export const GameNavigationProvider = ({ children }: { children: ReactNode }) => {
-  const [isHomeNavigationConfirmationRequired, setHomeNavigationConfirmationRequired] = useState(false);
+  const [isUnsafeToNavigate, setUnsafeToNavigate] = useState(false);
 
   return (
     <GameNavigationContext.Provider
       value={{
-        isHomeNavigationConfirmationRequired,
-        setHomeNavigationConfirmationRequired,
+        isUnsafeToNavigate,
+        setUnsafeToNavigate,
       }}
     >
       {children}

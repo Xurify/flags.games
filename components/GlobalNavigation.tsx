@@ -21,7 +21,7 @@ import {
 
 export const GlobalNavigation = () => {
   const { settings, updateSetting } = useSettings();
-  const { isHomeNavigationConfirmationRequired } = useGameNavigation();
+  const { isUnsafeToNavigate } = useGameNavigation();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showHomeConfirm, setShowHomeConfirm] = useState(false);
   const router = useRouter();
@@ -48,7 +48,7 @@ export const GlobalNavigation = () => {
           <Link
             href="/"
             onClick={(e) => {
-              if (isHomeNavigationConfirmationRequired) {
+              if (isUnsafeToNavigate) {
                 e.preventDefault();
                 setShowHomeConfirm(true);
               }
@@ -98,11 +98,9 @@ export const GlobalNavigation = () => {
             <SettingsMenu
               settingsOpen={settingsOpen}
               setSettingsOpen={setSettingsOpen}
-              setShowDifficultyDialog={() => {}}
               toggleSound={toggleSound}
               toggleDarkMode={toggleDarkMode}
               settings={settings}
-              showDifficultyOption={false}
             />
           </div>
         </div>

@@ -44,7 +44,7 @@ class FlagsApi {
       (result, error) => {
         if (error) return true; // Retry on network errors
         if (result && 'error' in result) {
-          const status = (result as any)._status;
+          const status = (result as { _status: number })._status;
           // Only retry on server errors (5xx) or rate limits (429)
           return status >= 500 || status === 429;
         }

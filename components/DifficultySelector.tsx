@@ -10,13 +10,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { SignalIcon } from "lucide-react";
 import { getDifficultySettings } from "@/lib/utils/gameLogic";
 import { Difficulty, DIFFICULTY_LEVELS } from "@/lib/constants";
@@ -37,10 +31,8 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   currentDifficulty,
   gameState,
 }) => {
-  const [selectedDifficulty, setSelectedDifficulty] =
-    useState(currentDifficulty);
-  const [showDifficultyRestartDialog, setShowDifficultyRestartDialog] =
-    useState(false);
+  const [selectedDifficulty, setSelectedDifficulty] = useState(currentDifficulty);
+  const [showDifficultyRestartDialog, setShowDifficultyRestartDialog] = useState(false);
   const difficultySettings = getDifficultySettings(selectedDifficulty);
 
   useEffect(() => {
@@ -50,10 +42,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   }, [open, currentDifficulty]);
 
   const handleDifficultyChange = () => {
-    if (
-      gameState.currentQuestion > 1 &&
-      selectedDifficulty !== currentDifficulty
-    ) {
+    if (gameState.currentQuestion > 1 && selectedDifficulty !== currentDifficulty) {
       setShowDifficultyRestartDialog(true);
     } else {
       onChangeDifficulty(selectedDifficulty);
@@ -79,17 +68,13 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
         </AlertDialogHeader>
         <div className="space-y-6 mt-2">
           <div className="space-y-2">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground ml-1">
-              Select Difficulty
-            </span>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground ml-1">Select Difficulty</span>
             <Select
               value={selectedDifficulty}
-              onValueChange={setSelectedDifficulty as any}
+              onValueChange={setSelectedDifficulty as (value: "easy" | "medium" | "hard" | "expert") => void}
             >
               <SelectTrigger className="w-full h-12 sm:h-14 font-black uppercase text-base border-2 border-foreground shadow-retro">
-                <SelectValue>
-                  {`${difficultySettings.label} (${difficultySettings.count} countries)`}
-                </SelectValue>
+                <SelectValue>{`${difficultySettings.label} (${difficultySettings.count} countries)`}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {DIFFICULTY_LEVELS.map((level) => {
@@ -97,30 +82,22 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
                   let description = "";
                   switch (level) {
                     case "easy":
-                      description =
-                        "Primary identification — high-visibility global entities.";
+                      description = "Primary identification — high-visibility global entities.";
                       break;
                     case "medium":
-                      description =
-                        "Standard operational set — includes moderate complexity.";
+                      description = "Standard operational set — includes moderate complexity.";
                       break;
                     case "hard":
-                      description =
-                        "Deep identification — all global entities included.";
+                      description = "Deep identification — all global entities included.";
                       break;
                     case "expert":
-                      description =
-                        "Maximum challenge — obscure entities and similar patterns.";
+                      description = "Maximum challenge — obscure entities and similar patterns.";
                       break;
                     default:
                       description = "";
                   }
                   return (
-                    <SelectItem
-                      key={level}
-                      value={level}
-                      className="py-3 px-4 group"
-                    >
+                    <SelectItem key={level} value={level} className="py-3 px-4 group">
                       <div className="flex flex-col gap-1">
                         <span className="font-black uppercase tracking-tight text-sm">
                           {settings.label} ({settings.count} countries)
@@ -151,28 +128,18 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
         </AlertDialogFooter>
       </AlertDialogContent>
 
-      <AlertDialog
-        open={showDifficultyRestartDialog}
-        onOpenChange={setShowDifficultyRestartDialog}
-      >
+      <AlertDialog open={showDifficultyRestartDialog} onOpenChange={setShowDifficultyRestartDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Restart Game?</AlertDialogTitle>
             <AlertDialogDescription>
-              Changing the difficulty will restart the game and you'll lose your
-              current progress. Are you sure you want to continue?
+              Changing the difficulty will restart the game and you'll lose your current progress. Are you sure you want to
+              continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => setShowDifficultyRestartDialog(false)}
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmDifficultyRestart}
-              variant="destructive"
-            >
+            <AlertDialogCancel onClick={() => setShowDifficultyRestartDialog(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDifficultyRestart} variant="destructive">
               Restart Game
             </AlertDialogAction>
           </AlertDialogFooter>

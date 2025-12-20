@@ -12,14 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CrownIcon, ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const Confetti = lazy(() => import("react-confetti"));
 
@@ -36,6 +29,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
     if (settings.soundEffectsEnabled && gameState?.phase === "finished") {
       audioManager.playVictorySound();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState?.phase]);
 
   const isHost = currentUser?.id === room.host;
@@ -69,12 +63,8 @@ export default function GameFinished({ room }: GameFinishedProps) {
           <ArrowLeftIcon className="w-4 h-4" />
         </Link>
         <div className="flex flex-col">
-          <h2 className="text-xl sm:text-2xl font-black tracking-tighter text-foreground uppercase leading-none">
-            Game Over
-          </h2>
-          <p className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em] mt-1">
-            Session Terminated
-          </p>
+          <h2 className="text-xl sm:text-2xl font-black tracking-tighter text-foreground uppercase leading-none">Game Over</h2>
+          <p className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em] mt-1">Session Terminated</p>
         </div>
       </div>
 
@@ -111,9 +101,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
           },
           {
             label: "CORRECT",
-            value: `${currentUserPlacement?.me?.correctAnswers ?? 0}/${
-              gameState?.totalQuestions || 0
-            }`,
+            value: `${currentUserPlacement?.me?.correctAnswers ?? 0}/${gameState?.totalQuestions || 0}`,
           },
           {
             label: "ACCURACY",
@@ -132,34 +120,22 @@ export default function GameFinished({ room }: GameFinishedProps) {
               stat.highlight ? "bg-primary text-primary-foreground" : "bg-card text-foreground"
             )}
           >
-            <span className="font-mono text-[10px] uppercase font-bold opacity-70 mb-1">
-              {stat.label}
-            </span>
+            <span className="font-mono text-[10px] uppercase font-bold opacity-70 mb-1">{stat.label}</span>
             <span className="text-3xl font-black tracking-tighter leading-none">{stat.value}</span>
           </div>
         ))}
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-2xl font-black tracking-tight uppercase border-b-2 border-foreground pb-2">
-          Final Standings
-        </h3>
+        <h3 className="text-2xl font-black tracking-tight uppercase border-b-2 border-foreground pb-2">Final Standings</h3>
         <div className="border-2 border-foreground shadow-retro overflow-hidden">
           <Table>
             <TableHeader className="bg-muted dark:bg-muted/20">
               <TableRow className="hover:bg-transparent border-b-2 border-foreground">
-                <TableHead className="w-16 font-black text-foreground uppercase tracking-wider text-center">
-                  Pos
-                </TableHead>
-                <TableHead className="font-black text-foreground uppercase tracking-wider">
-                  Player
-                </TableHead>
-                <TableHead className="w-32 font-black text-foreground uppercase tracking-wider text-center">
-                  Score
-                </TableHead>
-                <TableHead className="w-32 font-black text-foreground uppercase tracking-wider text-right">
-                  Correct
-                </TableHead>
+                <TableHead className="w-16 font-black text-foreground uppercase tracking-wider text-center">Pos</TableHead>
+                <TableHead className="font-black text-foreground uppercase tracking-wider">Player</TableHead>
+                <TableHead className="w-32 font-black text-foreground uppercase tracking-wider text-center">Score</TableHead>
+                <TableHead className="w-32 font-black text-foreground uppercase tracking-wider text-right">Correct</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -168,27 +144,17 @@ export default function GameFinished({ room }: GameFinishedProps) {
                 return (
                   <TableRow
                     key={player.userId}
-                    className={cn(
-                      "group border-b-2 border-foreground last:border-0",
-                      isYou ? "bg-primary/5" : "bg-card"
-                    )}
+                    className={cn("group border-b-2 border-foreground last:border-0", isYou ? "bg-primary/5" : "bg-card")}
                   >
                     <TableCell className="text-2xl font-black tracking-tighter text-foreground/20 group-hover:text-foreground/40 text-center transition-colors italic p-2">
                       {index + 1}
                     </TableCell>
                     <TableCell className="p-2">
                       <div className="flex items-center gap-3">
-                        <span
-                          className={cn(
-                            "text-lg",
-                            isYou ? "font-black text-primary" : "font-bold text-foreground"
-                          )}
-                        >
+                        <span className={cn("text-lg", isYou ? "font-black text-primary" : "font-bold text-foreground")}>
                           {player.username}
                         </span>
-                        {index === 0 && (
-                          <CrownIcon className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                        )}
+                        {index === 0 && <CrownIcon className="w-4 h-4 text-yellow-500 fill-yellow-500" />}
                         {isYou && (
                           <Badge
                             variant="outline"
@@ -200,12 +166,9 @@ export default function GameFinished({ room }: GameFinishedProps) {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-center font-black tabular-nums text-lg p-2">
-                      {player.score}
-                    </TableCell>
+                    <TableCell className="text-center font-black tabular-nums text-lg p-2">{player.score}</TableCell>
                     <TableCell className="text-right font-bold text-muted-foreground tabular-nums p-2 pr-4">
-                      {player.correctAnswers}{" "}
-                      <span className="text-xs">/ {gameState?.totalQuestions}</span>
+                      {player.correctAnswers} <span className="text-xs">/ {gameState?.totalQuestions}</span>
                     </TableCell>
                   </TableRow>
                 );

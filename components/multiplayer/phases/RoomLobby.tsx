@@ -1,15 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  UsersIcon,
-  TimerIcon,
-  BarChartIcon,
-  CopyIcon,
-  QrCodeIcon,
-  LogOutIcon,
-  ArrowLeftIcon,
-} from "lucide-react";
+import { UsersIcon, TimerIcon, BarChartIcon, CopyIcon, QrCodeIcon, LogOutIcon, ArrowLeftIcon } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -34,7 +26,6 @@ const PlayerList = ({
   members,
   maxPlayers,
   hostId,
-  currentUserId,
   isHost,
   onKick,
 }: {
@@ -54,53 +45,45 @@ const PlayerList = ({
     </div>
 
     <div className="grid gap-3">
-      {[...members, ...Array(maxPlayers - members.length).fill(null)].map(
-        (player: User | null, index) => (
+      {[...members, ...Array(maxPlayers - members.length).fill(null)].map((player: User | null, index) => (
+        <div
+          key={`player-${index}`}
+          className={cn(
+            "flex items-center gap-4 p-4 border-2 transition-all rounded-sm",
+            player ? "bg-background border-foreground shadow-retro" : "bg-muted/10 border-foreground/10 border-dashed opacity-50"
+          )}
+        >
           <div
-            key={`player-${index}`}
             className={cn(
-              "flex items-center gap-4 p-4 border-2 transition-all rounded-sm",
-              player
-                ? "bg-background border-foreground shadow-retro"
-                : "bg-muted/10 border-foreground/10 border-dashed opacity-50"
+              "w-10 h-10 border-2 flex items-center justify-center font-black",
+              player ? "bg-secondary text-secondary-foreground border-foreground" : "bg-muted/20 border-foreground/10"
             )}
           >
-            <div
-              className={cn(
-                "w-10 h-10 border-2 flex items-center justify-center font-black",
-                player
-                  ? "bg-secondary text-secondary-foreground border-foreground"
-                  : "bg-muted/20 border-foreground/10"
-              )}
-            >
-              {player ? player.username.charAt(0).toUpperCase() : "?"}
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-foreground truncate">
-                  {player ? player.username : "EMPTY SLOT"}
-                </span>
-                {player && hostId === player.id && (
-                  <div className="bg-foreground text-background text-[9px] px-1.5 py-0.5 font-black uppercase tracking-tighter leading-none">
-                    HOST
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {player && hostId !== player.id && isHost && (
-              <Button
-                variant="ghost"
-                onClick={() => onKick(player.id)}
-                className="text-[10px] h-6 px-2 hover:bg-destructive hover:text-white border-transparent hover:border-foreground"
-              >
-                KICK
-              </Button>
-            )}
+            {player ? player.username.charAt(0).toUpperCase() : "?"}
           </div>
-        )
-      )}
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-foreground truncate">{player ? player.username : "EMPTY SLOT"}</span>
+              {player && hostId === player.id && (
+                <div className="bg-foreground text-background text-[9px] px-1.5 py-0.5 font-black uppercase tracking-tighter leading-none">
+                  HOST
+                </div>
+              )}
+            </div>
+          </div>
+
+          {player && hostId !== player.id && isHost && (
+            <Button
+              variant="ghost"
+              onClick={() => onKick(player.id)}
+              className="text-[10px] h-6 px-2 hover:bg-destructive hover:text-white border-transparent hover:border-foreground"
+            >
+              KICK
+            </Button>
+          )}
+        </div>
+      ))}
     </div>
   </div>
 );
@@ -116,7 +99,7 @@ const MatchSettings = ({
   membersCount: number;
   isHost: boolean;
   isStarting: boolean;
-  onSettingChange: (key: any, value: any) => void;
+  onSettingChange: (key: keyof Room["settings"], value: Room["settings"][keyof Room["settings"]]) => void;
 }) => (
   <div className="space-y-4">
     <div className="flex items-center border-b-2 border-foreground pb-2">
@@ -220,13 +203,16 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   }, [isStarting, gameStartingCountdown, settings.soundEffectsEnabled]);
 
   useEffect(() => {
-    if (currentRoom?.gameState?.phase === "starting") {
-      setIsStarting(true);
-      setGameStartingCountdown(5);
-    } else if (currentRoom?.gameState?.phase === "question") {
-      setIsStarting(false);
-      setGameStartingCountdown(null);
-    }
+    const t = setTimeout(() => {
+      if (currentRoom?.gameState?.phase === "starting") {
+        setIsStarting(true);
+        setGameStartingCountdown(5);
+      } else if (currentRoom?.gameState?.phase === "question") {
+        setIsStarting(false);
+        setGameStartingCountdown(null);
+      }
+    }, 0);
+    return () => clearTimeout(t);
   }, [currentRoom?.gameState?.phase]);
 
   const handleStart = () => {
@@ -235,7 +221,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     startGame();
   };
 
-  const handleSettingChange = (key: keyof typeof room.settings, value: any) => {
+  const handleSettingChange = (key: keyof Room["settings"], value: Room["settings"][keyof Room["settings"]]) => {
     if (isHost) {
       updateRoomSettings({ ...room.settings, [key]: value });
     }
@@ -254,9 +240,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
               <ArrowLeftIcon className="w-4 h-4 sm:w-6 sm:h-6 group-hover:text-white" />
             </Link>
             <div className="flex flex-col">
-              <h1 className="text-3xl sm:text-6xl font-black tracking-tighter uppercase leading-none">
-                Lobby
-              </h1>
+              <h1 className="text-3xl sm:text-6xl font-black tracking-tighter uppercase leading-none">Lobby</h1>
               <p className="font-mono text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-widest mt-1">
                 Waiting for players to join
               </p>
@@ -297,9 +281,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
               </Button>
             ) : (
               <div className="p-4 bg-muted/10 border-2 border-foreground border-dashed text-center font-mono text-sm opacity-60">
-                {isStarting
-                  ? `STARTING IN ${gameStartingCountdown}...`
-                  : "WAITING FOR HOST TO START"}
+                {isStarting ? `STARTING IN ${gameStartingCountdown}...` : "WAITING FOR HOST TO START"}
               </div>
             )}
 
@@ -338,11 +320,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
         </div>
       </div>
 
-      <QRCodeShareModal
-        isOpen={showQRModal}
-        onClose={() => setShowQRModal(false)}
-        inviteLink={inviteLink}
-      />
+      <QRCodeShareModal isOpen={showQRModal} onClose={() => setShowQRModal(false)} inviteLink={inviteLink} />
     </div>
   );
 }

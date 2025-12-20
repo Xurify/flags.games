@@ -24,7 +24,7 @@ export async function delay(ms: number) {
  */
 export async function withRetry<T>(
   fn: () => Promise<T>,
-  shouldRetry: (result: T | undefined, error: any) => boolean,
+  shouldRetry: (result: T | undefined, error: unknown) => boolean,
   options: Partial<RetryOptions> = {}
 ): Promise<T> {
   const { maxRetries, initialDelay, maxDelay } = {
@@ -33,7 +33,7 @@ export async function withRetry<T>(
   };
 
   let lastResult: T | undefined;
-  let lastError: any;
+  let lastError: unknown;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {

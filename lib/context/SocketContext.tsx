@@ -18,7 +18,7 @@ import {
 } from "@/lib/types/socket";
 import { ErrorCode } from "../types/errorCodes";
 
-export interface WebSocketMessage<T = any> {
+export interface WebSocketMessage<T = unknown> {
   type: keyof typeof WS_MESSAGE_TYPES;
   data: T;
   timestamp?: number;
@@ -27,7 +27,7 @@ export interface WebSocketMessage<T = any> {
 export type ConnectionState = "disconnected" | "connecting" | "connected" | "reconnecting";
 
 export interface MessageDataTypes {
-  [WS_MESSAGE_TYPES.HEARTBEAT]: {};
+  [WS_MESSAGE_TYPES.HEARTBEAT]: Record<string, never>;
   [WS_MESSAGE_TYPES.AUTH_SUCCESS]: {
     user?: User;
     room?: Room;
@@ -42,7 +42,7 @@ export interface MessageDataTypes {
     room: Room;
     user: User;
   };
-  [WS_MESSAGE_TYPES.LEAVE_ROOM]: {};
+  [WS_MESSAGE_TYPES.LEAVE_ROOM]: Record<string, never>;
   [WS_MESSAGE_TYPES.SETTINGS_UPDATED]: {
     settings: RoomSettings;
   };
@@ -101,7 +101,7 @@ export interface MessageDataTypes {
   [WS_MESSAGE_TYPES.ERROR]: {
     message: string;
     code?: string;
-    details?: any;
+    details?: unknown;
   };
   [WS_MESSAGE_TYPES.ROOM_TTL_WARNING]: {
     roomId: string;
@@ -113,8 +113,6 @@ export interface MessageDataTypes {
     expiredAt: number;
   };
 }
-
-type MessageHandler<T extends keyof MessageDataTypes> = (data: MessageDataTypes[T]) => void;
 
 export interface SocketContextType {
   connectionState: ConnectionState;
@@ -172,20 +170,19 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const reconnectAttemptsRef = useRef(0);
   const reconnectToastIdRef = useRef<string | number | null>(null);
   const disconnectedToastIdRef = useRef<string | number | null>(null);
+  const connectRef = useRef<() => void>(() => {});
 
   const MAX_RECONNECT_ATTEMPTS = 3;
   const RECONNECT_DELAY = 3000;
 
   const { settings } = useSettings();
 
-  const messageHandlers = useRef<Map<keyof typeof WS_MESSAGE_TYPES, (data: any) => void>>(
-    new Map()
-  );
+  const messageHandlers = useRef<Map<keyof typeof WS_MESSAGE_TYPES, (data: unknown) => void>>(new Map());
 
-  const setupMessageHandlers = () => {
+  useEffect(() => {
     messageHandlers.current.clear();
 
-    const heartbeatHandler: MessageHandler<typeof WS_MESSAGE_TYPES.HEARTBEAT> = () => {
+    const heartbeatHandler = () => {
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(
           JSON.stringify({
@@ -196,90 +193,72 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       }
     };
 
-    const authSuccessHandler: MessageHandler<typeof WS_MESSAGE_TYPES.AUTH_SUCCESS> = (data) => {
-      data.user && setCurrentUser(data.user);
-      data.room && setCurrentRoom(data.room);
+    const authSuccessHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.AUTH_SUCCESS]) => {
+      if (data.user) setCurrentUser(data.user);
+      if (data.room) setCurrentRoom(data.room);
     };
 
-    const createRoomSuccessHandler: MessageHandler<typeof WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS> = (
-      data
-    ) => {
+    const createRoomSuccessHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS]) => {
       setCurrentRoom(data.room);
       setCurrentUser(data.user);
       logger.info("Created room successfully (CREATE_ROOM_SUCCESS)");
     };
 
-    const joinRoomSuccessHandler: MessageHandler<typeof WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS> = (
-      data
-    ) => {
+    const joinRoomSuccessHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS]) => {
       setCurrentRoom(data.room);
       setCurrentUser(data.user);
       logger.info("Joined room successfully (JOIN_ROOM_SUCCESS)");
     };
 
-    const leaveRoomHandler: MessageHandler<typeof WS_MESSAGE_TYPES.LEAVE_ROOM> = () => {
+    const leaveRoomHandler = () => {
       setCurrentRoom(null);
       setCurrentUser(null);
       logger.info("Left room");
     };
 
-    const settingsUpdatedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED> = (
-      data
-    ) => {
+    const settingsUpdatedHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED]) => {
       setCurrentRoom((prev) => (prev ? { ...prev, settings: data.settings } : prev));
     };
 
-    const userJoinedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_JOINED> = (data) => {
-      setCurrentRoom((prev) =>
-        prev && data.room ? { ...prev, members: data.room.members } : null
-      );
-      if (
-        settings.soundEffectsEnabled &&
-        data.user.id !== currentUser?.id &&
-        data.room?.gameState?.phase !== "finished"
-      ) {
+    const userJoinedHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.USER_JOINED]) => {
+       
+      setCurrentRoom((prev) => (prev && data.room ? { ...prev, members: data.room.members } : null));
+
+      if (settings.soundEffectsEnabled && data.user.id !== currentUser?.id && data.room?.gameState?.phase !== "finished") {
         audioManager.playTone(440, 0.14, "triangle");
         audioManager.playTone(554.37, 0.14, "triangle");
       }
     };
 
-    const userLeftHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_LEFT> = (data) => {
-      setCurrentRoom((prev) =>
-        prev && data.room ? { ...prev, members: data.room.members } : null
-      );
-      if (
-        settings.soundEffectsEnabled &&
-        data.userId !== currentUser?.id &&
-        data.room?.gameState?.phase !== "finished"
-      ) {
+    const userLeftHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.USER_LEFT]) => {
+       
+      setCurrentRoom((prev) => (prev && data.room ? { ...prev, members: data.room.members } : null));
+
+      if (settings.soundEffectsEnabled && data.userId !== currentUser?.id && data.room?.gameState?.phase !== "finished") {
         audioManager.playTone(330, 0.18, "triangle");
       }
     };
 
-    const userKickedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.USER_KICKED> = (data) => {
-      setCurrentRoom((prev) =>
-        prev && data.room ? { ...prev, members: data.room.members } : null
-      );
-      if (
-        settings.soundEffectsEnabled &&
-        data.userId !== currentUser?.id &&
-        data.room?.gameState?.phase !== "finished"
-      ) {
+    const userKickedHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.USER_KICKED]) => {
+       
+      setCurrentRoom((prev) => (prev && data.room ? { ...prev, members: data.room.members } : null));
+
+      if (settings.soundEffectsEnabled && data.userId !== currentUser?.id && data.room?.gameState?.phase !== "finished") {
         audioManager.playTone(300, 0.16, "triangle");
       }
     };
 
-    const hostChangedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.HOST_CHANGED> = (data) => {
+    const hostChangedHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.HOST_CHANGED]) => {
       setCurrentRoom((prev) => (prev ? { ...prev, host: data.newHost.id } : null));
     };
 
-    const kickedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.KICKED> = (data) => {
+    const kickedHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.KICKED]) => {
       setCurrentRoom(null);
       setCurrentUser(null);
       logger.info("Kicked from room:", data.reason);
     };
 
-    const gameStartingHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_STARTING> = (data) => {
+    const gameStartingHandler = () => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -311,7 +290,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const gameRestartedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_RESTARTED> = (data) => {
+    const gameRestartedHandler = () => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -342,7 +321,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const newQuestionHandler: MessageHandler<typeof WS_MESSAGE_TYPES.NEW_QUESTION> = (data) => {
+    const newQuestionHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.NEW_QUESTION]) => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -362,19 +341,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const answerSubmittedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ANSWER_SUBMITTED> = (
-      data
-    ) => {
-      logger.info(
-        `${data.username} submitted an answer (${data.totalAnswers}/${data.totalPlayers})`
-      );
+    const answerSubmittedHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.ANSWER_SUBMITTED]) => {
+      logger.info(`${data.username} submitted an answer (${data.totalAnswers}/${data.totalPlayers})`);
       setCurrentRoom((prev) =>
         prev
           ? {
               ...prev,
-              members: prev.members.map((member) =>
-                member.id === data.userId ? { ...member, hasAnswered: true } : member
-              ),
+              members: prev.members.map((member) => (member.id === data.userId ? { ...member, hasAnswered: true } : member)),
             }
           : null
       );
@@ -383,9 +356,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       }
     };
 
-    const questionResultsHandler: MessageHandler<typeof WS_MESSAGE_TYPES.QUESTION_RESULTS> = (
-      data
-    ) => {
+    const questionResultsHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.QUESTION_RESULTS]) => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -403,7 +374,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const gameEndedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_ENDED> = (data) => {
+    const gameEndedHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.GAME_ENDED]) => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -421,7 +392,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const gameStoppedHandler: MessageHandler<typeof WS_MESSAGE_TYPES.GAME_STOPPED> = () => {
+    const gameStoppedHandler = () => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -448,7 +419,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       );
     };
 
-    const errorHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ERROR> = (data) => {
+    const errorHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.ERROR]) => {
       if (data.message) {
         let description = null;
         if (data.code === ErrorCode.ROOM_NOT_FOUND) {
@@ -460,7 +431,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       }
     };
 
-    const ttlWarningHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ROOM_TTL_WARNING> = (data) => {
+    const ttlWarningHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.ROOM_TTL_WARNING]) => {
       const seconds = Math.max(0, Math.floor(data.remainingMs / 1000));
       toast.warning("Room will expire soon", {
         description: `This room will be deleted in ${seconds}s. Finish up or create a new room.`,
@@ -468,7 +439,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       });
     };
 
-    const roomExpiredHandler: MessageHandler<typeof WS_MESSAGE_TYPES.ROOM_EXPIRED> = () => {
+    const roomExpiredHandler = () => {
       setCurrentRoom(null);
       toast.warning("Room expired", {
         description: "This room reached its maximum lifetime and was deleted.",
@@ -477,32 +448,37 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       });
     };
 
-    messageHandlers.current.set(WS_MESSAGE_TYPES.HEARTBEAT, heartbeatHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.AUTH_SUCCESS, authSuccessHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS, createRoomSuccessHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS, joinRoomSuccessHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.LEAVE_ROOM, leaveRoomHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.SETTINGS_UPDATED, settingsUpdatedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_JOINED, userJoinedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_LEFT, userLeftHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.USER_KICKED, userKickedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.HOST_CHANGED, hostChangedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.KICKED, kickedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_STARTING, gameStartingHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_RESTARTED, gameRestartedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.NEW_QUESTION, newQuestionHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.ANSWER_SUBMITTED, answerSubmittedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.QUESTION_RESULTS, questionResultsHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_ENDED, gameEndedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.GAME_STOPPED, gameStoppedHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.ERROR, errorHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.ROOM_TTL_WARNING, ttlWarningHandler);
-    messageHandlers.current.set(WS_MESSAGE_TYPES.ROOM_EXPIRED, roomExpiredHandler);
-  };
+    // Helper to safely cast handlers. We know the socket routing ensures safe types.
+    const register = <T extends keyof MessageDataTypes>(type: T, handler: (data: MessageDataTypes[T]) => void) => {
+      messageHandlers.current.set(type, handler as unknown as (data: unknown) => void);
+    };
 
-  const handleMessage = (event: MessageEvent) => {
+    register(WS_MESSAGE_TYPES.HEARTBEAT, heartbeatHandler);
+    register(WS_MESSAGE_TYPES.AUTH_SUCCESS, authSuccessHandler);
+    register(WS_MESSAGE_TYPES.CREATE_ROOM_SUCCESS, createRoomSuccessHandler);
+    register(WS_MESSAGE_TYPES.JOIN_ROOM_SUCCESS, joinRoomSuccessHandler);
+    register(WS_MESSAGE_TYPES.LEAVE_ROOM, leaveRoomHandler);
+    register(WS_MESSAGE_TYPES.SETTINGS_UPDATED, settingsUpdatedHandler);
+    register(WS_MESSAGE_TYPES.USER_JOINED, userJoinedHandler);
+    register(WS_MESSAGE_TYPES.USER_LEFT, userLeftHandler);
+    register(WS_MESSAGE_TYPES.USER_KICKED, userKickedHandler);
+    register(WS_MESSAGE_TYPES.HOST_CHANGED, hostChangedHandler);
+    register(WS_MESSAGE_TYPES.KICKED, kickedHandler);
+    register(WS_MESSAGE_TYPES.GAME_STARTING, gameStartingHandler);
+    register(WS_MESSAGE_TYPES.GAME_RESTARTED, gameRestartedHandler);
+    register(WS_MESSAGE_TYPES.NEW_QUESTION, newQuestionHandler);
+    register(WS_MESSAGE_TYPES.ANSWER_SUBMITTED, answerSubmittedHandler);
+    register(WS_MESSAGE_TYPES.QUESTION_RESULTS, questionResultsHandler);
+    register(WS_MESSAGE_TYPES.GAME_ENDED, gameEndedHandler);
+    register(WS_MESSAGE_TYPES.GAME_STOPPED, gameStoppedHandler);
+    register(WS_MESSAGE_TYPES.ERROR, errorHandler);
+    register(WS_MESSAGE_TYPES.ROOM_TTL_WARNING, ttlWarningHandler);
+    register(WS_MESSAGE_TYPES.ROOM_EXPIRED, roomExpiredHandler);
+  }, [currentRoom, currentUser, settings.soundEffectsEnabled]);
+
+  const handleMessage = React.useCallback((event: MessageEvent) => {
     try {
-      const message: WebSocketMessage = JSON.parse(event.data);
+      const message = JSON.parse(event.data) as WebSocketMessage;
       const handler = messageHandlers.current.get(message.type);
 
       if (handler) {
@@ -513,13 +489,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     } catch (error) {
       logger.error("Error parsing WebSocket message:", error);
     }
-  };
+  }, []);
 
-  const connect = () => {
-    if (
-      wsRef.current?.readyState === WebSocket.OPEN ||
-      wsRef.current?.readyState === WebSocket.CONNECTING
-    ) {
+  const connect = React.useCallback(() => {
+    if (wsRef.current?.readyState === WebSocket.OPEN || wsRef.current?.readyState === WebSocket.CONNECTING) {
       return;
     }
 
@@ -576,7 +549,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
               });
             }
             reconnectTimeoutRef.current = setTimeout(() => {
-              connect();
+              connectRef.current();
             }, RECONNECT_DELAY * Math.pow(2, reconnectAttemptsRef.current - 1));
           } else {
             if (reconnectToastIdRef.current) {
@@ -600,9 +573,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       toast.error("Failed to create WebSocket connection", { duration: 10000 });
       logger.error("WebSocket connection error:", error);
     }
-  };
+  }, [wsUrl, handleMessage]);
 
-  const disconnect = () => {
+  useEffect(() => {
+    connectRef.current = connect;
+  }, [connect]);
+
+  const disconnect = React.useCallback(() => {
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
@@ -624,9 +601,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     setConnectionState("disconnected");
     setCurrentRoom(null);
     setCurrentUser(null);
-  };
+  }, []);
 
-  const sendMessage = (message: WebSocketMessage) => {
+  const sendMessage = React.useCallback((message: WebSocketMessage) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.send(
         JSON.stringify({
@@ -637,106 +614,118 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     } else {
       logger.warn("Cannot send message: WebSocket not connected");
       if (!disconnectedToastIdRef.current) {
-        disconnectedToastIdRef.current = toast.error(
-          "Connection lost - messages will be sent when reconnected",
-          {
-            duration: Infinity,
-            dismissible: true,
-          }
-        );
+        disconnectedToastIdRef.current = toast.error("Connection lost - messages will be sent when reconnected", {
+          duration: Infinity,
+          dismissible: true,
+        });
       }
     }
-  };
+  }, []);
 
-  const createRoom = async (username: string, settings: Partial<RoomSettings>) => {
-    sendMessage({
-      type: WS_MESSAGE_TYPES.CREATE_ROOM,
-      data: { username, settings },
-    });
-  };
+  const createRoom = React.useCallback(
+    async (username: string, settings: Partial<RoomSettings>) => {
+      sendMessage({
+        type: WS_MESSAGE_TYPES.CREATE_ROOM,
+        data: { username, settings },
+      });
+    },
+    [sendMessage]
+  );
 
-  const joinRoom = async (inviteCode: string, username: string) => {
-    sendMessage({
-      type: WS_MESSAGE_TYPES.JOIN_ROOM,
-      data: { inviteCode, username },
-    });
-  };
+  const joinRoom = React.useCallback(
+    async (inviteCode: string, username: string) => {
+      sendMessage({
+        type: WS_MESSAGE_TYPES.JOIN_ROOM,
+        data: { inviteCode, username },
+      });
+    },
+    [sendMessage]
+  );
 
-  const leaveRoom = async () => {
+  const leaveRoom = React.useCallback(async () => {
     sendMessage({
       type: WS_MESSAGE_TYPES.LEAVE_ROOM,
       data: {},
     });
     setCurrentRoom(null);
-  };
+  }, [sendMessage]);
 
-  const startGame = async () => {
+  const startGame = React.useCallback(async () => {
     sendMessage({
       type: WS_MESSAGE_TYPES.START_GAME,
       data: {},
     });
-  };
+  }, [sendMessage]);
 
-  const restartGame = async () => {
+  const restartGame = React.useCallback(async () => {
     sendMessage({
       type: WS_MESSAGE_TYPES.RESTART_GAME,
       data: {},
     });
-  };
+  }, [sendMessage]);
 
-  const stopGame = async () => {
+  const stopGame = React.useCallback(async () => {
     sendMessage({
       type: WS_MESSAGE_TYPES.STOP_GAME,
       data: {},
     });
-  };
+  }, [sendMessage]);
 
-  const submitAnswer = async (answer: string) => {
-    const activeQuestion = currentRoom?.gameState?.currentQuestion;
-    if (!activeQuestion) {
-      logger.error("No active question");
-      return;
-    }
+  const submitAnswer = React.useCallback(
+    async (answer: string) => {
+      const activeQuestion = currentRoom?.gameState?.currentQuestion;
+      if (!activeQuestion) {
+        logger.error("No active question");
+        return;
+      }
 
-    sendMessage({
-      type: WS_MESSAGE_TYPES.SUBMIT_ANSWER,
-      data: {
-        answer,
-        questionId: activeQuestion.index.toString(),
-      },
-    });
-  };
+      sendMessage({
+        type: WS_MESSAGE_TYPES.SUBMIT_ANSWER,
+        data: {
+          answer,
+          questionId: activeQuestion.index.toString(),
+        },
+      });
+    },
+    [currentRoom, sendMessage]
+  );
 
-  const updateRoomSettings = async (settings: Partial<Room["settings"]>) => {
-    sendMessage({
-      type: WS_MESSAGE_TYPES.UPDATE_ROOM_SETTINGS,
-      data: { settings },
-    });
-  };
+  const updateRoomSettings = React.useCallback(
+    async (settings: Partial<Room["settings"]>) => {
+      sendMessage({
+        type: WS_MESSAGE_TYPES.UPDATE_ROOM_SETTINGS,
+        data: { settings },
+      });
+    },
+    [sendMessage]
+  );
 
-  const kickUser = async (userId: string) => {
-    sendMessage({
-      type: WS_MESSAGE_TYPES.KICK_USER,
-      data: { userId },
-    });
-  };
+  const kickUser = React.useCallback(
+    async (userId: string) => {
+      sendMessage({
+        type: WS_MESSAGE_TYPES.KICK_USER,
+        data: { userId },
+      });
+    },
+    [sendMessage]
+  );
 
-  const getConnectionStats = () => ({
-    connectionState,
-    reconnectAttempts: reconnectAttemptsRef.current,
-  });
+  const getConnectionStats = React.useCallback(
+    () => ({
+      connectionState,
+      reconnectAttempts: reconnectAttemptsRef.current,
+    }),
+    [connectionState]
+  );
 
   useEffect(() => {
-    setupMessageHandlers();
-  }, [currentRoom, currentUser, settings.soundEffectsEnabled]);
-
-  useEffect(() => {
-    connect();
+    const t = setTimeout(() => connect(), 0);
 
     return () => {
+      clearTimeout(t);
       disconnect();
     };
-  }, [wsUrl]);
+  }, [connect, disconnect, wsUrl]);
 
   useEffect(() => {
     return () => {

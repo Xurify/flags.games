@@ -131,7 +131,7 @@ export const WS_MESSAGE_TYPES = {
 export type WSMessageType =
   (typeof WS_MESSAGE_TYPES)[keyof typeof WS_MESSAGE_TYPES];
 
-export interface WebSocketMessage<T = any> {
+export interface WebSocketMessage<T = unknown> {
   type: string;
   data: T;
   timestamp?: number;
@@ -256,7 +256,7 @@ export interface ProfileUpdatedData {
 export interface ErrorData {
   message: string;
   code?: string;
-  details?: any;
+  details?: unknown;
 }
 
 export interface RoomTtlWarningData {
@@ -279,11 +279,14 @@ export type ClientToServerMessage =
       data: UpdateSettingsData;
     }
   | { type: typeof WS_MESSAGE_TYPES.KICK_USER; data: KickUserData }
-  | { type: typeof WS_MESSAGE_TYPES.LEAVE_ROOM; data: {} }
-  | { type: typeof WS_MESSAGE_TYPES.START_GAME; data: {} }
-  | { type: typeof WS_MESSAGE_TYPES.STOP_GAME; data: {} }
-  | { type: typeof WS_MESSAGE_TYPES.RESTART_GAME; data: {} }
-  | { type: typeof WS_MESSAGE_TYPES.HEARTBEAT_RESPONSE; data: {} };
+  | { type: typeof WS_MESSAGE_TYPES.LEAVE_ROOM; data: Record<string, never> }
+  | { type: typeof WS_MESSAGE_TYPES.START_GAME; data: Record<string, never> }
+  | { type: typeof WS_MESSAGE_TYPES.STOP_GAME; data: Record<string, never> }
+  | { type: typeof WS_MESSAGE_TYPES.RESTART_GAME; data: Record<string, never> }
+  | {
+      type: typeof WS_MESSAGE_TYPES.HEARTBEAT_RESPONSE;
+      data: Record<string, never>;
+    };
 
 export type ServerToClientMessage =
   | { type: typeof WS_MESSAGE_TYPES.AUTH_SUCCESS; data: AuthSuccessData }
@@ -305,13 +308,13 @@ export type ServerToClientMessage =
       data: QuestionResultsData;
     }
   | { type: typeof WS_MESSAGE_TYPES.GAME_ENDED; data: GameEndedData }
-  | { type: typeof WS_MESSAGE_TYPES.GAME_STOPPED; data: {} }
+  | { type: typeof WS_MESSAGE_TYPES.GAME_STOPPED; data: Record<string, never> }
   | { type: typeof WS_MESSAGE_TYPES.GAME_RESTARTED; data: GameRestartedData }
   | {
       type: typeof WS_MESSAGE_TYPES.SETTINGS_UPDATED;
       data: SettingsUpdatedData;
     }
   | { type: typeof WS_MESSAGE_TYPES.ERROR; data: ErrorData }
-  | { type: typeof WS_MESSAGE_TYPES.HEARTBEAT; data: {} }
+  | { type: typeof WS_MESSAGE_TYPES.HEARTBEAT; data: Record<string, never> }
   | { type: typeof WS_MESSAGE_TYPES.ROOM_TTL_WARNING; data: RoomTtlWarningData }
   | { type: typeof WS_MESSAGE_TYPES.ROOM_EXPIRED; data: RoomExpiredData };

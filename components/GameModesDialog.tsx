@@ -10,13 +10,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { HeartIcon, TimerIcon, CompassIcon, SwordsIcon } from "lucide-react";
 import { TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
 import { useSettings } from "@/lib/context/SettingsContext";
@@ -46,12 +40,8 @@ const GameModesDialog: React.FC<GameModesDialogProps> = ({
 }) => {
   const { settings } = useSettings();
   const [showLimitedLifeConfirm, setShowLimitedLifeConfirm] = useState(false);
-  const [pendingLimitedLife, setPendingLimitedLife] = useState<boolean>(
-    limitedLifeModeEnabled
-  );
-  const [timePerQuestion, setTimePerQuestion] = useState<number>(
-    settings.timePerQuestion
-  );
+  const [pendingLimitedLife, setPendingLimitedLife] = useState<boolean>(limitedLifeModeEnabled);
+  const [timePerQuestion, setTimePerQuestion] = useState<number>(settings.timePerQuestion);
 
   useEffect(() => {
     if (open) {
@@ -72,8 +62,7 @@ const GameModesDialog: React.FC<GameModesDialogProps> = ({
     onOpenChange(false);
   };
 
-  const isClassicActive =
-    !limitedLifeModeEnabled && activeTimeAttackDuration === null;
+  const isClassicActive = !limitedLifeModeEnabled && activeTimeAttackDuration === null;
   const isLimitedLifeActive = limitedLifeModeEnabled;
   const isTimeAttackActive = activeTimeAttackDuration !== null;
 
@@ -93,17 +82,13 @@ const GameModesDialog: React.FC<GameModesDialogProps> = ({
         <div className="space-y-3 mt-2">
           <div
             className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${
-              isClassicActive
-                ? "border-primary bg-primary/5"
-                : "border-foreground bg-card shadow-primary/10"
+              isClassicActive ? "border-primary bg-primary/5" : "border-foreground bg-card shadow-primary/10"
             }`}
           >
             <div className="flex items-center gap-4 flex-1 min-w-0">
               <CompassIcon className="w-8 h-8 sm:w-6 sm:h-6 shrink-0 text-muted-foreground" />
               <div className="min-w-0">
-                <div className="font-black uppercase tracking-tight text-base sm:text-lg">
-                  Classic Mode
-                </div>
+                <div className="font-black uppercase tracking-tight text-base sm:text-lg">Classic Mode</div>
                 <div className="text-xs font-mono text-muted-foreground leading-normal mt-0.5">
                   Standard procedure — identify all flags in the set.
                 </div>
@@ -132,23 +117,17 @@ const GameModesDialog: React.FC<GameModesDialogProps> = ({
 
           <div
             className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${
-              isLimitedLifeActive
-                ? "border-primary bg-primary/5"
-                : "border-foreground bg-card shadow-primary/10"
+              isLimitedLifeActive ? "border-primary bg-primary/5" : "border-foreground bg-card shadow-primary/10"
             }`}
           >
             <div className="flex items-center gap-4 flex-1 min-w-0">
               <HeartIcon
                 className={`w-8 h-8 sm:w-6 sm:h-6 shrink-0 ${
-                  isLimitedLifeActive
-                    ? "text-red-500 fill-red-500"
-                    : "text-muted-foreground"
+                  isLimitedLifeActive ? "text-red-500 fill-red-500" : "text-muted-foreground"
                 }`}
               />
               <div className="min-w-0">
-                <div className="font-black uppercase tracking-tight text-base sm:text-lg">
-                  Limited Life
-                </div>
+                <div className="font-black uppercase tracking-tight text-base sm:text-lg">Limited Life</div>
                 <div className="text-xs font-mono text-muted-foreground leading-normal mt-0.5">
                   High stakes — failure reduces terminal heart count.
                 </div>
@@ -177,21 +156,13 @@ const GameModesDialog: React.FC<GameModesDialogProps> = ({
 
           <div
             className={`flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-4 p-4 sm:p-5 rounded-sm border-2 transition-all shadow-retro ${
-              isTimeAttackActive
-                ? "border-primary bg-primary/5"
-                : "border-foreground bg-card shadow-primary/10"
+              isTimeAttackActive ? "border-primary bg-primary/5" : "border-foreground bg-card shadow-primary/10"
             }`}
           >
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              <TimerIcon
-                className={`w-8 h-8 sm:w-6 sm:h-6 shrink-0 ${
-                  isTimeAttackActive ? "text-primary" : ""
-                }`}
-              />
+              <TimerIcon className={`w-8 h-8 sm:w-6 sm:h-6 shrink-0 ${isTimeAttackActive ? "text-primary" : ""}`} />
               <div className="min-w-0">
-                <div className="font-black uppercase tracking-tight text-base sm:text-lg">
-                  Time Attack
-                </div>
+                <div className="font-black uppercase tracking-tight text-base sm:text-lg">Time Attack</div>
                 <div className="text-xs font-mono text-muted-foreground leading-normal mt-0.5">
                   Rapid identification — limited window per guess.
                 </div>
@@ -199,10 +170,7 @@ const GameModesDialog: React.FC<GameModesDialogProps> = ({
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto sm:shrink-0">
               <div className="w-full sm:w-auto min-w-0">
-                <Select
-                  value={String(timePerQuestion)}
-                  onValueChange={(value) => setTimePerQuestion(Number(value))}
-                >
+                <Select value={String(timePerQuestion)} onValueChange={(value) => setTimePerQuestion(Number(value))}>
                   <SelectTrigger className="w-full sm:w-24 h-11 sm:h-10 text-sm font-bold border-2 border-foreground/20">
                     <SelectValue />
                   </SelectTrigger>
@@ -217,21 +185,12 @@ const GameModesDialog: React.FC<GameModesDialogProps> = ({
               </div>
               <Button
                 size="lg"
-                variant={
-                  isTimeAttackActive &&
-                  timePerQuestion === activeTimeAttackDuration
-                    ? "outline"
-                    : "default"
-                }
-                disabled={
-                  isTimeAttackActive &&
-                  timePerQuestion === activeTimeAttackDuration
-                }
+                variant={isTimeAttackActive && timePerQuestion === activeTimeAttackDuration ? "outline" : "default"}
+                disabled={isTimeAttackActive && timePerQuestion === activeTimeAttackDuration}
                 className="w-full sm:w-auto sm:min-w-[120px] font-black"
                 onClick={startTimeAttack}
               >
-                {isTimeAttackActive &&
-                timePerQuestion === activeTimeAttackDuration
+                {isTimeAttackActive && timePerQuestion === activeTimeAttackDuration
                   ? "SELECTED"
                   : isTimeAttackActive
                   ? "RESTART"
@@ -246,26 +205,18 @@ const GameModesDialog: React.FC<GameModesDialogProps> = ({
         </AlertDialogFooter>
       </AlertDialogContent>
 
-      <AlertDialog
-        open={showLimitedLifeConfirm}
-        onOpenChange={setShowLimitedLifeConfirm}
-      >
+      <AlertDialog open={showLimitedLifeConfirm} onOpenChange={setShowLimitedLifeConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Restart Game?</AlertDialogTitle>
             <AlertDialogDescription>
-              Changing hearts mode will restart the game and you'll lose your
-              current progress. Are you sure you want to continue?
+              Changing hearts mode will restart the game and you&apos;ll lose your current progress. Are you sure you want to
+              continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowLimitedLifeConfirm(false)}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmLimitedLifeRestart}
-              variant="destructive"
-            >
+            <AlertDialogCancel onClick={() => setShowLimitedLifeConfirm(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmLimitedLifeRestart} variant="destructive">
               Restart Game
             </AlertDialogAction>
           </AlertDialogFooter>

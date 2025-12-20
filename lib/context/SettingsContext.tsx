@@ -25,13 +25,7 @@ interface SettingsContextType {
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
-export const SettingsProvider = ({
-  children,
-  initialDarkMode = false
-}: {
-  children: ReactNode;
-  initialDarkMode?: boolean;
-}) => {
+export const SettingsProvider = ({ children, initialDarkMode = false }: { children: ReactNode; initialDarkMode?: boolean }) => {
   const [settings, setSettings] = useState<GameSettings>({
     ...defaultSettings,
     darkMode: initialDarkMode,
@@ -44,13 +38,20 @@ export const SettingsProvider = ({
 
     const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (savedSettings) {
-      const parsedSettings = JSON.parse(savedSettings);
-      setSettings((prev) => ({
-        ...prev,
-        soundEffectsEnabled: parsedSettings.soundEffectsEnabled ?? prev.soundEffectsEnabled,
-        autoAdvanceEnabled: parsedSettings.autoAdvanceEnabled ?? prev.autoAdvanceEnabled,
-        timePerQuestion: parsedSettings.timePerQuestion ?? prev.timePerQuestion,
-      }));
+      try {
+        const parsedSettings = JSON.parse(savedSettings);
+        setTimeout(() => {
+           
+          setSettings((prev) => ({
+            ...prev,
+            soundEffectsEnabled: parsedSettings.soundEffectsEnabled ?? prev.soundEffectsEnabled,
+            autoAdvanceEnabled: parsedSettings.autoAdvanceEnabled ?? prev.autoAdvanceEnabled,
+            timePerQuestion: parsedSettings.timePerQuestion ?? prev.timePerQuestion,
+          }));
+        }, 0);
+      } catch (error) {
+        console.warn("Failed to parse saved settings:", error);
+      }
     }
   }, []);
 
@@ -70,11 +71,7 @@ export const SettingsProvider = ({
     });
   };
 
-  return (
-    <SettingsContext.Provider value={{ settings, updateSetting }}>
-      {children}
-    </SettingsContext.Provider>
-  );
+  return <SettingsContext.Provider value={{ settings, updateSetting }}>{children}</SettingsContext.Provider>;
 };
 
 export const useSettings = () => {
@@ -83,4 +80,4 @@ export const useSettings = () => {
     throw new Error("useSettings must be used within a SettingsProvider");
   }
   return context;
-}; 
+};

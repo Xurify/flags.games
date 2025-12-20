@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import QRCode from "qrcode";
 import { LinkIcon, CopyIcon, CopyCheckIcon, QrCodeIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -15,8 +15,8 @@ import {
   AlertDialogFooter,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils/strings";
+import Image from "next/image";
 
 interface QRCodeShareModalProps {
   isOpen: boolean;
@@ -24,22 +24,12 @@ interface QRCodeShareModalProps {
   inviteLink: string;
 }
 
-export default function QRCodeShareModal({
-  isOpen,
-  onClose,
-  inviteLink,
-}: QRCodeShareModalProps) {
+export default function QRCodeShareModal({ isOpen, onClose, inviteLink }: QRCodeShareModalProps) {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [copiedLink, setCopiedLink] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  useEffect(() => {
-    if (isOpen && inviteLink) {
-      generateQRCode();
-    }
-  }, [isOpen, inviteLink]);
-
-  const generateQRCode = async () => {
+  const generateQRCode = useCallback(async () => {
     if (!inviteLink) return;
 
     setIsGenerating(true);
@@ -59,7 +49,13 @@ export default function QRCodeShareModal({
     } finally {
       setIsGenerating(false);
     }
-  };
+  }, [inviteLink]);
+
+  useEffect(() => {
+    if (isOpen && inviteLink) {
+      generateQRCode();
+    }
+  }, [isOpen, inviteLink, generateQRCode]);
 
   const handleCopyLink = async () => {
     try {
@@ -94,23 +90,23 @@ export default function QRCodeShareModal({
                   <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                 </div>
               ) : qrCodeDataUrl ? (
-                <img
-                  src={qrCodeDataUrl}
-                  alt="Room invite QR code"
-                  className="w-48 h-48"
-                  style={{ imageRendering: "pixelated" }}
-                />
+                <div className="w-48 h-48 flex items-center justify-center">
+                  <Image
+                    src={qrCodeDataUrl}
+                    alt="Room invite QR code"
+                    width={256}
+                    height={256}
+                    className="w-48 h-48"
+                    style={{ imageRendering: "pixelated" }}
+                  />
+                </div>
               ) : (
                 <div className="w-48 h-48 flex items-center justify-center bg-muted">
-                  <span className="text-5xl text-muted-foreground font-black">
-                    ?
-                  </span>
+                  <span className="text-5xl text-muted-foreground font-black">?</span>
                 </div>
               )}
             </div>
-            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground text-center">
-              Scan Code to Join
-            </p>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground text-center">Scan Code to Join</p>
           </div>
 
           <div className="space-y-2">
@@ -130,7 +126,7 @@ export default function QRCodeShareModal({
               <input
                 className={cn(
                   "flex-1 border-0 bg-transparent shadow-none text-sm font-bold font-mono h-10 px-2 truncate w-full cursor-pointer outline-none focus:ring-0 focus:outline-none placeholder:text-muted-foreground",
-                  copiedLink && "text-green-600",
+                  copiedLink && "text-green-600"
                 )}
                 value={inviteLink.replace("https://", "")}
                 readOnly
@@ -145,11 +141,7 @@ export default function QRCodeShareModal({
                 }}
                 className="h-10 w-10 hover:bg-transparent hover:text-primary transition-colors"
               >
-                {copiedLink ? (
-                  <CopyCheckIcon className="w-4 h-4 text-green-600" />
-                ) : (
-                  <CopyIcon className="w-4 h-4" />
-                )}
+                {copiedLink ? <CopyCheckIcon className="w-4 h-4 text-green-600" /> : <CopyIcon className="w-4 h-4" />}
               </Button>
             </div>
           </div>

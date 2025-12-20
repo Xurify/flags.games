@@ -84,6 +84,7 @@ class ToneManager {
 
     frequencies.forEach((frequency) => {
       const oscillator = new Oscillator(frequency, type);
+      oscillator.volume.value = volume;
       oscillator.connect(envelope);
       oscillators.push(oscillator);
     });

@@ -2,7 +2,6 @@
 
 import React from "react";
 import { CrownIcon, CheckIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { GameStateLeaderboard, RoomMember, User, GameAnswer } from "@/lib/types/socket";
 import { cn } from "@/lib/utils/strings";
 
@@ -19,7 +18,6 @@ interface LeaderboardProps {
 export default function Leaderboard({
   members,
   leaderboard,
-  answers,
   currentUser,
   hostId,
   isGameActive,
@@ -60,9 +58,12 @@ export default function Leaderboard({
   // Track previous order so we can compute stable ties and FLIP deltas
   React.useEffect(() => {
     previousOrderRef.current = currentOrder;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentOrder.join("|")]);
 
   // We use FLIP pixel delta to derive movement direction; no rank delta map needed
+
+  const sortedMembersString = sortedMembers.map((member) => `${member.id}:${scoreByUserId[member.id] ?? 0}`).join("|");
 
   // FLIP: animate vertical movement on re-rank
   React.useLayoutEffect(() => {
@@ -91,10 +92,8 @@ export default function Leaderboard({
           const movedUp = deltaY < 0 ? false : true; // prevTop - newTop; positive means moved up
           // Pull colors from app theme variables for consistency
           const rootVars = getComputedStyle(document.documentElement);
-          const upColor =
-            (rootVars.getPropertyValue("--success") || "").trim() || "oklch(0.65 0.18 140)";
-          const downColor =
-            (rootVars.getPropertyValue("--destructive") || "").trim() || "oklch(0.62 0.21 25)";
+          const upColor = (rootVars.getPropertyValue("--success") || "").trim() || "oklch(0.65 0.18 140)";
+          const downColor = (rootVars.getPropertyValue("--destructive") || "").trim() || "oklch(0.62 0.21 25)";
           const existing = highlightTimeoutsRef.current.get(m.id);
           if (existing) {
             window.clearTimeout(existing);
@@ -132,7 +131,8 @@ export default function Leaderboard({
     if (Object.keys(positionsRef.current).length === 0) {
       positionsRef.current = newPositions;
     }
-  }, [sortedMembers.map((member) => `${member.id}:${scoreByUserId[member.id] ?? 0}`).join("|")]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortedMembersString]);
 
   return (
     <div
@@ -181,9 +181,7 @@ export default function Leaderboard({
                     {member.username}
                   </span>
                   <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-                    {isHost && (
-                      <CrownIcon className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
-                    )}
+                    {isHost && <CrownIcon className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />}
                     {hasAnswered && <CheckIcon className="w-3.5 h-3.5 text-success stroke-[3]" />}
                   </div>
                 </div>
@@ -201,9 +199,7 @@ export default function Leaderboard({
 
       {!isGameActive && members.length < 2 && (
         <div className="p-4 bg-muted/20 border-t-2 border-foreground/10 text-center">
-          <p className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground">
-            Waiting for more players...
-          </p>
+          <p className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground">Waiting for more players...</p>
         </div>
       )}
     </div>

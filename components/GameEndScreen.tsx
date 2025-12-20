@@ -2,16 +2,9 @@
 
 import React, { lazy, Suspense } from "react";
 import Image from "next/image";
-import { Check, X, Trophy } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getCountryByCode } from "@/lib/data/countries";
 import { getCountryFlagIconUrl } from "@/lib/utils/image";
 import { QuestionResult } from "./FlagGameClient";
@@ -42,12 +35,9 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
   const orderedResults = [...results].sort((a, b) => a.index - b.index);
 
   const totalPossible = totalQuestions * CORRECT_POINT_COST;
-  const percentage =
-    totalPossible === 0 ? 0 : Math.round((score / totalPossible) * 100);
+  const percentage = totalPossible === 0 ? 0 : Math.round((score / totalPossible) * 100);
 
-  const correctCount = orderedResults.filter(
-    (result) => result.isCorrect,
-  ).length;
+  const correctCount = orderedResults.filter((result) => result.isCorrect).length;
   let currentStreak = 0;
   let longestStreak = 0;
   for (const result of orderedResults) {
@@ -61,12 +51,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
   const summary = { totalQuestions, correctCount, longestStreak };
 
   const elapsedMs =
-    orderedResults.length === 0
-      ? null
-      : orderedResults.reduce(
-          (sum, result) => sum + (result.timeToAnswerMs ?? 0),
-          0,
-        );
+    orderedResults.length === 0 ? null : orderedResults.reduce((sum, result) => sum + (result.timeToAnswerMs ?? 0), 0);
 
   const formatClock = (ms: number | null) => {
     if (ms === null || Number.isNaN(ms)) return "--:--";
@@ -135,58 +120,38 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
             key={`game-end-stats-${stat.label}`}
             className={cn(
               "p-6 border-2 border-foreground shadow-retro flex flex-col items-center justify-center text-center",
-              stat.highlight
-                ? "bg-primary text-primary-foreground"
-                : "bg-card text-foreground",
+              stat.highlight ? "bg-primary text-primary-foreground" : "bg-card text-foreground"
             )}
           >
-            <span className="font-mono text-[10px] uppercase font-bold opacity-70 mb-1">
-              {stat.label}
-            </span>
-            <span className="text-3xl font-black tracking-tighter leading-none">
-              {stat.value}
-            </span>
+            <span className="font-mono text-[10px] uppercase font-bold opacity-70 mb-1">{stat.label}</span>
+            <span className="text-3xl font-black tracking-tighter leading-none">{stat.value}</span>
           </div>
         ))}
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-2xl font-black tracking-tight uppercase border-b-2 border-foreground pb-2">
-          Details
-        </h3>
+        <h3 className="text-2xl font-black tracking-tight uppercase border-b-2 border-foreground pb-2">Details</h3>
         <div className="border-2 border-foreground shadow-retro overflow-hidden">
           <Table>
             <TableHeader className="bg-muted dark:bg-muted/20">
               <TableRow className="hover:bg-transparent border-b-2 border-foreground">
-                <TableHead className="w-16 font-black text-foreground uppercase tracking-wider text-center">
-                  #
-                </TableHead>
-                <TableHead className="font-black text-foreground uppercase tracking-wider">
-                  Question
-                </TableHead>
-                <TableHead className="font-black text-foreground uppercase tracking-wider">
-                  Answer
-                </TableHead>
-                <TableHead className="w-20 font-black text-foreground uppercase tracking-wider text-center">
-                  Result
-                </TableHead>
-                <TableHead className="w-24 font-black text-foreground uppercase tracking-wider text-right">
-                  Time
-                </TableHead>
+                <TableHead className="w-16 font-black text-foreground uppercase tracking-wider text-center">#</TableHead>
+                <TableHead className="font-black text-foreground uppercase tracking-wider">Question</TableHead>
+                <TableHead className="font-black text-foreground uppercase tracking-wider">Answer</TableHead>
+                <TableHead className="w-20 font-black text-foreground uppercase tracking-wider text-center">Result</TableHead>
+                <TableHead className="w-24 font-black text-foreground uppercase tracking-wider text-right">Time</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {orderedResults.map((result) => {
                 const country = getCountryByCode(result.countryCode);
-                const selected = result.selectedCode
-                  ? getCountryByCode(result.selectedCode)
-                  : null;
+                const selected = result.selectedCode ? getCountryByCode(result.selectedCode) : null;
                 return (
                   <TableRow
                     key={`game-end-details-table-row-${result.countryCode}`}
                     className={cn(
                       "group border-b-2 border-foreground last:border-0",
-                      result.isCorrect ? "bg-card" : "bg-red-500/10",
+                      result.isCorrect ? "bg-card" : "bg-red-500/10"
                     )}
                   >
                     <TableCell className="text-xl font-black tracking-tighter text-foreground/20 group-hover:text-foreground/40 text-center transition-colors italic tabular-nums">
@@ -196,54 +161,30 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                       <div className="flex items-center gap-3">
                         {country && (
                           <div className="relative w-8 h-6 shadow-sm border border-foreground/10 overflow-hidden rounded-sm">
-                            <Image
-                              src={getCountryFlagIconUrl(country.code)}
-                              alt=""
-                              fill
-                              className="object-cover"
-                              sizes="32px"
-                            />
+                            <Image src={getCountryFlagIconUrl(country.code)} alt="" fill className="object-cover" sizes="32px" />
                           </div>
                         )}
-                        <span className="font-bold text-foreground">
-                          {result.countryName}
-                        </span>
+                        <span className="font-bold text-foreground">{result.countryName}</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       {selected ? (
                         <div className="flex items-center gap-3">
                           <div className="relative w-8 h-6 shadow-sm border border-foreground/10 overflow-hidden rounded-sm">
-                            <Image
-                              src={getCountryFlagIconUrl(selected.code)}
-                              alt=""
-                              fill
-                              className="object-cover"
-                              sizes="32px"
-                            />
+                            <Image src={getCountryFlagIconUrl(selected.code)} alt="" fill className="object-cover" sizes="32px" />
                           </div>
-                          <span className="font-bold text-foreground">
-                            {selected.name}
-                          </span>
+                          <span className="font-bold text-foreground">{selected.name}</span>
                         </div>
                       ) : (
-                        <span className="font-mono text-xs text-muted-foreground uppercase tracking-wider">
-                          No answer
-                        </span>
+                        <span className="font-mono text-xs text-muted-foreground uppercase tracking-wider">No answer</span>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
                       <div className="flex items-center justify-center">
                         {result.isCorrect ? (
-                          <Check
-                            className="w-6 h-6 text-green-600 dark:text-green-500 stroke-[3]"
-                            aria-label="Correct"
-                          />
+                          <Check className="w-6 h-6 text-green-600 dark:text-green-500 stroke-[3]" aria-label="Correct" />
                         ) : (
-                          <X
-                            className="w-6 h-6 text-red-600 dark:text-red-500 stroke-[3]"
-                            aria-label="Wrong"
-                          />
+                          <X className="w-6 h-6 text-red-600 dark:text-red-500 stroke-[3]" aria-label="Wrong" />
                         )}
                       </div>
                     </TableCell>

@@ -73,7 +73,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   const { settings } = useSettings();
   const searchParams = useSearchParams();
   const { setDifficultyParam, setModeClassic, setModeLimited, setModeTimeAttack } = useGameQueryParams();
-  const { setHomeNavigationConfirmationRequired } = useGameNavigation();
+  const { setUnsafeToNavigate } = useGameNavigation();
 
   const [gameState, setGameState] = useState<GameState>({
     currentQuestion: 1,
@@ -103,7 +103,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   const [showPointsAddedAnimation, setShowPointsAddedAnimation] = useState(false);
 
   const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
-  const [questionStartMs, setQuestionStartMs] = useState<number>(Date.now());
+  const [questionStartMs, setQuestionStartMs] = useState<number>(() => Date.now());
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -119,10 +119,10 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 
   useEffect(() => {
     const isProtected = gameState.currentQuestion > 1 && !gameState.gameCompleted;
-    setHomeNavigationConfirmationRequired(isProtected);
+    setUnsafeToNavigate(isProtected);
 
-    return () => setHomeNavigationConfirmationRequired(false);
-  }, [gameState.currentQuestion, gameState.gameCompleted, setHomeNavigationConfirmationRequired]);
+    return () => setUnsafeToNavigate(false);
+  }, [gameState.currentQuestion, gameState.gameCompleted, setUnsafeToNavigate]);
 
   const clearGameTimeout = () => {
     if (timeoutRef.current) {
@@ -394,6 +394,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
         restartGame(false);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, settings.timePerQuestion]);
 
   useEffect(() => {
@@ -403,6 +404,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
         audioManager.playVictorySound();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState.gameCompleted]);
 
   return (
@@ -606,7 +608,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                     <div className="flex flex-col items-center text-center gap-3 p-4">
                       <div className="text-base font-semibold">Time Attack</div>
                       <p className="text-muted-foreground text-sm">
-                        Press Start — you'll have {timeAttackModeDurationSec}s per question.
+                        Press Start — you&apos;ll have {timeAttackModeDurationSec}s per question.
                       </p>
                       <Button
                         onClick={() => {

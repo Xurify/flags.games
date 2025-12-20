@@ -1,6 +1,5 @@
 import React from "react";
 import { ChevronDownIcon } from "lucide-react";
-
 import { cn } from "@/lib/utils/strings";
 
 interface SettingsButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -16,7 +15,7 @@ const SettingsButton = React.forwardRef<HTMLButtonElement, SettingsButtonProps>(
         ref={ref}
         className={cn(
           "flex items-center w-full text-left px-4 py-3 rounded-lg hover:bg-muted/80 transition-colors bg-card disabled:cursor-not-allowed",
-          className,
+          className
         )}
         {...props}
       >
@@ -30,7 +29,9 @@ const SettingsButton = React.forwardRef<HTMLButtonElement, SettingsButtonProps>(
         </div>
       </button>
     );
-  },
+  }
 );
+
+SettingsButton.displayName = "SettingsButton";
 
 export default SettingsButton;

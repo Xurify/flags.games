@@ -21,7 +21,7 @@ class AudioManager {
   private initAudioContext() {
     try {
       this.audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
     } catch (error) {
       console.warn("AudioContext not supported:", error);
     }

@@ -4,7 +4,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -19,20 +18,14 @@ interface RestartDialogProps {
   children: React.ReactNode;
 }
 
-const RestartDialog: React.FC<RestartDialogProps> = ({
-  open,
-  onOpenChange,
-  onRestart,
-  gameCompleted,
-  children,
-}) => (
+const RestartDialog: React.FC<RestartDialogProps> = ({ open, onOpenChange, onRestart, gameCompleted, children }) => (
   <AlertDialog open={open} onOpenChange={onOpenChange}>
-    {!gameCompleted && (
-      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-    )}
+    {!gameCompleted && <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>}
     <AlertDialogContent className="max-w-[92vw] sm:max-w-md p-4 sm:p-8 max-h-[85vh] overflow-y-auto">
       <AlertDialogHeader>
-        <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight text-destructive">Restart Game</AlertDialogTitle>
+        <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight text-destructive">
+          Restart Game
+        </AlertDialogTitle>
         <div className="text-sm font-medium pt-2">
           Are you sure you want to restart? Your current session progress will be wiped.
         </div>

@@ -7,7 +7,7 @@ const levelColors: Record<LogLevel, string> = {
   debug: '\x1b[35m',  // magenta
 };
 
-function formatMessage(level: LogLevel, message: string, ...args: any[]) {
+function formatMessage(level: LogLevel, message: string) {
   const timestamp = new Date().toISOString();
   const color = levelColors[level] || '';
   const reset = '\x1b[0m';
@@ -15,16 +15,16 @@ function formatMessage(level: LogLevel, message: string, ...args: any[]) {
 }
 
 export const logger = {
-  info: (message: string, ...args: any[]) => {
+  info: (message: string, ...args: unknown[]) => {
     console.info(formatMessage('info', message), ...args);
   },
-  warn: (message: string, ...args: any[]) => {
+  warn: (message: string, ...args: unknown[]) => {
     console.warn(formatMessage('warn', message), ...args);
   },
-  error: (message: string, ...args: any[]) => {
+  error: (message: string, ...args: unknown[]) => {
     console.error(formatMessage('error', message), ...args);
   },
-  debug: (message: string, ...args: any[]) => {
+  debug: (message: string, ...args: unknown[]) => {
     if (process.env.DEBUG) {
       console.debug(formatMessage('debug', message), ...args);
     }
