@@ -173,16 +173,8 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-mono), monospace;
-    background-image:
-      linear-gradient(
-        color-mix(in oklch, var(--foreground), transparent 95%) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        90deg,
-        color-mix(in oklch, var(--foreground), transparent 95%) 1px,
-        transparent 1px
-      );
+    background-image: linear-gradient(color-mix(in oklch, var(--foreground), transparent 95%) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklch, var(--foreground), transparent 95%) 1px, transparent 1px);
     background-size: 40px 40px;
     background-position: center center;
     background-attachment: fixed;
@@ -367,8 +359,7 @@
 
 [data-slot="table-container"] {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in oklch, var(--muted-foreground) 35%, transparent)
-    transparent;
+  scrollbar-color: color-mix(in oklch, var(--muted-foreground) 35%, transparent) transparent;
 }
 
 /* WebKit (Chrome, Edge, Safari) */
@@ -382,19 +373,18 @@
 }
 
 [data-slot="table-container"]::-webkit-scrollbar-thumb {
-  background-color: color-mix(
-    in oklch,
-    var(--muted-foreground) 35%,
-    transparent
-  );
+  background-color: color-mix(in oklch, var(--muted-foreground) 35%, transparent);
   border-radius: 9999px;
   border: 2px solid transparent;
 }
 
 [data-slot="table-container"]:hover::-webkit-scrollbar-thumb {
-  background-color: color-mix(
-    in oklch,
-    var(--muted-foreground) 55%,
-    transparent
-  );
+  background-color: color-mix(in oklch, var(--muted-foreground) 55%, transparent);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

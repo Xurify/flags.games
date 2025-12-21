@@ -48,7 +48,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
     if (isHost) {
       await stopGame();
     } else {
-      window.location.href = "/lobby";
+      window.location.href = "/";
     }
   };
 
