@@ -76,7 +76,6 @@ export default function GameQuestion({ room }: GameQuestionProps) {
         hostId={currentRoom?.host ?? room.host}
         isGameActive={isGameActive}
       />
-
       <div className="flex flex-col lg:flex-row gap-8 items-stretch lg:items-start mx-auto px-4 lg:px-12 pt-4 lg:pt-0 w-full max-w-[90rem]">
         <div className="flex-1 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-foreground pb-4 mb-2">
@@ -97,7 +96,6 @@ export default function GameQuestion({ room }: GameQuestionProps) {
                 </h1>
               </div>
             </div>
-
             <div className="flex items-center gap-2 sm:gap-4 bg-card border-2 border-foreground shadow-retro-sm px-4 py-2 self-start sm:self-auto uppercase font-black">
               <div className="flex flex-col items-center min-w-[64px]">
                 <span className="text-[9px] text-muted-foreground mb-0.5">Score</span>
@@ -122,13 +120,11 @@ export default function GameQuestion({ room }: GameQuestionProps) {
               </div>
             </div>
           </div>
-
           <div className="relative group">
             <div className="bg-card border-2 border-foreground shadow-retro p-4 sm:p-8">
               <div className="mb-6">
                 <FlagDisplay countryCode={currentQuestion.country.code} />
               </div>
-
               <AnswerOptions
                 options={currentQuestion.options}
                 showResult={hasAnswered || currentPhase === "results"}
@@ -138,11 +134,14 @@ export default function GameQuestion({ room }: GameQuestionProps) {
                 correctAnswer={currentQuestion.country.code}
               />
             </div>
-
-            <CountdownOverlay currentPhase={currentPhase} timer={gameState?.resultTimer || null} />
+            <CountdownOverlay
+              currentPhase={currentPhase}
+              timer={gameState?.resultTimer || null}
+              questionIndex={currentQuestion.index}
+              totalQuestions={gameState?.totalQuestions}
+            />
           </div>
         </div>
-
         <Leaderboard
           members={currentRoom?.members ?? room.members}
           leaderboard={gameState?.leaderboard ?? []}
