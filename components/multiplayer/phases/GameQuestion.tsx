@@ -10,9 +10,9 @@ import AnswerOptions from "@/components/AnswerOptions";
 import Timer from "@/components/Timer";
 import Leaderboard from "@/components/multiplayer/Leaderboard";
 import MobileLeaderboard from "@/components/multiplayer/MobileLeaderboard";
-
+import CountdownOverlay from "@/components/multiplayer/phases/CountdownOverlay";
+import { logger } from "@/lib/utils/logger";
 import { useSocket } from "@/lib/context/SocketContext";
-import { useGameState } from "@/lib/hooks/useGameState";
 import { Room } from "@/lib/types/socket";
 import { audioManager } from "@/lib/utils/audio-manager";
 import { AUDIO_URLS, AUDIO_URLS_KEYS } from "@/lib/constants";
@@ -22,29 +22,18 @@ interface GameQuestionProps {
 }
 
 export default function GameQuestion({ room }: GameQuestionProps) {
-  const { currentUser, submitAnswer, currentRoom } = useSocket();
-  const { currentQuestion, currentPhase, isGameActive, gameState } = useGameState();
+  const { currentUser, submitAnswer, currentRoom, currentQuestion, currentPhase, isGameActive, gameState } = useSocket();
 
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [hasAnswered, setHasAnswered] = useState(false);
-  const [countdown, setCountdown] = useState(3);
+  const hasAnswered = selectedAnswer !== null;
+  const hasAnsweredRef = useRef(false);
 
   useEffect(() => {
     if (currentQuestion?.index) {
       setSelectedAnswer(null);
-      setHasAnswered(false);
+      hasAnsweredRef.current = false;
     }
   }, [currentQuestion?.index]);
-
-  useEffect(() => {
-    if (currentPhase === "results") {
-      setCountdown(3);
-      const timer = setInterval(() => {
-        setCountdown((prev) => Math.max(0, prev - 1));
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [currentPhase]);
 
   useEffect(() => {
     if (Number(gameState?.currentQuestion?.index) >= Number(gameState?.totalQuestions) - 4) {
@@ -53,18 +42,18 @@ export default function GameQuestion({ room }: GameQuestionProps) {
   }, [gameState?.currentQuestion?.index, gameState?.totalQuestions]);
 
   const handleAnswerSelect = async (answer: string) => {
-    if (hasAnswered || !currentQuestion) return;
+    if (hasAnsweredRef.current || !currentQuestion) return;
 
     setSelectedAnswer(answer);
-    setHasAnswered(true);
+    hasAnsweredRef.current = true;
 
     try {
       await submitAnswer(answer);
     } catch (error) {
-      console.error("Failed to submit answer", error);
+      logger.error("Failed to submit answer", error);
       toast.error("Failed to submit answer");
-      setHasAnswered(false);
       setSelectedAnswer(null);
+      hasAnsweredRef.current = false;
     }
   };
 
@@ -150,20 +139,7 @@ export default function GameQuestion({ room }: GameQuestionProps) {
               />
             </div>
 
-            <div
-              className={`absolute inset-0 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center transition-all duration-300 ease-in-out z-20 ${
-                currentPhase === "results" && countdown > 0 ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
-              }`}
-            >
-              <p className="font-black text-2xl tracking-tighter mb-2 uppercase">Next Question In</p>
-              <div className="text-8xl font-black text-foreground tabular-nums tracking-tighter leading-none">{countdown}</div>
-              <div className="w-48 h-2.5 bg-muted mt-8 overflow-hidden border-2 border-foreground shadow-retro-sm">
-                <div
-                  className={cn("h-full bg-primary ease-linear", countdown < 3 && "transition-all duration-1000")}
-                  style={{ width: `${(countdown / 3) * 100}%` }}
-                />
-              </div>
-            </div>
+            <CountdownOverlay currentPhase={currentPhase} timer={gameState?.resultTimer || null} />
           </div>
         </div>
 

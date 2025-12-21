@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState, ReactNode, useMemo } from "react";
 import { toast } from "sonner";
 
 import { logger } from "@/lib/utils/logger";
@@ -12,9 +12,10 @@ import {
   RoomSettings,
   User,
   GameQuestion,
-  GameAnswer,
   GameStateLeaderboard,
   AnswerSubmittedData,
+  QuestionResultsData,
+  GamePhase,
 } from "@/lib/types/socket";
 import { ErrorCode } from "../types/errorCodes";
 
@@ -66,6 +67,7 @@ export interface MessageDataTypes {
   };
   [WS_MESSAGE_TYPES.GAME_STARTING]: {
     countdown: number;
+    startTime?: number;
   };
   [WS_MESSAGE_TYPES.GAME_RESTARTED]: {
     countdown: number;
@@ -75,16 +77,7 @@ export interface MessageDataTypes {
     totalQuestions: number;
   };
   [WS_MESSAGE_TYPES.ANSWER_SUBMITTED]: AnswerSubmittedData;
-  [WS_MESSAGE_TYPES.QUESTION_RESULTS]: {
-    correctAnswer: string;
-    correctCountry: {
-      name: string;
-      flag: string;
-      code: string;
-    };
-    playerAnswers: GameAnswer[];
-    leaderboard: GameStateLeaderboard[];
-  };
+  [WS_MESSAGE_TYPES.QUESTION_RESULTS]: QuestionResultsData;
   [WS_MESSAGE_TYPES.GAME_ENDED]: {
     leaderboard: GameStateLeaderboard[];
     gameStats: {
@@ -117,8 +110,13 @@ export interface MessageDataTypes {
 export interface SocketContextType {
   connectionState: ConnectionState;
   isConnected: boolean;
-  currentRoom: Room | null;
   currentUser: User | null;
+  currentRoom: Room | null;
+  gameState: Room["gameState"] | null;
+  isGameActive: boolean;
+  currentPhase: GamePhase;
+  currentQuestion: any;
+  leaderboard: GameStateLeaderboard[];
 
   connect: () => void;
   disconnect: () => void;
@@ -221,7 +219,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     };
 
     const userJoinedHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.USER_JOINED]) => {
-       
       setCurrentRoom((prev) => (prev && data.room ? { ...prev, members: data.room.members } : null));
 
       if (settings.soundEffectsEnabled && data.user.id !== currentUser?.id && data.room?.gameState?.phase !== "finished") {
@@ -231,7 +228,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     };
 
     const userLeftHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.USER_LEFT]) => {
-       
       setCurrentRoom((prev) => (prev && data.room ? { ...prev, members: data.room.members } : null));
 
       if (settings.soundEffectsEnabled && data.userId !== currentUser?.id && data.room?.gameState?.phase !== "finished") {
@@ -240,7 +236,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     };
 
     const userKickedHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.USER_KICKED]) => {
-       
       setCurrentRoom((prev) => (prev && data.room ? { ...prev, members: data.room.members } : null));
 
       if (settings.soundEffectsEnabled && data.userId !== currentUser?.id && data.room?.gameState?.phase !== "finished") {
@@ -258,7 +253,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       logger.info("Kicked from room:", data.reason);
     };
 
-    const gameStartingHandler = () => {
+    const gameStartingHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.GAME_STARTING]) => {
       setCurrentRoom((prev) =>
         prev
           ? {
@@ -268,6 +263,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
                     ...prev.gameState,
                     phase: "starting",
                     isActive: true,
+                    gameStartTime: data.startTime || Date.now(),
                   }
                 : {
                     isActive: true,
@@ -278,7 +274,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
                     currentQuestionIndex: 0,
                     totalQuestions: 0,
                     difficulty: "easy",
-                    gameStartTime: Date.now(),
+                    gameStartTime: data.startTime || Date.now(),
                     gameEndTime: null,
                     usedCountries: [],
                     questionTimer: null,
@@ -333,6 +329,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
                     currentQuestion: data.question,
                     answers: [],
                     totalQuestions: data.totalQuestions,
+                    resultTimer: null,
                   }
                 : prev.gameState,
               members: prev.members.map((m) => ({ ...m, hasAnswered: false })),
@@ -367,6 +364,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
                     phase: "results",
                     answers: data.playerAnswers,
                     leaderboard: data.leaderboard,
+                    resultTimer: data.timer,
                   }
                 : prev.gameState,
             }
@@ -739,11 +737,22 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     };
   }, []);
 
+  const gameState = useMemo(() => currentRoom?.gameState ?? null, [currentRoom]);
+  const isGameActive = gameState?.isActive || false;
+  const currentPhase = gameState?.phase || "waiting";
+  const currentQuestion = gameState?.currentQuestion;
+  const leaderboard = gameState?.leaderboard || [];
+
   const contextValue: SocketContextType = {
     connectionState,
     isConnected: connectionState === "connected",
     currentRoom,
     currentUser,
+    gameState,
+    isGameActive,
+    currentPhase,
+    currentQuestion,
+    leaderboard,
     connect,
     disconnect,
     createRoom,

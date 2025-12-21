@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { UsersIcon, TimerIcon, BarChartIcon, CopyIcon, QrCodeIcon, LogOutIcon, ArrowLeftIcon } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import QRCodeShareModal from "@/components/multiplayer/QRCodeShareModal";
 import { DIFFICULTY_LEVELS, ROOM_SIZES, TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
 import { cn } from "@/lib/utils/strings";
 import { useSocket } from "@/lib/context/SocketContext";
+import { useWallClockCountdown } from "@/lib/hooks/useWallClockCountdown";
 import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
 import { useSettings } from "@/lib/context/SettingsContext";
 import { Room, User } from "@/lib/types/socket";
@@ -50,7 +51,7 @@ const PlayerList = ({
           key={`player-${index}`}
           className={cn(
             "flex items-center gap-4 p-4 border-2 transition-all rounded-sm",
-            player ? "bg-background border-foreground shadow-retro" : "bg-muted/10 border-foreground/10 border-dashed opacity-50"
+            player ? "bg-background border-foreground shadow-retro" : "bg-muted/10 border-foreground/20 border-dashed opacity-50"
           )}
         >
           <div
@@ -160,9 +161,8 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   const { isHost, canStartGame, startGame, updateRoomSettings, kickUser } = useRoomManagement();
   const { settings } = useSettings();
 
-  const [gameStartingCountdown, setGameStartingCountdown] = useState<number | null>(null);
-  const [isStarting, setIsStarting] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
+  const [isStartingRequest, setIsStartingRequest] = useState(false);
 
   const inviteLink = room.inviteCode ? `${window.location.origin}/lobby?c=${room.inviteCode}` : "";
 
@@ -177,48 +177,36 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     prefetchAllFlags(room.settings.difficulty);
   }, [room.settings.difficulty]);
 
-  useEffect(() => {
-    if (isStarting && gameStartingCountdown !== null) {
-      const timer = setInterval(() => {
-        setGameStartingCountdown((prev) => {
-          if (prev === null || prev <= 1) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+  const { timeRemainingSec } = useWallClockCountdown({
+    durationSec: 5,
+    startTimeMs: currentRoom?.gameState?.gameStartTime ?? undefined,
+    isActive: currentRoom?.gameState?.phase === "starting",
+  });
 
-      return () => clearInterval(timer);
-    }
-  }, [isStarting, gameStartingCountdown]);
+  const isStarting = currentRoom?.gameState?.phase === "starting";
+  const countdown = Math.ceil(timeRemainingSec);
 
+  // Actually, we need to replicate the sound logic.
+  // The previous logic was: frequency = countdown <= 1 ? 800 : 600.
+  // We can use a simple effect that triggers when `countdown` changes integer value.
+  const prevCountdown = useRef(countdown);
   useEffect(() => {
-    if (!isStarting || gameStartingCountdown === null) return;
-    if (!settings.soundEffectsEnabled) return;
-    if (gameStartingCountdown > 0) {
-      const frequency = gameStartingCountdown <= 1 ? 800 : 600;
+    if (isStarting && settings.soundEffectsEnabled && countdown > 0 && countdown !== prevCountdown.current) {
+      const frequency = countdown <= 1 ? 800 : 600;
       audioManager.playTone(frequency, 0.18, "sine");
+      prevCountdown.current = countdown;
     }
-  }, [isStarting, gameStartingCountdown, settings.soundEffectsEnabled]);
+  }, [isStarting, countdown, settings.soundEffectsEnabled]);
 
-  useEffect(() => {
-    const t = setTimeout(() => {
-      if (currentRoom?.gameState?.phase === "starting") {
-        setIsStarting(true);
-        setGameStartingCountdown(5);
-      } else if (currentRoom?.gameState?.phase === "question") {
-        setIsStarting(false);
-        setGameStartingCountdown(null);
-      }
-    }, 0);
-    return () => clearTimeout(t);
-  }, [currentRoom?.gameState?.phase]);
-
-  const handleStart = () => {
-    setIsStarting(true);
-    setGameStartingCountdown(5);
-    startGame();
+  const handleStart = async () => {
+    try {
+      setIsStartingRequest(true);
+      await startGame();
+    } catch (error) {
+      // Error handled by socket context
+    } finally {
+      setIsStartingRequest(false);
+    }
   };
 
   const handleSettingChange = (key: keyof Room["settings"], value: Room["settings"][keyof Room["settings"]]) => {
@@ -275,13 +263,20 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 size="lg"
                 className="w-full h-16 text-xl tracking-tighter bg-primary hover:bg-primary/90 text-white border-2 border-foreground shadow-retro active:translate-x-0.5 active:translate-y-0.5"
                 onClick={handleStart}
-                disabled={!canStartGame || isStarting}
+                disabled={!canStartGame || isStarting || isStartingRequest}
               >
-                {isStarting ? `STARTING IN ${gameStartingCountdown}...` : "START MATCH"}
+                {isStarting ? `STARTING IN ${countdown}...` : "START MATCH"}
               </Button>
             ) : (
-              <div className="p-4 bg-muted/10 border-2 border-foreground border-dashed text-center font-mono text-sm opacity-60">
-                {isStarting ? `STARTING IN ${gameStartingCountdown}...` : "WAITING FOR HOST TO START"}
+              <div
+                className={cn(
+                  "p-4 border-2 border-foreground text-center font-mono text-sm transition-all duration-300",
+                  isStarting
+                    ? "bg-primary text-primary-foreground font-black text-lg scale-105 shadow-retro"
+                    : "bg-muted/10 border-dashed opacity-60"
+                )}
+              >
+                {isStarting ? <span className="animate-pulse">STARTING IN {countdown}...</span> : "WAITING FOR HOST TO START"}
               </div>
             )}
 

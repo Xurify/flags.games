@@ -2,7 +2,6 @@
 
 import { useMemo, useEffect, Suspense, lazy } from "react";
 import { useSocket } from "@/lib/context/SocketContext";
-import { useGameState } from "@/lib/hooks/useGameState";
 import { useSettings } from "@/lib/context/SettingsContext";
 import { Room } from "@/lib/types/socket";
 import { cn } from "@/lib/utils/strings";
@@ -21,8 +20,7 @@ interface GameFinishedProps {
 }
 
 export default function GameFinished({ room }: GameFinishedProps) {
-  const { restartGame, stopGame, currentUser } = useSocket();
-  const { gameState, leaderboard, currentRoom } = useGameState();
+  const { restartGame, stopGame, currentUser, gameState, leaderboard, currentRoom } = useSocket();
   const { settings } = useSettings();
 
   useEffect(() => {

@@ -10,7 +10,7 @@ import { getDifficultySettings } from "@/lib/utils/gameLogic";
 
 import JoinRoomForm from "@/components/multiplayer/JoinRoomForm";
 import CreateRoomForm from "@/components/multiplayer/CreateRoomForm";
-import { useGameState } from "@/lib/hooks/useGameState";
+import { useSocket } from "@/lib/context/SocketContext";
 import RoomLobby from "@/components/multiplayer/phases/RoomLobby";
 import GameQuestion from "@/components/multiplayer/phases/GameQuestion";
 import GameFinished from "@/components/multiplayer/phases/GameFinished";
@@ -24,11 +24,10 @@ export function LobbyPageClient({ randomUsername }: LobbyPageClientProps) {
   const searchParams = useSearchParams();
   const inviteCode = searchParams.get("c");
 
-  const { currentRoom, currentPhase } = useGameState();
+  const { currentRoom, currentPhase } = useSocket();
   const { createRoom, joinRoom } = useRoomManagement();
 
-  const shouldProtectReload =
-    currentRoom && ["starting", "question", "results"].includes(currentPhase);
+  const shouldProtectReload = currentRoom && ["starting", "question", "results"].includes(currentPhase);
 
   usePageReloadProtection({
     enabled: !!shouldProtectReload,
@@ -98,9 +97,7 @@ export function LobbyPageClient({ randomUsername }: LobbyPageClientProps) {
   return (
     <div className="min-h-screen w-full bg-transparent mx-auto px-4 sm:px-6 py-7 sm:py-6 pb-24 sm:pb-6">
       <div className="flex flex-col gap-2 sm:gap-2 text-center mb-4 sm:mb-4">
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-foreground leading-[0.85] uppercase">
-          Multiplayer
-        </h1>
+        <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-foreground leading-[0.85] uppercase">Multiplayer</h1>
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground max-w-sm mx-auto">
           Play with your friends or join a public match.
         </p>

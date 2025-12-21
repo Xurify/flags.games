@@ -230,6 +230,7 @@ export interface QuestionResultsData {
   correctCountry: Country;
   playerAnswers: GameAnswer[];
   leaderboard: GameStateLeaderboard[];
+  timer: Timer;
 }
 
 export interface GameEndedData {
