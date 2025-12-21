@@ -120,6 +120,7 @@ export default function LandingPage() {
           <Link href="/play" className="w-full">
             <Button
               size="lg"
+              variant="outline"
               className="h-20 md:h-24 w-full justify-between px-5 sm:px-6 md:px-8 bg-background hover:bg-muted group border-2 border-foreground shadow-retro"
             >
               <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
