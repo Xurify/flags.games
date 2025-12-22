@@ -143,7 +143,7 @@ export default function Leaderboard({
       )}
     >
       <div className="bg-foreground text-background px-4 py-3 flex items-center justify-between">
-        <div className="text-xs font-black tracking-widest uppercase">Rankings</div>
+        <div className="text-xs font-black tracking-widest uppercase">Leaderboard</div>
       </div>
 
       <div className={cn("max-h-[500px] overflow-y-auto", variant === "inline" && "max-h-none")}>

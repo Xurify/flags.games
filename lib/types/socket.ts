@@ -91,7 +91,8 @@ export interface Room {
   inviteCode: string;
   gameState: GameState;
   members: RoomMember[];
-  created: string;
+  kickedUsers: string[];
+  createdAt: string;
   settings: RoomSettings;
 }
 

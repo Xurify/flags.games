@@ -44,7 +44,6 @@ const PlayerList = ({
         {members.length}/{maxPlayers}
       </Badge>
     </div>
-
     <div className="grid gap-3">
       {[...members, ...Array(maxPlayers - members.length).fill(null)].map((player: User | null, index) => (
         <div
@@ -62,7 +61,6 @@ const PlayerList = ({
           >
             {player ? player.username.charAt(0).toUpperCase() : "?"}
           </div>
-
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <span className="font-bold text-foreground truncate">{player ? player.username : "EMPTY SLOT"}</span>
@@ -73,7 +71,6 @@ const PlayerList = ({
               )}
             </div>
           </div>
-
           {player && hostId !== player.id && isHost && (
             <Button
               variant="destructive"

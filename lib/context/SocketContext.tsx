@@ -250,6 +250,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const kickedHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.KICKED]) => {
       setCurrentRoom(null);
       setCurrentUser(null);
+      toast.error(data.reason || "Kicked by host");
       logger.info("Kicked from room:", data.reason);
     };
 
@@ -423,6 +424,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
         if (data.code === ErrorCode.ROOM_NOT_FOUND) {
           description = "This room likely does not exist or was deleted.";
         }
+
         toast.error(data.message, {
           description,
         });

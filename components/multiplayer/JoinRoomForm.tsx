@@ -9,10 +9,7 @@ import { RoomSettings } from "@/lib/types/socket";
 import { useConnectionStatus } from "@/lib/hooks/useConnectionStatus";
 
 const formSchema = z.object({
-  username: z
-    .string()
-    .min(3, "Username must be at least 3 characters")
-    .max(30, "Username must be less than 30 characters"),
+  username: z.string().min(3, "Username must be at least 3 characters").max(30, "Username must be less than 30 characters"),
   settings: z.object({
     maxRoomSize: z.number(),
     difficulty: z.string(),
@@ -96,18 +93,11 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
           <div className="space-y-4">
             <div className="p-4 bg-muted/20 border-2 border-foreground shadow-retro">
               <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-2">
-                Match Info:{" "}
-                <span className="text-foreground font-bold">{settings.maxRoomSize} PLAYERS</span> |{" "}
-                <span className="text-foreground font-bold">
-                  {settings.difficulty.toUpperCase()}
-                </span>
+                Match Info: <span className="text-foreground font-bold">{settings.maxRoomSize} PLAYERS</span> |{" "}
+                <span className="text-foreground font-bold">{settings.difficulty.toUpperCase()}</span>
               </p>
-
               <div className="space-y-2">
-                <Label
-                  htmlFor="username"
-                  className="font-mono text-[10px] uppercase font-bold text-muted-foreground ml-1"
-                >
+                <Label htmlFor="username" className="font-mono text-[10px] uppercase font-bold text-muted-foreground ml-1">
                   Your Username
                 </Label>
                 <Input
@@ -119,15 +109,12 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
                   maxLength={30}
                 />
                 {formErrors.username && (
-                  <p className="text-xs text-destructive font-bold uppercase mt-1">
-                    {formErrors.username}
-                  </p>
+                  <p className="text-xs text-destructive font-bold uppercase mt-1">{formErrors.username}</p>
                 )}
               </div>
             </div>
           </div>
         </section>
-
         <div>
           <Button
             onClick={handleSubmit}
@@ -137,7 +124,6 @@ const JoinRoomForm: React.FC<JoinRoomFormProps> = ({
           >
             {buttonLabel}
           </Button>
-
           <div className="flex justify-center pt-2">
             <Link href="/">
               <Button
