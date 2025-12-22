@@ -134,6 +134,52 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
     timeoutRef.current = setTimeout(callback, delay);
   };
 
+  const scheduleNextQuestion = () => {
+    setGameTimeout(() => {
+      setGameState((prev) => {
+        if (prev.gameCompleted) return prev;
+        if (prev.currentQuestion >= prev.totalQuestions) {
+          return { ...prev, gameCompleted: true };
+        }
+        return { ...prev, currentQuestion: prev.currentQuestion + 1 };
+      });
+
+      if (!gameState.gameCompleted && gameState.currentQuestion < gameState.totalQuestions) {
+        generateQuestionHandler();
+      }
+    }, 2000);
+  };
+
+  const recordQuestionAnswerResult = (selectedCode: string | null, isCorrect: boolean) => {
+    const answeredAt = Date.now();
+    const timeToAnswer = Math.max(0, answeredAt - questionStartMs);
+
+    setQuestionResults((prev) => [
+      ...prev,
+      {
+        index: gameState.currentQuestion,
+        countryCode: gameState.currentCountry.code,
+        countryName: gameState.currentCountry.name,
+        selectedCode,
+        isCorrect,
+        startedAtMs: questionStartMs,
+        answeredAtMs: answeredAt,
+        timeToAnswerMs: timeToAnswer,
+      },
+    ]);
+  };
+
+  const getBaseResetState = (difficulty: Difficulty): Partial<GameState> => ({
+    currentQuestion: 1,
+    score: 0,
+    totalQuestions: getDifficultySettings(difficulty).count,
+    selectedAnswer: null,
+    showResult: false,
+    gameCompleted: false,
+    usedCountries: [],
+    hearts: MAX_HEARTS,
+  });
+
   const playSound = (isCorrect: boolean) => {
     if (!settings.soundEffectsEnabled) return;
 
@@ -173,28 +219,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
     const isCorrect = selectedCountry.code === gameState.currentCountry.code;
 
     playSound(isCorrect);
-
-    const answeredAt = Date.now();
-    const timeToAnswer = Math.max(0, answeredAt - questionStartMs);
-
-    setQuestionResults((prev) => [
-      ...prev,
-      {
-        index: gameState.currentQuestion,
-        countryCode: gameState.currentCountry.code,
-        countryName: gameState.currentCountry.name,
-        selectedCode: selectedCountry.code,
-        isCorrect,
-        startedAtMs: questionStartMs,
-        answeredAtMs: answeredAt,
-        timeToAnswerMs: timeToAnswer,
-      },
-    ]);
+    recordQuestionAnswerResult(selectedCountry.code, isCorrect);
 
     setGameState((prev) => {
       const newHearts = limitedLifeModeEnabled && !isCorrect ? prev.hearts - 1 : prev.hearts;
       const gameOver = limitedLifeModeEnabled && newHearts <= 0;
-
       return {
         ...prev,
         selectedAnswer: selectedCountry.code,
@@ -210,54 +239,13 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
       setTimeout(() => setShowPointsAddedAnimation(false), 1500);
     }
 
-    const delay = settings.autoAdvanceEnabled ? 2000 : 0;
-
-    if (settings.autoAdvanceEnabled) {
-      setGameTimeout(() => {
-        const updatedHearts = limitedLifeModeEnabled && !isCorrect ? gameState.hearts - 1 : gameState.hearts;
-        if (limitedLifeModeEnabled && updatedHearts <= 0) {
-          setGameState((prev) => ({
-            ...prev,
-            gameCompleted: true,
-          }));
-          return;
-        }
-
-        if (gameState.currentQuestion < gameState.totalQuestions) {
-          setGameState((prev) => ({
-            ...prev,
-            currentQuestion: prev.currentQuestion + 1,
-          }));
-          generateQuestionHandler();
-        } else {
-          setGameState((prev) => ({
-            ...prev,
-            gameCompleted: true,
-          }));
-        }
-      }, delay);
-    }
+    scheduleNextQuestion();
   };
 
   const handleTimeUp = () => {
     if (gameState.showResult || gameState.gameCompleted) return;
 
-    const answeredAt = Date.now();
-    const timeToAnswer = Math.max(0, answeredAt - questionStartMs);
-
-    setQuestionResults((prev) => [
-      ...prev,
-      {
-        index: gameState.currentQuestion,
-        countryCode: gameState.currentCountry.code,
-        countryName: gameState.currentCountry.name,
-        selectedCode: null,
-        isCorrect: false,
-        startedAtMs: questionStartMs,
-        answeredAtMs: answeredAt,
-        timeToAnswerMs: timeToAnswer,
-      },
-    ]);
+    recordQuestionAnswerResult(null, false);
 
     setGameState((prev) => {
       const newHearts = limitedLifeModeEnabled ? prev.hearts - 1 : prev.hearts;
@@ -271,52 +259,16 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
       };
     });
 
-    if (settings.autoAdvanceEnabled) {
-      setGameTimeout(() => {
-        if (gameState.currentQuestion < gameState.totalQuestions) {
-          setGameState((prev) => ({
-            ...prev,
-            currentQuestion: prev.currentQuestion + 1,
-          }));
-          generateQuestionHandler();
-        } else {
-          setGameState((prev) => ({ ...prev, gameCompleted: true }));
-        }
-      }, 2000);
-    }
-  };
-
-  const nextQuestion = () => {
-    if (gameState.currentQuestion < gameState.totalQuestions) {
-      setGameState((prev) => ({
-        ...prev,
-        currentQuestion: prev.currentQuestion + 1,
-      }));
-      generateQuestionHandler();
-    } else {
-      setGameState((prev) => ({
-        ...prev,
-        gameCompleted: true,
-      }));
-    }
+    scheduleNextQuestion();
   };
 
   const startGame = () => {
-    const totalQuestions = getDifficultySettings(gameState.difficulty).count;
-
     clearGameTimeout();
 
     setGameState((prev) => ({
       ...prev,
-      currentQuestion: 1,
-      score: 0,
-      totalQuestions,
-      selectedAnswer: null,
-      showResult: false,
-      gameCompleted: false,
-      usedCountries: [],
+      ...getBaseResetState(prev.difficulty),
       gameStarted: true,
-      hearts: MAX_HEARTS,
     }));
 
     generateQuestionHandler(gameState.difficulty, []);
@@ -328,15 +280,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 
     setGameState((prev) => ({
       ...prev,
-      currentQuestion: 1,
-      score: 0,
-      totalQuestions: getDifficultySettings(prev.difficulty).count,
-      selectedAnswer: null,
-      showResult: false,
-      gameCompleted: false,
-      usedCountries: [],
-      gameStarted: requireStartPress ? false : true,
-      hearts: MAX_HEARTS,
+      ...getBaseResetState(prev.difficulty),
+      gameStarted: !requireStartPress,
     }));
 
     generateQuestionHandler(gameState.difficulty, []);
@@ -346,26 +291,16 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   };
 
   const handleChangeDifficulty = (newDifficulty: Difficulty) => {
-    const newTotalQuestions = getDifficultySettings(newDifficulty).count;
-
     clearGameTimeout();
 
     setGameState((prev) => ({
       ...prev,
+      ...getBaseResetState(newDifficulty),
       difficulty: newDifficulty,
-      totalQuestions: newTotalQuestions,
-      currentQuestion: 1,
-      score: 0,
-      selectedAnswer: null,
-      showResult: false,
-      gameCompleted: false,
-      usedCountries: [],
-      hearts: MAX_HEARTS,
     }));
 
     generateQuestionHandler(newDifficulty, []);
     setShowDifficultyDialog(false);
-
     setDifficultyParam(newDifficulty);
   };
 
@@ -617,13 +552,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
                         Start
                       </Button>
                     </div>
-                  </div>
-                )}
-                {gameState.showResult && !settings.autoAdvanceEnabled && (
-                  <div className="mb-3 sm:mb-6 text-center">
-                    <Button onClick={nextQuestion} className="w-full" size="lg">
-                      Next Question
-                    </Button>
                   </div>
                 )}
               </CardContent>
