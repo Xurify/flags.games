@@ -2,11 +2,6 @@
 
 A country flag guessing game built with Next.js, TypeScript, and WebSocket technology.
 
-## Features
-
-- **Singleplayer Mode**: Practice flag recognition with different difficulty levels
-- **Multiplayer Mode**: Real-time competitive flag guessing with friends
-
 ## Getting Started
 
 First, run the development server:
@@ -22,32 +17,6 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Multiplayer Setup
-
-The multiplayer functionality requires a WebSocket server. The server repository can be found at: [flags.games_server](https://github.com/Xurify/flags.games_server)
-
-To run the server:
-
-```bash
-cd flags.games_server
-bun install
-bun run dev
-```
-
-The server will run on `http://localhost:3001` by default.
-
-## Game Modes
-
-- **Classic**: Standard flag guessing with multiple choice
-- **Speed**: Quick-fire questions with shorter timers
-- **Elimination**: Players are eliminated after incorrect answers
-
-## Technologies Used
-
-- **Frontend**: Next.js 15, React 19, TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: Radix UI
 
 ## Learn More
 

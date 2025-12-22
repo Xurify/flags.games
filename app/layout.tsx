@@ -20,8 +20,7 @@ const spaceMono = Space_Mono({
   subsets: ["latin"],
 });
 
-const description =
-  "How well do you know your flags? Well, it's time to find out!";
+const description = "How well do you know your flags? Well, it's time to find out!";
 
 export const metadata: Metadata = {
   title: "Guess the Country | flags.games",
@@ -35,7 +34,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/flagsdotgames.png",
+        url: "/images/preview.png",
         width: 1920,
         height: 913,
         alt: "Guess the Country | flags.games",
@@ -48,7 +47,7 @@ export const metadata: Metadata = {
     description,
     images: [
       {
-        url: "/images/flagsdotgames.png",
+        url: "/images/preview.png",
         width: 1920,
         height: 913,
         alt: "Guess the Country | flags.games",
@@ -68,10 +67,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const theme = (await cookies()).get("theme")?.value as
-    | "light"
-    | "dark"
-    | undefined;
+  const theme = (await cookies()).get("theme")?.value as "light" | "dark" | undefined;
   const isDark = theme === "dark";
   return (
     <html lang="en" className={isDark ? `dark` : undefined}>
