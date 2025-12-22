@@ -72,12 +72,12 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
     return `${minutes}:${seconds}`;
   };
 
-  const isPerfect = score === totalPossible && totalPossible > 0;
+  const isPerfect = score === totalPossible;
 
   return (
     <div className="flex flex-col gap-8 w-full max-w-4xl mx-auto py-3">
       {isPerfect && (
-        <Suspense fallback={null}>
+        <Suspense fallback={<div />}>
           <Confetti
             width={window.innerWidth - 100}
             height={window.innerHeight}

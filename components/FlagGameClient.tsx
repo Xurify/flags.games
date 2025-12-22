@@ -24,8 +24,6 @@ import HowToPlayDialog from "./HowToPlayDialog";
 import RestartDialog from "./RestartDialog";
 import DifficultySelector from "./DifficultySelector";
 
-const Confetti = lazy(() => import("react-confetti"));
-
 export interface InitialGameData {
   currentCountry: Country;
   options: Country[];
@@ -409,18 +407,6 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
 
   return (
     <div className="min-h-screen w-full bg-transparent overflow-y-auto relative">
-      {gameState.gameCompleted && (
-        <Suspense fallback={null}>
-          <Confetti
-            width={window.innerWidth - 100}
-            height={window.innerHeight}
-            numberOfPieces={350}
-            recycle={false}
-            className="w-full h-full"
-          />
-        </Suspense>
-      )}
-
       <DifficultySelector
         open={showDifficultyDialog}
         onOpenChange={setShowDifficultyDialog}
