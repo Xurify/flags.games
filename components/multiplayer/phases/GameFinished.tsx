@@ -52,8 +52,6 @@ export default function GameFinished({ room }: GameFinishedProps) {
     }
   };
 
-  console.log("currentRoom", currentRoom);
-
   return (
     <div className="flex flex-col gap-8 w-full max-w-4xl mx-auto pt-6 pb-32 px-4 sm:px-6">
       <div className="flex items-center gap-3 border-b-2 border-foreground pb-4 mb-4">

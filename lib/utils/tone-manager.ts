@@ -16,9 +16,9 @@ class ToneManager {
     try {
       await start();
       this.isInitialized = true;
-      console.log("js initialized successfully");
+      console.log("Tone.js initialized successfully");
     } catch (error) {
-      console.warn("Failed to initialize js:", error);
+      console.warn("Failed to initialize Tone.js:", error);
     }
   }
 
