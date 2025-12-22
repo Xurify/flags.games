@@ -185,7 +185,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
         )}
         <Button
           onClick={handleBackToLobby}
-          variant="outline"
+          variant={isHost ? "outline" : "destructive"}
           className="w-full sm:w-auto h-16 px-12 text-xl font-black tracking-tighter shadow-retro border-2 border-foreground active:translate-x-1 active:translate-y-1 active:shadow-none"
         >
           {isHost ? "RETURN TO LOBBY" : "LEAVE MATCH"}
