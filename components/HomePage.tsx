@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getCountryFlagUrl } from "@/lib/utils/image";
 
-export default function LandingPage() {
+export default function HomePage() {
   interface FloatingFlag {
     code: string;
     delay: number;
