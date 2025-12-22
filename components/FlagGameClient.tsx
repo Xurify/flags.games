@@ -144,9 +144,11 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
     }
   };
 
-  const generateQuestionHandler = (difficulty?: Difficulty) => {
+  const generateQuestionHandler = (difficulty?: Difficulty, initialUsedCountries?: string[]) => {
     const difficultyToUse = difficulty || gameState.difficulty;
-    const questionData = generateQuestion(difficultyToUse, gameState.usedCountries);
+    const countriesToUse = initialUsedCountries !== undefined ? initialUsedCountries : gameState.usedCountries;
+
+    const questionData = generateQuestion(difficultyToUse, countriesToUse);
 
     if (!questionData) {
       setGameState((prev) => ({
@@ -162,7 +164,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
       options: questionData.options,
       selectedAnswer: null,
       showResult: false,
-      usedCountries: [...prev.usedCountries, questionData.currentCountry.code],
+      usedCountries: [...(initialUsedCountries !== undefined ? [] : prev.usedCountries), questionData.currentCountry.code],
     }));
     setQuestionStartMs(Date.now());
   };
@@ -317,7 +319,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
       hearts: MAX_HEARTS,
     }));
 
-    generateQuestionHandler();
+    generateQuestionHandler(gameState.difficulty, []);
     setQuestionResults([]);
   };
 
@@ -336,6 +338,8 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
       gameStarted: requireStartPress ? false : true,
       hearts: MAX_HEARTS,
     }));
+
+    generateQuestionHandler(gameState.difficulty, []);
     setShowRestartDialog(false);
     setQuestionResults([]);
     setQuestionStartMs(Date.now());
@@ -359,7 +363,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
       hearts: MAX_HEARTS,
     }));
 
-    generateQuestionHandler(newDifficulty);
+    generateQuestionHandler(newDifficulty, []);
     setShowDifficultyDialog(false);
 
     setDifficultyParam(newDifficulty);
