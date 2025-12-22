@@ -6,14 +6,12 @@ import { audioManager } from "../utils/audio-manager";
 
 export interface GameSettings {
   soundEffectsEnabled: boolean;
-  autoAdvanceEnabled: boolean;
   darkMode: boolean;
   timePerQuestion: number;
 }
 
 export const defaultSettings: GameSettings = {
   soundEffectsEnabled: true,
-  autoAdvanceEnabled: true,
   darkMode: false,
   timePerQuestion: TIME_PER_QUESTION_OPTIONS[0],
 };
@@ -41,11 +39,9 @@ export const SettingsProvider = ({ children, initialDarkMode = false }: { childr
       try {
         const parsedSettings = JSON.parse(savedSettings);
         setTimeout(() => {
-           
           setSettings((prev) => ({
             ...prev,
             soundEffectsEnabled: parsedSettings.soundEffectsEnabled ?? prev.soundEffectsEnabled,
-            autoAdvanceEnabled: parsedSettings.autoAdvanceEnabled ?? prev.autoAdvanceEnabled,
             timePerQuestion: parsedSettings.timePerQuestion ?? prev.timePerQuestion,
           }));
         }, 0);

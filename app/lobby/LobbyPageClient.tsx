@@ -45,6 +45,7 @@ export function LobbyPageClient({ randomUsername }: LobbyPageClientProps) {
     gameMode: "classic",
     timePerQuestion: TIME_PER_QUESTION_OPTIONS[1],
     questionCount: getDifficultySettings(DIFFICULTY_LEVELS[0]).count,
+    allowJoinAfterGameStart: false,
   });
   const [formErrors, setFormErrors] = useState<{
     username?: string;

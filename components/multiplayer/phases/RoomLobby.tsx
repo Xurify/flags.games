@@ -1,14 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { UsersIcon, TimerIcon, BarChartIcon, CopyIcon, QrCodeIcon, LogOutIcon, ArrowLeftIcon } from "lucide-react";
+import { UsersIcon, TimerIcon, BarChartIcon, CopyIcon, QrCodeIcon, LockIcon, LogOutIcon, ArrowLeftIcon } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { SettingsSelect } from "@/components/multiplayer/SettingsSelect";
-import QRCodeShareModal from "@/components/multiplayer/QRCodeShareModal";
 import { DIFFICULTY_LEVELS, ROOM_SIZES, TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
 import { cn } from "@/lib/utils/strings";
 import { useSocket } from "@/lib/context/SocketContext";
@@ -18,6 +14,12 @@ import { useSettings } from "@/lib/context/SettingsContext";
 import { Room, User } from "@/lib/types/socket";
 import { audioManager } from "@/lib/utils/audio-manager";
 import { prefetchAllFlags } from "@/lib/utils/image";
+
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { SettingsSelect } from "@/components/multiplayer/SettingsSelect";
+import QRCodeShareModal from "@/components/multiplayer/QRCodeShareModal";
 
 interface RoomLobbyProps {
   room: Room;
@@ -150,6 +152,21 @@ const MatchSettings = ({
         renderValue={(value) => `${value}s`}
         disabled={!isHost || isStarting}
       />
+
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <LockIcon className="w-4 h-4 text-muted-foreground" />
+          <div className="flex flex-col">
+            <span className="text-xs font-bold uppercase tracking-wide">Allow Late Joins</span>
+            <span className="text-[10px] text-muted-foreground">Let players join after the game starts</span>
+          </div>
+        </div>
+        <Switch
+          checked={settings.allowJoinAfterGameStart}
+          onCheckedChange={(checked) => onSettingChange("allowJoinAfterGameStart", checked)}
+          disabled={!isHost || isStarting}
+        />
+      </div>
     </div>
   </div>
 );

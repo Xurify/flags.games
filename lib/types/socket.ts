@@ -79,6 +79,7 @@ export interface RoomSettings {
   timePerQuestion: number;
   questionCount: number;
   allowSpectators?: boolean;
+  allowJoinAfterGameStart: boolean;
   gameMode: GameMode;
 }
 

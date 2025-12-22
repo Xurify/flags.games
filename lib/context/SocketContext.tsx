@@ -421,8 +421,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const errorHandler = (data: MessageDataTypes[typeof WS_MESSAGE_TYPES.ERROR]) => {
       if (data.message) {
         let description = null;
+
         if (data.code === ErrorCode.ROOM_NOT_FOUND) {
           description = "This room likely does not exist or was deleted.";
+        } else if (data.code === ErrorCode.SESSION_ALREADY_STARTED) {
+          description = "You are unable to join this room because the game has already started.";
         }
 
         toast.error(data.message, {

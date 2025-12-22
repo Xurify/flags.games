@@ -1,18 +1,11 @@
 "use client";
 
-import {
-  forwardRef,
-  type ElementRef,
-  type ComponentPropsWithoutRef,
-} from "react";
+import { forwardRef, type ElementRef, type ComponentPropsWithoutRef } from "react";
 import { Root, Thumb } from "@radix-ui/react-switch";
 
 import { cn } from "@/lib/utils/strings";
 
-const Switch = forwardRef<
-  ElementRef<typeof Root>,
-  ComponentPropsWithoutRef<typeof Root>
->(({ className, ...props }, ref) => (
+const Switch = forwardRef<ElementRef<typeof Root>, ComponentPropsWithoutRef<typeof Root>>(({ className, ...props }, ref) => (
   <Root
     className={cn(
       "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-sm border-2 border-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input",
@@ -23,7 +16,7 @@ const Switch = forwardRef<
   >
     <Thumb
       className={cn(
-        "pointer-events-none block h-5 w-5 rounded-sm bg-background border-2 border-foreground shadow-sm ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+        "pointer-events-none block h-5 w-5 rounded-sm bg-background border border-foreground shadow-sm ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0 data-[state=checked]:border-l-2 data-[state=unchecked]:border-r-2"
       )}
     />
   </Root>

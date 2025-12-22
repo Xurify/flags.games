@@ -1,12 +1,12 @@
 import React from "react";
 import Link from "next/link";
 import { z } from "zod";
-import { UsersIcon, TimerIcon, BarChartIcon, SwordsIcon } from "lucide-react";
-
+import { UsersIcon, TimerIcon, BarChartIcon, SwordsIcon, LockIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SettingsSelect } from "./SettingsSelect";
+import { Switch } from "@/components/ui/switch";
 import { DIFFICULTY_LEVELS, ROOM_SIZES, TIME_PER_QUESTION_OPTIONS } from "@/lib/constants";
 import { RoomSettings } from "@/lib/types/socket";
 import { useConnectionStatus } from "@/lib/hooks/useConnectionStatus";
@@ -22,10 +22,7 @@ const roomSettingsSchema = z.object({
 });
 
 const formSchema = z.object({
-  username: z
-    .string()
-    .min(3, "Username must be at least 3 characters")
-    .max(30, "Username must be less than 30 characters"),
+  username: z.string().min(3, "Username must be at least 3 characters").max(30, "Username must be less than 30 characters"),
   settings: roomSettingsSchema,
 });
 
@@ -95,16 +92,11 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
       <div className="space-y-6 sm:space-y-4">
         <section className="space-y-4 sm:space-y-3">
           <div className="flex items-center gap-4 border-b-2 border-foreground pb-2 mb-2">
-            <div className="w-8 h-8 bg-foreground text-background flex items-center justify-center font-black">
-              1
-            </div>
+            <div className="w-8 h-8 bg-foreground text-background flex items-center justify-center font-black">1</div>
             <h2 className="text-xl sm:text-2xl font-black tracking-tight uppercase">Player Info</h2>
           </div>
           <div className="space-y-2">
-            <Label
-              htmlFor="username"
-              className="font-mono text-[10px] uppercase font-bold text-muted-foreground ml-1"
-            >
+            <Label htmlFor="username" className="font-mono text-[10px] uppercase font-bold text-muted-foreground ml-1">
               Your Username
             </Label>
             <Input
@@ -115,25 +107,15 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
               className="h-12 sm:h-14 text-lg sm:text-xl font-bold border-2 border-foreground shadow-retro bg-background focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-all px-4"
               maxLength={30}
             />
-            {formErrors.username && (
-              <p className="text-xs text-destructive font-bold uppercase mt-1">
-                {formErrors.username}
-              </p>
-            )}
-            <p className="font-mono text-[10px] text-muted-foreground text-right uppercase mt-1">
-              Length: {username.length}/30
-            </p>
+            {formErrors.username && <p className="text-xs text-destructive font-bold uppercase mt-1">{formErrors.username}</p>}
+            <p className="font-mono text-[10px] text-muted-foreground text-right uppercase mt-1">Length: {username.length}/30</p>
           </div>
         </section>
 
         <section className="space-y-3">
           <div className="flex items-center gap-4 border-b-2 border-foreground pb-2">
-            <div className="w-8 h-8 bg-foreground text-background flex items-center justify-center font-black">
-              2
-            </div>
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight uppercase">
-              Match Settings
-            </h2>
+            <div className="w-8 h-8 bg-foreground text-background flex items-center justify-center font-black">2</div>
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight uppercase">Match Settings</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 bg-muted/20 border-2 border-foreground p-4 sm:p-6 shadow-retro">
@@ -167,9 +149,7 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
                 value: time,
                 label: `${time} seconds`,
               }))}
-              onValueChange={(value) =>
-                setSettings((prev) => ({ ...prev, timePerQuestion: value }))
-              }
+              onValueChange={(value) => setSettings((prev) => ({ ...prev, timePerQuestion: value }))}
               renderValue={(value) => `${value}S`}
             />
             <SettingsSelect
@@ -192,6 +172,19 @@ const CreateRoomForm: React.FC<CreateRoomFormProps> = ({
               onValueChange={(value) => setSettings((prev) => ({ ...prev, gameMode: value }))}
               renderValue={(value) => value.toUpperCase()}
             />
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <LockIcon className="w-4 h-4 text-muted-foreground" />
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold uppercase tracking-wide">Allow Late Joins</span>
+                  <span className="text-[10px] text-muted-foreground">Let players join after the game starts</span>
+                </div>
+              </div>
+              <Switch
+                checked={settings.allowJoinAfterGameStart}
+                onCheckedChange={(checked) => setSettings((prev) => ({ ...prev, allowJoinAfterGameStart: checked }))}
+              />
+            </div>
           </div>
         </section>
 
