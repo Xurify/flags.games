@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useEffect, Suspense, lazy } from "react";
+import Link from "next/link";
 import { useSocket } from "@/lib/context/SocketContext";
 import { useSettings } from "@/lib/context/SettingsContext";
+import { useRoomManagement } from "@/lib/hooks/useRoomManagement";
 import { Room } from "@/lib/types/socket";
 import { cn } from "@/lib/utils/strings";
 import { audioManager } from "@/lib/utils/audio-manager";
@@ -10,7 +12,6 @@ import { audioManager } from "@/lib/utils/audio-manager";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CrownIcon, ArrowLeftIcon } from "lucide-react";
-import Link from "next/link";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const Confetti = lazy(() => import("react-confetti"));
@@ -21,6 +22,7 @@ interface GameFinishedProps {
 
 export default function GameFinished({ room }: GameFinishedProps) {
   const { restartGame, stopGame, currentUser, gameState, leaderboard, currentRoom } = useSocket();
+  const { canStartGame } = useRoomManagement();
   const { settings } = useSettings();
 
   useEffect(() => {
@@ -50,6 +52,8 @@ export default function GameFinished({ room }: GameFinishedProps) {
     }
   };
 
+  console.log("currentRoom", currentRoom);
+
   return (
     <div className="flex flex-col gap-8 w-full max-w-4xl mx-auto pt-6 pb-32 px-4 sm:px-6">
       <div className="flex items-center gap-3 border-b-2 border-foreground pb-4 mb-4">
@@ -65,7 +69,6 @@ export default function GameFinished({ room }: GameFinishedProps) {
           <p className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em] mt-1">Session Terminated</p>
         </div>
       </div>
-
       {gameState?.phase === "finished" && (
         <Suspense fallback={null}>
           <Confetti
@@ -77,7 +80,6 @@ export default function GameFinished({ room }: GameFinishedProps) {
           />
         </Suspense>
       )}
-
       <div className="flex flex-col gap-2 text-center">
         <h1 className="text-5xl sm:text-7xl font-black tracking-tighter text-foreground leading-[0.9] uppercase">
           Final
@@ -85,7 +87,6 @@ export default function GameFinished({ room }: GameFinishedProps) {
           <span className="text-destructive whitespace-nowrap">Results</span>
         </h1>
       </div>
-
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           {
@@ -123,7 +124,6 @@ export default function GameFinished({ room }: GameFinishedProps) {
           </div>
         ))}
       </div>
-
       <div className="space-y-4">
         <h3 className="text-2xl font-black tracking-tight uppercase border-b-2 border-foreground pb-2">Final Standings</h3>
         <div className="border-2 border-foreground shadow-retro overflow-hidden">
@@ -175,13 +175,12 @@ export default function GameFinished({ room }: GameFinishedProps) {
           </Table>
         </div>
       </div>
-
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
         {isHost && (
           <Button
             onClick={() => restartGame()}
             className="w-full sm:w-auto h-16 px-12 text-xl font-black tracking-tighter bg-destructive hover:bg-destructive/90 text-white shadow-retro border-2 border-foreground active:translate-x-1 active:translate-y-1 active:shadow-none"
-            disabled={Number(currentRoom?.members?.length) < 1}
+            disabled={!canStartGame}
           >
             PLAY AGAIN
           </Button>

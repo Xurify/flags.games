@@ -18,10 +18,12 @@ export const useRoomManagement = () => {
 
   const isHost = getIsHost();
 
-  const canStartGame = () => {
+  const canStartGameCheck = () => {
     if (!currentRoom || !isHost || currentRoom.members.length < 2) return false;
     return true;
   };
+
+  const canStartGame = canStartGameCheck();
 
   const getRoomStats = () => {
     if (!currentRoom) return null;

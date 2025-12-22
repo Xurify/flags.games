@@ -162,7 +162,6 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   const { settings } = useSettings();
 
   const [showQRModal, setShowQRModal] = useState(false);
-  const [isStartingRequest, setIsStartingRequest] = useState(false);
 
   const inviteLink = room.inviteCode ? `${window.location.origin}/lobby?c=${room.inviteCode}` : "";
 
@@ -186,9 +185,6 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   const isStarting = currentRoom?.gameState?.phase === "starting";
   const countdown = Math.ceil(timeRemainingSec);
 
-  // Actually, we need to replicate the sound logic.
-  // The previous logic was: frequency = countdown <= 1 ? 800 : 600.
-  // We can use a simple effect that triggers when `countdown` changes integer value.
   const prevCountdown = useRef(countdown);
   useEffect(() => {
     if (isStarting && settings.soundEffectsEnabled && countdown > 0 && countdown !== prevCountdown.current) {
@@ -200,13 +196,8 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
 
   const handleStart = async () => {
     try {
-      setIsStartingRequest(true);
       await startGame();
-    } catch (error) {
-      // Error handled by socket context
-    } finally {
-      setIsStartingRequest(false);
-    }
+    } catch (error) {}
   };
 
   const handleSettingChange = (key: keyof Room["settings"], value: Room["settings"][keyof Room["settings"]]) => {
@@ -236,7 +227,6 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
           </div>
         </div>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <PlayerList
           members={room.members}
@@ -246,7 +236,6 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
           isHost={isHost}
           onKick={kickUser}
         />
-
         <div className="space-y-4">
           <MatchSettings
             settings={room.settings}
@@ -263,7 +252,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 size="lg"
                 className="w-full h-16 text-xl tracking-tighter bg-primary hover:bg-primary/90 text-white border-2 border-foreground shadow-retro active:translate-x-0.5 active:translate-y-0.5"
                 onClick={handleStart}
-                disabled={!canStartGame || isStarting || isStartingRequest}
+                disabled={!canStartGame || isStarting}
               >
                 {isStarting ? `STARTING IN ${countdown}...` : "START MATCH"}
               </Button>
