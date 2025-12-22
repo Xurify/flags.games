@@ -154,7 +154,7 @@ const GameEndScreen: React.FC<GameEndScreenProps> = ({
                       result.isCorrect ? "bg-card" : "bg-red-500/10"
                     )}
                   >
-                    <TableCell className="text-xl font-black tracking-tighter text-foreground/20 group-hover:text-foreground/40 text-center transition-colors italic tabular-nums">
+                    <TableCell className="text-xl font-black tracking-tighter text-foreground/30 group-hover:text-foreground/40 text-center transition-colors italic tabular-nums">
                       {result.index}
                     </TableCell>
                     <TableCell>

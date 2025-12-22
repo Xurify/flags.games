@@ -146,7 +146,7 @@ export default function Leaderboard({
         <div className="text-xs font-black tracking-widest uppercase">Leaderboard</div>
       </div>
 
-      <div className={cn("max-h-[500px] overflow-y-auto", variant === "inline" && "max-h-none")}>
+      <div className={cn("max-h-[500px] overflow-y-auto no-scrollbar", variant === "inline" && "max-h-none")}>
         <div className="divide-y-2 divide-foreground/10">
           {sortedMembers.map((member, index) => {
             const isCurrentUser = currentUser?.id === member.id;
@@ -167,7 +167,7 @@ export default function Leaderboard({
               >
                 <div data-role="highlight" className="absolute inset-0 pointer-events-none z-0" />
 
-                <div className="text-xl font-black italic tracking-tighter text-foreground/10 group-hover:text-foreground/20 transition-colors z-10">
+                <div className="text-xl font-black italic tracking-tighter text-foreground/30 group-hover:text-foreground/20 transition-colors z-10">
                   {index + 1}
                 </div>
 

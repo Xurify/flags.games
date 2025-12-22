@@ -142,7 +142,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
                     key={player.userId}
                     className={cn("group border-b-2 border-foreground last:border-0", isYou ? "bg-primary/5" : "bg-card")}
                   >
-                    <TableCell className="text-2xl font-black tracking-tighter text-foreground/20 group-hover:text-foreground/40 text-center transition-colors italic p-2">
+                    <TableCell className="text-2xl font-black tracking-tighter text-foreground/30 group-hover:text-foreground/40 text-center transition-colors italic p-2">
                       {index + 1}
                     </TableCell>
                     <TableCell className="p-2">
