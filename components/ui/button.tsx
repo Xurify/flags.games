@@ -13,19 +13,13 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground border-2 border-foreground shadow-retro hover:shadow-retro-hover active:shadow-retro-pressed active:translate-x-[2px] active:translate-y-[2px] hover:-translate-y-[2px] hover:-translate-x-[2px]",
-        destructive:
-          "bg-destructive text-white border-2 border-foreground shadow-retro hover:shadow-retro-hover active:shadow-retro-pressed active:translate-x-[2px] active:translate-y-[2px] hover:-translate-y-[2px] hover:-translate-x-[2px]",
-        outline:
-          "bg-background text-foreground border-2 border-foreground shadow-retro hover:shadow-retro-hover active:shadow-retro-pressed active:translate-x-[2px] active:translate-y-[2px] hover:-translate-y-[2px] hover:-translate-x-[2px]",
-        neutral:
-          "bg-muted text-foreground border-2 border-foreground shadow-retro hover:shadow-retro-hover active:shadow-retro-pressed active:translate-x-[2px] active:translate-y-[2px] hover:-translate-y-[2px] hover:-translate-x-[2px]",
-        secondary:
-          "bg-secondary text-secondary-foreground border-2 border-foreground shadow-retro hover:shadow-retro-hover active:shadow-retro-pressed active:translate-x-[2px] active:translate-y-[2px] hover:-translate-y-[2px] hover:-translate-x-[2px]",
-        ghost:
-          "hover:bg-primary hover:text-primary-foreground border-2 border-transparent hover:border-foreground hover:shadow-retro",
-        link: "text-primary underline-offset-4 hover:underline",
+        default: "bg-primary text-primary-foreground border-2 border-foreground shadow-retro",
+        destructive: "bg-destructive text-white border-2 border-foreground shadow-retro",
+        outline: "bg-background text-foreground border-2 border-foreground shadow-retro",
+        neutral: "bg-muted text-foreground border-2 border-foreground shadow-retro",
+        secondary: "bg-secondary text-secondary-foreground border-2 border-foreground shadow-retro",
+        ghost: "hover:bg-primary hover:text-primary-foreground border-2 border-transparent hover:border-foreground",
+        link: "text-primary underline-offset-4 hover:underline shadow-none",
       },
       size: {
         default: "h-11 px-6 py-3 has-[>svg]:px-5",
@@ -35,18 +29,42 @@ const buttonVariants = cva(
         "icon-sm": "size-9",
         pill: "h-11 px-8 rounded-full",
       },
+      hoverEffect: {
+        up: "hover:shadow-retro-hover active:shadow-retro-pressed active:translate-x-[2px] active:translate-y-[2px] hover:-translate-y-[2px] hover:-translate-x-[2px]",
+        down: "hover:shadow-retro-pressed active:translate-x-[4px] active:translate-y-[4px] active:shadow-none hover:translate-y-[2px] hover:translate-x-[2px]",
+        none: "",
+      },
     },
+    compoundVariants: [
+      {
+        variant: ["ghost", "link"],
+        hoverEffect: "up",
+        className: "shadow-none",
+      },
+      {
+        variant: "ghost",
+        hoverEffect: "up",
+        className: "hover:shadow-retro",
+      },
+      {
+        variant: "link",
+        hoverEffect: "up",
+        className: "hover:shadow-none hover:translate-0 active:translate-0",
+      },
+    ],
     defaultVariants: {
       variant: "default",
       size: "default",
+      hoverEffect: "up",
     },
-  },
+  }
 );
 
 function Button({
   className,
   variant,
   size,
+  hoverEffect,
   asChild = false,
   playClickSound = false,
   onClick,
@@ -69,7 +87,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size, hoverEffect, className }))}
       onClick={handleClick}
       {...props}
     />

@@ -76,9 +76,10 @@ const PlayerList = ({
 
           {player && hostId !== player.id && isHost && (
             <Button
-              variant="ghost"
+              variant="destructive"
               onClick={() => onKick(player.id)}
-              className="text-[10px] h-6 px-2 hover:bg-destructive hover:text-white border-transparent hover:border-foreground"
+              className="text-[10px] h-6 px-2 !shadow-none hover:bg-destructive/80 transition-all"
+              hoverEffect="none"
             >
               KICK
             </Button>
