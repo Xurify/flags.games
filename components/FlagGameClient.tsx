@@ -652,7 +652,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
               <HowToPlayDialog open={showHowToPlayDialog} onOpenChange={setShowHowToPlayDialog}>
                 <Button
                   variant="ghost"
-                  className="text-muted-foreground hover:bg-transparent hover:shadow-none font-mono text-xs uppercase tracking-widest"
+                  className="hover:bg-transparent hover:text-foreground hover:shadow-none font-mono text-xs uppercase tracking-widest"
                   size="sm"
                 >
                   <HelpCircleIcon className="w-4 h-4 mr-2" />
