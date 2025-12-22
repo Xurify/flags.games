@@ -34,6 +34,12 @@ export default function LandingPage() {
       className: "top-[65%] md:top-[20%] left-[40%] md:left-[15%] animate-float-1",
     },
     {
+      code: "SE",
+      delay: 6,
+      className: "top-[12%] left-[58%] animate-float-2",
+      hiddenOnMobile: true,
+    },
+    {
       code: "GB",
       delay: 5,
       className: "top-[40%] left-[25%] animate-float-3",
@@ -80,10 +86,7 @@ export default function LandingPage() {
         >
           <picture>
             {flag.hiddenOnMobile && (
-              <source
-                media="(max-width: 767px)"
-                srcSet="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-              />
+              <source media="(max-width: 767px)" srcSet="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
             )}
             <Image
               src={getCountryFlagUrl(flag.code)}
@@ -98,7 +101,6 @@ export default function LandingPage() {
           </picture>
         </div>
       ))}
-
       <main className="relative z-10 flex flex-col items-center text-center px-4 max-w-2xl mt-16 sm:mt-0">
         <Badge
           variant="default"
@@ -107,15 +109,12 @@ export default function LandingPage() {
           <GlobeIcon className="w-3 h-3 mr-2" />
           197 Countries
         </Badge>
-
         <h1 className="text-6xl sm:text-7xl md:text-9xl font-black mb-2 sm:mb-4 tracking-tighter text-foreground decoration-primary underline underline-offset-8 decoration-4">
           FLAGS
         </h1>
-
         <p className="text-sm sm:text-base md:text-xl font-mono text-muted-foreground mb-6 md:mb-12 max-w-md">
           How well do you know your flags? <br /> Let's find out! 🧐
         </p>
-
         <div className="flex flex-col gap-4 md:gap-6 w-full max-w-sm">
           <Link href="/play" className="w-full">
             <Button
@@ -137,7 +136,6 @@ export default function LandingPage() {
               <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-destructive" />
             </Button>
           </Link>
-
           <Link href="/lobby" className="w-full">
             <Button
               size="lg"
@@ -149,12 +147,8 @@ export default function LandingPage() {
                   <UsersIcon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                 </div>
                 <div className="text-left">
-                  <div className="text-lg sm:text-xl font-black block leading-none">
-                    MULTIPLAYER (BETA)
-                  </div>
-                  <div className="text-[10px] md:text-xs font-mono font-normal opacity-70">
-                    Challenge your friends
-                  </div>
+                  <div className="text-lg sm:text-xl font-black block leading-none">MULTIPLAYER (BETA)</div>
+                  <div className="text-[10px] md:text-xs font-mono font-normal opacity-70">Challenge your friends</div>
                 </div>
               </div>
               <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-blue-600" />
@@ -162,10 +156,7 @@ export default function LandingPage() {
           </Link>
         </div>
       </main>
-
-      <footer className="absolute bottom-8 text-xs font-mono opacity-40">
-        © 2025 FLAGS.GAMES • XURIFY
-      </footer>
+      <footer className="absolute bottom-8 text-xs font-mono opacity-40">© 2025 FLAGS.GAMES • XURIFY</footer>
     </div>
   );
 }

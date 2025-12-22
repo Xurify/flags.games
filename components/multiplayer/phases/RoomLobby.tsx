@@ -185,9 +185,15 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
   const isStarting = currentRoom?.gameState?.phase === "starting";
   const countdown = Math.ceil(timeRemainingSec);
 
-  const prevCountdown = useRef(countdown);
+  const prevCountdown = useRef<number | null>(null);
+
   useEffect(() => {
-    if (isStarting && settings.soundEffectsEnabled && countdown > 0 && countdown !== prevCountdown.current) {
+    if (!isStarting) {
+      prevCountdown.current = null;
+      return;
+    }
+
+    if (settings.soundEffectsEnabled && countdown > 0 && countdown !== prevCountdown.current) {
       const frequency = countdown <= 1 ? 800 : 600;
       audioManager.playTone(frequency, 0.18, "sine");
       prevCountdown.current = countdown;
@@ -196,6 +202,7 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
 
   const handleStart = async () => {
     try {
+      audioManager.resumeAudioContext();
       await startGame();
     } catch (error) {}
   };
@@ -244,7 +251,6 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
             isStarting={isStarting}
             onSettingChange={handleSettingChange}
           />
-
           <div className="pt-4 space-y-3">
             {isHost ? (
               <Button
@@ -268,7 +274,6 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 {isStarting ? <span className="animate-pulse">STARTING IN {countdown}...</span> : "WAITING FOR HOST TO START"}
               </div>
             )}
-
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -289,7 +294,6 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
                 COPY LINK
               </Button>
             </div>
-
             <Link href="/" className="md:block pt-2">
               <Button
                 variant="ghost"
@@ -303,7 +307,6 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
           </div>
         </div>
       </div>
-
       <QRCodeShareModal isOpen={showQRModal} onClose={() => setShowQRModal(false)} inviteLink={inviteLink} />
     </div>
   );
