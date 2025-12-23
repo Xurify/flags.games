@@ -39,6 +39,7 @@ export default function GameFinished({ room }: GameFinishedProps) {
   useEffect(() => {
     if (settings.soundEffectsEnabled && gameState?.phase === "finished") {
       audioManager.playGameOverSound(currentUserPlacement?.rank === 1);
+      //audioManager.playVictorySound();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState?.phase, currentUserPlacement?.rank]);
