@@ -445,7 +445,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     const roomExpiredHandler = () => {
       setCurrentRoom(null);
       toast.warning("Room expired", {
-        description: "This room reached its maximum lifetime and was deleted.",
+        description: "This room was inactive for way too long and was deleted.",
         duration: Infinity,
         dismissible: true,
       });

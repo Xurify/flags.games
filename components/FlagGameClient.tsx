@@ -337,9 +337,7 @@ const FlagGameClient: React.FC<FlagGameClientProps> = ({
   useEffect(() => {
     if (gameState.gameCompleted && settings.soundEffectsEnabled) {
       const percentage = (gameState.score / (gameState.totalQuestions * CORRECT_POINT_COST)) * 100;
-      if (percentage >= 60) {
-        audioManager.playVictorySound();
-      }
+      audioManager.playGameOverSound(percentage >= 60);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState.gameCompleted]);

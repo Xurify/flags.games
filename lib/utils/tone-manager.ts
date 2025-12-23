@@ -1,8 +1,21 @@
-import { start, getContext, Oscillator, AmplitudeEnvelope, Synth, now as nowTone, Filter, Reverb, PingPongDelay } from "tone";
+import {
+  start,
+  getContext,
+  Oscillator,
+  AmplitudeEnvelope,
+  Synth,
+  now as nowTone,
+  Filter,
+  Reverb,
+  PingPongDelay,
+  Player,
+  PolySynth,
+} from "tone";
 
 class ToneManager {
   private isInitialized = false;
   private isStarted = false;
+  private players: Map<string, Player> = new Map();
 
   constructor() {
     if (typeof window !== "undefined") {
@@ -208,29 +221,54 @@ class ToneManager {
   async playVictoryFanfare(): Promise<void> {
     await this.ensureStarted();
 
-    const synth = new Synth({
-      oscillator: {
-        type: "sine",
-      },
-      envelope: {
-        attack: 0.01,
-        decay: 0.1,
-        sustain: 0.5,
-        release: 0.3,
-      },
+    const synth = new PolySynth(Synth, {
+      oscillator: { type: "square" },
+      envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.2 },
     }).toDestination();
-
-    synth.volume.value = -10;
+    synth.volume.value = -12;
 
     const now = nowTone();
-    const notes = ["C5", "E5", "G5", "C6", "E6", "G6"];
-    notes.forEach((note, index) => {
-      synth.triggerAttackRelease(note, "4n", now + index * 0.2);
+    // Ascending bouncy riff
+    ["C5", "E5", "G5", "C6"].forEach((note, i) => {
+      synth.triggerAttackRelease(note, "16n", now + i * 0.1);
     });
+
+    // Final triumphant chord
+    synth.triggerAttackRelease(["E6", "C6", "G6"], "4n", now + 0.5);
+
+    setTimeout(() => synth.dispose(), 3000);
+  }
+
+  async playDefeatFanfare(): Promise<void> {
+    await this.ensureStarted();
+
+    const synth = new PolySynth(Synth, {
+      oscillator: { type: "sawtooth" },
+      envelope: { attack: 0.02, decay: 0.3, sustain: 0.2, release: 0.8 },
+    }).toDestination();
+    synth.volume.value = -14;
+
+    const now = nowTone();
+    // Classic "womp womp wooomp" pattern
+    synth.triggerAttackRelease("G4", "8n", now);
+    synth.triggerAttackRelease("Eb4", "8n", now + 0.3);
+    synth.triggerAttackRelease("C4", "2n", now + 0.6);
+
+    // Sub-bass layer for weight
+    const bass = new Synth({
+      oscillator: { type: "triangle" },
+      envelope: { attack: 0.05, decay: 0.5, sustain: 0.1, release: 1.2 },
+    }).toDestination();
+    bass.volume.value = -18;
+
+    bass.triggerAttackRelease("G3", "8n", now);
+    bass.triggerAttackRelease("Eb3", "8n", now + 0.3);
+    bass.triggerAttackRelease("C3", "2n", now + 0.6);
 
     setTimeout(() => {
       synth.dispose();
-    }, 2000);
+      bass.dispose();
+    }, 4000);
   }
 
   async playCountdownTick(): Promise<void> {
@@ -414,6 +452,35 @@ class ToneManager {
   async resumeContext(): Promise<void> {
     if (getContext().state === "suspended") {
       await start();
+    }
+  }
+
+  async loadAudio(url: string, key: string): Promise<void> {
+    if (this.players.has(key)) return;
+
+    const player = new Player(url).toDestination();
+    await player.loaded;
+    this.players.set(key, player);
+  }
+
+  async playAudioFile(key: string, volume: number = 0.5): Promise<void> {
+    await this.ensureStarted();
+    const player = this.players.get(key);
+    if (player && player.loaded) {
+      // Player volume is in decibels. 0 is original, -10 is significantly quieter.
+      // Simple conversion from 0-1 to dB (logarithmic is better but linear is fine for basic use)
+      const db = 20 * Math.log10(volume);
+      player.volume.value = isFinite(db) ? db : -100;
+      player.start();
+    } else {
+      throw new Error(`Audio player for key "${key}" not found or not loaded`);
+    }
+  }
+
+  stopAudioFile(key: string): void {
+    const player = this.players.get(key);
+    if (player) {
+      player.stop();
     }
   }
 }

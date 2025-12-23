@@ -35,10 +35,7 @@ class AudioManager {
     }
   }
 
-  private async playWithAudioContext(
-    actionName: string,
-    action: (context: AudioContext) => void
-  ): Promise<void> {
+  private async playWithAudioContext(actionName: string, action: (context: AudioContext) => void): Promise<void> {
     if (!this.audioContext) {
       console.warn(`AudioContext not available for ${actionName}.`);
       return;
@@ -89,14 +86,21 @@ class AudioManager {
     document.addEventListener("touchstart", resume);
   }
 
-  async preloadAudio(url: string, key?: string): Promise<HTMLAudioElement> {
+  async preloadAudio(url: string, key?: string): Promise<HTMLAudioElement | void> {
     const cacheKey = key || url;
+
+    // Load in Tone.js
+    try {
+      await toneManager.loadAudio(url, cacheKey);
+    } catch (error) {
+      console.warn("Tone.js preload failed for:", url, error);
+    }
 
     if (this.audioCache[cacheKey]) {
       return this.audioCache[cacheKey];
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const audio = new Audio();
 
       audio.preload = "auto";
@@ -115,7 +119,7 @@ class AudioManager {
         "error",
         (error) => {
           console.error("Failed to preload audio:", url, error);
-          reject(error);
+          resolve();
         },
         { once: true }
       );
@@ -133,44 +137,50 @@ class AudioManager {
     } = {}
   ): Promise<void> {
     const { volume = 0.5, key } = options;
+    const cacheKey = key || url;
 
     try {
-      const audio = await this.preloadAudio(url, key);
+      await toneManager.playAudioFile(cacheKey, volume);
+    } catch (error) {
+      console.warn(`Tone.js playback failed for ${cacheKey}, falling back to HTMLAudio:`, error);
+      try {
+        const audio = await this.preloadAudio(url, key);
+        if (!audio) return;
 
-      audio.currentTime = 0;
-      audio.volume = volume;
+        audio.currentTime = 0;
+        audio.volume = volume;
 
-      if (audio.readyState < 3) {
-        await new Promise((resolve) => {
-          const handleCanPlay = () => {
-            audio.removeEventListener("canplay", handleCanPlay);
-            resolve(undefined);
-          };
-          audio.addEventListener("canplay", handleCanPlay);
-        });
-      }
+        if (audio.readyState < 3) {
+          await new Promise((resolve) => {
+            const handleCanPlay = () => {
+              audio.removeEventListener("canplay", handleCanPlay);
+              resolve(undefined);
+            };
+            audio.addEventListener("canplay", handleCanPlay);
+          });
+        }
 
-      const cacheKey = key || url;
-      this.currentlyPlayingByKey.add(cacheKey);
-      const handleEnded = () => {
-        this.currentlyPlayingByKey.delete(cacheKey);
-        audio.removeEventListener("ended", handleEnded);
-      };
-      audio.addEventListener("ended", handleEnded);
-
-      const playPromise = audio.play();
-
-      if (playPromise !== undefined) {
-        try {
-          await playPromise;
-        } catch (e) {
+        this.currentlyPlayingByKey.add(cacheKey);
+        const handleEnded = () => {
           this.currentlyPlayingByKey.delete(cacheKey);
           audio.removeEventListener("ended", handleEnded);
-          throw e;
+        };
+        audio.addEventListener("ended", handleEnded);
+
+        const playPromise = audio.play();
+
+        if (playPromise !== undefined) {
+          try {
+            await playPromise;
+          } catch (e) {
+            this.currentlyPlayingByKey.delete(cacheKey);
+            audio.removeEventListener("ended", handleEnded);
+            throw e;
+          }
         }
+      } catch (innerError) {
+        console.error("Failed to play audio fallback:", url, innerError);
       }
-    } catch (error) {
-      console.error("Failed to play audio:", url, error);
     }
   }
 
@@ -201,11 +211,7 @@ class AudioManager {
   /**
    * Play a simple tone using Web Audio API
    */
-  async playTone(
-    frequency: number,
-    duration: number = 0.3,
-    type: OscillatorType = "sine"
-  ): Promise<void> {
+  async playTone(frequency: number, duration: number = 0.3, type: OscillatorType = "sine"): Promise<void> {
     await this.playWithAudioContext("TONE", (ctx) => {
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
@@ -288,11 +294,32 @@ class AudioManager {
     }
   }
 
-  playVictorySound(): void {
-    this.playAudio(AUDIO_URLS.VICTORY, {
-      volume: 0.7,
-      key: AUDIO_URLS_KEYS.VICTORY,
-    });
+  async playVictorySound(): Promise<void> {
+    try {
+      await this.playAudio(AUDIO_URLS.VICTORY, {
+        volume: 0.5,
+        key: AUDIO_URLS_KEYS.VICTORY,
+      });
+      //await toneManager.playVictoryFanfare();
+    } catch (error) {
+      console.warn("Victory sound failed:", error);
+    }
+  }
+
+  async playDefeatSound(): Promise<void> {
+    try {
+      await toneManager.playDefeatFanfare();
+    } catch (error) {
+      console.warn("Defeat sound failed:", error);
+    }
+  }
+
+  async playGameOverSound(isVictory: boolean): Promise<void> {
+    if (isVictory) {
+      await this.playVictorySound();
+    } else {
+      await this.playDefeatSound();
+    }
   }
 
   async playAnswerSubmittedSound(): Promise<void> {
