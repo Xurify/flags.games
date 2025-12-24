@@ -113,7 +113,7 @@ export default function HomePage() {
           FLAGS
         </h1>
         <p className="text-sm sm:text-base md:text-xl font-mono text-muted-foreground mb-6 md:mb-12 max-w-md">
-          How well do you know your flags? <br /> Let's find out! 🧐
+          How well do you know your flags? <br /> Let's find out! 😄
         </p>
         <div className="flex flex-col gap-4 md:gap-6 w-full max-w-sm">
           <Link href="/play" className="w-full">

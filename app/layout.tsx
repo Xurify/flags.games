@@ -20,7 +20,7 @@ const spaceMono = Space_Mono({
   subsets: ["latin"],
 });
 
-const description = "How well do you know your flags? Well, it's time to find out!";
+const description = "How well do you know your flags? Let's find out!";
 
 export const metadata: Metadata = {
   title: "Guess the Country | flags.games",
