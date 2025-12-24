@@ -32,11 +32,27 @@ export const metadata: Metadata = {
     siteName: "flags.games",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "https://flags.games/opengraph-image.png",
+        width: 1920,
+        height: 913,
+        alt: "Guess the Country | flags.games",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Guess the Country | flags.games",
     description,
+    images: [
+      {
+        url: "https://flags.games/opengraph-image.png",
+        width: 1920,
+        height: 913,
+        alt: "Guess the Country | flags.games",
+      },
+    ],
   },
   applicationName: "flags.games",
   metadataBase: new URL("https://flags.games"),
