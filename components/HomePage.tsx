@@ -2,79 +2,16 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { GlobeIcon, UsersIcon, ArrowRightIcon, UserIcon } from "lucide-react";
+import { GlobeIcon, UsersIcon, ArrowRightIcon, UserIcon, Gamepad2Icon } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { floatingFlags } from "@/components/ui/floatingFlags";
 import { getCountryFlagUrl } from "@/lib/utils/image";
 
-export default function HomePage() {
-  interface FloatingFlag {
-    code: string;
-    delay: number;
-    className: string;
-    hiddenOnMobile?: boolean;
-  }
+import type { Stats } from "@/lib/api/flags-api";
 
-  const floatingFlags: FloatingFlag[] = [
-    { code: "US", delay: 0, className: "top-[10%] left-[5%] animate-float-1" },
-    {
-      code: "JP",
-      delay: 2,
-      className: "top-[20%] right-[10%] animate-float-2",
-      hiddenOnMobile: true,
-    },
-    {
-      code: "SK",
-      delay: 3,
-      className: "top-[5%] right-[8%] md:right-[25%] animate-float-2",
-    },
-    {
-      code: "BR",
-      delay: 4,
-      className: "top-[65%] md:top-[20%] left-[40%] md:left-[15%] animate-float-1",
-    },
-    {
-      code: "SE",
-      delay: 6,
-      className: "top-[12%] left-[58%] animate-float-2",
-      hiddenOnMobile: true,
-    },
-    {
-      code: "GB",
-      delay: 5,
-      className: "top-[40%] left-[25%] animate-float-3",
-      hiddenOnMobile: true,
-    },
-    {
-      code: "EE",
-      delay: 4,
-      className: "bottom-[20%] md:bottom-[15%] left-[10%] animate-float-3",
-    },
-    {
-      code: "CA",
-      delay: 2,
-      className: "top-[30%] right-[25%] animate-float-2",
-      hiddenOnMobile: true,
-    },
-    {
-      code: "ZA",
-      delay: 1,
-      className: "bottom-[15%] md:bottom-[10%] right-[15%] md:right-[5%] animate-float-1",
-    },
-    {
-      code: "NL",
-      delay: 7,
-      className: "bottom-[25%] right-[15%] animate-float-1",
-      hiddenOnMobile: true,
-    },
-    {
-      code: "CZ",
-      delay: 9,
-      className: "top-[15%] left-[35%] animate-float-2",
-      hiddenOnMobile: true,
-    },
-  ];
-
+export default function HomePage({ stats }: { stats: Pick<Stats, "users" | "activeGames"> | null }) {
   return (
     <div className="relative min-h-screen w-full flex flex-col items-center sm:justify-center overflow-hidden bg-transparent">
       {floatingFlags.map((flag) => (
@@ -102,13 +39,33 @@ export default function HomePage() {
         </div>
       ))}
       <main className="relative z-10 flex flex-col items-center text-center px-4 max-w-2xl mt-16 sm:mt-0">
-        <Badge
-          variant="default"
-          className="mb-6 px-4 py-1.5 bg-primary text-primary-foreground border-2 border-foreground shadow-retro lowercase"
-        >
-          <GlobeIcon className="w-3 h-3 mr-2" />
-          197 Countries
-        </Badge>
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
+          <Badge
+            variant="default"
+            className="px-4 py-1.5 bg-primary text-primary-foreground border-2 border-foreground shadow-retro lowercase"
+          >
+            <GlobeIcon className="w-3 h-3 mr-2" />
+            197 Countries
+          </Badge>
+          {stats && (
+            <>
+              <Badge
+                variant="outline"
+                className="group px-4 py-1.5 bg-background hover:bg-blue-600 text-foreground border-2 border-foreground shadow-retro lowercase"
+              >
+                <UsersIcon className="w-3 h-3 mr-2 text-blue-600 group-hover:text-white" />
+                {stats.users} Players Online
+              </Badge>
+              <Badge
+                variant="outline"
+                className="group px-4 py-1.5 bg-background hover:bg-red-600 text-foreground border-2 border-foreground shadow-retro lowercase hidden sm:flex"
+              >
+                <Gamepad2Icon className="w-3 h-3 mr-2 text-destructive group-hover:text-white" />
+                {stats.activeGames} Games Active
+              </Badge>
+            </>
+          )}
+        </div>
         <h1 className="text-6xl sm:text-7xl md:text-9xl font-black mb-2 sm:mb-4 tracking-tighter text-foreground decoration-primary underline underline-offset-8 decoration-4">
           FLAGS
         </h1>

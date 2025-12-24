@@ -1,4 +1,4 @@
-import { withRetry, type RetryOptions } from '@/lib/utils/retry';
+import { withRetry, type RetryOptions } from "@/lib/utils/retry";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_FLAGS_API_URL;
 
@@ -9,6 +9,13 @@ export interface RoomInfo {
   maxRoomSize: number;
   isActive: boolean;
   gameMode: string;
+}
+
+export interface Stats {
+  rooms: number;
+  users: number;
+  activeGames: number;
+  timestamp: string;
 }
 
 export interface ApiResponse<T> {
@@ -27,7 +34,7 @@ class FlagsApi {
         const url = `${API_BASE_URL}${endpoint}`;
         const response = await fetch(url, {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             ...options?.headers,
           },
           ...options,
@@ -35,7 +42,9 @@ class FlagsApi {
 
         if (!response.ok) {
           const errorText = await response.text();
-          return { error: `HTTP ${response.status}: ${errorText}`, _status: response.status } as ApiResponse<T> & { _status: number };
+          return { error: `HTTP ${response.status}: ${errorText}`, _status: response.status } as ApiResponse<T> & {
+            _status: number;
+          };
         }
 
         const data = await response.json();
@@ -43,7 +52,7 @@ class FlagsApi {
       },
       (result, error) => {
         if (error) return true; // Retry on network errors
-        if (result && 'error' in result) {
+        if (result && "error" in result) {
           const status = (result as { _status: number })._status;
           // Only retry on server errors (5xx) or rate limits (429)
           return status >= 500 || status === 429;
@@ -56,6 +65,12 @@ class FlagsApi {
 
   async getRoomByInviteCode(inviteCode: string): Promise<ApiResponse<RoomInfo>> {
     return this.fetchApi<RoomInfo>(`/rooms/${inviteCode}`);
+  }
+
+  async getStats(): Promise<ApiResponse<Stats>> {
+    return this.fetchApi<Stats>("/stats", {
+      next: { revalidate: 60 },
+    });
   }
 }
 
