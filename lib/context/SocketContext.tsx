@@ -745,7 +745,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const gameState = useMemo(() => currentRoom?.gameState ?? null, [currentRoom]);
   const isGameActive = gameState?.isActive || false;
   const currentPhase = gameState?.phase || "waiting";
-  const currentQuestion = gameState?.currentQuestion;
+  const currentQuestion = gameState?.currentQuestion ?? null;
   const leaderboard = gameState?.leaderboard || [];
 
   const contextValue: SocketContextType = {
