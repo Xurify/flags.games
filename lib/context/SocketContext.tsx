@@ -115,7 +115,7 @@ export interface SocketContextType {
   gameState: Room["gameState"] | null;
   isGameActive: boolean;
   currentPhase: GamePhase;
-  currentQuestion: any;
+  currentQuestion: GameQuestion | null;
   leaderboard: GameStateLeaderboard[];
 
   connect: () => void;

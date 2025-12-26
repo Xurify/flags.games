@@ -77,6 +77,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ settingsOpen, setSettingsOp
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 text-center w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-foreground/10 rounded-md transition-colors"
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/icon.svg" alt="Guess the Country Icon" className="w-6 h-6 rounded-sm" />
                 Made with ❤️ by Xurify
               </a>

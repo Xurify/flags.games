@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, Suspense, lazy } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { RefreshCwIcon, HelpCircleIcon, SwordsIcon, ChevronDownIcon } from "lucide-react";
 import { CORRECT_POINT_COST, MAX_HEARTS, AUDIO_URLS, AUDIO_URLS_KEYS, Difficulty } from "@/lib/constants";

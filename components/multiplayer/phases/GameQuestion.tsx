@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { ArrowLeftIcon } from "lucide-react";
-import { cn } from "@/lib/utils/strings";
 import FlagDisplay from "@/components/FlagDisplay";
 import AnswerOptions from "@/components/AnswerOptions";
 import Timer from "@/components/Timer";

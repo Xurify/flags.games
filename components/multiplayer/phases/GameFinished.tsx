@@ -22,7 +22,7 @@ interface GameFinishedProps {
 }
 
 export default function GameFinished({ room }: GameFinishedProps) {
-  const { restartGame, stopGame, currentUser, gameState, leaderboard, currentRoom } = useSocket();
+  const { restartGame, stopGame, currentUser, gameState, leaderboard } = useSocket();
   const { canStartGame } = useRoomManagement();
   const { settings } = useSettings();
 

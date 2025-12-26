@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { SettingsSelect } from "@/components/multiplayer/SettingsSelect";
 import QRCodeShareModal from "@/components/multiplayer/QRCodeShareModal";
+import { logger } from "@/lib/utils/logger";
 
 interface RoomLobbyProps {
   room: Room;
@@ -219,7 +220,9 @@ export default function RoomLobby({ room }: RoomLobbyProps) {
     try {
       audioManager.resumeAudioContext();
       await startGame();
-    } catch (error) {}
+    } catch (error) {
+      logger.error('Failed to start game', error);
+    }
   };
 
   const handleSettingChange = (key: keyof Room["settings"], value: Room["settings"][keyof Room["settings"]]) => {
