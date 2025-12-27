@@ -18,12 +18,10 @@ export default function NotFound() {
 
       <div className="pt-4 flex items-center justify-center gap-4">
         <Link href="/">
-          <Button className="font-pressed">Back to Home</Button>
+          <Button className="font-pressed text-white">Back to Home</Button>
         </Link>
         <Link href="/flags">
-          <Button className="font-pressed bg-blue-500" variant="outline">
-            Flags?
-          </Button>
+          <Button className="font-pressed bg-blue-500 text-white">Flags?</Button>
         </Link>
       </div>
     </div>
