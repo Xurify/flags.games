@@ -10,9 +10,9 @@ export default function NotFound() {
       </div>
       <div className="space-y-4 max-w-md">
         <h1 className="text-8xl font-black text-foreground tracking-tighter drop-shadow-sm">404</h1>
-        <h2 className="text-2xl font-bold tracking-tight">Unregistered Country</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Not Found</h2>
         <p className="text-muted-foreground font-mono text-sm leading-relaxed">
-          You found an unregistered country. Please don't tell anyone about this.
+          You found an unknown <s>country</s> page. <br /> Please don't tell anyone about this.
         </p>
       </div>
 
@@ -22,7 +22,7 @@ export default function NotFound() {
         </Link>
         <Link href="/flags">
           <Button className="font-pressed bg-blue-500" variant="outline">
-            Flags
+            Flags?
           </Button>
         </Link>
       </div>
